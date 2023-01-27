@@ -1,3 +1,4 @@
+using Project.Scripts.Data;
 using UnityEngine;
 
 public class CharacterMovement : MonoBehaviour
