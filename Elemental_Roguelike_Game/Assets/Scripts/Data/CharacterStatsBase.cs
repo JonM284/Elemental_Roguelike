@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Project.Scripts.Data
 {
-    [CreateAssetMenu(fileName = "CharacterData", menuName = "Data/CharacterData")]
+    [CreateAssetMenu(fileName = "CharacterData", menuName = "Custom Data/CharacterData")]
     public class CharacterStatsBase : ScriptableObject
     {
 
@@ -11,7 +11,7 @@ namespace Project.Scripts.Data
 
         public int baseHealth = 10;
 
-        public int baseShields;
+        public int baseShields = 10;
 
         public float baseSpeed = 1;
     

@@ -36,8 +36,7 @@ public class CharacterMovement : MonoBehaviour
     public Vector3 velocity => _velocity;
 
     #endregion
-
-
+    
     #region Class Implementation
 
     // Update is called once per frame
