@@ -39,6 +39,19 @@ namespace Project.Scripts.Utils
             newTransform.rotation = Quaternion.identity;
         }
 
+        public static void ResetRectTransform(this RectTransform newRectTransform, RectTransform parentTransform = null)
+        {
+            if (parentTransform != null)
+            {
+                newRectTransform.parent = parentTransform;
+                newRectTransform.anchoredPosition = parentTransform.anchoredPosition;
+                return;
+            }
+            
+            newRectTransform.position = Vector3.zero;
+            newRectTransform.rotation = Quaternion.identity;
+        }
+
         public static void ResetPRS(this Transform changedTransform, Transform unchangedTransform)
         {
             changedTransform.position = unchangedTransform.position;

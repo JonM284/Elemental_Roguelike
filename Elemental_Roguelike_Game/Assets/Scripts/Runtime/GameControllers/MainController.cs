@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using UnityEngine;
 
 namespace Runtime.GameControllers
 {
@@ -20,6 +21,7 @@ namespace Runtime.GameControllers
 
         #region Class Implementation
 
+        [ContextMenu("Initialize")]
         public override void Initialize()
         {
             Instance = this;

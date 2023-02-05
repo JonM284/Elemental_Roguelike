@@ -17,13 +17,13 @@ MonoBehaviour:
     roomsByWeights:
     - weight: 25
       roomType: 0
-    - weight: 25
+    - weight: 20
       roomType: 1
-    - weight: 10
+    - weight: 6
       roomType: 2
   - percentage: 0.413
     roomsByWeights:
-    - weight: 6
+    - weight: 20
       roomType: 0
     - weight: 50
       roomType: 1
@@ -31,11 +31,11 @@ MonoBehaviour:
       roomType: 2
   - percentage: 0.655
     roomsByWeights:
-    - weight: 2
+    - weight: 5
       roomType: 0
-    - weight: 30
+    - weight: 35
       roomType: 1
-    - weight: 50
+    - weight: 45
       roomType: 2
     - weight: 18
       roomType: 3

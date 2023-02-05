@@ -9,7 +9,13 @@ namespace Runtime.Character
 
         #region Serialize Fields
 
-        [SerializeField] private List<Ability> abilities = new List<Ability>();
+        [SerializeField] private List<Ability> assignedAbilities = new List<Ability>();
+
+        #endregion
+
+        #region Accessors
+
+        public List<Ability> characterAbilities => assignedAbilities;
 
         #endregion
 

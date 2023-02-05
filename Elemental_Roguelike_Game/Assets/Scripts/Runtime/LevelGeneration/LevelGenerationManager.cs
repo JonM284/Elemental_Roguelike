@@ -1,8 +1,10 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using Project.Scripts.Data;
 using Project.Scripts.Utils;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 using Random = UnityEngine.Random;
 
 namespace Project.Scripts.Runtime.LevelGeneration
@@ -19,6 +21,12 @@ namespace Project.Scripts.Runtime.LevelGeneration
 
         #endregion
 
+        #region Actions
+
+        public static Action<RoomTracker> LevelGenerationFinished;
+
+        #endregion
+
         #region Serialized Fields
 
         [SerializeField] private float checkerRadius;
@@ -28,7 +36,7 @@ namespace Project.Scripts.Runtime.LevelGeneration
         [SerializeField] private RoomTracker startingRoom;
         
         [SerializeField] private GameObject roomPrefab;
-
+        
         [SerializeField] private LevelGenerationRulesData levelGenerationRulesData;
 
         [Range(1,10)]
@@ -84,6 +92,8 @@ namespace Project.Scripts.Runtime.LevelGeneration
             return poolTransform;
         });
 
+        public List<RoomTracker> levelRooms => allRooms;
+
         #endregion
         
         #region Unity Events
@@ -106,15 +116,15 @@ namespace Project.Scripts.Runtime.LevelGeneration
         #region Class Implementation
 
         [ContextMenu("Generate Level")]
-        private void GenerateLevel()
+        public void GenerateLevel()
         {
-            if (!startingRoom && !roomPrefab)
+            if (!startingRoom && roomPrefab == null)
             {
                 Debug.LogError("Starting room doesn't contain reference");
                 return;
             }
 
-            if (!startingRoom && roomPrefab)
+            if (!startingRoom && roomPrefab != null)
             {
                 var newStartingRoom = roomPrefab.Clone(activeRoomPool);
                 var newStartingRoomTracker = newStartingRoom.GetComponent<RoomTracker>();
@@ -130,6 +140,7 @@ namespace Project.Scripts.Runtime.LevelGeneration
                     {
                         _cachedRoomTrackers.Add(rt);
                         rt.transform.ResetTransform(inactiveRoomPool);   
+                        rt.gameObject.SetActive(true);
                     }
                 });
                 allRooms.Clear();
@@ -144,6 +155,8 @@ namespace Project.Scripts.Runtime.LevelGeneration
             
             allRooms.Add(startingRoom);
             _roomsToCheck.Enqueue(startingRoom);
+            
+            startingRoom.modifiableDoorCheckers.ForEach(dc => dc.AssignWallDoor(DoorType.DOOR));
 
             _isGeneratingLevel = true;
 
@@ -191,6 +204,7 @@ namespace Project.Scripts.Runtime.LevelGeneration
                 {
                     _isGeneratingLevel = false;
                     Debug.Log("Level generation finished");
+                    LevelGenerationFinished?.Invoke(startingRoom);
                     yield break;
                 }
                 
@@ -198,22 +212,30 @@ namespace Project.Scripts.Runtime.LevelGeneration
 
         }
         
-        public void GenerateConnectingRoom(DoorChecker m_doorChecker)
+        private void GenerateConnectingRoom(DoorChecker m_doorChecker)
         {
             Collider[] colliders = Physics.OverlapSphere(_checkerTransform.position, checkerRadius, roomCheckLayer);
             
             //If there is another room already in this direction
             if (colliders.Length > 0)
             {
-                CheckDoorArea(m_doorChecker);
+                foreach (var collider in colliders)
+                {
+                    var _roomTracker = collider.GetComponent<RoomTracker>();
+                    if (_roomTracker != null)
+                    {
+                        CheckDoorArea(m_doorChecker, _roomTracker);
+                    }
+                }
                 _isGeneratingRooms = false;
                 return;
             }
             
-            SpawnNewRoom();
+            m_doorChecker.AssignWallDoor(DoorType.DOOR);
+            SpawnNewRoom(m_doorChecker);
         }
 
-        public void SpawnNewRoom()
+        private void SpawnNewRoom(DoorChecker _currentDoorChecker)
         {
             var m_newRoom = _cachedRoomTrackers.Count > 0
                 ? _cachedRoomTrackers[0].gameObject
@@ -252,6 +274,7 @@ namespace Project.Scripts.Runtime.LevelGeneration
             }
 
             allRooms.Add(m_newRoomTracker);
+            _currentDoorChecker.AssignConnectedRoom(m_newRoomTracker);
 
             ManageRoomDoors(m_newRoomTracker);
         }
@@ -262,29 +285,32 @@ namespace Project.Scripts.Runtime.LevelGeneration
         /// Found: WALL => place: WALL
         /// Found: Nothing => place: DOOR
         /// </summary>
-        /// <param name="m_doorChecker">Current door to check</param>
-        private void CheckDoorArea(DoorChecker m_doorChecker)
+        /// <param name="m_doorChecker">Check door in direction to this room</param>
+        private void CheckDoorArea(DoorChecker currentCheckDoor, RoomTracker _roomInDirection)
         {
-            Collider[] colliders = Physics.OverlapSphere(m_doorChecker.doorCheckPosition, checkerRadius, doorCheckLayer);
-            _doorCheckerPosition = m_doorChecker.doorCheckPosition;
+            var _dirToCurrentRoom =  _roomInDirection.transform.position.FlattenVector3Y() - _currentProcessRoom.transform.position.FlattenVector3Y();
+
+            DoorChecker m_connectedDoor = null;
             
-            if (colliders.Length > 0)
+            //Walls face in towards parent room
+            foreach (var m_doorChecker in _roomInDirection.modifiableDoorCheckers)
             {
-                foreach (var collider in colliders)
+                var dot = Vector3.Dot(m_doorChecker.transform.forward, _dirToCurrentRoom);
+                if (dot >= 0.9f)
                 {
-                    if (collider.CompareTag(doorTag))
-                    {
-                        m_doorChecker.AssignWallDoor(DoorType.DOORWAY);
-                    }else if (collider.CompareTag(wallTag))
-                    {
-                        m_doorChecker.AssignWallDoor(DoorType.WALL);
-                    }
+                    m_connectedDoor = m_doorChecker;
+                    break;
                 }
             }
-            else
+
+            if (m_connectedDoor == null || m_connectedDoor.doorType == DoorType.WALL)
             {
-                m_doorChecker.AssignWallDoor(DoorType.DOOR);
+                currentCheckDoor.AssignWallDoor(DoorType.WALL);
+                return;
             }
+            
+            currentCheckDoor.AssignWallDoor(DoorType.DOOR);
+            currentCheckDoor.AssignConnectedRoom(_roomInDirection);
         }
 
         private void ManageRoomDoors(RoomTracker m_roomTracker)
@@ -314,7 +340,8 @@ namespace Project.Scripts.Runtime.LevelGeneration
             //remove door from door checkers
             if (m_connectedDoor)
             {
-                CheckDoorArea(m_connectedDoor);
+                m_connectedDoor.AssignWallDoor(DoorType.DOOR);
+                m_connectedDoor.AssignConnectedRoom(_currentProcessRoom);
                 m_roomTracker.modifiableDoorCheckers.Remove(m_connectedDoor);
             }
 
@@ -348,7 +375,7 @@ namespace Project.Scripts.Runtime.LevelGeneration
             
         }
 
-        public LevelGenerationRulesData.RoomByPercentage GetRoomTypeByRule()
+        private LevelGenerationRulesData.RoomByPercentage GetRoomTypeByRule()
         {
             //default value
             LevelGenerationRulesData.RoomByPercentage m_roomByPercentages = levelGenerationRulesData.defaultRoomByPercentage;
