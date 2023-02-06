@@ -13,6 +13,11 @@ namespace Project.Scripts.Utils
             return vector;
         }
 
+        public static bool IsNan(this Vector3 vector3)
+        {
+            return float.IsNaN(vector3.x) || float.IsNaN(vector3.y) || float.IsNaN(vector3.z);
+        }
+
         #endregion
         
     }

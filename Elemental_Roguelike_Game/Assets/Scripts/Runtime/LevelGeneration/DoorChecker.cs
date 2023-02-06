@@ -99,6 +99,11 @@ namespace Project.Scripts.Runtime.LevelGeneration
             _wallObstructionTypesList.ForEach(wot => wot.associatedObject.SetActive(false));
         }
 
+        public void ChangeRoom()
+        {
+            LevelUtils.ChangeRooms(m_connectedRoom);
+        }
+
         #endregion
 
     }

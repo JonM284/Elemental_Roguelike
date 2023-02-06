@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Runtime.Character;
 using UnityEngine;
 using Utils;
@@ -19,6 +20,12 @@ namespace Runtime.GameControllers
         #region Accessors
 
         public List<Team> activeTeams => TeamUtils.GetActiveTeams();
+
+        public bool isTeamFinished => m_currentActiveTeam != null && m_currentActiveTeam.teamMembers.All(c => c.finishedTurn);
+
+        public Team activeTeam => m_currentActiveTeam;
+
+        public CharacterBase activeCharacter { get; private set; }
 
         #endregion
 
@@ -66,6 +73,21 @@ namespace Runtime.GameControllers
         private void SetTeamActive(Team _activeTeam)
         {
             _activeTeam.teamMembers.ForEach(c => c.ResetCharacterActions());
+        }
+
+        public void SetActiveCharacter(CharacterBase _newActiveCharacter)
+        {
+            if (_newActiveCharacter == null)
+            {
+                return;
+            }
+
+            /*if (!m_currentActiveTeam.teamMembers.Contains(_newActiveCharacter))
+            {
+                return;
+            }*/
+
+            activeCharacter = _newActiveCharacter;
         }
 
         #endregion

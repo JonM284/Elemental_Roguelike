@@ -1,5 +1,7 @@
 ﻿using Project.Scripts.Utils;
+using Runtime.Selection;
 using UnityEngine;
+using Utils;
 
 namespace Runtime.Character
 {
@@ -7,7 +9,7 @@ namespace Runtime.Character
     [RequireComponent(typeof(CharacterLifeManager))]
     [RequireComponent(typeof(CharacterMovement))]
     [RequireComponent(typeof(CharacterRotation))]
-    public class CharacterBase: MonoBehaviour
+    public class CharacterBase: MonoBehaviour, ISelectable
     {
 
         #region Serialized Fields
@@ -22,6 +24,8 @@ namespace Runtime.Character
         private bool m_isActive;
 
         private bool m_isInBattle;
+
+        private bool m_finishedTurn;
         
         private CharacterAbilityManager m_characterAbilityManager;
         
@@ -65,6 +69,8 @@ namespace Runtime.Character
 
         public bool isAlive => characterLifeManager.isAlive;
 
+        public bool finishedTurn => m_finishedTurn;
+
         #endregion
 
         #region Class Implementation
@@ -90,7 +96,20 @@ namespace Runtime.Character
         }
 
         #endregion
-        
-        
+
+        #region ISelectable Inherited Methods
+
+        public void OnSelect()
+        {
+            TurnUtils.SetActiveCharacter(this);
+        }
+
+        public void OnUnselected()
+        {
+            
+        }
+
+        #endregion
+       
     }
 }

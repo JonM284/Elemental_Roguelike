@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
 namespace Project.Scripts.Runtime.LevelGeneration
 {
@@ -22,8 +23,18 @@ namespace Project.Scripts.Runtime.LevelGeneration
         [SerializeField]
         private List<DoorChecker> doorCheckers = new List<DoorChecker>();
 
+        [SerializeField] private NavMeshSurface navMeshSurface;
+
+        [SerializeField] private Transform decorationHolder;
+
         #endregion
-        
+
+        #region Accessor
+
+        public Transform decorationTransform => decorationHolder;
+
+        #endregion
+
         #region Class Implementation
 
         public void ResetRoom()
@@ -38,6 +49,16 @@ namespace Project.Scripts.Runtime.LevelGeneration
                     modifiableDoorCheckers.Add(dc);
                 }
             });
+        }
+
+        public void UpdateRoomNaveMesh()
+        {
+            navMeshSurface.BuildNavMesh();
+        }
+
+        public void LocationSelected()
+        {
+            
         }
 
         #endregion

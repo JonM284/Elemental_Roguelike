@@ -6,6 +6,11 @@ namespace Runtime.GameControllers
 {
     public class LevelController: GameControllerBase
     {
+        #region Events
+
+        public static Action<RoomTracker> OnRoomChanged;
+
+        #endregion
 
         #region Serialized Fields
 
@@ -36,6 +41,11 @@ namespace Runtime.GameControllers
             LevelGenerationManager.LevelGenerationFinished += ChangeRoom;
         }
 
+        private void OnDisable()
+        {
+            LevelGenerationManager.LevelGenerationFinished -= ChangeRoom;
+        }
+
         #endregion
 
         #region Class Implementation
@@ -47,8 +57,14 @@ namespace Runtime.GameControllers
         
         public void ChangeRoom(RoomTracker _newRoom)
         {
+            if (_newRoom == null)
+            {
+                return;
+            }
+            
             m_currentRoom = _newRoom;
             levelGenerationManager.levelRooms.ForEach(rt => rt.gameObject.SetActive(m_currentRoom == rt));
+            OnRoomChanged?.Invoke(m_currentRoom);
         }
 
         #endregion

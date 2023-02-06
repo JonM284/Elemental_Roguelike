@@ -2,6 +2,7 @@ using System;
 using Project.Scripts.Data;
 using Project.Scripts.Utils;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class CharacterMovement : MonoBehaviour
 {
@@ -27,20 +28,28 @@ public class CharacterMovement : MonoBehaviour
 
     private CharacterController m_characterController;
 
+    private NavMeshAgent m_navMeshAgent;
+
     #endregion
     
     #region Accessors
 
     private float speed => characterStats != null ? characterStats.baseSpeed : 1f;
 
-    private float battleMoveDistance => characterStats != null ? characterStats.movementDistance : 1f;
+    public float battleMoveDistance => characterStats != null ? characterStats.movementDistance : 1f;
 
-    private float maxGravity => gravity * 20f;
+    public float maxGravity => gravity * 20f;
 
-    private CharacterController _characterController => CommonUtils.GetRequiredComponent(ref m_characterController, () =>
+    private CharacterController characterController => CommonUtils.GetRequiredComponent(ref m_characterController, () =>
     {
         var cc = GetComponent<CharacterController>();
         return cc;
+    });
+
+    private NavMeshAgent navMeshAgent => CommonUtils.GetRequiredComponent(ref m_navMeshAgent, () =>
+    {
+        var nma = GetComponent<NavMeshAgent>();
+        return nma;
     });
     
     public Camera mainCamera => CommonUtils.GetRequiredComponent(ref m_mainCamera, () =>
@@ -66,11 +75,6 @@ public class CharacterMovement : MonoBehaviour
         Gizmos.DrawWireSphere(transform.position, battleMoveDistance);
     }
 
-    private void OnEnable()
-    {
-        InitializeCharacterMovement();
-    }
-
     void Update()
     {
        HandleMovement();
@@ -80,12 +84,6 @@ public class CharacterMovement : MonoBehaviour
     
     #region Class Implementation
 
-    private void InitializeCharacterMovement()
-    {
-        relativeRight = mainCamera.transform.right.normalized.FlattenVector3Y();
-        relativeForward = mainCamera.transform.forward.normalized.FlattenVector3Y();
-    }
-
     private void HandleMovement()
     {
         if (!m_canMove)
@@ -93,24 +91,53 @@ public class CharacterMovement : MonoBehaviour
             return;
         }
         
-        if (_characterController.isGrounded)
-        {
-            if (!m_isInBattle)
-            {
-                FreeMove();    
-            }
-            else
-            {
-                BattleMove();
-            }
-            
-        }
-        else
-        {
-            DoGravity();
-        }
+        
+        
     }
 
+    public void MoveCharacterAgent(Vector3 _movePosition)
+    {
+        navMeshAgent.SetDestination(_movePosition);
+    }
+
+    [ContextMenu("Battle On")]
+    public void SetCharacterBattleStatus()
+    {
+        m_isInBattle = true;
+    }
+
+    [ContextMenu("Active char")]
+    public void SetCharacterActiveCharacter()
+    {
+        pivotPosition = transform.position.FlattenVector3Y();
+        m_canMove = true;
+    }
+
+    public void SetCharacterInactive()
+    {
+        m_canMove = false;
+        TeleportCharacter(pivotPosition);
+    }
+
+    public void TeleportCharacter(Vector3 teleportPosition)
+    {
+        characterController.enabled = false;
+        transform.position = teleportPosition;
+        characterController.enabled = true;
+    }
+
+    #endregion
+
+    #region Unused
+
+    /* This is used if going back to character controller movement
+     
+    private void InitializeCharacterMovement()
+    {
+        relativeRight = mainCamera.transform.right.normalized.FlattenVector3Y();
+        relativeForward = mainCamera.transform.forward.normalized.FlattenVector3Y();
+    }
+     
     private void DoGravity()
     {
         _velocity.y -= gravity * Time.deltaTime;
@@ -140,32 +167,7 @@ public class CharacterMovement : MonoBehaviour
             TeleportCharacter(farthestPointInDir);
         }
     }
-
-    [ContextMenu("Battle On")]
-    public void SetCharacterBattleStatus()
-    {
-        m_isInBattle = true;
-    }
-
-    [ContextMenu("Active char")]
-    public void SetCharacterActiveCharacter()
-    {
-        pivotPosition = transform.position.FlattenVector3Y();
-        m_canMove = true;
-    }
-
-    public void SetCharacterInactive()
-    {
-        m_canMove = false;
-        TeleportCharacter(pivotPosition);
-    }
-
-    public void TeleportCharacter(Vector3 teleportPosition)
-    {
-        _characterController.enabled = false;
-        transform.position = teleportPosition;
-        _characterController.enabled = true;
-    }
+    */
 
     #endregion
 

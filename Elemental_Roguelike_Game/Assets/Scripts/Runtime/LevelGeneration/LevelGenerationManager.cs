@@ -12,12 +12,15 @@ namespace Project.Scripts.Runtime.LevelGeneration
     [DisallowMultipleComponent]
     public class LevelGenerationManager: MonoBehaviour
     {
+        
+        #region Nested Classes
 
-        #region Read only
-
-        private readonly string doorTag = "Door";
-
-        private readonly string wallTag = "Wall";
+        [Serializable]
+        public class RoomDecorations
+        {
+            public Color associatedColor = Color.white;
+            public GameObject associatedPrefab;
+        }
 
         #endregion
 
@@ -45,6 +48,10 @@ namespace Project.Scripts.Runtime.LevelGeneration
         [SerializeField] private LayerMask roomCheckLayer;
         
         [SerializeField] private LayerMask doorCheckLayer;
+
+        [SerializeField] private Texture2D roomLayout;
+
+        [SerializeField] private List<RoomDecorations> roomDecorations = new List<RoomDecorations>();
 
         #endregion
 
@@ -344,6 +351,30 @@ namespace Project.Scripts.Runtime.LevelGeneration
                 m_connectedDoor.AssignConnectedRoom(_currentProcessRoom);
                 m_roomTracker.modifiableDoorCheckers.Remove(m_connectedDoor);
             }
+
+            for (int x = 0; x < roomLayout.width; x++)
+            {
+                for (int z = 0;z < roomLayout.height; z++)
+                {
+                    Color pixelColor = roomLayout.GetPixel(x, z);
+                    if (pixelColor.a == 0)
+                    {
+                        continue;
+                    }
+
+                    foreach (var decoration in roomDecorations)
+                    {
+                        if (pixelColor == decoration.associatedColor)
+                        {
+                           var newObject = decoration.associatedPrefab.Clone(m_roomTracker.decorationTransform);
+                           var newY = newObject.transform.localScale.y / 2;
+                           newObject.transform.localPosition = new Vector3(x, newY, z);
+                        }
+                    }
+                }
+            }
+            
+            m_roomTracker.UpdateRoomNaveMesh();
 
             //If the room only has one door, the one door is the connecting door
             if (m_roomTracker.roomType == RoomType.ONE_DOOR || m_roomTracker.roomType == RoomType.FOUR_DOOR)
