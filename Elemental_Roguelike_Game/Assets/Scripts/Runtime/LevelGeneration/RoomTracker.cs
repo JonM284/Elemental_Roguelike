@@ -30,6 +30,8 @@ namespace Project.Scripts.Runtime.LevelGeneration
         #endregion
 
         #region Accessor
+        
+        public bool hasBuiltNavmesh { get; private set; }
 
         public Transform decorationTransform => decorationHolder;
 
@@ -51,9 +53,10 @@ namespace Project.Scripts.Runtime.LevelGeneration
             });
         }
 
-        public void UpdateRoomNaveMesh()
+        public void UpdateRoomNavMesh()
         {
             navMeshSurface.BuildNavMesh();
+            hasBuiltNavmesh = true;
         }
 
         public void LocationSelected()

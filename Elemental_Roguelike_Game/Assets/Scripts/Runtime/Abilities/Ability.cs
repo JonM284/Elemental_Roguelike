@@ -1,13 +1,30 @@
-﻿using Project.Scripts.Data;
+﻿using System;
+using Data.Elements;
 using UnityEngine;
 
 namespace Runtime.Abilities
 {
-    public abstract class Ability: MonoBehaviour
+    [Serializable]
+    public abstract class Ability: ScriptableObject
     {
-        #region Serialized Fields
 
-        [SerializeField] private CharacterAbilityData characterAbilityData;
+        //Types of abilities include {Projectile, Puppet, Cast, Movement}
+        //Most ability types can be summarized to this
+        
+        #region Public Fields
+
+        public string abilityName;
+
+        //cooldowns are determined by rounds
+        public int roundCooldownTimer;
+
+        public float baseDamage;
+
+        public ElementTyping abilityElement;
+
+        public float criticalMultiplier;
+
+        public bool hasPrerequisites;
 
         #endregion
 
@@ -21,49 +38,37 @@ namespace Runtime.Abilities
 
         #region Protected Fields
 
-        protected Transform _targetTransform;
+        protected GameObject currentOwner;
 
-        protected Vector3 _targetPosition;
+        protected Transform m_targetTransform;
+
+        protected Vector3 m_targetPosition;
 
         #endregion
 
         #region Accessors
 
-        public int abilityCooldownTimer => characterAbilityData.roundCooldownTimer;
-
-        public float abilityDamage => characterAbilityData.baseDamage;
-
-        public float abilityCritMultiplier => characterAbilityData.criticalMultiplier;
-
-        public bool canUseAbility => m_canUseAbility;
-
-        public bool abilityHasPrerequisites => characterAbilityData.hasPrerequisites;
+        public bool isUnlocked { get; private set; }
 
         #endregion
 
         #region Class Implementation
 
-        public virtual void Initialize()
+        //Initialization happens when user (player or Ai) want to use this SO
+        public void Initialize(GameObject _ownerObj)
         {
             m_abilityCurrentState = AbilityState.READY_TO_USE;
             m_canUseAbility = true;
+            currentOwner = _ownerObj;
         }
 
-        public virtual void SelectPosition(Vector3 _inputPosition)
-        {
-            m_abilityCurrentState = AbilityState.SELECTING;
-        }
+        //Select Location or Target
+        public abstract void SelectPosition(Vector3 _inputPosition);
 
-        public virtual void SelectTarget(Transform _inputTransform)
-        {
-            m_abilityCurrentState = AbilityState.SELECTING;
-        }
+        public abstract void SelectTarget(Transform _inputTransform);
 
-        public virtual void UseAbility()
-        {
-            m_abilityCurrentState = AbilityState.IN_USE;
-            m_canUseAbility = false;
-        }
+        //Use ability is different for each ability type
+        public abstract void UseAbility();
 
         public virtual void AbilityUsed()
         {
@@ -74,6 +79,11 @@ namespace Runtime.Abilities
         {
             m_abilityCurrentState = AbilityState.READY_TO_USE;
             m_canUseAbility = true;
+        }
+
+        public void UnlockAbility()
+        {
+            isUnlocked = true;
         }
 
         #endregion

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Runtime.Character;
 using UnityEngine;
 using Utils;
 
@@ -34,6 +35,8 @@ namespace Project.Scripts.Runtime.LevelGeneration
         [SerializeField] private Transform _doorCheckPosition;
         
         [SerializeField] private Transform _associatedRoomCheckTransform;
+
+        [SerializeField] private Transform _associatedRoomChangeTransform;
         
         #endregion
 
@@ -101,7 +104,7 @@ namespace Project.Scripts.Runtime.LevelGeneration
 
         public void ChangeRoom()
         {
-            LevelUtils.ChangeRooms(m_connectedRoom);
+            
         }
 
         #endregion

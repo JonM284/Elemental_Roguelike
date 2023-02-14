@@ -1,6 +1,7 @@
 ﻿using System;
 using Project.Scripts.Runtime.LevelGeneration;
 using UnityEngine;
+using UnityEngine.AI;
 
 namespace Runtime.GameControllers
 {
@@ -38,12 +39,12 @@ namespace Runtime.GameControllers
 
         private void OnEnable()
         {
-            LevelGenerationManager.LevelGenerationFinished += ChangeRoom;
+            LevelGenerationManager.LevelGenerationFinished += OnLevelGenerationFinished;
         }
 
         private void OnDisable()
         {
-            LevelGenerationManager.LevelGenerationFinished -= ChangeRoom;
+            LevelGenerationManager.LevelGenerationFinished -= OnLevelGenerationFinished;
         }
 
         #endregion
@@ -53,6 +54,19 @@ namespace Runtime.GameControllers
         public void StartLevelGeneration()
         {
             levelGenerationManager.GenerateLevel();
+        }
+
+        public void OnLevelGenerationFinished(RoomTracker _startingRoom)
+        {
+            levelGenerationManager.levelRooms.ForEach(rt => rt.gameObject.SetActive(false));
+            levelGenerationManager.levelRooms.ForEach(rt =>
+            {
+                rt.gameObject.SetActive(true);
+                rt.UpdateRoomNavMesh();
+                rt.gameObject.SetActive(false);
+            });
+
+            ChangeRoom(_startingRoom);
         }
         
         public void ChangeRoom(RoomTracker _newRoom)

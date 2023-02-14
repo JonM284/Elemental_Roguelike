@@ -1,6 +1,7 @@
 ﻿using Project.Scripts.Utils;
 using Runtime.Selection;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 namespace Runtime.GameControllers
 {
@@ -23,7 +24,7 @@ namespace Runtime.GameControllers
 
         private float m_mouseDownTime;
 
-        private float m_mouseInputThreshold = 0.25f;
+        private float m_mouseInputThreshold = 0.2f;
 
         private UnityEngine.Camera m_mainCamera;
 
@@ -76,6 +77,11 @@ namespace Runtime.GameControllers
 
         private void TrySelect()
         {
+            if (EventSystem.current.IsPointerOverGameObject())
+            {
+                return;
+            }
+            
             Debug.Log("TrySelect");
             if (mainCamera == null)
             {

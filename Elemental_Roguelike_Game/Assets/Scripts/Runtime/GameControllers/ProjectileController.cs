@@ -1,8 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Project.Scripts.Utils;
+using Runtime.Character;
 using Runtime.Weapons;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
+using UnityEngine.ResourceManagement.AsyncOperations;
 
 namespace Runtime.GameControllers
 {
@@ -77,7 +80,7 @@ namespace Runtime.GameControllers
             projectile.transform.ResetTransform(disabledProjectilePool);
         }
 
-        public void GetProjectileAt(ProjectileBase projectileBase, Vector3 startPos, Vector3 startRotation)
+        public void GetProjectileAt(ProjectileBase projectileBase, Vector3 startPos, Vector3 startRotation, Vector3 endPos)
         {
             if (projectileBase == null)
             {
@@ -88,7 +91,21 @@ namespace Runtime.GameControllers
 
             if (!foundProjectile)
             {
-                foundProjectile = Instantiate(projectileBase);
+                //instantiate gameobject
+                var handle = Addressables.LoadAssetAsync<GameObject>(projectileBase.projectileRef.projectileAsset);
+                handle.Completed += operation =>
+                {
+                    if (operation.Status == AsyncOperationStatus.Succeeded)
+                    {
+                        var newProjectileObj = handle.Result.Clone(activeProjectilePool);
+                        var newProjectile = newProjectileObj.GetComponent<ProjectileBase>();
+                        if (newProjectile != null)
+                        {
+                            foundProjectile = newProjectile;
+                            newProjectile.Initialize(startPos);
+                        }
+                    }
+                };
             }
             else
             {
@@ -100,7 +117,7 @@ namespace Runtime.GameControllers
             foundProjectile.transform.forward = startRotation;
             
             m_activeProjectiles.Add(foundProjectile);
-            foundProjectile.Initialize();
+            foundProjectile.Initialize(startPos);
         }
 
         #endregion

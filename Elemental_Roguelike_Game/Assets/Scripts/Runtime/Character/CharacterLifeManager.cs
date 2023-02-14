@@ -1,4 +1,6 @@
-﻿using Project.Scripts.Data;
+﻿using Data;
+using Data.Elements;
+using Project.Scripts.Data;
 using UnityEngine;
 
 namespace Runtime.Character
@@ -8,7 +10,6 @@ namespace Runtime.Character
 
         #region Serialized Fields
 
-        [SerializeField] private CharacterStatsBase characterStats;
 
         #endregion
 
@@ -18,13 +19,15 @@ namespace Runtime.Character
 
         private float m_currentShieldPoints;
 
+        private CharacterStatsData m_characterStats;
+
         #endregion
 
         #region Accessors
 
-        public float maxHealthPoints => characterStats.baseHealth;
+        public float maxHealthPoints => m_characterStats.baseHealth;
 
-        public float maxSheildPoints => characterStats.baseShields;
+        public float maxSheildPoints => m_characterStats.baseShields;
 
         public bool isAlive => m_currentHealthPoints > 0;
 
@@ -32,22 +35,29 @@ namespace Runtime.Character
 
         #region Class Implementation
 
-        public void DealDamage(float _incomingDamage, bool _armorPiercing)
+        public void InitializeCharacterHealth(CharacterStatsData _stats)
         {
+            m_characterStats = _stats;
+        }
+
+        public void DealDamage(float _incomingDamage, bool _armorPiercing, ElementTyping _type)
+        {
+            var _fixedIncomingDamage = m_characterStats.type.CalculateDamageOnWeakness(_incomingDamage, _type);
+            
             if (_armorPiercing)
             {
-                m_currentHealthPoints -= _incomingDamage;
+                m_currentHealthPoints -= _fixedIncomingDamage;
                 return;
             }
 
             if (_incomingDamage >= m_currentShieldPoints)
             {
                 m_currentShieldPoints = 0;
-                m_currentHealthPoints -= (_incomingDamage - m_currentShieldPoints);
+                m_currentHealthPoints -= (_fixedIncomingDamage - m_currentShieldPoints);
             }
             else
             {
-                m_currentShieldPoints -= _incomingDamage;
+                m_currentShieldPoints -= _fixedIncomingDamage;
             }
         }
 

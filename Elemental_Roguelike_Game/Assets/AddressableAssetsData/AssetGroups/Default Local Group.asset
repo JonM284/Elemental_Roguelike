@@ -29,6 +29,14 @@ MonoBehaviour:
     m_Address: Assets/Prefabs/Player.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
+  - m_GUID: 5e7ab120e7973124cae1c9af033b4c05
+    m_Address: Assets/Prefabs/UI/TestPopup.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 5d2ecc0022857e24bbf63d1ebd6e4853
+    m_Address: Assets/Prefabs/TestProjectile.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: c51bc8bdb2bb6e5479c05b7cf9bc0f75, type: 2}
   m_SchemaSet:

@@ -1,5 +1,8 @@
-﻿using Runtime.GameControllers;
+﻿using System;
+using Data;
+using Runtime.GameControllers;
 using Runtime.UI;
+using UnityEngine.AddressableAssets;
 
 namespace Utils
 {
@@ -20,6 +23,16 @@ namespace Utils
 
         #region Class Implementation
 
+        public static void OpenUI(AssetReference _uiWindowAssetRef, UILayerData _layer)
+        {
+            if (_uiWindowAssetRef == null)
+            {
+                return;
+            }
+
+            uiController.AddUI(_layer, _uiWindowAssetRef);
+        }
+
         public static void CloseUI(UIBase _uiWindow)
         {
             if (_uiWindow == null)
@@ -29,6 +42,11 @@ namespace Utils
             
             uiController.ReturnUIToCachedPool(_uiWindow);
             
+        }
+
+        public static void OpenNewPopup(PopupDialogData _data, Action _confirmAction, Action _closeAction = null)
+        {
+            uiController.CreatePopup(_data, _confirmAction, _closeAction);
         }
 
         #endregion

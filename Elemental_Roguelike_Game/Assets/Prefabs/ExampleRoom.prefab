@@ -1,5 +1,36 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &40051646627952582
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2068468495832504908}
+  m_Layer: 7
+  m_Name: MoveLocation
+  m_TagString: Untagged
+  m_Icon: {fileID: -5397416234189338067, guid: 0000000000000000d000000000000000, type: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2068468495832504908
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 40051646627952582}
+  m_LocalRotation: {x: -0, y: 0.7071068, z: -0, w: 0.7071068}
+  m_LocalPosition: {x: -2.5, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7027676799205320074}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &111074718382059099
 GameObject:
   m_ObjectHideFlags: 0
@@ -601,8 +632,8 @@ GameObject:
   - component: {fileID: 2306251998578660607}
   - component: {fileID: 817071365148646670}
   - component: {fileID: 8097792320760538857}
-  - component: {fileID: 7114652767997552680}
-  m_Layer: 0
+  - component: {fileID: 41270208162077251}
+  m_Layer: 10
   m_Name: MoveToNextRoom
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -617,7 +648,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1817451274890165013}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 1, z: 0}
   m_LocalScale: {x: 0.34999996, y: 0.35, z: 0.34999996}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -687,7 +718,7 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &7114652767997552680
+--- !u!114 &41270208162077251
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -696,25 +727,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 1817451274890165013}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2008b3d2929047dca168dcdc3c6b3463, type: 3}
+  m_Script: {fileID: 11500000, guid: d7a3c0a6ccd94eccbcc6fe81f24ee920, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   onSelect:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 7027676799593399495}
-        m_TargetAssemblyTypeName: Project.Scripts.Runtime.LevelGeneration.DoorChecker,
-          Assembly-CSharp
-        m_MethodName: ChangeRoom
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
   onUnselect:
     m_PersistentCalls:
       m_Calls: []
@@ -724,6 +742,7 @@ MonoBehaviour:
   onUnhover:
     m_PersistentCalls:
       m_Calls: []
+  associatedNewLocation: {fileID: 2068468495832504908}
 --- !u!1 &2101842078411745024
 GameObject:
   m_ObjectHideFlags: 0
@@ -735,7 +754,7 @@ GameObject:
   - component: {fileID: 3865093544109430224}
   - component: {fileID: 7841466260213435897}
   - component: {fileID: 2855833559934551692}
-  - component: {fileID: 1352405236748301953}
+  - component: {fileID: 3506088128087678492}
   m_Layer: 0
   m_Name: RoomConnectorHallway
   m_TagString: Untagged
@@ -751,7 +770,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2101842078411745024}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -1.5000007, y: -0.96, z: 0}
+  m_LocalPosition: {x: -1.5, y: 0, z: 0}
   m_LocalScale: {x: 3, y: 0.19999999, z: 2}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -808,7 +827,7 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &1352405236748301953
+--- !u!65 &3506088128087678492
 BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -819,8 +838,8 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Size: {x: 1.0000002, y: 1, z: 1.0000002}
+  m_Center: {x: -0.00000023841858, y: 0, z: 0}
 --- !u!1 &2356292243541838366
 GameObject:
   m_ObjectHideFlags: 0
@@ -930,8 +949,8 @@ GameObject:
   - component: {fileID: 9115502064732515881}
   - component: {fileID: 8799395812830741446}
   - component: {fileID: 2668623351440859554}
-  - component: {fileID: 903175623162020487}
-  m_Layer: 0
+  - component: {fileID: 4083707278991981841}
+  m_Layer: 10
   m_Name: MoveToNextRoom
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -946,7 +965,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2400352728061841147}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 1, z: 0}
   m_LocalScale: {x: 0.35, y: 0.35, z: 0.35}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1016,7 +1035,7 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &903175623162020487
+--- !u!114 &4083707278991981841
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1025,25 +1044,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 2400352728061841147}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2008b3d2929047dca168dcdc3c6b3463, type: 3}
+  m_Script: {fileID: 11500000, guid: d7a3c0a6ccd94eccbcc6fe81f24ee920, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   onSelect:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 7027676799336310892}
-        m_TargetAssemblyTypeName: Project.Scripts.Runtime.LevelGeneration.DoorChecker,
-          Assembly-CSharp
-        m_MethodName: ChangeRoom
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
   onUnselect:
     m_PersistentCalls:
       m_Calls: []
@@ -1053,6 +1059,7 @@ MonoBehaviour:
   onUnhover:
     m_PersistentCalls:
       m_Calls: []
+  associatedNewLocation: {fileID: 5547930872224778247}
 --- !u!1 &2471345900295139694
 GameObject:
   m_ObjectHideFlags: 0
@@ -1465,7 +1472,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2975570882629106384}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -4.32, y: 0, z: 0.1}
+  m_LocalPosition: {x: -4.32, y: 0, z: -0.1}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1976,7 +1983,7 @@ GameObject:
   - component: {fileID: 5277367375145322167}
   - component: {fileID: 4919442393185656757}
   - component: {fileID: 8974369953118805172}
-  - component: {fileID: 8991563246155850425}
+  - component: {fileID: 1196292030860409074}
   m_Layer: 0
   m_Name: RoomConnectorHallway
   m_TagString: Untagged
@@ -1992,7 +1999,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4388489975368685097}
   m_LocalRotation: {x: -0, y: 0.7071068, z: -0, w: 0.7071068}
-  m_LocalPosition: {x: -1.5000019, y: -0.96, z: 0}
+  m_LocalPosition: {x: -1.5, y: 0, z: 0}
   m_LocalScale: {x: 2, y: 0.2, z: 3}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2049,7 +2056,7 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &8991563246155850425
+--- !u!65 &1196292030860409074
 BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -2060,8 +2067,8 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Size: {x: 1.0000007, y: 1, z: 1.0000008}
+  m_Center: {x: 1.1368684e-13, y: 0, z: 0}
 --- !u!1 &4598523324240640791
 GameObject:
   m_ObjectHideFlags: 0
@@ -2171,8 +2178,8 @@ GameObject:
   - component: {fileID: 8883290172108618894}
   - component: {fileID: 5715811556730380386}
   - component: {fileID: 303073836949886152}
-  - component: {fileID: 1239635038203228324}
-  m_Layer: 0
+  - component: {fileID: 8704030253421236635}
+  m_Layer: 10
   m_Name: MoveToNextRoom
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2187,7 +2194,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4718940131573634977}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 1, z: 0}
   m_LocalScale: {x: 0.34999996, y: 0.35, z: 0.34999996}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2257,7 +2264,7 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &1239635038203228324
+--- !u!114 &8704030253421236635
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -2266,25 +2273,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 4718940131573634977}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2008b3d2929047dca168dcdc3c6b3463, type: 3}
+  m_Script: {fileID: 11500000, guid: d7a3c0a6ccd94eccbcc6fe81f24ee920, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   onSelect:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 7027676799349207531}
-        m_TargetAssemblyTypeName: Project.Scripts.Runtime.LevelGeneration.DoorChecker,
-          Assembly-CSharp
-        m_MethodName: ChangeRoom
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
   onUnselect:
     m_PersistentCalls:
       m_Calls: []
@@ -2294,6 +2288,7 @@ MonoBehaviour:
   onUnhover:
     m_PersistentCalls:
       m_Calls: []
+  associatedNewLocation: {fileID: 6218470366236018858}
 --- !u!1 &4969271086230977441
 GameObject:
   m_ObjectHideFlags: 0
@@ -2985,8 +2980,8 @@ GameObject:
   - component: {fileID: 6868336562938404912}
   - component: {fileID: 6241307210383351784}
   - component: {fileID: 6818970773270161102}
-  - component: {fileID: 6273702393989588724}
-  m_Layer: 0
+  - component: {fileID: 6706886136328531979}
+  m_Layer: 10
   m_Name: MoveToNextRoom
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3001,7 +2996,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5924073701462891568}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 1, z: 0}
   m_LocalScale: {x: 0.34999996, y: 0.35, z: 0.34999996}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -3071,7 +3066,7 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &6273702393989588724
+--- !u!114 &6706886136328531979
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -3080,25 +3075,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 5924073701462891568}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2008b3d2929047dca168dcdc3c6b3463, type: 3}
+  m_Script: {fileID: 11500000, guid: d7a3c0a6ccd94eccbcc6fe81f24ee920, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   onSelect:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 7027676800157665695}
-        m_TargetAssemblyTypeName: Project.Scripts.Runtime.LevelGeneration.DoorChecker,
-          Assembly-CSharp
-        m_MethodName: ChangeRoom
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
   onUnselect:
     m_PersistentCalls:
       m_Calls: []
@@ -3108,6 +3090,7 @@ MonoBehaviour:
   onUnhover:
     m_PersistentCalls:
       m_Calls: []
+  associatedNewLocation: {fileID: 5826541975972678151}
 --- !u!1 &6024534501762998020
 GameObject:
   m_ObjectHideFlags: 0
@@ -3140,6 +3123,37 @@ Transform:
   - {fileID: 4525857924235777104}
   - {fileID: 2643929620610529412}
   m_Father: {fileID: 7027676799593399494}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &6225916692202943103
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6218470366236018858}
+  m_Layer: 7
+  m_Name: MoveLocation
+  m_TagString: Untagged
+  m_Icon: {fileID: -5397416234189338067, guid: 0000000000000000d000000000000000, type: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6218470366236018858
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6225916692202943103}
+  m_LocalRotation: {x: -0, y: -0.7071068, z: -0, w: 0.7071068}
+  m_LocalPosition: {x: -2.5, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7027676800174688922}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &6285305994192907743
@@ -3541,7 +3555,7 @@ GameObject:
   - component: {fileID: 9070449592729279034}
   - component: {fileID: 4175475116624605556}
   - component: {fileID: 1031979646438865215}
-  - component: {fileID: 8795977402488141631}
+  - component: {fileID: 7222326990566907683}
   m_Layer: 0
   m_Name: RoomConnectorHallway
   m_TagString: Untagged
@@ -3557,7 +3571,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6525858160769962975}
   m_LocalRotation: {x: -0, y: -0.7071068, z: -0, w: 0.7071068}
-  m_LocalPosition: {x: -1.5000014, y: -0.96, z: 0}
+  m_LocalPosition: {x: -1.5000001, y: 0, z: 0}
   m_LocalScale: {x: 2, y: 0.19999999, z: 3}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -3614,7 +3628,7 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &8795977402488141631
+--- !u!65 &7222326990566907683
 BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -3625,8 +3639,39 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Size: {x: 1.0000007, y: 1, z: 1.0000008}
+  m_Center: {x: 5.684342e-14, y: 0, z: 0.00000023841858}
+--- !u!1 &6781463828932641972
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5547930872224778247}
+  m_Layer: 7
+  m_Name: MoveLocation
+  m_TagString: Untagged
+  m_Icon: {fileID: -5397416234189338067, guid: 0000000000000000d000000000000000, type: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5547930872224778247
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6781463828932641972}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -2.5000005, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7027676799358143988}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &7027676799039361898
 GameObject:
   m_ObjectHideFlags: 0
@@ -3786,6 +3831,7 @@ Transform:
   - {fileID: 7027676799039361899}
   - {fileID: 3865093544109430224}
   - {fileID: 3016393690591905003}
+  - {fileID: 2068468495832504908}
   m_Father: {fileID: 7027676800912378541}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -3813,7 +3859,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7027676799219485024}
   m_LocalRotation: {x: 0, y: -0.7071068, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: 0.96, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -3881,7 +3927,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7027676799271495096}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.1, y: 0, z: 0}
+  m_LocalPosition: {x: -0.1, y: 1, z: 0}
   m_LocalScale: {x: 0.2, y: 2, z: 2}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -4010,6 +4056,7 @@ MonoBehaviour:
     associatedObject: {fileID: 8892390274685012251}
   _doorCheckPosition: {fileID: 7027676800193616810}
   _associatedRoomCheckTransform: {fileID: 7027676799854013258}
+  _associatedRoomChangeTransform: {fileID: 0}
   m_connectedRoom: {fileID: 0}
   doorType: 0
 --- !u!65 &5875028556697468884
@@ -4084,6 +4131,7 @@ MonoBehaviour:
     associatedObject: {fileID: 1580032462196773199}
   _doorCheckPosition: {fileID: 7027676799669264075}
   _associatedRoomCheckTransform: {fileID: 7027676800331844958}
+  _associatedRoomChangeTransform: {fileID: 0}
   m_connectedRoom: {fileID: 0}
   doorType: 0
 --- !u!65 &9013690954936054365
@@ -4130,6 +4178,7 @@ Transform:
   - {fileID: 7027676799359751786}
   - {fileID: 9070449592729279034}
   - {fileID: 459694134122306432}
+  - {fileID: 5547930872224778247}
   m_Father: {fileID: 7027676800255469274}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -4417,6 +4466,7 @@ MonoBehaviour:
     associatedObject: {fileID: 8325978824838553250}
   _doorCheckPosition: {fileID: 7027676799233380748}
   _associatedRoomCheckTransform: {fileID: 7027676801001832308}
+  _associatedRoomChangeTransform: {fileID: 0}
   m_connectedRoom: {fileID: 0}
   doorType: 0
 --- !u!65 &8421916064167692205
@@ -4747,6 +4797,7 @@ MonoBehaviour:
     associatedObject: {fileID: 238099120173891960}
   _doorCheckPosition: {fileID: 7027676799418348782}
   _associatedRoomCheckTransform: {fileID: 7027676799126981959}
+  _associatedRoomChangeTransform: {fileID: 0}
   m_connectedRoom: {fileID: 0}
   doorType: 0
 --- !u!65 &5569894101313304903
@@ -4789,7 +4840,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7027676800169774546}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.1, y: 0, z: 0}
+  m_LocalPosition: {x: -0.1, y: 1, z: 0}
   m_LocalScale: {x: 0.2, y: 2, z: 2}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -4890,6 +4941,7 @@ Transform:
   - {fileID: 7027676799845263406}
   - {fileID: 9164881010920439984}
   - {fileID: 1060911796003245414}
+  - {fileID: 6218470366236018858}
   m_Father: {fileID: 7027676800731196327}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -4948,7 +5000,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7027676800255469221}
   m_LocalRotation: {x: 0, y: -0.7071068, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: 0.96, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -5016,7 +5068,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7027676800454472283}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.1, y: 0, z: 0}
+  m_LocalPosition: {x: -0.1, y: 1, z: 0}
   m_LocalScale: {x: 0.2, y: 2, z: 2}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -5208,6 +5260,7 @@ MonoBehaviour:
   onUnhover:
     m_PersistentCalls:
       m_Calls: []
+  associatedNewLocation: {fileID: 0}
 --- !u!1 &7027676800637011124
 GameObject:
   m_ObjectHideFlags: 0
@@ -5239,6 +5292,7 @@ Transform:
   - {fileID: 7027676799591318948}
   - {fileID: 5277367375145322167}
   - {fileID: 6312017242062909074}
+  - {fileID: 5826541975972678151}
   m_Father: {fileID: 7027676799219485025}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -5269,7 +5323,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7027676800688129410}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.1, y: 0, z: 0}
+  m_LocalPosition: {x: -0.1, y: 1, z: 0}
   m_LocalScale: {x: 0.2, y: 2, z: 2}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -5363,7 +5417,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7027676800731196326}
   m_LocalRotation: {x: 0, y: -0.7071068, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: 0.96, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -5478,9 +5532,9 @@ MonoBehaviour:
   m_OverrideTileSize: 0
   m_TileSize: 256
   m_OverrideVoxelSize: 0
-  m_VoxelSize: 0.11666667
+  m_VoxelSize: 0.06666667
   m_BuildHeightMesh: 0
-  m_NavMeshData: {fileID: 23800000, guid: 035e6b78f3d4cbe41aec8240a8085583, type: 2}
+  m_NavMeshData: {fileID: 0}
 --- !u!1 &7027676800912378540
 GameObject:
   m_ObjectHideFlags: 0
@@ -5505,7 +5559,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7027676800912378540}
   m_LocalRotation: {x: 0, y: -0.7071068, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: 0.96, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -6076,7 +6130,7 @@ GameObject:
   - component: {fileID: 9164881010920439984}
   - component: {fileID: 7297600210917033902}
   - component: {fileID: 4782215275173132495}
-  - component: {fileID: 5472067513401734478}
+  - component: {fileID: 2560370971899268416}
   m_Layer: 0
   m_Name: RoomConnectorHallway
   m_TagString: Untagged
@@ -6092,7 +6146,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8542035770423802486}
   m_LocalRotation: {x: -0, y: -1, z: -0, w: 0}
-  m_LocalPosition: {x: -1.5000007, y: -0.96, z: 0}
+  m_LocalPosition: {x: -1.5, y: 0, z: 0}
   m_LocalScale: {x: 3, y: 0.19999999, z: 2}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -6149,7 +6203,7 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &5472067513401734478
+--- !u!65 &2560370971899268416
 BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -6160,8 +6214,8 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Size: {x: 1.0000002, y: 1, z: 1.0000002}
+  m_Center: {x: 0.00000023841858, y: 0, z: 0}
 --- !u!1 &8554674741331661374
 GameObject:
   m_ObjectHideFlags: 0
@@ -6550,6 +6604,37 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!1 &8871310827101617970
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5826541975972678151}
+  m_Layer: 7
+  m_Name: MoveLocation
+  m_TagString: Untagged
+  m_Icon: {fileID: -5397416234189338067, guid: 0000000000000000d000000000000000, type: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5826541975972678151
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8871310827101617970}
+  m_LocalRotation: {x: -0, y: 1, z: -0, w: 0}
+  m_LocalPosition: {x: -2.5, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7027676800637011125}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &8892390274685012251
 GameObject:
   m_ObjectHideFlags: 0

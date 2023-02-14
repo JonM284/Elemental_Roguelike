@@ -1,4 +1,8 @@
-﻿using Project.Scripts.Utils;
+﻿using Data;
+using Data.DataSaving;
+using Data.Elements;
+using Project.Scripts.Utils;
+using Runtime.Damage;
 using Runtime.Selection;
 using UnityEngine;
 using Utils;
@@ -9,11 +13,11 @@ namespace Runtime.Character
     [RequireComponent(typeof(CharacterLifeManager))]
     [RequireComponent(typeof(CharacterMovement))]
     [RequireComponent(typeof(CharacterRotation))]
-    public class CharacterBase: MonoBehaviour, ISelectable
+    public class CharacterBase: MonoBehaviour, ISelectable,IDamageable
     {
 
         #region Serialized Fields
-
+        
 
         #endregion
 
@@ -22,10 +26,10 @@ namespace Runtime.Character
         private int m_characterActionPoints = 3;
 
         private bool m_isActive;
-
-        private bool m_isInBattle;
-
+        
         private bool m_finishedTurn;
+
+        private CharacterStatsData m_characterStatsData;
         
         private CharacterAbilityManager m_characterAbilityManager;
         
@@ -71,16 +75,21 @@ namespace Runtime.Character
 
         public bool finishedTurn => m_finishedTurn;
 
+        public bool isInBattle => characterMovement.isInBattle;
+
         #endregion
 
         #region Class Implementation
 
+        public void InitializeCharacter(CharacterStatsData _stats)
+        {
+            m_characterStatsData = _stats;
+            characterMovement.InitializeCharacterMovement(_stats);
+            characterLifeManager.InitializeCharacterHealth(_stats);
+        }
+
         public void InitializeCharacterBattle()
         {
-            if (characterAbilityManager.characterAbilities.Count > 0)
-            { 
-                characterAbilityManager.characterAbilities.ForEach(a => a.Initialize());
-            }
             characterMovement.SetCharacterBattleStatus();
         }
 
@@ -110,6 +119,15 @@ namespace Runtime.Character
         }
 
         #endregion
-       
+
+        #region IDamageable Inherited Methods
+
+        public void OnDealDamage(int _damageAmount, bool _armorPiercing ,ElementTyping _damageElementType)
+        {
+            characterLifeManager.DealDamage(_damageAmount, _armorPiercing, _damageElementType);
+        }
+
+        #endregion
+        
     }
 }

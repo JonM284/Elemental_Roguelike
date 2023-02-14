@@ -14,5 +14,17 @@ namespace Project.Scripts.Utils
             return clonedObject;
         }
 
+        public static void CloneAddressable(this AssetReference objectToClone, Transform parent)
+        {
+            var handle = Addressables.LoadAssetAsync<GameObject>(objectToClone);
+            handle.Completed += operation =>
+            {
+                if (operation.Status == AsyncOperationStatus.Succeeded)
+                {
+                    GameObject.Instantiate(operation.Result, parent);
+                }
+            };
+        }
+
     }
 }

@@ -15,7 +15,7 @@ namespace Utils
 
         #region Accessors
 
-        public static ProjectileController projectileController => GameControllerUtils.GetGameController(ref _projectileController);
+        private static ProjectileController projectileController => GameControllerUtils.GetGameController(ref _projectileController);
 
         #endregion
         
@@ -26,9 +26,9 @@ namespace Utils
             projectileController.ReturnToPool(projectile);
         }
 
-        public static void PlayAt(this ProjectileBase projectile, Vector3 position, Vector3 rotation)
+        public static void PlayAt(this ProjectileBase projectile, Vector3 position, Vector3 rotation, Vector3 endPos)
         {
-            projectileController.GetProjectileAt(projectile, position, rotation);
+            projectileController.GetProjectileAt(projectile, position, rotation, endPos);
         }
 
         #endregion

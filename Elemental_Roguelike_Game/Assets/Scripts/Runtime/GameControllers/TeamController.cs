@@ -1,14 +1,16 @@
 ﻿using System.Collections.Generic;
+using Data.DataSaving;
 using Runtime.Character;
 
 namespace Runtime.GameControllers
 {
-    public class TeamController: GameControllerBase
+    public class TeamController: GameControllerBase, ISaveableData
     {
 
         #region Private Feilds
 
         private Team playerTeam;
+        
         private List<Team> m_activeTeams = new List<Team>();
 
         #endregion
@@ -51,8 +53,20 @@ namespace Runtime.GameControllers
         }
 
         #endregion
+
+        #region ISaveableData Methods
+
+        public void LoadData(SavedGameData _savedGameData)
+        {
+            this.playerTeam = _savedGameData.savedTeam;
+        }
+
+        public void SaveData(ref SavedGameData _savedGameData)
+        {
+            _savedGameData.savedTeam = this.playerTeam;
+        }
+
+        #endregion
         
-
-
     }
 }

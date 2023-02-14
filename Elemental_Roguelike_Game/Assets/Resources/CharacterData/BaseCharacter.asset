@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6e30cf3dd6a8ee349ac5bc304a59fcb7, type: 3}
   m_Name: BaseCharacter
   m_EditorClassIdentifier: 
-  baseSpeed: 8
+  baseSpeed: 15
   baseHealth: 10
   baseShields: 0
   movementDistance: 5

@@ -77,7 +77,7 @@ namespace Runtime.Camera
 
         private void TrackZoom()
         {
-            var originalSpeed = Time.deltaTime * scrollSpeed;
+            var originalSpeed = Time.deltaTime * automaticZoomSpeed;
             
             transform.localPosition = Vector3.Lerp(transform.localPosition, m_localZoomZ, originalSpeed);
         }

@@ -206,6 +206,8 @@ namespace Project.Scripts.Runtime.LevelGeneration
                 }
 
                 yield return null;
+                
+                
             
                 if (_roomsToCheck.Count == 0)
                 {
@@ -214,7 +216,7 @@ namespace Project.Scripts.Runtime.LevelGeneration
                     LevelGenerationFinished?.Invoke(startingRoom);
                     yield break;
                 }
-                
+
             }
 
         }
@@ -373,8 +375,6 @@ namespace Project.Scripts.Runtime.LevelGeneration
                     }
                 }
             }
-            
-            m_roomTracker.UpdateRoomNaveMesh();
 
             //If the room only has one door, the one door is the connecting door
             if (m_roomTracker.roomType == RoomType.ONE_DOOR || m_roomTracker.roomType == RoomType.FOUR_DOOR)
@@ -385,6 +385,7 @@ namespace Project.Scripts.Runtime.LevelGeneration
                 {
                     m_roomTracker.modifiableDoorCheckers.ForEach(dc => dc.AssignWallDoor(DoorType.WALL));
                 }
+                
                 
                 _isGeneratingRooms = false;
                 return;

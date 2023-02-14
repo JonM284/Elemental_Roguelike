@@ -27,6 +27,7 @@ namespace Runtime.GameControllers
             Instance = this;
             SetupControllers();
             base.Initialize();
+            DontDestroyOnLoad(this.gameObject);
         }
 
         public void SetupControllers()

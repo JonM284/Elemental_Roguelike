@@ -170,7 +170,5 @@ namespace Runtime.Camera
         }
 
         #endregion
-
-
     }
 }

@@ -1,13 +1,31 @@
-﻿using Project.Scripts.Utils;
+﻿using System;
+using Data;
+using Project.Scripts.Utils;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 using Utils;
 
 namespace Runtime.UI
 {
     [RequireComponent(typeof(RectTransform))]
-    public class UIBase: MonoBehaviour
+    public abstract class UIBase: MonoBehaviour
     {
 
+        #region Events
+
+        protected Action m_confirmAction;
+
+        protected Action m_closeAction;
+
+        #endregion
+        
+        #region Serialized Fields
+
+        [SerializeField] private UILayerData layer;
+
+        #endregion
+        
         #region Private Fields
 
         private RectTransform m_uiRectTransform;
@@ -15,6 +33,8 @@ namespace Runtime.UI
         #endregion
 
         #region Accessors
+
+        public UILayerData uiLayerData => layer;
 
         public RectTransform uiRectTransform => CommonUtils.GetRequiredComponent(ref m_uiRectTransform, () =>
         {
@@ -26,8 +46,17 @@ namespace Runtime.UI
 
         #region Class Implementation
 
-        private void Close()
+        public abstract void AssignArguments(params object[] _arguments);
+
+        public void ConfirmAction()
         {
+            m_confirmAction?.Invoke();
+            Close();
+        }
+
+        public void Close()
+        {
+            m_closeAction?.Invoke();
             UIUtils.CloseUI(this);
         }
 
