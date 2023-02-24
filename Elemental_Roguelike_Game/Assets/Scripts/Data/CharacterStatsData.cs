@@ -15,13 +15,20 @@ namespace Data
         
         //Speed character will normally move at
         public float baseSpeed;
+
+        //Higher initiative goes first
+        public int initiativeNumber;
         
         //Max health of character
         public int baseHealth;
 
+        public int currentHealth;
+
         //Max shield of character
         public int baseShields;
-        
+
+        public int currentShield;
+
         //Distance from start position, character is able to move
         public float movementDistance;
     
@@ -47,7 +54,7 @@ namespace Data
 
         public ElementTyping type;
 
-        public List<Ability> abilityReferences;
+        public List<Ability> abilityReferences = new List<Ability>();
 
         //Change later to actual weapon
         public int weapon;
@@ -64,8 +71,11 @@ namespace Data
         public CharacterStatsData()
         {
             this.baseSpeed = 10;
+            this.initiativeNumber = 1;
             this.baseHealth = 10;
+            this.currentHealth = this.baseHealth;
             this.baseShields = 10;
+            this.currentShield = this.baseShields;
             this.movementDistance = 5f;
             this.baseDamage = 1;
             this.cosmeticHat = 0;
@@ -76,7 +86,7 @@ namespace Data
             this.cosmeticFeet = 0;
             this.characterColor = Color.white;
             //Type must be added whenever creating a new meeple
-            this.abilityReferences = new List<Ability>(2);
+            this.abilityReferences = new List<Ability>();
             //Abilities must also be added when creating a new meeple
             this.weapon = 0;
         }

@@ -19,13 +19,15 @@ namespace Runtime.Selection
 
         public CharacterBase activeCharacter => TurnUtils.GetActiveCharacter();
 
+        public bool isInBattle => TurnUtils.isInBattle();
+
         #endregion
 
         #region Class Implementation
 
         public void SelectPathingLocation(Vector3 _pathPosition)
         {
-            if (activeCharacter == null)
+            if (isInBattle && activeCharacter == null)
             {
                 return;
             }

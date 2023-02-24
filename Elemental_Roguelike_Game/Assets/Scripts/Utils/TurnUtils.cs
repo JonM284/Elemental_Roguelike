@@ -20,19 +20,20 @@ namespace Utils
 
         #region Class Implementation
 
-        public static void SetActiveCharacter(CharacterBase _activeCharacter)
-        {
-            if (_activeCharacter == null)
-            {
-                return;
-            }
-            
-            turnController.SetActiveCharacter(_activeCharacter);
-        }
 
         public static CharacterBase GetActiveCharacter()
         {
             return turnController.activeCharacter;
+        }
+
+        public static bool isInBattle()
+        {
+            return turnController.isInBattle;
+        }
+
+        public static void InitializeBattle()
+        {
+            turnController.StartBattle();
         }
 
         #endregion

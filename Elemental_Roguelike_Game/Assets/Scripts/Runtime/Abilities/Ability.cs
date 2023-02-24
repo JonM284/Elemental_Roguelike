@@ -53,7 +53,8 @@ namespace Runtime.Abilities
         #endregion
 
         #region Class Implementation
-
+        
+        //Step 1: Select Ability to use
         //Initialization happens when user (player or Ai) want to use this SO
         public void Initialize(GameObject _ownerObj)
         {
@@ -62,14 +63,17 @@ namespace Runtime.Abilities
             currentOwner = _ownerObj;
         }
 
+        //Step 2: Select Where or on who to use Ability
         //Select Location or Target
         public abstract void SelectPosition(Vector3 _inputPosition);
 
         public abstract void SelectTarget(Transform _inputTransform);
-
+        
+        //Step 3: Use Ability
         //Use ability is different for each ability type
         public abstract void UseAbility();
 
+        //Step 4: Put Ability on cooldown
         public virtual void AbilityUsed()
         {
             m_abilityCurrentState = AbilityState.COOLDOWN;

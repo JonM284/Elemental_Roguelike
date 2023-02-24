@@ -1,4 +1,6 @@
-﻿using Unity.VisualScripting;
+﻿using System.Collections;
+using Unity.Mathematics;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
@@ -24,6 +26,17 @@ namespace Project.Scripts.Utils
                     GameObject.Instantiate(operation.Result, parent);
                 }
             };
+        }
+
+        public static GameObject CloneAddressableReturn(this AssetReference objectToClone, Transform parent)
+        {
+            var obj = Addressables.InstantiateAsync(objectToClone, parent);
+            if (obj.IsDone)
+            {
+                return obj.Result;
+            }
+
+            return default;
         }
 
     }

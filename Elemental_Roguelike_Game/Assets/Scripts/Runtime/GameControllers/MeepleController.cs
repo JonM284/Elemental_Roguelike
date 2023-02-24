@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Data;
 using Data.DataSaving;
+using Project.Scripts.Data;
 using Project.Scripts.Runtime.LevelGeneration;
 using Project.Scripts.Utils;
 using Runtime.Character;
@@ -18,9 +19,17 @@ namespace Runtime.GameControllers
     public class MeepleController: GameControllerBase, ISaveableData
     {
 
+        #region Events
+
+        public static event Action<CharacterBase, CharacterStatsData> PlayerMeepleCreated;
+        
+        #endregion
+
         #region Serialized Fields
 
         [SerializeField] private AssetReference meepleAsset;
+
+        [SerializeField] private AssetReference enemyMeeplAsset;
 
         [SerializeField] private bool randomizeCharacter;
 
@@ -32,7 +41,7 @@ namespace Runtime.GameControllers
         private SerializableDictionary<string, CharacterStatsData> m_allOwnedCharacters;
 
         //Dictionary to keep track of meeple gameobjects that were already created. Might not be used
-        private Dictionary<string, GameObject> m_cachedMeepleGameobjects = new Dictionary<string, GameObject>(); 
+        private Dictionary<string, CharacterBase> m_cachedMeepleCharacters = new Dictionary<string, CharacterBase>(); 
 
         #endregion
 
@@ -40,19 +49,19 @@ namespace Runtime.GameControllers
 
         private void OnEnable()
         {
-            LevelGenerationManager.LevelGenerationFinished += TestPlaceStartCharacter;
+            LevelGenerationManager.LevelGenerationFinished += PlaceStartCharacter;
         }
 
         private void OnDisable()
         {
-            LevelGenerationManager.LevelGenerationFinished -= TestPlaceStartCharacter;
+            LevelGenerationManager.LevelGenerationFinished -= PlaceStartCharacter;
         }
 
         #endregion
         
         #region Class Implementation
 
-        private void TestPlaceStartCharacter(RoomTracker _roomTracker)
+        private void PlaceStartCharacter(RoomTracker _roomTracker)
         {
             if (meepleAsset == null)
             {
@@ -90,6 +99,7 @@ namespace Runtime.GameControllers
         private void RandomizeCharacterVariables(CharacterStatsData _character)
         {
             _character.type = ElementUtils.GetRandomElement();
+            _character.initiativeNumber = Random.Range(1, 20);
             _character.weapon = Random.Range(0, 10);
             _character.baseDamage = Random.Range(1f, 10f);
             _character.baseHealth = Random.Range(10, 20);
@@ -98,7 +108,7 @@ namespace Runtime.GameControllers
             _character.movementDistance = Random.Range(5, 10);
             for (int i = 0; i < 2; i++)
             {
-                _character.abilityReferences[i] = AbilityUtils.GetRandomAbilityByType(_character.type);
+                _character.abilityReferences.Add(AbilityUtils.GetRandomAbilityByType(_character.type));
             }
         }
 
@@ -115,15 +125,47 @@ namespace Runtime.GameControllers
                     var newMeeple = newMeepleObject.GetComponent<CharacterBase>();
                     if (newMeeple != null)
                     {
-                        newMeeple.InitializeCharacter(_meepleCharacter.Value);
+                        if (newMeeple is PlayableCharacter playableCharacter)
+                        {
+                            playableCharacter.AssignStats(_meepleCharacter.Value);
+                        }
+                        newMeeple.InitializeCharacter();
+                        PlayerMeepleCreated?.Invoke(newMeeple, _meepleCharacter.Value);
                     }
                 }
             };
         }
 
+        public void InstantiateMeepleEnemy(CharacterStatsData _meepleStats)
+        {
+            var handle = Addressables.LoadAssetAsync<GameObject>(enemyMeeplAsset);
+            handle.Completed += operation =>
+            {
+                if (operation.Status == AsyncOperationStatus.Succeeded)
+                {
+                    var newMeepleObject = Instantiate(handle.Result);
+                    newMeepleObject.transform.position = new Vector3(0,newMeepleObject.transform.localScale.y / 2,0);
+                    var newMeeple = newMeepleObject.GetComponent<CharacterBase>();
+                    if (newMeeple != null)
+                    {
+                        if (newMeeple is EnemyCharacterMeeple enemyMeeple)
+                        {
+                            enemyMeeple.AssignStats(_meepleStats);
+                        }
+                        newMeeple.InitializeCharacter();
+                    }
+                }
+            };
+        }
+
+        public CharacterStatsData GetMeepleFromUID(string _UID)
+        {
+            return m_allOwnedCharacters.FirstOrDefault(c => c.Key == _UID).Value;
+        }
+
         #endregion
 
-
+        
         #region ISaveableData Methods
 
         public void LoadData(SavedGameData _savedGameData)

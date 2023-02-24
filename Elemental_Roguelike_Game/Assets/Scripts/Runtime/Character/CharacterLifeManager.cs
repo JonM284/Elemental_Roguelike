@@ -1,4 +1,5 @@
-﻿using Data;
+﻿using System;
+using Data;
 using Data.Elements;
 using Project.Scripts.Data;
 using UnityEngine;
@@ -8,68 +9,84 @@ namespace Runtime.Character
     public class CharacterLifeManager: MonoBehaviour
     {
 
+        #region Events
+
+        public static event Action OnCharacterDied;
+
+        public static event Action OnCharacterHealed;
+        
+
+        #endregion
+
         #region Serialized Fields
 
 
         #endregion
 
-        #region Private Fields
-
-        private float m_currentHealthPoints;
-
-        private float m_currentShieldPoints;
-
-        private CharacterStatsData m_characterStats;
-
-        #endregion
-
         #region Accessors
+        
+        public int currentHealthPoints { get; private set; }
 
-        public float maxHealthPoints => m_characterStats.baseHealth;
+        public int currentShieldPoints { get; private set; } 
 
-        public float maxSheildPoints => m_characterStats.baseShields;
+        public int maxHealthPoints { get; private set; }
 
-        public bool isAlive => m_currentHealthPoints > 0;
+        public int maxSheildPoints { get; private set; }
+        
+        public ElementTyping characterElementType { get; private set; }
+
+        public bool isAlive => currentHealthPoints > 0;
 
         #endregion
 
         #region Class Implementation
 
-        public void InitializeCharacterHealth(CharacterStatsData _stats)
+        public void InitializeCharacterHealth(int _maxHealth, int _maxShields, int _currentHealth, int _currentShield, ElementTyping _typing)
         {
-            m_characterStats = _stats;
+            maxHealthPoints = _maxHealth;
+            maxSheildPoints = _maxShields;
+            currentHealthPoints = _currentHealth;
+            currentShieldPoints = _currentShield;
+            characterElementType = _typing;
         }
 
-        public void DealDamage(float _incomingDamage, bool _armorPiercing, ElementTyping _type)
+        public void DealDamage(int _incomingDamage, bool _armorPiercing, ElementTyping _type)
         {
-            var _fixedIncomingDamage = m_characterStats.type.CalculateDamageOnWeakness(_incomingDamage, _type);
+            var _fixedIncomingDamage = characterElementType.CalculateDamageOnWeakness(_incomingDamage, _type);
             
             if (_armorPiercing)
             {
-                m_currentHealthPoints -= _fixedIncomingDamage;
+                currentHealthPoints -= _fixedIncomingDamage;
                 return;
             }
 
-            if (_incomingDamage >= m_currentShieldPoints)
+            if (_incomingDamage >= currentShieldPoints)
             {
-                m_currentShieldPoints = 0;
-                m_currentHealthPoints -= (_fixedIncomingDamage - m_currentShieldPoints);
+                currentShieldPoints = 0;
+                currentHealthPoints -= (_fixedIncomingDamage - currentShieldPoints);
             }
             else
             {
-                m_currentShieldPoints -= _fixedIncomingDamage;
+                currentShieldPoints -= _fixedIncomingDamage;
+            }
+
+            if (currentHealthPoints <= 0)
+            {
+                OnCharacterDied?.Invoke();
             }
         }
 
         public void FullReviveCharacter()
         {
-            m_currentHealthPoints = maxHealthPoints;
-            m_currentShieldPoints = maxSheildPoints;
+            currentHealthPoints = maxHealthPoints;
+            currentShieldPoints = maxSheildPoints;
+            OnCharacterHealed?.Invoke();
         }
 
         public void PartialReviveCharacter(float _percentHeal)
         {
-            m_currentHealthPoints += maxHealthPoints * _percentHeal;
+            currentHealthPoints += Mathf.RoundToInt(maxHealthPoints * _percentHeal);
+            OnCharacterHealed?.Invoke();
         }
 
         #endregion

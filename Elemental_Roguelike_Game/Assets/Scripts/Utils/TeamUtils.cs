@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Data;
 using Project.Scripts.Utils;
 using Runtime.Character;
 using Runtime.GameControllers;
@@ -23,19 +24,29 @@ namespace Utils
 
         #region Class Implementation
 
-        public static void AddTeam(Team _teamToAdd)
+        public static void AddTeamMember(CharacterBase _teamMember, CharacterStatsData _meepleData)
         {
-            if (_teamToAdd == null || _teamToAdd.teamMembers.Count == 0)
+            if (_teamMember == null)
             {
                 return;
             }
             
-            teamController.AddTeam(_teamToAdd);
+            teamController.AddTeamMember(_teamMember, _meepleData);
+        }
+        
+        public static void RemoveTeamMember(CharacterBase _teamMember, CharacterStatsData _meepleData)
+        {
+            if (_teamMember == null)
+            {
+                return;
+            }
+            
+            teamController.RemoveTeamMember(_teamMember, _meepleData);
         }
 
-        public static List<Team> GetActiveTeams()
+        public static Team GetCurrentTeam()
         {
-            return teamController.activeTeams.ToList();
+            return teamController.playerTeam;
         }
 
         #endregion

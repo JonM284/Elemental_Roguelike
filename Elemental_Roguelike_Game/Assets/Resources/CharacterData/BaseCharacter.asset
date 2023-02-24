@@ -12,9 +12,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6e30cf3dd6a8ee349ac5bc304a59fcb7, type: 3}
   m_Name: BaseCharacter
   m_EditorClassIdentifier: 
-  baseSpeed: 15
+  initiativeNumber: 0
+  baseSpeed: 10
   baseHealth: 10
   baseShields: 0
-  movementDistance: 5
+  movementDistance: 10
   baseDamage: 1
   characterColor: {r: 1, g: 1, b: 1, a: 1}
+  typing: {fileID: 11400000, guid: c9878cd57e22d2f4294bb226cbe069b6, type: 2}
+  characterVisualReference:
+    m_AssetGUID: 407156b8812e3954c90e8169bda255c3
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_EditorAssetChanged: 0

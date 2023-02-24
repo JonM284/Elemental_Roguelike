@@ -9,7 +9,7 @@ namespace Runtime.GameControllers
     {
         #region Events
 
-        public static Action<RoomTracker> OnRoomChanged;
+        public static event Action<RoomTracker> OnRoomChanged;
 
         #endregion
 
@@ -79,6 +79,11 @@ namespace Runtime.GameControllers
             m_currentRoom = _newRoom;
             levelGenerationManager.levelRooms.ForEach(rt => rt.gameObject.SetActive(m_currentRoom == rt));
             OnRoomChanged?.Invoke(m_currentRoom);
+        }
+
+        public RoomTracker GetCurrentRoom()
+        {
+            return m_currentRoom;
         }
 
         #endregion

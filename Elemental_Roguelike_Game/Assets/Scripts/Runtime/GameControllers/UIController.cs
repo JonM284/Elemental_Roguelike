@@ -40,6 +40,8 @@ namespace Runtime.GameControllers
 
         #region Private Fields
 
+        private List<UIBase> m_activeUIWindows = new List<UIBase>();
+
         private List<UIBase> m_cachedUIWindows = new List<UIBase>();
 
         [SerializeField] private List<UIPopupDialog> m_cachedPopups = new List<UIPopupDialog>();
@@ -72,6 +74,23 @@ namespace Runtime.GameControllers
             
             //using addressables
             _uiWindow.CloneAddressable(_foundCanvasByLayer.associatedCanvas.transform);
+        }
+
+        public void AddUI(UIWindowData _uiWindowData)
+        {
+            var _cachedWindow = m_cachedUIWindows.FirstOrDefault(ui => ui.uiWindowData == _uiWindowData);
+            var _foundCanvasByLayer = canvasByLayers.FirstOrDefault(cbl => cbl.layer == _uiWindowData.layerData);
+            
+            if (_cachedWindow != null)
+            {
+                m_cachedUIWindows.Remove(_cachedWindow);
+                _cachedWindow.uiRectTransform.ResetTransform(_foundCanvasByLayer.associatedCanvas.transform);
+                m_activeUIWindows.Add(_cachedWindow);
+                Debug.Log("Found Window");
+                return;
+            }
+            
+            _uiWindowData.uiWindowAssetReference.CloneAddressable(_foundCanvasByLayer.associatedCanvas.transform);
         }
 
         public void ReturnUIToCachedPool(UIBase _uiWindow)
@@ -108,7 +127,7 @@ namespace Runtime.GameControllers
             }
             
             //Otherwise create a new popup
-            object[] arg = new object[] {_data, _confirmAction, _closeAction};
+            object[] arg = {_data, _confirmAction, _closeAction};
 
             var handle = Addressables.LoadAssetAsync<GameObject>(popupAssetReference.modalAssetReference);
             handle.Completed += operation =>

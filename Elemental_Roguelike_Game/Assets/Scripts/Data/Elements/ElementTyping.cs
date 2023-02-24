@@ -18,13 +18,13 @@ namespace Data.Elements
 
         #region Private Fields
 
-        private float damageModifier = 1.5f;
+        private int damageModifier = 2;
 
         #endregion
 
         #region Class Implementation
 
-        public float CalculateDamageOnWeakness(float _incomingDamage, ElementTyping _damagingType)
+        public int CalculateDamageOnWeakness(int _incomingDamage, ElementTyping _damagingType)
         {
             if (weaknesses.Count == 0 || !weaknesses.Contains(_damagingType))
             {

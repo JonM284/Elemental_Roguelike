@@ -24,6 +24,8 @@ namespace Runtime.UI
 
         [SerializeField] private UILayerData layer;
 
+        [SerializeField] private UIWindowData uiWindow;
+
         #endregion
         
         #region Private Fields
@@ -35,6 +37,8 @@ namespace Runtime.UI
         #region Accessors
 
         public UILayerData uiLayerData => layer;
+
+        public UIWindowData uiWindowData => uiWindow;
 
         public RectTransform uiRectTransform => CommonUtils.GetRequiredComponent(ref m_uiRectTransform, () =>
         {

@@ -10,6 +10,14 @@ namespace Runtime.Character
     [DisallowMultipleComponent]
     public class CharacterMovement : MonoBehaviour
     {
+        #region Events
+
+        public Action OnBeforeMovementCallback;
+        
+        //local action to use action point when done walking
+        public Action OnFinishMovementCallback;
+
+        #endregion
     
         #region SerializedFields
     
@@ -31,14 +39,12 @@ namespace Runtime.Character
     
         private bool m_canMove = true;
 
-        private bool m_isMovingOnPath;
+        private bool m_isMovingOnPath = false;
 
         private float m_timeToGetToPoint;
 
         private float m_startTime;
-
-        private CharacterStatsData m_characterStats;
-    
+        
         private CharacterController m_characterController;
     
         private NavMeshPath m_navMeshPath;
@@ -47,9 +53,9 @@ namespace Runtime.Character
     
         #region Accessors
 
-        private float speed => m_characterStats != null ? m_characterStats.baseSpeed : 1f;
+        public float speed { get; private set; }
 
-        public float battleMoveDistance => m_characterStats != null ? m_characterStats.movementDistance : 1f;
+        public float battleMoveDistance { get; private set; }
 
         public float maxGravity => gravity * 20f;
 
@@ -62,6 +68,8 @@ namespace Runtime.Character
         public Vector3 velocity => _velocity;
     
         public bool isInBattle { get; private set; }
+
+        public bool isMoving => m_isMovingOnPath;
     
         public Vector3 relativeRight { get; private set; }
 
@@ -95,6 +103,11 @@ namespace Runtime.Character
 
         private void Update()
         {
+            if (!m_canMove)
+            {
+                return;
+            }
+            
             if (!characterController.isGrounded)
             {
                 DoGravity();
@@ -109,13 +122,20 @@ namespace Runtime.Character
     
         #region Class Implementation
 
-        public void InitializeCharacterMovement(CharacterStatsData _stats)
+        public void InitializeCharacterMovement(float _speed, float _moveDistance)
         {
-            m_characterStats = _stats;
+            speed = _speed;
+            battleMoveDistance = _moveDistance;
         }
 
         public void MoveCharacter(Vector3 _movePosition)
         {
+            if (!m_canMove || isMoving)
+            {
+                Debug.Log("<color=cyan>Character can't move</color>");
+                return;
+            }
+            
             if (m_navMeshPath == null)
             {
                 m_navMeshPath = new NavMeshPath();
@@ -127,7 +147,7 @@ namespace Runtime.Character
                 m_navMeshPath.ClearCorners();
             }
 
-            var sourcePos = NavMesh.SamplePosition(transform.position, out NavMeshHit playerPosition, 100, NavMesh.AllAreas);
+            NavMesh.SamplePosition(transform.position, out NavMeshHit playerPosition, 100, NavMesh.AllAreas);
             var hasPath = NavMesh.CalculatePath(playerPosition.position, _movePosition, NavMesh.AllAreas, m_navMeshPath);
             if (!hasPath)
             {
@@ -141,7 +161,7 @@ namespace Runtime.Character
             m_startPos = playerPosition.position;
             m_finalPos = _movePosition;
             m_isMovingOnPath = true;
-
+            OnBeforeMovementCallback?.Invoke();
         }
     
         private void DoGravity()
@@ -174,6 +194,11 @@ namespace Runtime.Character
                 else
                 {
                     m_isMovingOnPath = false;
+                    if (isInBattle)
+                    {
+                        m_canMove = false;    
+                    }
+                    OnFinishMovementCallback?.Invoke();
                     return;
                 }
             }
@@ -181,21 +206,24 @@ namespace Runtime.Character
             characterController.Move(Vector3.ClampMagnitude(_velocity, speed));
         }
 
-        [ContextMenu("Battle On")]
-        public void SetCharacterBattleStatus()
+        public void SetCharacterBattleStatus(bool _isInBattle)
         {
-            isInBattle = true;
+            isInBattle = _isInBattle;
+            m_canMove = !_isInBattle;
         }
-
-        [ContextMenu("Active char")]
-        public void SetCharacterActiveCharacter()
+        
+        public void SetCharacterMovable(Action _beginningAction = null ,Action _finishActionCallback = null)
         {
             m_canMove = true;
-        }
-
-        public void SetCharacterInactive()
-        {
-            m_canMove = false;
+            if (_beginningAction != null)
+            {
+                OnBeforeMovementCallback = _beginningAction;
+            }
+            
+            if (_finishActionCallback != null)
+            {
+                OnFinishMovementCallback = _finishActionCallback;
+            }
         }
 
         public void TeleportCharacter(Vector3 teleportPosition)
@@ -218,49 +246,6 @@ namespace Runtime.Character
 
         #endregion
 
-        #region Unused
 
-        /* This is used if going back to character controller movement
-     
-    private void InitializeCharacterMovement()
-    {
-        relativeRight = mainCamera.transform.right.normalized.FlattenVector3Y();
-        relativeForward = mainCamera.transform.forward.normalized.FlattenVector3Y();
-    }
-     
-    private void DoGravity()
-    {
-        _velocity.y -= gravity * Time.deltaTime;
-        
-        _characterController.Move(Vector3.ClampMagnitude(_velocity, maxGravity) * Time.deltaTime);
-    }
-
-    private void FreeMove()
-    {
-        var _xInput = Input.GetAxisRaw("Horizontal") * speed;
-        var _yInput = Input.GetAxisRaw("Vertical") * speed;
-        
-        _velocity = Vector3.Normalize(relativeRight * _xInput + relativeForward * _yInput).FlattenVector3Y();
-        _velocity *= speed * Time.deltaTime;
-
-        _characterController.Move(Vector3.ClampMagnitude(_velocity, speed));
-    }
-
-    private void BattleMove()
-    {
-        FreeMove();
-        float mag = Vector3.Magnitude(pivotPosition - transform.position);
-        if (mag > battleMoveDistance)
-        {
-            var dirFromCenter = (transform.position - pivotPosition).normalized;
-            var farthestPointInDir = dirFromCenter * battleMoveDistance;
-            TeleportCharacter(farthestPointInDir);
-        }
-    }
-    */
-
-        #endregion
-
-   
     }
 }

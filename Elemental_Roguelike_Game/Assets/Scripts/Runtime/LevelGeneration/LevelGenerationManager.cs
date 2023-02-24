@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using Data;
 using Project.Scripts.Data;
 using Project.Scripts.Utils;
 using UnityEngine;
@@ -19,6 +20,7 @@ namespace Project.Scripts.Runtime.LevelGeneration
         public class RoomDecorations
         {
             public Color associatedColor = Color.white;
+            public bool isEnemySpawnPosition;
             public GameObject associatedPrefab;
         }
 
@@ -41,6 +43,8 @@ namespace Project.Scripts.Runtime.LevelGeneration
         [SerializeField] private GameObject roomPrefab;
         
         [SerializeField] private LevelGenerationRulesData levelGenerationRulesData;
+
+        [SerializeField] private BattleGenerationRulesData battleGenerationRulesData;
 
         [Range(1,10)]
         [SerializeField] private int levelOfDifficulty = 1;
@@ -284,6 +288,9 @@ namespace Project.Scripts.Runtime.LevelGeneration
 
             allRooms.Add(m_newRoomTracker);
             _currentDoorChecker.AssignConnectedRoom(m_newRoomTracker);
+            
+            var battleEnemies = battleGenerationRulesData.GetBattleEnemies();
+            m_newRoomTracker.AssignBattle(battleEnemies);
 
             ManageRoomDoors(m_newRoomTracker);
         }
@@ -369,9 +376,14 @@ namespace Project.Scripts.Runtime.LevelGeneration
                         if (pixelColor == decoration.associatedColor)
                         {
                            var newObject = decoration.associatedPrefab.Clone(m_roomTracker.decorationTransform);
+                           if (decoration.isEnemySpawnPosition)
+                           {
+                               m_roomTracker.AddEnemySpawnPos(newObject.transform);
+                           }
                            var newY = newObject.transform.localScale.y / 2;
                            newObject.transform.localPosition = new Vector3(x, newY, z);
                         }
+                        
                     }
                 }
             }

@@ -1,21 +1,19 @@
-﻿using System.Collections.Generic;
-using Runtime.Character;
-using UnityEngine;
+﻿using System.Collections.Generic;  
 
 namespace Data.DataSaving
 {
     
     [System.Serializable]
-    public class SavedGameData
+    public class SavedGameData 
     {
         
-        public Team savedTeam;
+        public List<string> savedTeamUIDs;
 
         public SerializableDictionary<string, CharacterStatsData> allOwnedCharacters;
 
         public SavedGameData()
         {
-            this.savedTeam = new Team();
+            this.savedTeamUIDs = new List<string>();
             this.allOwnedCharacters = new SerializableDictionary<string, CharacterStatsData>();
         }
     }

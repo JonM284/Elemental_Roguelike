@@ -31,6 +31,11 @@ namespace Utils
             levelController.ChangeRoom(_roomTracker);
         }
 
+        public static RoomTracker GetCurrentRoom()
+        {
+            return levelController.GetCurrentRoom();
+        }
+
         
         #endregion
 

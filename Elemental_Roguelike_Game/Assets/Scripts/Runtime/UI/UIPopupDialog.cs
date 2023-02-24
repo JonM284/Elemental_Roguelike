@@ -29,14 +29,14 @@ namespace Runtime.UI
             data = _arguments[0] as PopupDialogData;
             title.text = data.popupTitle;
             description.text = data.popupDescription;
-            if (_arguments.Length >= 3 && _arguments[2] != null)
+            if (_arguments.Length >= 2 && _arguments[1] != null)
             {
-                m_confirmAction = _arguments[2] as Action;
+                m_confirmAction = _arguments[1] as Action;
             }
 
-            if (_arguments.Length >= 4 && _arguments[3] != null)
+            if (_arguments.Length >= 3 && _arguments[2] != null)
             {
-                m_closeAction = _arguments[3] as Action;
+                m_closeAction = _arguments[2] as Action;
             }
         }
 
