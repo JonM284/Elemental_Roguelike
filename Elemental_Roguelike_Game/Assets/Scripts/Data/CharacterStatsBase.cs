@@ -1,4 +1,6 @@
+using System.Collections.Generic;
 using Data.Elements;
+using Runtime.Abilities;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 
@@ -36,7 +38,9 @@ namespace Project.Scripts.Data
 
         [Tooltip("Character Element type")] 
         public ElementTyping typing;
-        
+
+        public List<Ability> abilities;
+
         public AssetReference characterVisualReference;
 
 

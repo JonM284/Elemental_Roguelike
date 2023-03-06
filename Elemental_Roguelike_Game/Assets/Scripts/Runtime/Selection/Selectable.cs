@@ -4,7 +4,7 @@ using UnityEngine.Events;
 
 namespace Runtime.Selection
 {
-    public class Selectable: MonoBehaviour
+    public class Selectable: MonoBehaviour, ISelectable
     {
 
         #region Events
@@ -40,7 +40,7 @@ namespace Runtime.Selection
             onSelect?.Invoke();
         }
 
-        public void OnUnselect()
+        public void OnUnselected()
         {
             onUnselect?.Invoke();
         }

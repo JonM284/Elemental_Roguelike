@@ -17,11 +17,20 @@ namespace Utils
 
         #region Accessors
 
-        public static UIController uiController => GameControllerUtils.GetGameController(ref _uiController);
+        private static UIController uiController => GameControllerUtils.GetGameController(ref _uiController);
 
         #endregion
 
         #region Class Implementation
+
+        /// <summary>
+        /// Fade Black Screen
+        /// </summary>
+        /// <param name="_fadeIn">true => Fade into Black, false => Fade to transparent</param>
+        public static void FadeBlack(bool _fadeIn)
+        {
+            uiController.FadeBlackScreen(_fadeIn);
+        }
 
         public static void OpenUI(AssetReference _uiWindowAssetRef, UILayerData _layer)
         {

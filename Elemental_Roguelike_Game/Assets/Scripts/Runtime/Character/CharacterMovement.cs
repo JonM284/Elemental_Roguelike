@@ -70,6 +70,8 @@ namespace Runtime.Character
         public bool isInBattle { get; private set; }
 
         public bool isMoving => m_isMovingOnPath;
+
+        public bool isUsingMoveAction => m_canMove;
     
         public Vector3 relativeRight { get; private set; }
 

@@ -18,4 +18,4 @@ MonoBehaviour:
   abilityElement: {fileID: 11400000, guid: c9878cd57e22d2f4294bb226cbe069b6, type: 2}
   criticalMultiplier: 1.2
   hasPrerequisites: 0
-  ability: {fileID: 0}
+  ability: {fileID: 11400000, guid: 7526ce1770d98fc4393baaf33315a4dc, type: 2}

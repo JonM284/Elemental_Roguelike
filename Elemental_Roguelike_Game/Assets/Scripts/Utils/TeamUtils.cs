@@ -17,7 +17,7 @@ namespace Utils
 
         #region Accessor
 
-        public static TeamController teamController => GameControllerUtils.GetGameController(ref m_teamController);
+        private static TeamController teamController => GameControllerUtils.GetGameController(ref m_teamController);
 
         #endregion
 

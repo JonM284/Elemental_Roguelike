@@ -78,6 +78,22 @@ namespace Runtime.GameControllers
             InstantiatePremadeMeeple(firstCharacter);
         }
 
+        public void DeletePlayerMeeple(string _meepleGUID)
+        {
+            if (_meepleGUID == "")
+            {
+                return;
+            }
+
+            if (!m_allOwnedCharacters.ContainsKey(_meepleGUID))
+            {
+                Debug.LogError("Deleted meeple doesn't exist");
+                return;
+            }
+
+            m_allOwnedCharacters.Remove(_meepleGUID);
+        }
+
         [ContextMenu("Clear all characters")]
         public void ClearAllCharacters()
         {

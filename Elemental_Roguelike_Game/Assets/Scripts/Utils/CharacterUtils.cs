@@ -22,9 +22,9 @@ namespace Utils
 
         #region Accessors
 
-        public static EnemyController enemyController => GameControllerUtils.GetGameController(ref m_enemyController);
+        private static EnemyController enemyController => GameControllerUtils.GetGameController(ref m_enemyController);
         
-        public static MeepleController meepleController => GameControllerUtils.GetGameController(ref m_meepleController);
+        private static MeepleController meepleController => GameControllerUtils.GetGameController(ref m_meepleController);
 
         #endregion
 
@@ -106,6 +106,11 @@ namespace Utils
         public static CharacterStatsData GetMeepleFromUID(this string _UID)
         {
             return meepleController.GetMeepleFromUID(_UID);
+        }
+
+        public static void DeletePlayerMeeple(string _uid)
+        {
+            meepleController.DeletePlayerMeeple(_uid);
         }
 
         #endregion

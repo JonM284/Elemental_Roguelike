@@ -15,7 +15,7 @@ namespace Utils
 
         #region Accessors
 
-        public static VFXController vfxController => GameControllerUtils.GetGameController(ref _vfxController);
+        private static VFXController vfxController => GameControllerUtils.GetGameController(ref _vfxController);
 
         #endregion
 
@@ -45,9 +45,9 @@ namespace Utils
             vfxController.ReturnToPool(vfxPlayer);
         }
 
-        public static void PlayAt(this VFXPlayer vfxPlayer, Vector3 position, Quaternion rotation)
+        public static void PlayAt(this VFXPlayer vfxPlayer, Vector3 position, Quaternion rotation, Transform activeParent = null)
         {
-            vfxController.PlayAt(vfxPlayer, position, rotation);
+            vfxController.PlayAt(vfxPlayer, position, rotation, activeParent);
         }
 
         #endregion

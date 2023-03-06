@@ -4,12 +4,12 @@ using UnityEngine;
 
 namespace Runtime.ScriptedAnimations
 {
-    public class AnimationListPlayer : TransformAnimationsBase
+    public class AnimationListPlayer : AnimationsBase
     {
 
         #region Serialized Fields
 
-        [SerializeField] private List<TransformAnimationsBase> m_animations = new List<TransformAnimationsBase>();
+        [SerializeField] private List<AnimationsBase> m_animations = new List<AnimationsBase>();
 
         #endregion
         public override void SetProgress(float progress)

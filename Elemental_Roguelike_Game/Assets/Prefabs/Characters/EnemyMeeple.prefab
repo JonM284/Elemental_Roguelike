@@ -50,7 +50,7 @@ GameObject:
   - component: {fileID: 3276127876927732706}
   - component: {fileID: 305895916089748453}
   - component: {fileID: 3276127876927732714}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: EnemyMeeple
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -65,7 +65,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3276127876927732713}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -85,7 +85,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8bedece1a25c417cb09f9ef3d6c48895, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  assignedAbilities: []
+  m_assignedAbilities: []
 --- !u!114 &3276127876927732711
 MonoBehaviour:
   m_ObjectHideFlags: 0

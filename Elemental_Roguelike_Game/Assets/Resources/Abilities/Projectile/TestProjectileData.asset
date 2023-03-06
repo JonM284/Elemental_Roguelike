@@ -18,11 +18,45 @@ MonoBehaviour:
   projectileLifetime: 1
   isArmorPiercing: 0
   projectileType: {fileID: 11400000, guid: c9878cd57e22d2f4294bb226cbe069b6, type: 2}
+  statusEffect: {fileID: 11400000, guid: 105104d71c6a3354f95ca160d3294c22, type: 2}
   projectileCollisionLayers:
     serializedVersion: 2
     m_Bits: 768
   projectileAsset:
-    m_AssetGUID: 
+    m_AssetGUID: 5d2ecc0022857e24bbf63d1ebd6e4853
     m_SubObjectName: 
     m_SubObjectType: 
     m_EditorAssetChanged: 0
+  projectileArcCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 0.5
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4

@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using Data;
 using Project.Scripts.Utils;
+using Runtime.ScriptedAnimations;
 using Runtime.UI;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
+using UnityEngine.Events;
 using UnityEngine.ResourceManagement.AsyncOperations;
 
 namespace Runtime.GameControllers
@@ -27,6 +29,14 @@ namespace Runtime.GameControllers
             public UILayerData layer;
             public AssetReference modalAssetReference;
         }
+
+        #endregion
+
+        #region Public Fields
+
+        public UnityEvent onBeginFadeIn;
+
+        public UnityEvent onBeginFadeOut;
 
         #endregion
         
@@ -62,6 +72,18 @@ namespace Runtime.GameControllers
         #endregion
 
         #region Class Impelmentation
+
+        public void FadeBlackScreen(bool _fadeIn)
+        {
+            if (_fadeIn)
+            {
+                onBeginFadeIn?.Invoke();
+            }
+            else
+            {
+                onBeginFadeOut?.Invoke();
+            }
+        }
 
         public void AddUI(UILayerData _layer, AssetReference _uiWindow)
         {

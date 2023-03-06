@@ -94,7 +94,7 @@ Material:
     m_Floats:
     - _Alpha: 0.01
     - _AlphaClip: 0
-    - _Blend: 2
+    - _Blend: 0
     - _BumpScale: 1
     - _CastShadows: 0
     - _CircleRadius: 0.4
@@ -109,7 +109,7 @@ Material:
     - _DetailAlbedoMapScale: 1
     - _DetailNormalMapScale: 1
     - _DrawOrder: 0
-    - _DstBlend: 1
+    - _DstBlend: 10
     - _EnvironmentReflections: 1
     - _FresnelEffect: 1.16
     - _FresnelPower: 0.91

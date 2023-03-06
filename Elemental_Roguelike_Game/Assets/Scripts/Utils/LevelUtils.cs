@@ -14,7 +14,7 @@ namespace Utils
 
         #region Accessors
 
-        public static LevelController levelController => GameControllerUtils.GetGameController(ref _levelController);
+        private static LevelController levelController => GameControllerUtils.GetGameController(ref _levelController);
 
         #endregion
 

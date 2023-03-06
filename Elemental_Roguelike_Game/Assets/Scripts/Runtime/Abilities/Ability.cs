@@ -24,15 +24,7 @@ namespace Runtime.Abilities
 
         public float criticalMultiplier;
 
-        public bool hasPrerequisites;
-
-        #endregion
-
-        #region Private Fields
-
-        private bool m_canUseAbility = true;
-
-        private AbilityState m_abilityCurrentState = AbilityState.READY_TO_USE;
+        public AbilityTargetType targetType;
 
         #endregion
 
@@ -49,7 +41,7 @@ namespace Runtime.Abilities
         #region Accessors
 
         public bool isUnlocked { get; private set; }
-
+        
         #endregion
 
         #region Class Implementation
@@ -58,8 +50,6 @@ namespace Runtime.Abilities
         //Initialization happens when user (player or Ai) want to use this SO
         public void Initialize(GameObject _ownerObj)
         {
-            m_abilityCurrentState = AbilityState.READY_TO_USE;
-            m_canUseAbility = true;
             currentOwner = _ownerObj;
         }
 
@@ -71,18 +61,15 @@ namespace Runtime.Abilities
         
         //Step 3: Use Ability
         //Use ability is different for each ability type
-        public abstract void UseAbility();
-
-        //Step 4: Put Ability on cooldown
-        public virtual void AbilityUsed()
+        public virtual void UseAbility()
         {
-            m_abilityCurrentState = AbilityState.COOLDOWN;
+            currentOwner = null;
+            m_targetTransform = null;
         }
 
-        public virtual void AbilityReset()
+        public void CancelAbilityUse()
         {
-            m_abilityCurrentState = AbilityState.READY_TO_USE;
-            m_canUseAbility = true;
+            currentOwner = null;
         }
 
         public void UnlockAbility()

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using Runtime.Character;
 using UnityEngine;
@@ -63,8 +64,7 @@ namespace Project.Scripts.Runtime.LevelGeneration
         {
             if (other.CompareTag(playerTag))
             {
-                other.gameObject.GetComponent<CharacterMovement>().TeleportCharacter(m_connectedRoom.gameObject.transform.position);
-                LevelUtils.ChangeRooms(m_connectedRoom);
+                StartCoroutine(ChangeRoom(other.gameObject));
             }
         }
 
@@ -102,8 +102,14 @@ namespace Project.Scripts.Runtime.LevelGeneration
             _wallObstructionTypesList.ForEach(wot => wot.associatedObject.SetActive(false));
         }
 
-        public void ChangeRoom()
+        private IEnumerator ChangeRoom(GameObject playerObj)
         {
+            UIUtils.FadeBlack(true);
+            
+            yield return new WaitForSeconds(1f);
+            
+            playerObj.GetComponent<CharacterMovement>().TeleportCharacter(m_connectedRoom.gameObject.transform.position);
+            LevelUtils.ChangeRooms(m_connectedRoom);
             
         }
 

@@ -1,7 +1,6 @@
-﻿using System;
+﻿using System.Collections.Generic;
 using Runtime.Character;
 using Runtime.GameControllers;
-using Runtime.UI;
 using UnityEngine;
 using Utils;
 
@@ -18,11 +17,17 @@ namespace Runtime.UI.DataReceivers
 
         [SerializeField] private UIPopupCreator uiPopupCreator;
 
+        [SerializeField] private GameObject playerOrderToken;
+
         #endregion
 
         #region Private Fields
 
         private bool isPlayerTurn;
+
+        private List<CharacterBase> m_activeBattleOrder = new List<CharacterBase>();
+
+        private List<CharacterBase> m_cachedBattleOrder = new List<CharacterBase>();
 
         #endregion
 
@@ -40,12 +45,14 @@ namespace Runtime.UI.DataReceivers
         {
             TurnController.OnBattleEnded += OnBattleEnded;
             TurnController.OnChangeCharacterTurn += OnChangeCharacterTurn;
+            TurnController.OnTurnOrderChanged += OnTurnOrderChanged;
         }
 
         private void OnDisable()
         {
             TurnController.OnBattleEnded -= OnBattleEnded;   
             TurnController.OnChangeCharacterTurn -= OnChangeCharacterTurn;
+            TurnController.OnTurnOrderChanged -= OnTurnOrderChanged;
         }
 
         #endregion
@@ -124,6 +131,17 @@ namespace Runtime.UI.DataReceivers
         {
             activePlayer.EndTurn();
             Debug.Log("<color=red>Player Ended Turn</color>");
+        }
+        
+        private void OnTurnOrderChanged(List<CharacterBase> _orderList)
+        {
+            if (_orderList.Count == 0)
+            {
+                return;
+            }
+            
+            
+
         }
 
         #endregion

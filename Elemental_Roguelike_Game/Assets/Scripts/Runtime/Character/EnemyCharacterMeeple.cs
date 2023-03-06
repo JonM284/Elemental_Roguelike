@@ -1,5 +1,6 @@
 ﻿using Data;
 using Project.Scripts.Data;
+using Utils;
 
 namespace Runtime.Character
 {
@@ -19,6 +20,10 @@ namespace Runtime.Character
             characterMovement.InitializeCharacterMovement(m_enemyMeepleStats.baseSpeed, m_enemyMeepleStats.movementDistance);
             characterLifeManager.InitializeCharacterHealth(m_enemyMeepleStats.baseHealth, m_enemyMeepleStats.baseShields,
                 m_enemyMeepleStats.currentHealth, m_enemyMeepleStats.currentShield, m_enemyMeepleStats.type);
+            if (m_enemyMeepleStats.abilityReferences.Count > 0)
+            {
+                characterAbilityManager.InitializeCharacterAbilityList(m_enemyMeepleStats.abilityReferences);
+            }
         }
 
         public override int GetInitiativeNumber()
@@ -39,6 +44,11 @@ namespace Runtime.Character
             }
 
             return m_enemyMeepleStats.baseSpeed;
+        }
+
+        protected override void CharacterDeath()
+        {
+            this.CacheEnemy();
         }
 
         #endregion

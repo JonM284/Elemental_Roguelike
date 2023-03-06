@@ -1,6 +1,7 @@
 ﻿using Data;
 using Runtime.GameControllers;
 using UnityEngine;
+using Utils;
 
 namespace Runtime.Character
 {
@@ -46,6 +47,10 @@ namespace Runtime.Character
             characterLifeManager.InitializeCharacterHealth(m_characterStatsData.baseHealth, m_characterStatsData.baseShields,
                 m_characterStatsData.currentHealth, m_characterStatsData.currentShield,m_characterStatsData.type);
             movementRangeGO.transform.localScale = Vector3.one * (m_characterStatsData.movementDistance * 2);
+            if (m_characterStatsData.abilityReferences.Count > 0)
+            {
+                characterAbilityManager.InitializeCharacterAbilityList(m_characterStatsData.abilityReferences);
+            }
         }
 
         public override int GetInitiativeNumber()
@@ -68,6 +73,11 @@ namespace Runtime.Character
             return m_characterStatsData.baseSpeed;
         }
 
+        protected override void CharacterDeath()
+        {
+            CharacterUtils.DeletePlayerMeeple(m_characterStatsData.id);
+        }
+
         protected override void OnWalkActionPressed()
         {
             movementRangeGO.SetActive(true);
@@ -77,11 +87,6 @@ namespace Runtime.Character
         {
             movementRangeGO.SetActive(false);
             base.OnBeginWalkAction();
-        }
-
-        protected override void OnAttackActionPressed()
-        {
-            
         }
 
         #endregion

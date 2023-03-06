@@ -47,7 +47,15 @@ namespace Runtime.Selection
 
             var selectedLocation =
                 NavMesh.SamplePosition(_newLocation, out NavMeshHit clickedLocation, 100, NavMesh.AllAreas);
-            activeCharacter.characterMovement.MoveCharacter(clickedLocation.position);
+
+            if (activeCharacter.characterMovement.isUsingMoveAction)
+            {
+                activeCharacter.characterMovement.MoveCharacter(clickedLocation.position);    
+            }else if (activeCharacter.characterAbilityManager.isUsingAbilityAction)
+            {
+                activeCharacter.characterAbilityManager.SelectAbilityTarget(clickedLocation.position);
+            }
+            
         }
 
         #endregion

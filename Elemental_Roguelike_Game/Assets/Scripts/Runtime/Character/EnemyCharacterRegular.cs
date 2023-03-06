@@ -1,6 +1,7 @@
 ﻿using Project.Scripts.Data;
 using Project.Scripts.Utils;
 using UnityEngine;
+using Utils;
 
 namespace Runtime.Character
 {
@@ -31,6 +32,10 @@ namespace Runtime.Character
             characterMovement.InitializeCharacterMovement(m_enemyStats.baseSpeed, m_enemyStats.movementDistance);
             characterLifeManager.InitializeCharacterHealth(m_enemyStats.baseHealth, m_enemyStats.baseShields, m_enemyStats.baseHealth,
                 m_enemyStats.baseShields, m_enemyStats.typing);
+            if (m_enemyStats.abilities.Count > 0)
+            {
+                characterAbilityManager.InitializeCharacterAbilityList(m_enemyStats.abilities);
+            }
         }
 
         public override int GetInitiativeNumber()
@@ -51,6 +56,11 @@ namespace Runtime.Character
             }
 
             return m_enemyStats.baseSpeed;
+        }
+
+        protected override void CharacterDeath()
+        {
+            this.CacheEnemy();
         }
 
         #endregion

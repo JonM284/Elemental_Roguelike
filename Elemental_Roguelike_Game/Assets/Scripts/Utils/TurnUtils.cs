@@ -14,7 +14,7 @@ namespace Utils
 
         #region Accessor
 
-        public static TurnController turnController => GameControllerUtils.GetGameController(ref m_turnController);
+        private static TurnController turnController => GameControllerUtils.GetGameController(ref m_turnController);
 
         #endregion
 

@@ -1,4 +1,5 @@
 ﻿using Data.Elements;
+using Runtime.Status;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 
@@ -22,11 +23,16 @@ namespace Data
 
         public ElementTyping projectileType;
 
+        public Status statusEffect;
+
         public LayerMask projectileCollisionLayers;
 
         public AssetReference projectileAsset;
 
+        public AnimationCurve projectileArcCurve = AnimationCurve.Constant(0, 1, 0);
+
         #endregion
+        
 
     }
 }

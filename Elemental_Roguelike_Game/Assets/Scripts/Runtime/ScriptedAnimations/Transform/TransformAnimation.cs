@@ -2,7 +2,7 @@
 
 namespace Runtime.ScriptedAnimations.Transform
 {
-    public abstract class TransformAnimation : TransformAnimationsBase
+    public abstract class TransformAnimation : AnimationsBase
     {
         #region Serialized Fields
 

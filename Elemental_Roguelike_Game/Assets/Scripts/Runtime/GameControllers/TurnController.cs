@@ -16,7 +16,11 @@ namespace Runtime.GameControllers
 
         #region Events
 
+        public static event Action OnBattlePreStart;
+
         public static event Action OnBattleStarted;
+
+        public static event Action<List<CharacterBase>> OnTurnOrderChanged;
 
         public static event Action<CharacterBase> OnChangeCharacterTurn;
 
@@ -99,6 +103,7 @@ namespace Runtime.GameControllers
         {
             if (_roomTracker == null || !_roomTracker.hasBattle)
             {
+                UIUtils.FadeBlack(false);
                 yield break;
             }
 
@@ -135,11 +140,25 @@ namespace Runtime.GameControllers
 
         public void StartBattle()
         {
+            StartCoroutine(C_StartBattle());
+        }
+
+        private IEnumerator C_StartBattle()
+        {
             isInBattle = true;
             SetAllCharactersBattleStatus(isInBattle);
             SortCharacterOrder();
             UIUtils.OpenUI(battleUIData);
+            OnBattlePreStart?.Invoke();
+
+            yield return new WaitForSeconds(1f);
+            
+            UIUtils.FadeBlack(false);
+            
+            yield return new WaitForSeconds(1f);
             OnBattleStarted?.Invoke();
+            SetNextCharacterActive();
+            
         }
 
         private void SortCharacterOrder()
@@ -156,9 +175,6 @@ namespace Runtime.GameControllers
             {
                 m_battlersQueue.Enqueue(m_allBattlers[i]);
             }
-
-            //Set Active
-            SetNextCharacterActive();
         }
 
         private void SetAllCharactersBattleStatus(bool _inBattle)
@@ -213,6 +229,8 @@ namespace Runtime.GameControllers
             activeCharacter = nextInTurn;
             Debug.Log($"{activeCharacter} is active", activeCharacter);
             OnChangeCharacterTurn?.Invoke(activeCharacter);
+            
+            OnTurnOrderChanged?.Invoke(m_battlersQueue.ToList());
             
             //Return to end of Queue
             m_battlersQueue.Enqueue(nextInTurn);

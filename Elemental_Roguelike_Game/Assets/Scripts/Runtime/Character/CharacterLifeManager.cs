@@ -2,6 +2,7 @@
 using Data;
 using Data.Elements;
 using Project.Scripts.Data;
+using Project.Scripts.Utils;
 using UnityEngine;
 
 namespace Runtime.Character
@@ -11,16 +12,17 @@ namespace Runtime.Character
 
         #region Events
 
-        public static event Action OnCharacterDied;
+        public static event Action<CharacterBase> OnCharacterDied;
 
         public static event Action OnCharacterHealed;
         
 
         #endregion
 
-        #region Serialized Fields
+        #region Private Fields
 
-
+        private CharacterBase m_ownCharacter;
+        
         #endregion
 
         #region Accessors
@@ -36,6 +38,12 @@ namespace Runtime.Character
         public ElementTyping characterElementType { get; private set; }
 
         public bool isAlive => currentHealthPoints > 0;
+
+        public CharacterBase ownCharacter => CommonUtils.GetRequiredComponent(ref m_ownCharacter, () =>
+        {
+            var cb = GetComponent<CharacterBase>();
+            return cb;
+        });
 
         #endregion
 
@@ -57,22 +65,25 @@ namespace Runtime.Character
             if (_armorPiercing)
             {
                 currentHealthPoints -= _fixedIncomingDamage;
-                return;
-            }
-
-            if (_incomingDamage >= currentShieldPoints)
-            {
-                currentShieldPoints = 0;
-                currentHealthPoints -= (_fixedIncomingDamage - currentShieldPoints);
             }
             else
             {
-                currentShieldPoints -= _fixedIncomingDamage;
+                if (_incomingDamage >= currentShieldPoints)
+                {
+                    currentShieldPoints = 0;
+                    currentHealthPoints -= (_fixedIncomingDamage - currentShieldPoints);
+                }
+                else
+                {
+                    currentShieldPoints -= _fixedIncomingDamage;
+                }
             }
+            
+            Debug.Log($"<color=orange> {this.gameObject.name} took damage /// hp now: {currentHealthPoints} shields: {currentShieldPoints} </color>");
 
             if (currentHealthPoints <= 0)
             {
-                OnCharacterDied?.Invoke();
+                OnCharacterDied?.Invoke(ownCharacter);
             }
         }
 

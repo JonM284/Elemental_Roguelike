@@ -2,9 +2,9 @@
 using UnityEngine;
 using UnityEngine.Events;
 
-namespace Runtime.ScriptedAnimations.Transform
+namespace Runtime.ScriptedAnimations
 {
-    public abstract class TransformAnimationsBase: MonoBehaviour
+    public abstract class AnimationsBase: MonoBehaviour
     {
 
         #region Events

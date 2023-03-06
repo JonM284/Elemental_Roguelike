@@ -17,6 +17,6 @@ MonoBehaviour:
   baseDamage: 2
   abilityElement: {fileID: 11400000, guid: c9878cd57e22d2f4294bb226cbe069b6, type: 2}
   criticalMultiplier: 1.2
-  hasPrerequisites: 0
+  targetType: 0
   projectilePrefab: {fileID: 7448458883257669756, guid: 5d2ecc0022857e24bbf63d1ebd6e4853,
     type: 3}

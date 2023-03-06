@@ -43,12 +43,6 @@ namespace GameControllers
 
         #region Controller Inherited Fields
 
-        public override void Initialize()
-        {
-            StartCoroutine(MainCoroutine());
-            base.Initialize();
-        }
-
         public override void Cleanup()
         {
             m_cached_VFX.ForEach(c => Destroy(c.gameObject));
@@ -71,18 +65,17 @@ namespace GameControllers
         
         #region Class Implementation
         
-        private IEnumerator MainCoroutine()
+        void Update()
         {
-            while (true)
+            if (m_active_VFX.Count == 0)
             {
-
-                if (m_active_VFX.Count > 0)
-                {
-                    var currentActive = Enumerable.ToList(m_active_VFX);
-                    currentActive.ForEach(vfx => vfx.CheckVFX());
-                }
-                
-                yield return null;
+                return;
+            }
+            
+            if (m_active_VFX.Count > 0)
+            {
+                var currentActive = Enumerable.ToList(m_active_VFX);
+                currentActive.ForEach(vfx => vfx.CheckVFX());
             }
         }
 
@@ -106,7 +99,7 @@ namespace GameControllers
             vfxPlayer.transform.ResetTransform(vfxPool);
         }
 
-        public void PlayAt(VFXPlayer vfxPlayer, Vector3 position, Quaternion rotation)
+        public void PlayAt(VFXPlayer vfxPlayer, Vector3 position, Quaternion rotation, Transform activeParent = null)
         {
             if (vfxPlayer == null)
             {
@@ -125,7 +118,7 @@ namespace GameControllers
                 m_cached_VFX.Remove(foundVFX);
             }
 
-            foundVFX.transform.parent = activeVFXPool;
+            foundVFX.transform.parent = activeParent != null ? activeParent : activeVFXPool;
             foundVFX.transform.position = position;
             foundVFX.transform.rotation = rotation;
             

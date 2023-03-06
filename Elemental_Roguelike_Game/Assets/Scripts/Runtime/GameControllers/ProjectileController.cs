@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Project.Scripts.Utils;
 using Runtime.Character;
@@ -18,8 +19,10 @@ namespace Runtime.GameControllers
 
         private Transform m_activeProjectilePool;
         
+        [SerializeField]
         private List<ProjectileBase> m_cachedProjectiles = new List<ProjectileBase>();
-
+        
+        [SerializeField]
         private List<ProjectileBase> m_activeProjectiles = new List<ProjectileBase>();
 
         #endregion
@@ -89,7 +92,8 @@ namespace Runtime.GameControllers
             
             var foundProjectile = m_cachedProjectiles.FirstOrDefault(c => c.projectileRef == projectileBase.projectileRef);
 
-            if (!foundProjectile)
+            //projectile not found in cachedProjectiles
+            if (foundProjectile == null)
             {
                 //instantiate gameobject
                 var handle = Addressables.LoadAssetAsync<GameObject>(projectileBase.projectileRef.projectileAsset);
@@ -97,27 +101,26 @@ namespace Runtime.GameControllers
                 {
                     if (operation.Status == AsyncOperationStatus.Succeeded)
                     {
-                        var newProjectileObj = handle.Result.Clone(activeProjectilePool);
+                        var newProjectileObj = Instantiate(handle.Result);
                         var newProjectile = newProjectileObj.GetComponent<ProjectileBase>();
                         if (newProjectile != null)
                         {
                             foundProjectile = newProjectile;
-                            newProjectile.Initialize(startPos);
+                            newProjectile.Initialize(startPos , endPos);
                         }
                     }
                 };
+                return;
             }
-            else
-            {
-                m_cachedProjectiles.Remove(foundProjectile);
-            }
+            
+            m_cachedProjectiles.Remove(foundProjectile);
 
-            foundProjectile.transform.parent = activeProjectilePool;
+            foundProjectile.transform.parent = null;
             foundProjectile.transform.position = startPos;
             foundProjectile.transform.forward = startRotation;
             
             m_activeProjectiles.Add(foundProjectile);
-            foundProjectile.Initialize(startPos);
+            foundProjectile.Initialize(startPos, endPos);
         }
 
         #endregion

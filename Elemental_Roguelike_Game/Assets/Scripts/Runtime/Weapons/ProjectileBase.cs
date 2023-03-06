@@ -3,7 +3,9 @@ using Data;
 using Data.Elements;
 using Project.Scripts.Utils;
 using Runtime.Damage;
+using Runtime.Status;
 using UnityEngine;
+using UnityEngine.Events;
 using Utils;
 
 namespace Runtime.Weapons
@@ -12,9 +14,9 @@ namespace Runtime.Weapons
     public class ProjectileBase: MonoBehaviour
     {
 
-        #region Events
+        #region Public Fields
 
-        private Action OnProjectileEnd;
+        public UnityEvent onProjectileEnd;
 
         #endregion
         
@@ -43,17 +45,23 @@ namespace Runtime.Weapons
 
         #region Accessors
 
-        public float moveSpeed => m_info.projectileSpeed;
-        
-        public int damage => m_info.projectileDamage;
+        private float moveSpeed => m_info.projectileSpeed;
 
-        public ElementTyping type => m_info.projectileType;
+        private int damage => m_info.projectileDamage;
 
-        public bool armorPiercing => m_info.isArmorPiercing;
+        private bool isDamageDealing => damage > 0;
+
+        private ElementTyping type => m_info.projectileType;
+
+        private bool armorPiercing => m_info.isArmorPiercing;
 
         public ProjectileInfo projectileRef => m_info;
 
-        public Rigidbody rb => CommonUtils.GetRequiredComponent(ref m_rigidbody, () =>
+        private bool hasStatusEffect => m_info.statusEffect != null;
+
+        private Status.Status statusEffect => m_info.statusEffect;
+
+        private Rigidbody rb => CommonUtils.GetRequiredComponent(ref m_rigidbody, () =>
         {
             var r = GetComponent<Rigidbody>();
             return r;
@@ -68,8 +76,14 @@ namespace Runtime.Weapons
             var progress = (Time.time - m_startTime) / m_endTime;
             if (progress <= 1) {
                 m_velocity = Vector3.Lerp(m_startPos, m_endPos, progress);
+                m_velocity.y = m_info.projectileArcCurve.Evaluate(progress) + m_startPos.y;
             } else {
                 m_velocity = m_endPos;
+                onProjectileEnd?.Invoke();
+                if (isDamageDealing)
+                {
+                    DealDamage();    
+                }
                 
             }
             
@@ -89,20 +103,16 @@ namespace Runtime.Weapons
 
         #region Class Implementation
 
-        public void Initialize(Vector3 _endPos, Action _endCallback = null)
+        public void Initialize(Vector3 _startPos, Vector3 _endPos)
         {
             m_startTime = Time.time;
             m_endTime = m_info.projectileLifetime;
-            m_startPos = transform.position;
+            m_startPos = _startPos;
+            transform.position = m_startPos;
             m_endPos = _endPos;
-            
-            if (_endCallback != null)
-            {
-                OnProjectileEnd = _endCallback;
-            }
         }
 
-        public void DealDamage()
+        private void DealDamage()
         {
             Collider[] colliders = Physics.OverlapSphere(transform.position, m_info.projectileDamageRadius, m_info.projectileCollisionLayers);
 
@@ -111,17 +121,23 @@ namespace Runtime.Weapons
                 foreach (var collider in colliders)
                 {
                     var damageable = collider.GetComponent<IDamageable>();
-                    if (damageable != null)
+                    damageable?.OnDealDamage(damage, armorPiercing, type);
+                    
+                    if (hasStatusEffect)
                     {
-                        damageable.OnDealDamage(damage, armorPiercing, type);
+                        var effectable = collider.GetComponent<IEffectable>();
+                        effectable?.ApplyEffect(statusEffect);    
                     }
+                    
                 }
             }
+            
+            DeleteObject();
         }
 
-        public void DeleteObject()
+        private void DeleteObject()
         {
-            ProjectileUtils.ReturnToPool(this);
+            this.ReturnToPool();
         }
 
         #endregion

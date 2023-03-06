@@ -22,11 +22,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 117d9f0c612dc9949b8b0082137cfd17
-    m_Address: Assets/Prefabs/MainGameController.prefab
+    m_Address: Assets/Prefabs/GameController/MainGameController.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 8214c403d76305c43986943a2c13b094
-    m_Address: Assets/Prefabs/Player.prefab
+    m_Address: Assets/Prefabs/Characters/Player.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 5e7ab120e7973124cae1c9af033b4c05
@@ -34,7 +34,7 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 5d2ecc0022857e24bbf63d1ebd6e4853
-    m_Address: Assets/Prefabs/TestProjectile.prefab
+    m_Address: Assets/Prefabs/Projectile/TestProjectile.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 73dd801a61da52c499e5e92a8f1ffd11
@@ -42,23 +42,47 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 28fa5f7e988678a4288888f1f74b901f
-    m_Address: Assets/Prefabs/EnemyRegular.prefab
+    m_Address: Assets/Prefabs/Characters/EnemyRegular.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 1c746b542452d464eb2218f0132b29e0
-    m_Address: Assets/Prefabs/EnemyMeeple.prefab
+    m_Address: Assets/Prefabs/Characters/EnemyMeeple.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 407156b8812e3954c90e8169bda255c3
-    m_Address: Assets/Prefabs/RegularEnemyModel1.prefab
+    m_Address: Assets/Prefabs/Characters/EnemyModels/RegularEnemyModel1.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 4f17778a0a142e74bab17193491be3f3
-    m_Address: Assets/Prefabs/RegularEnemyModel3.prefab
+    m_Address: Assets/Prefabs/Characters/EnemyModels/RegularEnemyModel3.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 0fdaf1c18fb0ed047b195b74fc949471
-    m_Address: Assets/Prefabs/RegularEnemyModel2.prefab
+    m_Address: Assets/Prefabs/Characters/EnemyModels/RegularEnemyModel2.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 14b2aa3087bc9984d8bba580da47882d
+    m_Address: Assets/Prefabs/Projectile/ProjectileVisuals.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: f0c82631a5e58194c9956af50e459e12
+    m_Address: Assets/Prefabs/VFX/BurnEffect.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 8102c0ba86a598548a88387add62a4bd
+    m_Address: Assets/Prefabs/Obstacles/Barrel.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 97081832c82af1d4c9ce55773ce304b2
+    m_Address: Assets/Prefabs/Obstacles/ExplodingBarrel.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 0ff3243bc1b038f4aaca1bd1bf97534e
+    m_Address: Assets/Prefabs/Obstacles/FullCover.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 6d3daeeccacb60b49abdfb4f322c272c
+    m_Address: Assets/Prefabs/Obstacles/HalfCover.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
   m_ReadOnly: 0

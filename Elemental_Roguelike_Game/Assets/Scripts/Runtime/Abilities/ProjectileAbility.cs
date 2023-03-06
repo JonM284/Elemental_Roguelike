@@ -1,7 +1,6 @@
 ﻿using Project.Scripts.Utils;
 using Runtime.Weapons;
 using UnityEngine;
-using UnityEngine.AddressableAssets;
 using Utils;
 
 namespace Runtime.Abilities
@@ -49,7 +48,7 @@ namespace Runtime.Abilities
 
             var m_endPos = m_targetTransform != null ? m_targetTransform.position : m_targetPosition;
             ProjectileUtils.PlayAt(projectilePrefab, currentOwner.transform.position, currentOwner.transform.forward, m_endPos);
-            
+            base.UseAbility();
         }
 
         #endregion

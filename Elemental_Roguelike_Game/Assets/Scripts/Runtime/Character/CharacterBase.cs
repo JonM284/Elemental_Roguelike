@@ -1,13 +1,13 @@
 ﻿using System;
-using Data;
 using Data.Elements;
 using Project.Scripts.Data;
 using Project.Scripts.Utils;
 using Runtime.Damage;
-using Runtime.GameControllers;
 using Runtime.Selection;
-using Unity.VisualScripting;
+using Runtime.Status;
+using Runtime.VFX;
 using UnityEngine;
+using Utils;
 
 namespace Runtime.Character
 {
@@ -17,12 +17,24 @@ namespace Runtime.Character
     [RequireComponent(typeof(CharacterMovement))]
     [RequireComponent(typeof(CharacterRotation))]
     [RequireComponent(typeof(CharacterVisuals))]
-    public abstract class CharacterBase: MonoBehaviour, ISelectable,IDamageable
+    public abstract class CharacterBase: MonoBehaviour, ISelectable, IDamageable, IEffectable
     {
 
+        #region Nested Classes
+
+        public class AppliedStatus
+        {
+            public Status.Status status;
+            public int roundTimer;
+        }
+
+        #endregion
+        
         #region Events
 
-        public static event Action<CharacterBase> CharacterEndedTurn; 
+        public static event Action<CharacterBase> CharacterEndedTurn;
+
+        public static event Action<CharacterBase> CharacterSelected;
 
         #endregion
 
@@ -32,14 +44,14 @@ namespace Runtime.Character
 
         #endregion
 
-        #region Private Fields
+        #region Protected Fields
 
         protected int m_characterActionPoints = 2;
 
         protected bool m_isActive;
         
         protected bool m_finishedTurn;
-
+        
         protected CharacterAbilityManager m_characterAbilityManager;
         
         protected CharacterLifeManager m_characterLifeManager;
@@ -49,6 +61,8 @@ namespace Runtime.Character
         protected CharacterRotation m_characterRotation;
         
         protected CharacterVisuals m_characterVisuals;
+
+        private Transform m_statusEffectTransform;
         
         #endregion
 
@@ -89,6 +103,12 @@ namespace Runtime.Character
                 return cv;
             });
 
+        public Transform statusEffectTransform => CommonUtils.GetRequiredComponent(ref m_statusEffectTransform, () =>
+        {
+            var t = TransformUtils.CreatePool(transform, true);
+            return t;
+        });
+
         public bool isAlive => characterLifeManager.isAlive;
 
         public bool finishedTurn => m_finishedTurn;
@@ -104,6 +124,8 @@ namespace Runtime.Character
         public CharacterSide side => characterSide;
 
         public bool isBusy => characterMovement.isMoving;
+
+        public AppliedStatus appliedStatus { get; private set; }
         
         
         public CharacterStatsBase m_characterStatsBase { get; private set; }
@@ -111,6 +133,20 @@ namespace Runtime.Character
         
         #endregion
 
+        #region Unity Events
+
+        private void OnEnable()
+        {
+            CharacterLifeManager.OnCharacterDied += OnCharacterDied;
+        }
+
+        private void OnDisable()
+        {
+            CharacterLifeManager.OnCharacterDied -= OnCharacterDied;
+        }
+
+        #endregion
+        
         #region Class Implementation
 
         public abstract void InitializeCharacter();
@@ -118,6 +154,8 @@ namespace Runtime.Character
         public abstract int GetInitiativeNumber();
 
         public abstract float GetBaseSpeed();
+        
+        protected abstract void CharacterDeath();
 
         protected virtual void OnWalkActionPressed()
         {
@@ -134,23 +172,20 @@ namespace Runtime.Character
             
         }
 
-        protected virtual void OnAttackActionPressed()
+        private void OnCharacterDied(CharacterBase _character)
         {
+            if (_character != this)
+            {
+                return;
+            }
             
+            Debug.Log($"{this} has died");
+            RemoveEffect();
         }
-
 
         public void InitializeCharacterBattle(bool _isInBattle)
         {
             characterMovement.SetCharacterBattleStatus(_isInBattle);
-        }
-
-        /// <summary>
-        /// Whenever it is this characters turn, ability cooldown's go down by 1
-        /// </summary>
-        public void CheckAbilityCooldown()
-        {
-            
         }
 
         public void UseCharacterAbility(int _abilityIndex)
@@ -159,14 +194,8 @@ namespace Runtime.Character
             {
                 return;
             }
-            
-            if (characterAbilityManager.characterAbilities[_abilityIndex] == null)
-            {
-                return;
-            }
-            
-            characterAbilityManager.UseAssignedAbility(_abilityIndex);
-            UseActionPoint();
+
+            characterAbilityManager.UseAssignedAbility(_abilityIndex, UseActionPoint);
         }
 
         public void UseCharacterWeapon()
@@ -177,6 +206,7 @@ namespace Runtime.Character
             }
             
             Debug.Log("<color=yellow>Shoot</color>");
+            //ToDo: Add Weapons
             UseActionPoint();
         }
 
@@ -207,6 +237,31 @@ namespace Runtime.Character
             m_finishedTurn = false;
             m_characterActionPoints = 2;
             m_isActive = true;
+            characterAbilityManager.CheckAbilityCooldown();
+            CheckStatus();
+        }
+
+        private void CheckStatus()
+        {
+            if (appliedStatus == null)
+            {
+                return;
+            }
+
+            if (appliedStatus.roundTimer <= 0)
+            {
+                RemoveEffect();
+                return;
+            }
+            
+            appliedStatus.status.TriggerStatusEffect(this);
+
+            if (!isAlive)
+            {
+                return;
+            }
+            
+            appliedStatus.roundTimer--;
         }
 
         [ContextMenu("Skip Turn")]
@@ -223,7 +278,7 @@ namespace Runtime.Character
 
         public void OnSelect()
         {
-            
+            CharacterSelected?.Invoke(this);
         }
 
         public void OnUnselected()
@@ -238,6 +293,36 @@ namespace Runtime.Character
         public void OnDealDamage(int _damageAmount, bool _armorPiercing ,ElementTyping _damageElementType)
         {
             characterLifeManager.DealDamage(_damageAmount, _armorPiercing, _damageElementType);
+        }
+
+        #endregion
+
+        #region IEffectable Inherited Methods
+
+        public void ApplyEffect(Status.Status _newStatus)
+        {
+            appliedStatus = new AppliedStatus
+            {
+                status = _newStatus,
+                roundTimer = _newStatus.roundCooldownTimer
+            };
+
+            if (_newStatus.statusVFX != null)
+            {
+                _newStatus.statusVFX.PlayAt(transform.position, Quaternion.identity, statusEffectTransform);    
+            }
+            
+        }
+
+        public void RemoveEffect()
+        {
+            var vfx = statusEffectTransform.GetComponentInChildren<VFXPlayer>();
+            if (vfx != null)
+            {
+                vfx.Stop();
+            }
+            
+            appliedStatus = null;
         }
 
         #endregion

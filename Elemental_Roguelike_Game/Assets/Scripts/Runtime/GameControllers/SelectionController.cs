@@ -32,7 +32,7 @@ namespace Runtime.GameControllers
 
         #region Accessors
 
-        public Selectable currentSelectable { get; private set; }
+        public ISelectable currentSelectable { get; private set; }
 
         public UnityEngine.Camera mainCamera => CommonUtils.GetRequiredComponent(ref m_mainCamera, () =>
         {
@@ -95,7 +95,7 @@ namespace Runtime.GameControllers
                 return;
             }
 
-            var selectable = hit.collider.GetComponent<Selectable>();
+            var selectable = hit.collider.GetComponent<ISelectable>();
 
             if (selectable == null)
             {
@@ -113,7 +113,7 @@ namespace Runtime.GameControllers
             {
                 if (currentSelectable != null)
                 {
-                    currentSelectable.OnUnselect();
+                    currentSelectable.OnUnselected();
                 }
                 currentSelectable = selectable;
             }
