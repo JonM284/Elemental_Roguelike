@@ -31,7 +31,12 @@ namespace Runtime.Character
         {
             ///change forward direction
             Vector3 tempDir = new Vector3(_characterMovement.velocity.x, 0, _characterMovement.velocity.z);
-        
+
+            if (tempDir == Vector3.zero)
+            {
+                return;
+            }
+            
             if (_characterController.isGrounded)
             {
                 playerModel.forward = Vector3.Slerp(playerModel.forward, tempDir.normalized, Time.deltaTime * rotationSpeed);

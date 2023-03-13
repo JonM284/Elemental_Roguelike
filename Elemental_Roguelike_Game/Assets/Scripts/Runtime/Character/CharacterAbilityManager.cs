@@ -4,6 +4,7 @@ using System.Linq;
 using Runtime.Abilities;
 using UnityEngine;
 using UnityEngine.Serialization;
+using Utils;
 
 namespace Runtime.Character
 {
@@ -75,15 +76,33 @@ namespace Runtime.Character
             SelectAbilityTarget(_selectedCharacter.transform);
         }
         
+        public void InitializeCharacterAbilityList(List<string> _abilities)
+        {
+            _abilities.ForEach(a =>
+            {
+                var locatedAbility = AbilityUtils.GetAbilityByGUID(a);
+                var _newAssign = new AssignedAbilities
+                {
+                    ability = locatedAbility,
+                    canUse = true,
+                    roundCooldown = locatedAbility.roundCooldownTimer
+                };
+
+                m_assignedAbilities.Add(_newAssign);
+            });
+        }
+        
         public void InitializeCharacterAbilityList(List<Ability> _abilities)
         {
             _abilities.ForEach(a =>
             {
-                var _newAssign = new AssignedAbilities();
-                _newAssign.ability = a;
-                _newAssign.canUse = true;
-                _newAssign.roundCooldown = a.roundCooldownTimer;
-                
+                var _newAssign = new AssignedAbilities
+                {
+                    ability = a,
+                    canUse = true,
+                    roundCooldown = a.roundCooldownTimer
+                };
+
                 m_assignedAbilities.Add(_newAssign);
             });
         }

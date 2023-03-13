@@ -110,6 +110,7 @@ namespace Runtime.Character
             {
                 return;
             }
+            
             Debug.Log("Player start");
             ResetCharacterActions();
         }

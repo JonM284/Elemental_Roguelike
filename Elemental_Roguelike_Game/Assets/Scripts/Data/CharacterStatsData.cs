@@ -54,7 +54,7 @@ namespace Data
 
         public ElementTyping type;
 
-        public List<Ability> abilityReferences = new List<Ability>();
+        public List<string> abilityReferences;
 
         //Change later to actual weapon
         public int weapon;
@@ -86,7 +86,7 @@ namespace Data
             this.cosmeticFeet = 0;
             this.characterColor = Color.white;
             //Type must be added whenever creating a new meeple
-            this.abilityReferences = new List<Ability>();
+            this.abilityReferences = new List<string>();
             //Abilities must also be added when creating a new meeple
             this.weapon = 0;
         }

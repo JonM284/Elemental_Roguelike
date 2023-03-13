@@ -124,7 +124,7 @@ namespace Runtime.GameControllers
             _character.movementDistance = Random.Range(5, 10);
             for (int i = 0; i < 2; i++)
             {
-                _character.abilityReferences.Add(AbilityUtils.GetRandomAbilityByType(_character.type));
+                _character.abilityReferences.Add(AbilityUtils.GetRandomAbilityByType(_character.type).abilityGUID);
             }
         }
 

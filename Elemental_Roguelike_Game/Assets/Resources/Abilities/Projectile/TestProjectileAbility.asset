@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: TestProjectileAbility
   m_EditorClassIdentifier: 
   abilityName: Test Projectile
+  abilityGUID: 36901bdf-823e-4a6a-b552-94d9955b137a
   roundCooldownTimer: 3
   baseDamage: 2
   abilityElement: {fileID: 11400000, guid: c9878cd57e22d2f4294bb226cbe069b6, type: 2}

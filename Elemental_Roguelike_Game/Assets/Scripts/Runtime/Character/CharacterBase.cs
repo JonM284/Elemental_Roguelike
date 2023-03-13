@@ -47,8 +47,6 @@ namespace Runtime.Character
         #region Protected Fields
 
         protected int m_characterActionPoints = 2;
-
-        protected bool m_isActive;
         
         protected bool m_finishedTurn;
         
@@ -179,8 +177,9 @@ namespace Runtime.Character
                 return;
             }
             
-            Debug.Log($"{this} has died");
             RemoveEffect();
+            CharacterDeath();
+            Debug.Log($"<color=red>{this} has died</color>");
         }
 
         public void InitializeCharacterBattle(bool _isInBattle)
@@ -227,6 +226,7 @@ namespace Runtime.Character
             Debug.Log($"<color=yellow>Used action point // Action Points:{characterActionPoints} left</color>");
         }
 
+        [ContextMenu("Reset Actions")]
         public void ResetCharacterActions()
         {
             if (!isAlive)
@@ -236,7 +236,6 @@ namespace Runtime.Character
             
             m_finishedTurn = false;
             m_characterActionPoints = 2;
-            m_isActive = true;
             characterAbilityManager.CheckAbilityCooldown();
             CheckStatus();
         }

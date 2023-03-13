@@ -15,6 +15,8 @@ namespace Runtime.Abilities
 
         public string abilityName;
 
+        public string abilityGUID;
+
         //cooldowns are determined by rounds
         public int roundCooldownTimer;
 
@@ -75,6 +77,12 @@ namespace Runtime.Abilities
         public void UnlockAbility()
         {
             isUnlocked = true;
+        }
+
+        [ContextMenu("Generate GUID")]
+        private void GenerateID()
+        {
+            abilityGUID = System.Guid.NewGuid().ToString();
         }
 
         #endregion

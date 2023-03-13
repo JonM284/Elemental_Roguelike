@@ -5,6 +5,7 @@ using System.Linq;
 using Data;
 using Project.Scripts.Runtime.LevelGeneration;
 using Runtime.Character;
+using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
 using Utils;
@@ -40,18 +41,15 @@ namespace Runtime.GameControllers
 
         private int m_currentTeamTurnIndex = 0;
 
+        [SerializeField]
         private List<CharacterBase> m_allBattlers = new List<CharacterBase>();
-
-        private Queue<CharacterBase> m_battlersQueue = new Queue<CharacterBase>();
         
         #endregion
 
         #region Accessors
         
         public bool isInBattle { get; private set; }
-
-        public List<CharacterBase> allBattlers => m_allBattlers;
-
+        
         public CharacterBase activeCharacter { get; private set; }
 
         public Team playerTeam => TeamUtils.GetCurrentTeam();
@@ -65,6 +63,7 @@ namespace Runtime.GameControllers
             MeepleController.PlayerMeepleCreated += OnPlayerMeepleCreated;
             LevelController.OnRoomChanged += OnRoomChange;
             CharacterBase.CharacterEndedTurn += OnCharacterEndedTurn;
+            CharacterLifeManager.OnCharacterDied += OnCharacterDied;
         }
 
         private void OnDisable()
@@ -72,6 +71,7 @@ namespace Runtime.GameControllers
             MeepleController.PlayerMeepleCreated -= OnPlayerMeepleCreated;
             LevelController.OnRoomChanged -= OnRoomChange;
             CharacterBase.CharacterEndedTurn -= OnCharacterEndedTurn;
+            CharacterLifeManager.OnCharacterDied -= OnCharacterDied;
         }
 
         #endregion
@@ -80,6 +80,16 @@ namespace Runtime.GameControllers
         
         private void OnCharacterEndedTurn(CharacterBase _character)
         {
+            StartCoroutine(C_EndCharTurn(_character));
+        }
+
+        private IEnumerator C_EndCharTurn(CharacterBase _character)
+        {
+            //Return to end of List
+            m_allBattlers.Add(_character);
+
+            yield return new WaitForSeconds(0.05f);
+            
             SetNextCharacterActive();
         }
         
@@ -107,7 +117,7 @@ namespace Runtime.GameControllers
                 yield break;
             }
 
-            allBattlers.Clear();
+            m_allBattlers.Clear();
             
             Debug.Log("<color=yellow>Before await</color>");
             yield return StartCoroutine(_roomTracker.SetupBattle());
@@ -163,18 +173,12 @@ namespace Runtime.GameControllers
 
         private void SortCharacterOrder()
         {
-            if (allBattlers.Count == 0)
+            if (m_allBattlers.Count == 0)
             {
                 return;
             }
 
             m_allBattlers.SortCharacterTurnOrder();
-            
-            m_battlersQueue.Clear();
-            for (int i = 0; i < m_allBattlers.Count; i++)
-            {
-                m_battlersQueue.Enqueue(m_allBattlers[i]);
-            }
         }
 
         private void SetAllCharactersBattleStatus(bool _inBattle)
@@ -195,45 +199,87 @@ namespace Runtime.GameControllers
             }
             
             m_allBattlers.Add(_newCharacter);
+            if (isInBattle)
+            {
+                OnTurnOrderChanged?.Invoke(m_allBattlers);   
+            }
         }
 
-        public void RemoveCharacter(CharacterBase _removedCharacter)
+        private void OnCharacterDied(CharacterBase _character)
         {
-            if (_removedCharacter == null)
+            if (!m_allBattlers.Contains(_character))
             {
                 return;
             }
 
-            m_allBattlers.Remove(_removedCharacter);
+            var tempList = new List<CharacterBase>();
+            
+            m_allBattlers.ForEach(c => tempList.Add(c));
+            
+            m_allBattlers.ForEach(c =>
+            {
+                if (c == _character)
+                {
+                    tempList.Remove(c);
+                }
+            });
+
+            m_allBattlers = tempList;
+            
+            var liveEnemyCount = 0;
+            m_allBattlers.ForEach(c =>
+            {
+                if (c.side == CharacterSide.ENEMY && c != _character)
+                {
+                    liveEnemyCount++;
+                }
+            });
+
+            Debug.Log($"{liveEnemyCount}");
+            if (liveEnemyCount == 0)
+            {
+                EndBattle();
+                return;
+            }
+
+            if (_character == activeCharacter)
+            {
+                SetNextCharacterActive();    
+            }
+            
         }
 
-        public void RemoveAllCharacters()
+        private void RemoveAllCharacters()
         {
             m_allBattlers.Clear();
         }
 
-        public void EndBattle()
+        private void EndBattle()
         {
             isInBattle = false;
             SetAllCharactersBattleStatus(isInBattle);
             RemoveAllCharacters();
+            //NOTE: must set active player to the movement meeple, aka the first meeple in the team that is alive, if all meeples dead, player loses
+            activeCharacter = m_cachedMovementMeeple;
+            Debug.Log("Battle Ended");
             OnBattleEnded?.Invoke();
         }
 
         public void SetNextCharacterActive()
         {
             //take next character out of queue
-            var nextInTurn = m_battlersQueue.Dequeue();
+            var nextInTurn = m_allBattlers[0];
 
             //set to active character
             activeCharacter = nextInTurn;
-            Debug.Log($"{activeCharacter} is active", activeCharacter);
+            
+            Debug.Log($"<color=green>{activeCharacter} is active</color>", activeCharacter);
+            
             OnChangeCharacterTurn?.Invoke(activeCharacter);
-            
-            OnTurnOrderChanged?.Invoke(m_battlersQueue.ToList());
-            
-            //Return to end of Queue
-            m_battlersQueue.Enqueue(nextInTurn);
+
+            m_allBattlers.Remove(nextInTurn);
+
+            OnTurnOrderChanged?.Invoke(m_allBattlers);
         }
 
         #endregion

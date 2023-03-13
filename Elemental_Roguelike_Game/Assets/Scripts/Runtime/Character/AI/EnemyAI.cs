@@ -70,12 +70,17 @@ namespace Runtime.Character.AI
 
             if (!characterBase.isAlive)
             {
-                characterBase.EndTurn();
                 return;
             }
             
             Debug.Log($"{this} start turn", this);
             characterBase.ResetCharacterActions();
+
+            if (!characterBase.isAlive)
+            {
+                return;
+            }
+            
             StartCoroutine(C_Turn());
         }
 

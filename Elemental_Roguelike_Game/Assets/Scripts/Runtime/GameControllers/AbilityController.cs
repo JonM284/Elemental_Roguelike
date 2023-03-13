@@ -50,6 +50,17 @@ namespace Runtime.GameControllers
             return foundAbility;
         }
 
+        public Ability GetAbilityByGUID(string _searchGUID)
+        {
+            var foundAbility = allAbilities.FirstOrDefault(a => a.abilityGUID == _searchGUID);
+            if (foundAbility == null)
+            {
+                return default;
+            }
+
+            return foundAbility;
+        }
+
         public List<Ability> GetAbilitiesByType(ElementTyping _type)
         {
             var foundAbilities = abilitiesByType.FirstOrDefault(abt => abt.type == _type);

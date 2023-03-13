@@ -27,8 +27,9 @@ namespace Runtime.Selection
 
         public void SelectPathingLocation(Vector3 _pathPosition)
         {
-            if (isInBattle && activeCharacter == null)
+            if (isInBattle || activeCharacter == null)
             {
+                Debug.Log($"isInBattle{isInBattle} /// active character null? {activeCharacter == null}");
                 return;
             }
 
@@ -45,8 +46,8 @@ namespace Runtime.Selection
                 }    
             }
 
-            var selectedLocation =
-                NavMesh.SamplePosition(_newLocation, out NavMeshHit clickedLocation, 100, NavMesh.AllAreas);
+            
+            NavMesh.SamplePosition(_newLocation, out NavMeshHit clickedLocation, 100, NavMesh.AllAreas);
 
             if (activeCharacter.characterMovement.isUsingMoveAction)
             {
