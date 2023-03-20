@@ -201,7 +201,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   allAbilities:
   - {fileID: 11400000, guid: 7526ce1770d98fc4393baaf33315a4dc, type: 2}
-  - {fileID: 11400000, guid: 7526ce1770d98fc4393baaf33315a4dc, type: 2}
+  - {fileID: 11400000, guid: 52047ebd3020b114cb162a4a6540ef69, type: 2}
   - {fileID: 11400000, guid: 7526ce1770d98fc4393baaf33315a4dc, type: 2}
   - {fileID: 11400000, guid: 7526ce1770d98fc4393baaf33315a4dc, type: 2}
   abilitiesByType:
@@ -213,7 +213,7 @@ MonoBehaviour:
     - {fileID: 11400000, guid: 7526ce1770d98fc4393baaf33315a4dc, type: 2}
   - type: {fileID: 11400000, guid: dff32d43cdb15e64d9f95e5f1c9a2574, type: 2}
     abilitiesOfType:
-    - {fileID: 11400000, guid: 7526ce1770d98fc4393baaf33315a4dc, type: 2}
+    - {fileID: 11400000, guid: 52047ebd3020b114cb162a4a6540ef69, type: 2}
   - type: {fileID: 11400000, guid: b5ba9f007020f914f9c8d519cccd8f04, type: 2}
     abilitiesOfType:
     - {fileID: 11400000, guid: 7526ce1770d98fc4393baaf33315a4dc, type: 2}
@@ -1317,6 +1317,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   battleUIData: {fileID: 11400000, guid: a3521c7b3aca2f042a02600402156282, type: 2}
+  m_allBattlers: []
 --- !u!1 &7876103537610162765
 GameObject:
   m_ObjectHideFlags: 0
@@ -1564,3 +1565,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3e53144dd98a75047949e2e30134bd22, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_cachedProjectiles: []
+  m_activeProjectiles: []

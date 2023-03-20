@@ -27,7 +27,7 @@ namespace Runtime.Selection
 
         public void SelectPathingLocation(Vector3 _pathPosition)
         {
-            if (isInBattle || activeCharacter == null)
+            if (isInBattle && activeCharacter == null)
             {
                 Debug.Log($"isInBattle{isInBattle} /// active character null? {activeCharacter == null}");
                 return;

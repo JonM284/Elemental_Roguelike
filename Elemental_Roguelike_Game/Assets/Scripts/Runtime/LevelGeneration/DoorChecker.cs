@@ -107,8 +107,8 @@ namespace Project.Scripts.Runtime.LevelGeneration
             UIUtils.FadeBlack(true);
             
             yield return new WaitForSeconds(1f);
-            
-            playerObj.GetComponent<CharacterMovement>().TeleportCharacter(m_connectedRoom.gameObject.transform.position);
+
+            playerObj.GetComponent<CharacterMovement>().TeleportCharacter(m_connectedRoom.transform.position);
             LevelUtils.ChangeRooms(m_connectedRoom);
             
         }

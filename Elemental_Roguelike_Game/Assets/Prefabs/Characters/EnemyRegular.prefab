@@ -137,6 +137,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   characterSide: 1
+  deathVFX: {fileID: 5269481490371825388, guid: a47c62049fca59048afe703c9e1ded0f,
+    type: 3}
   characterVisualParent: {fileID: 5657833464208694327}
 --- !u!114 &631976847981564846
 MonoBehaviour:

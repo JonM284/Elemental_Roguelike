@@ -15,7 +15,7 @@ namespace Data
 
         public float projectileDamageRadius = 0.5f;
 
-        public float projectileSpeed = 1f;
+        public float projectileSpeed = 5f;
 
         public float projectileLifetime = 1f;
 

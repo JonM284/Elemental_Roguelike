@@ -20,7 +20,7 @@ TagManager:
   - CHARACTER
   - OBSTACLES
   - SELECTABLE
-  - 
+  - IGNORE_NAV_MESH
   - 
   - 
   - 

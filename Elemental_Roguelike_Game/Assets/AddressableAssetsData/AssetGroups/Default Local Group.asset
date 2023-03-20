@@ -85,6 +85,14 @@ MonoBehaviour:
     m_Address: Assets/Prefabs/Obstacles/HalfCover.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
+  - m_GUID: a47c62049fca59048afe703c9e1ded0f
+    m_Address: Assets/Prefabs/VFX/DefaulEnemyDeathVFX.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 30e2018a2d60d924082e6a3cf540faae
+    m_Address: Assets/Prefabs/Projectile/FireBall.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: c51bc8bdb2bb6e5479c05b7cf9bc0f75, type: 2}
   m_SchemaSet:

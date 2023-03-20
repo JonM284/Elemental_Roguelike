@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Data;
 using Project.Scripts.Utils;
 using UnityEngine;
@@ -22,6 +23,8 @@ namespace Runtime.Character
         #region SerializedFields
     
         [SerializeField] private float gravity;
+        
+        [SerializeField] private LayerMask obstacleCheckMask;
 
         #endregion
 
@@ -83,7 +86,7 @@ namespace Runtime.Character
 
         private void OnDrawGizmos()
         {
-            Gizmos.DrawWireSphere(transform.position, battleMoveDistance);
+            Gizmos.DrawWireSphere(transform.position, 0.5f);
             if (m_navMeshPath != null)
             {
                 if (m_navMeshPath.corners.Length > 0)
@@ -149,8 +152,10 @@ namespace Runtime.Character
                 m_navMeshPath.ClearCorners();
             }
 
+            var adjustedEndPos = _movePosition;
+
             NavMesh.SamplePosition(transform.position, out NavMeshHit playerPosition, 100, NavMesh.AllAreas);
-            var hasPath = NavMesh.CalculatePath(playerPosition.position, _movePosition, NavMesh.AllAreas, m_navMeshPath);
+            var hasPath = NavMesh.CalculatePath(playerPosition.position, adjustedEndPos, NavMesh.AllAreas, m_navMeshPath);
             if (!hasPath)
             {
                 Debug.Log("<color=red>No Path</color>");
@@ -240,7 +245,7 @@ namespace Runtime.Character
                 m_isMovingOnPath = false;
             }
             
-            var _fixedTeleportPos = new Vector3(teleportPosition.x, transform.localScale.y / 2, teleportPosition.z);
+            var _fixedTeleportPos = new Vector3(teleportPosition.x, teleportPosition.y + transform.localScale.y/1.35f, teleportPosition.z);
             characterController.enabled = false;
             transform.position = _fixedTeleportPos;
             characterController.enabled = true;

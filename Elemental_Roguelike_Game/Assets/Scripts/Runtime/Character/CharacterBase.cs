@@ -7,6 +7,7 @@ using Runtime.Selection;
 using Runtime.Status;
 using Runtime.VFX;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 using Utils;
 
 namespace Runtime.Character
@@ -41,6 +42,8 @@ namespace Runtime.Character
         #region Serialized Fields
 
         [SerializeField] private CharacterSide characterSide;
+
+        [SerializeField] private VFXPlayer deathVFX;
 
         #endregion
 
@@ -176,7 +179,8 @@ namespace Runtime.Character
             {
                 return;
             }
-            
+
+            PlayDeathEffect();
             RemoveEffect();
             CharacterDeath();
             Debug.Log($"<color=red>{this} has died</color>");
@@ -206,6 +210,9 @@ namespace Runtime.Character
             
             Debug.Log("<color=yellow>Shoot</color>");
             //ToDo: Add Weapons
+            
+            
+            
             UseActionPoint();
         }
 
@@ -311,6 +318,16 @@ namespace Runtime.Character
                 _newStatus.statusVFX.PlayAt(transform.position, Quaternion.identity, statusEffectTransform);    
             }
             
+        }
+
+        public void PlayDeathEffect()
+        {
+            if (deathVFX == null)
+            {
+                return;
+            }
+
+            deathVFX.PlayAt(transform.position, Quaternion.identity);
         }
 
         public void RemoveEffect()

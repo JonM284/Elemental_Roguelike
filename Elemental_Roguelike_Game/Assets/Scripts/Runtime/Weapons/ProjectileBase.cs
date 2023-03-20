@@ -106,7 +106,7 @@ namespace Runtime.Weapons
         public void Initialize(Vector3 _startPos, Vector3 _endPos)
         {
             m_startTime = Time.time;
-            m_endTime = m_info.projectileLifetime;
+            m_endTime = Vector3.Magnitude(_startPos - _endPos) / moveSpeed;
             m_startPos = _startPos;
             transform.position = m_startPos;
             m_endPos = _endPos;

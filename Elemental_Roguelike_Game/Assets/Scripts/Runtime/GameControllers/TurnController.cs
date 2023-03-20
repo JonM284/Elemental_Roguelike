@@ -211,6 +211,12 @@ namespace Runtime.GameControllers
             {
                 return;
             }
+            
+            StartCoroutine(C_CharacterDeath(_character));
+        }
+
+        private IEnumerator C_CharacterDeath(CharacterBase _deadCharacter)
+        {
 
             var tempList = new List<CharacterBase>();
             
@@ -218,7 +224,7 @@ namespace Runtime.GameControllers
             
             m_allBattlers.ForEach(c =>
             {
-                if (c == _character)
+                if (c == _deadCharacter)
                 {
                     tempList.Remove(c);
                 }
@@ -229,24 +235,27 @@ namespace Runtime.GameControllers
             var liveEnemyCount = 0;
             m_allBattlers.ForEach(c =>
             {
-                if (c.side == CharacterSide.ENEMY && c != _character)
+                if (c.side == CharacterSide.ENEMY && c != _deadCharacter)
                 {
                     liveEnemyCount++;
                 }
             });
 
+            yield return new WaitForSeconds(0.05f);
+
             Debug.Log($"{liveEnemyCount}");
             if (liveEnemyCount == 0)
             {
                 EndBattle();
-                return;
+                yield break;
             }
 
-            if (_character == activeCharacter)
+            yield return new WaitForSeconds(0.05f);
+
+            if (_deadCharacter == activeCharacter)
             {
                 SetNextCharacterActive();    
             }
-            
         }
 
         private void RemoveAllCharacters()
