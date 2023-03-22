@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Runtime.Abilities;
+using Runtime.Environment;
 using UnityEngine;
 using UnityEngine.Serialization;
 using Utils;
@@ -32,6 +33,8 @@ namespace Runtime.Character
 
         #region Serialize Fields
 
+        [SerializeField] private LayerMask abilityUsageMask;
+        
         [SerializeField] private List<AssignedAbilities> m_assignedAbilities = new List<AssignedAbilities>();
 
         #endregion
@@ -159,6 +162,12 @@ namespace Runtime.Character
                 Debug.Log($"<color=red>Target Type:{m_assignedAbilities[m_activeAbilityIndex].ability.targetType}</color>");
                 return;
             }
+
+            if (!InLineOfSight(_targetTransform.position))
+            {
+                Debug.Log("<color=red>Can't hit target</color>");
+                return;
+            }
             
             m_assignedAbilities[m_activeAbilityIndex].ability.SelectTarget(_targetTransform);
             m_assignedAbilities[m_activeAbilityIndex].canUse = false;
@@ -199,6 +208,29 @@ namespace Runtime.Character
                     }
                 }
             });
+        }
+
+        /// <summary>
+        /// Methods returns if obstacle is in direction trying to attack
+        /// </summary>
+        /// <param name="_checkPos"></param>
+        /// <returns></returns>
+        private bool InLineOfSight(Vector3 _checkPos)
+        {
+            var dir = transform.position - _checkPos;
+            var dirMagnitude = dir.magnitude;
+            var dirNormalized = dir.normalized;
+            Debug.DrawRay(_checkPos, dirNormalized, Color.red, 10f);
+            if (Physics.Raycast(_checkPos, dirNormalized, out RaycastHit hit, dirMagnitude, abilityUsageMask))
+            {
+                var _obstacle = hit.transform.GetComponent<CoverObstacles>();
+                if (_obstacle != null && _obstacle.type == ObstacleType.FULL)
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         #endregion

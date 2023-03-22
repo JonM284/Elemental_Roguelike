@@ -13,13 +13,14 @@ MonoBehaviour:
   m_Name: EnemyType2
   m_EditorClassIdentifier: 
   initiativeNumber: 10
-  baseSpeed: 10
+  baseSpeed: 4.3
   baseHealth: 10
   baseShields: 0
   movementDistance: 10
   baseDamage: 1
   characterColor: {r: 0.9607843, g: 0.30588236, b: 0.30588236, a: 1}
   typing: {fileID: 11400000, guid: dff32d43cdb15e64d9f95e5f1c9a2574, type: 2}
+  abilities: []
   characterVisualReference:
     m_AssetGUID: 0fdaf1c18fb0ed047b195b74fc949471
     m_SubObjectName: 

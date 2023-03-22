@@ -27,6 +27,27 @@ ModelImporter:
   - first:
       74: -5665953639875407445
     second: IdleNoCoverNormal
+  - first:
+      74: 5606655803075146184
+    second: Armature|MeepleIdleFCover1
+  - first:
+      74: -1488983903001806027
+    second: Armature|MeepleWalkNormal
+  - first:
+      74: 6899648882141670738
+    second: Armature|MeepleIdleNCoverNorm
+  - first:
+      74: -3913253330000963755
+    second: Armature|MeepleIdleFCover2
+  - first:
+      74: 6330554796396086999
+    second: Armature|MeepleCast
+  - first:
+      74: -4484546943002059226
+    second: Armature|MeepleDamaged
+  - first:
+      74: 6557745755801676397
+    second: Armature|MeepleThrow
   externalObjects: {}
   materials:
     materialImportMode: 2
@@ -57,8 +78,8 @@ ModelImporter:
     extraUserProperties: []
     clipAnimations:
     - serializedVersion: 16
-      name: IdleInFullCover1
-      takeName: IdleInFullCover1
+      name: Armature|MeepleIdleFCover1
+      takeName: Armature|MeepleIdleFCover1
       internalID: 0
       firstFrame: 0
       lastFrame: 151
@@ -86,8 +107,8 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: WalkNormal
-      takeName: WalkNormal
+      name: Armature|MeepleWalkNormal
+      takeName: Armature|MeepleWalkNormal
       internalID: 0
       firstFrame: 0
       lastFrame: 13
@@ -115,8 +136,8 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: IdleNoCoverNormal
-      takeName: IdleNoCoverNormal
+      name: Armature|MeepleIdleNCoverNorm
+      takeName: Armature|MeepleIdleNCoverNorm
       internalID: 0
       firstFrame: 0
       lastFrame: 100
@@ -144,8 +165,8 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: Armature|IdleInFullCover2
-      takeName: Armature|IdleInFullCover2
+      name: Armature|MeepleIdleFCover2
+      takeName: Armature|MeepleIdleFCover2
       internalID: 0
       firstFrame: 0
       lastFrame: 150
@@ -156,6 +177,93 @@ ModelImporter:
       loop: 0
       hasAdditiveReferencePose: 0
       loopTime: 1
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Armature|MeepleCast
+      takeName: Armature|MeepleCast
+      internalID: 0
+      firstFrame: 0
+      lastFrame: 40
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Armature|MeepleDamaged
+      takeName: Armature|MeepleDamaged
+      internalID: 0
+      firstFrame: 0
+      lastFrame: 20
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Armature|MeepleThrow
+      takeName: Armature|MeepleThrow
+      internalID: 0
+      firstFrame: 0
+      lastFrame: 40
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
       loopBlend: 0
       loopBlendOrientation: 0
       loopBlendPositionY: 0

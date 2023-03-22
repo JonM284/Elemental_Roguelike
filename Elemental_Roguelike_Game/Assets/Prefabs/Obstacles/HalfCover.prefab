@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 1271381347346041605}
   - component: {fileID: 1271381347346041600}
   - component: {fileID: 4531651220699296556}
+  - component: {fileID: 5646175602608699181}
   m_Layer: 9
   m_Name: HalfCover
   m_TagString: Untagged
@@ -63,6 +64,20 @@ NavMeshObstacle:
   m_CarveOnlyStationary: 1
   m_Center: {x: 0, y: 0, z: 0}
   m_TimeToStationary: 0.5
+--- !u!114 &5646175602608699181
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1271381347346041601}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbdf08d1f80d4038bfaeb643e3f5aaf5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  obstacleType: 1
+  amountOfHitsMax: 2
 --- !u!1001 &1497690806675318062
 PrefabInstance:
   m_ObjectHideFlags: 0

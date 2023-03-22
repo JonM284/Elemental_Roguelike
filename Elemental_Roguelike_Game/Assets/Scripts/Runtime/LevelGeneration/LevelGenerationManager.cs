@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Data;
 using Project.Scripts.Data;
 using Project.Scripts.Utils;
+using Runtime.Environment;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using Random = UnityEngine.Random;
@@ -20,6 +21,7 @@ namespace Project.Scripts.Runtime.LevelGeneration
         public class RoomDecorations
         {
             public Color associatedColor = Color.white;
+            public bool isObstacle;
             public bool isEnemySpawnPosition;
             public GameObject associatedPrefab;
         }
@@ -379,6 +381,9 @@ namespace Project.Scripts.Runtime.LevelGeneration
                            if (decoration.isEnemySpawnPosition)
                            {
                                m_roomTracker.AddEnemySpawnPos(newObject.transform);
+                           }else if (decoration.isObstacle)
+                           {
+                               newObject.GetComponent<CoverObstacles>().InitializeCover();
                            }
                            var newY = newObject.transform.localScale.y / 2;
                            newObject.transform.localPosition = new Vector3(x, newY, z);

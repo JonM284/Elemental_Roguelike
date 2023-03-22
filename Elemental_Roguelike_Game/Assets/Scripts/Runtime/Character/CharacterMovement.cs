@@ -24,8 +24,6 @@ namespace Runtime.Character
     
         [SerializeField] private float gravity;
         
-        [SerializeField] private LayerMask obstacleCheckMask;
-
         #endregion
 
         #region Private Fields
