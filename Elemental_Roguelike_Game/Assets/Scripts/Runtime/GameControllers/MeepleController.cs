@@ -116,7 +116,7 @@ namespace Runtime.GameControllers
         {
             _character.type = ElementUtils.GetRandomElement();
             _character.initiativeNumber = Random.Range(1, 20);
-            _character.weapon = Random.Range(0, 10);
+            //TODO:assign default weapon ******
             _character.baseDamage = Random.Range(1f, 10f);
             _character.baseHealth = Random.Range(10, 20);
             _character.baseShields = Random.Range(10, 20);

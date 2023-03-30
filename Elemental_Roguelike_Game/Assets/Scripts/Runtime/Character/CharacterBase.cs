@@ -7,7 +7,6 @@ using Runtime.Selection;
 using Runtime.Status;
 using Runtime.VFX;
 using UnityEngine;
-using UnityEngine.AddressableAssets;
 using Utils;
 
 namespace Runtime.Character
@@ -59,9 +58,9 @@ namespace Runtime.Character
         
         protected CharacterMovement m_characterMovement;
         
-        protected CharacterRotation m_characterRotation;
-        
         protected CharacterVisuals m_characterVisuals;
+
+        protected CharacterAnimations m_characterAnimations;
 
         private Transform m_statusEffectTransform;
         
@@ -89,14 +88,7 @@ namespace Runtime.Character
                 var cm = GetComponent<CharacterMovement>();
                 return cm;
             });
-        
-        public CharacterRotation characterRotation => CommonUtils.GetRequiredComponent(ref m_characterRotation,
-            () =>
-            {
-                var cr = GetComponent<CharacterRotation>();
-                return cr;
-            });
-        
+
         public CharacterVisuals characterVisuals => CommonUtils.GetRequiredComponent(ref m_characterVisuals,
             () =>
             {
@@ -109,6 +101,13 @@ namespace Runtime.Character
             var t = TransformUtils.CreatePool(transform, true);
             return t;
         });
+        
+        public CharacterAnimations characterAnimations => CommonUtils.GetRequiredComponent(ref m_characterAnimations,
+            () =>
+            {
+                var cam = GetComponentInChildren<CharacterAnimations>();
+                return cam;
+            });
 
         public bool isAlive => characterLifeManager.isAlive;
 
@@ -198,7 +197,13 @@ namespace Runtime.Character
                 return;
             }
 
-            characterAbilityManager.UseAssignedAbility(_abilityIndex, UseActionPoint);
+            characterAbilityManager.UseAssignedAbility(_abilityIndex, OnAbilityUsed);
+        }
+
+        private void OnAbilityUsed()
+        {
+            characterAnimations.AbilityAnim(true);
+            UseActionPoint();
         }
 
         public void UseCharacterWeapon()
@@ -277,6 +282,12 @@ namespace Runtime.Character
             m_finishedTurn = true;
             CharacterEndedTurn?.Invoke(this);
         }
+
+        [ContextMenu("Damage Trial")]
+        public void TakeDamage()
+        {
+            characterAnimations.DamageAnim(true);
+        }
         
         #endregion
 
@@ -299,6 +310,10 @@ namespace Runtime.Character
         public void OnDealDamage(int _damageAmount, bool _armorPiercing ,ElementTyping _damageElementType)
         {
             characterLifeManager.DealDamage(_damageAmount, _armorPiercing, _damageElementType);
+            if (characterAnimations != null)
+            {
+                characterAnimations.DamageAnim(true);
+            }
         }
 
         #endregion

@@ -15,3 +15,7 @@ MonoBehaviour:
   elementName: earth
   weaknesses:
   - {fileID: 11400000, guid: 3007beed4b27d8b458961ac106f278d9, type: 2}
+  weaponColors:
+  - {r: 0.83137256, g: 0.50440073, b: 0.25490192, a: 1}
+  - {r: 0.7176471, g: 0.4786869, b: 0.2352941, a: 1}
+  meepleColors: []

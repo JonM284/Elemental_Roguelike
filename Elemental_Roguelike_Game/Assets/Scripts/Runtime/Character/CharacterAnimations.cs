@@ -10,6 +10,14 @@ namespace Runtime.Character
 
         //Animator Params
         private readonly string isMovingParam = "isWalking";
+        
+        private readonly string isAttackingParam = "isAttacking";
+        
+        private readonly string damagedParam = "Damaged";
+        
+        private readonly string deathParam = "OnDeath";
+        
+        private readonly string useAbilityParam = "OnAbilityOneUse";
 
         #endregion
 
@@ -49,6 +57,21 @@ namespace Runtime.Character
         #endregion
 
         #region Class Implementation
+
+        public void AbilityAnim(bool _usingAbility)
+        {
+            animator.SetBool(useAbilityParam, _usingAbility);
+        }
+
+        public void AttackAnim(bool _isAttacking)
+        {
+            animator.SetBool(isAttackingParam, _isAttacking);
+        }
+
+        public void DamageAnim(bool _takingDamage)
+        {
+            animator.SetBool(damagedParam, _takingDamage);
+        }
 
         private void HandleAnimator()
         {

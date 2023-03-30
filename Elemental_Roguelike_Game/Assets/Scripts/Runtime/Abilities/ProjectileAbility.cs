@@ -25,7 +25,6 @@ namespace Runtime.Abilities
             }
             
             m_targetPosition = _inputPosition;
-            UseAbility();
         }
 
         public override void SelectTarget(Transform _inputTransform)
@@ -36,10 +35,9 @@ namespace Runtime.Abilities
             }
             
             m_targetTransform = _inputTransform;
-            UseAbility();
         }
 
-        public override void UseAbility()
+        public override void UseAbility(Vector3 _ownerUsePos)
         {
             if (currentOwner == null)
             {
@@ -47,8 +45,8 @@ namespace Runtime.Abilities
             }
 
             var m_endPos = m_targetTransform != null ? m_targetTransform.position : m_targetPosition;
-            ProjectileUtils.PlayAt(projectilePrefab, currentOwner.transform.position, currentOwner.transform.forward, m_endPos);
-            base.UseAbility();
+            ProjectileUtils.PlayAt(projectilePrefab, _ownerUsePos, currentOwner.transform.forward, m_endPos);
+            base.UseAbility(_ownerUsePos);
         }
 
         #endregion

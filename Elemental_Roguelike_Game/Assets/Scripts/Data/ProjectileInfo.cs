@@ -16,9 +16,7 @@ namespace Data
         public float projectileDamageRadius = 0.5f;
 
         public float projectileSpeed = 5f;
-
-        public float projectileLifetime = 1f;
-
+        
         public bool isArmorPiercing;
 
         public ElementTyping projectileType;

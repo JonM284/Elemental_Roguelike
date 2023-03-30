@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using Project.Scripts.Utils;
 using Runtime.Abilities;
 using Runtime.Environment;
 using UnityEngine;
-using UnityEngine.Serialization;
 using Utils;
 
 namespace Runtime.Character
@@ -34,6 +33,8 @@ namespace Runtime.Character
         #region Serialize Fields
 
         [SerializeField] private LayerMask abilityUsageMask;
+
+        [SerializeField] private Transform abilityUseTransform;
         
         [SerializeField] private List<AssignedAbilities> m_assignedAbilities = new List<AssignedAbilities>();
 
@@ -44,12 +45,32 @@ namespace Runtime.Character
         private int m_activeAbilityIndex = -1;
 
         private int m_defaultInactiveAbilityIndex = -1;
+
+        private CharacterMovement m_characterMovement;
+
+        private CharacterRotation m_characterRotation;
         
         #endregion
 
         #region Accessors
         
         public bool isUsingAbilityAction => m_activeAbilityIndex != -1;
+        
+        private Vector3 abilityPos => abilityUseTransform != null ? abilityUseTransform.position : transform.position;
+        
+        private CharacterMovement characterMovement => CommonUtils.GetRequiredComponent(ref m_characterMovement, () =>
+        {
+            var cm = this.GetComponent<CharacterMovement>();
+            return cm;
+        });
+        
+        private CharacterRotation characterRotation => CommonUtils.GetRequiredComponent(ref m_characterRotation, () =>
+        {
+            var cr = this.GetComponent<CharacterRotation>();
+            return cr;
+        });
+
+        private bool isInCover => characterMovement.isInCover;
 
         #endregion
 
@@ -170,9 +191,15 @@ namespace Runtime.Character
             }
             
             m_assignedAbilities[m_activeAbilityIndex].ability.SelectTarget(_targetTransform);
+            characterRotation.SetRotationTarget(_targetTransform.position);
+            OnAbilityUsed?.Invoke();
+        }
+
+        public void UseActiveAbility()
+        {
+            m_assignedAbilities[m_activeAbilityIndex].ability.UseAbility(abilityPos);
             m_assignedAbilities[m_activeAbilityIndex].canUse = false;
             m_activeAbilityIndex = m_defaultInactiveAbilityIndex;
-            OnAbilityUsed?.Invoke();
         }
 
         public void SelectAbilityTarget(Vector3 _targetPos)
@@ -185,12 +212,12 @@ namespace Runtime.Character
             if (m_assignedAbilities[m_activeAbilityIndex].ability.targetType　== AbilityTargetType.CHARACTER_TRANSFORM)
             {
                 Debug.Log($"<color=red>Target Type:{m_assignedAbilities[m_activeAbilityIndex].ability.targetType}</color>");
+                CancelAbilityUse();
                 return;
             }
             
             m_assignedAbilities[m_activeAbilityIndex].ability.SelectPosition(_targetPos);
-            m_assignedAbilities[m_activeAbilityIndex].canUse = false;
-            m_activeAbilityIndex = m_defaultInactiveAbilityIndex;
+            characterRotation.SetRotationTarget(_targetPos);
             OnAbilityUsed?.Invoke();
         }
 
@@ -213,8 +240,8 @@ namespace Runtime.Character
         /// <summary>
         /// Methods returns if obstacle is in direction trying to attack
         /// </summary>
-        /// <param name="_checkPos"></param>
-        /// <returns></returns>
+        /// <param name="_checkPos">Target Transform Position</param>
+        /// <returns>If enemy can be hit</returns>
         private bool InLineOfSight(Vector3 _checkPos)
         {
             var dir = transform.position - _checkPos;

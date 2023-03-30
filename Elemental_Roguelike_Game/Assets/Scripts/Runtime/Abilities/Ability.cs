@@ -1,5 +1,6 @@
 ﻿using System;
 using Data.Elements;
+using Runtime.Character;
 using UnityEngine;
 
 namespace Runtime.Abilities
@@ -19,13 +20,7 @@ namespace Runtime.Abilities
 
         //cooldowns are determined by rounds
         public int roundCooldownTimer;
-
-        public float baseDamage;
-
-        public ElementTyping abilityElement;
-
-        public float criticalMultiplier;
-
+        
         public AbilityTargetType targetType;
 
         #endregion
@@ -63,7 +58,7 @@ namespace Runtime.Abilities
         
         //Step 3: Use Ability
         //Use ability is different for each ability type
-        public virtual void UseAbility()
+        public virtual void UseAbility(Vector3 _ownerUsePos)
         {
             currentOwner = null;
             m_targetTransform = null;

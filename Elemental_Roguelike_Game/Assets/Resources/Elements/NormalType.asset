@@ -14,3 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   elementName: normal
   weaknesses: []
+  weaponColors:
+  - {r: 0.745283, g: 0.745283, b: 0.745283, a: 1}
+  - {r: 0.6320754, g: 0.6320754, b: 0.6320754, a: 1}
+  meepleColors: []

@@ -89,6 +89,7 @@ MonoBehaviour:
   abilityUsageMask:
     serializedVersion: 2
     m_Bits: 512
+  abilityUseTransform: {fileID: 792718599591013545}
   m_assignedAbilities: []
 --- !u!114 &3276127876927732711
 MonoBehaviour:
@@ -133,6 +134,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gravity: 5
+  obstacleLayer:
+    serializedVersion: 2
+    m_Bits: 0
 --- !u!114 &3276127876927732708
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -383,6 +387,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 0482992e3f9407b4586dac22cbbd90f7, type: 3}
+--- !u!4 &792718599591013545 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2771800298583540711, guid: 0482992e3f9407b4586dac22cbbd90f7,
+    type: 3}
+  m_PrefabInstance: {fileID: 3276127877314342734}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &2429213864854704671 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 0482992e3f9407b4586dac22cbbd90f7,

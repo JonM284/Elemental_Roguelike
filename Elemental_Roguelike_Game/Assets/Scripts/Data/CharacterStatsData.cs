@@ -56,8 +56,7 @@ namespace Data
 
         public List<string> abilityReferences;
 
-        //Change later to actual weapon
-        public int weapon;
+        public string weaponReference;
 
 
         #endregion
@@ -88,7 +87,9 @@ namespace Data
             //Type must be added whenever creating a new meeple
             this.abilityReferences = new List<string>();
             //Abilities must also be added when creating a new meeple
-            this.weapon = 0;
+            this.weaponReference = "";
+            //Weapon must be added when creating new meeple
+            //Add default weapon, hands?
         }
 
         #endregion

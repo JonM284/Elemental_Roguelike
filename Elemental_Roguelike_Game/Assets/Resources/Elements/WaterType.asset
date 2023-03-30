@@ -13,4 +13,9 @@ MonoBehaviour:
   m_Name: WaterType
   m_EditorClassIdentifier: 
   elementName: water
-  weaknesses: []
+  weaknesses:
+  - {fileID: 11400000, guid: 3c9c561ec5c01714b84d55420dbb7e71, type: 2}
+  weaponColors:
+  - {r: 0.2352941, g: 0.6945202, b: 0.7176471, a: 1}
+  - {r: 0.2352941, g: 0.6458861, b: 0.7176471, a: 1}
+  meepleColors: []

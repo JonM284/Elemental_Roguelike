@@ -14,6 +14,10 @@ namespace Data.Elements
 
         public List<ElementTyping> weaknesses = new List<ElementTyping>();
 
+        public List<Color> weaponColors = new List<Color>(2);
+
+        public List<Color> meepleColors = new List<Color>(2);
+
         #endregion
 
         #region Private Fields

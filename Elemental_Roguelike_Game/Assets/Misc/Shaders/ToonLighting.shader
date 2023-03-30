@@ -21,6 +21,8 @@ Shader "Custom/ToonLighting"
     SubShader
     {
         LOD 100
+
+        Name "Toon Textured Shader"
         
         CGINCLUDE
             struct appdata

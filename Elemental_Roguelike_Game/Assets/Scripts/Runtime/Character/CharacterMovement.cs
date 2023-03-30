@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using Data;
 using Project.Scripts.Utils;
+using Runtime.Environment;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -13,16 +14,18 @@ namespace Runtime.Character
     {
         #region Events
 
-        public Action OnBeforeMovementCallback;
+        private Action OnBeforeMovementCallback;
         
         //local action to use action point when done walking
-        public Action OnFinishMovementCallback;
+        private Action OnFinishMovementCallback;
 
         #endregion
     
         #region SerializedFields
     
         [SerializeField] private float gravity;
+
+        [SerializeField] private LayerMask obstacleLayer;
         
         #endregion
 
@@ -49,7 +52,7 @@ namespace Runtime.Character
         private CharacterController m_characterController;
     
         private NavMeshPath m_navMeshPath;
-
+        
         #endregion
     
         #region Accessors
@@ -73,10 +76,11 @@ namespace Runtime.Character
         public bool isMoving => m_isMovingOnPath;
 
         public bool isUsingMoveAction => m_canMove;
-    
-        public Vector3 relativeRight { get; private set; }
 
-        public Vector3 relativeForward { get; private set; }
+        public CoverObstacles currentCover { get; private set; }
+        
+        public bool isInCover => currentCover != null;
+
 
         #endregion
 
@@ -203,6 +207,7 @@ namespace Runtime.Character
                     {
                         m_canMove = false;    
                     }
+                    CheckCover();
                     OnFinishMovementCallback?.Invoke();
                     return;
                 }
@@ -229,6 +234,21 @@ namespace Runtime.Character
             {
                 OnFinishMovementCallback = _finishActionCallback;
             }
+        }
+
+        public void CheckCover()
+        {
+            Collider[] colliders = Physics.OverlapSphere(transform.position, 0.5f, obstacleLayer);
+
+            if (colliders.Length > 0)
+            {
+                var primaryCover = colliders.FirstOrDefault().GetComponent<CoverObstacles>();
+                if (primaryCover != null)
+                {
+                    currentCover = primaryCover;
+                }
+            }
+            
         }
 
         public void TeleportCharacter(Vector3 teleportPosition)
