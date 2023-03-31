@@ -32,12 +32,6 @@ namespace GameControllers
             var t = TransformUtils.CreatePool(transform, false);
             return t;
         });
-        
-        public Transform activeVFXPool => CommonUtils.GetRequiredComponent(ref m_enabledVFXPool, () =>
-        {
-            var t = TransformUtils.CreatePool(transform, true);
-            return t;
-        });
 
         #endregion
 
@@ -96,6 +90,7 @@ namespace GameControllers
             }
             
             m_cached_VFX.Add(vfxPlayer);
+            vfxPlayer.Stop();
             vfxPlayer.transform.ResetTransform(vfxPool);
         }
 
@@ -118,7 +113,10 @@ namespace GameControllers
                 m_cached_VFX.Remove(foundVFX);
             }
 
-            foundVFX.transform.parent = activeParent != null ? activeParent : activeVFXPool;
+            if (activeParent != null)
+            {
+                foundVFX.transform.parent = activeParent;
+            }
             foundVFX.transform.position = position;
             foundVFX.transform.rotation = rotation;
             

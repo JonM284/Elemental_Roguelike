@@ -86,7 +86,7 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: a47c62049fca59048afe703c9e1ded0f
-    m_Address: Assets/Prefabs/VFX/DefaulEnemyDeathVFX.prefab
+    m_Address: Assets/Prefabs/VFX/DefaultEnemyDeathVFX.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 30e2018a2d60d924082e6a3cf540faae
