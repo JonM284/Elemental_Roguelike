@@ -80,6 +80,13 @@ namespace Runtime.GameControllers
             return foundAbilities.abilitiesOfType[randomAbilityIndex];
         }
         
+        public Ability GetRandomAbilityByType(string guid)
+        {
+            var foundAbilities = abilitiesByType.FirstOrDefault(abt => abt.type.elementGUID == guid);
+            var randomAbilityIndex = Random.Range(0, foundAbilities.abilitiesOfType.Count);
+            return foundAbilities.abilitiesOfType[randomAbilityIndex];
+        }
+        
         public Ability GetRandomAbilityByType(ElementTyping _type, Ability _excludingAbility)
         {
             var foundAbilities = abilitiesByType.FirstOrDefault(abt => abt.type == _type);

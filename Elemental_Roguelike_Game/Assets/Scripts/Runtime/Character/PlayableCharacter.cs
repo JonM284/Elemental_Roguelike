@@ -43,14 +43,20 @@ namespace Runtime.Character
         
         public override void InitializeCharacter()
         {
+            var elementType = ElementUtils.GetElementTypeByGUID(m_characterStatsData.meepleElementTypeRef);
+            characterVisuals.InitializeMeepleCharacterVisuals(elementType);
             characterMovement.InitializeCharacterMovement(m_characterStatsData.baseSpeed, m_characterStatsData.movementDistance);
             characterLifeManager.InitializeCharacterHealth(m_characterStatsData.baseHealth, m_characterStatsData.baseShields,
-                m_characterStatsData.currentHealth, m_characterStatsData.currentShield,m_characterStatsData.type);
+                m_characterStatsData.currentHealth, m_characterStatsData.currentShield, elementType);
             movementRangeGO.transform.localScale = Vector3.one * (m_characterStatsData.movementDistance * 2);
             if (m_characterStatsData.abilityReferences.Count > 0)
             {
                 characterAbilityManager.InitializeCharacterAbilityList(m_characterStatsData.abilityReferences);
             }
+
+            var weaponData = WeaponUtils.GetDataByRef(m_characterStatsData.weaponReference);
+            var weaponElementType = ElementUtils.GetElementTypeByGUID(m_characterStatsData.weaponElementTypeRef);
+            characterWeaponManager.InitializeCharacterWeapon(weaponData, weaponElementType);
         }
 
         public override int GetInitiativeNumber()

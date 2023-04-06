@@ -52,11 +52,13 @@ namespace Data
         //Character associated color
         public Color characterColor;
 
-        public ElementTyping type;
+        public string meepleElementTypeRef;
 
         public List<string> abilityReferences;
 
         public string weaponReference;
+
+        public string weaponElementTypeRef;
 
 
         #endregion
@@ -88,7 +90,9 @@ namespace Data
             this.abilityReferences = new List<string>();
             //Abilities must also be added when creating a new meeple
             this.weaponReference = "";
+            this.weaponElementTypeRef = "";
             //Weapon must be added when creating new meeple
+            //Weapon type will default to normal
             //Add default weapon, hands?
         }
 

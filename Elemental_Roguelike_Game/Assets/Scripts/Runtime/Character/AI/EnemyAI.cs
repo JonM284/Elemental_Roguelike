@@ -74,18 +74,22 @@ namespace Runtime.Character.AI
             }
             
             Debug.Log($"{this} start turn", this);
-            characterBase.ResetCharacterActions();
 
-            if (!characterBase.isAlive)
-            {
-                return;
-            }
-            
             StartCoroutine(C_Turn());
         }
 
         private IEnumerator C_Turn()
         {
+            
+            characterBase.ResetCharacterActions();
+
+            if (!characterBase.isAlive)
+            {
+                yield break;
+            }
+
+            yield return new WaitForSeconds(0.5f);
+            
             while (characterBase.characterActionPoints > 0)
             {
                 //Check if players are hittable
@@ -104,8 +108,6 @@ namespace Runtime.Character.AI
 
                         yield return new WaitUntil(() => !characterBase.characterMovement.isMoving);
                     }
-                    
-                    //Attack?
                     
                 }
                 else

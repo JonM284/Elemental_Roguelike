@@ -113,10 +113,7 @@ namespace GameControllers
                 m_cached_VFX.Remove(foundVFX);
             }
 
-            if (activeParent != null)
-            {
-                foundVFX.transform.parent = activeParent;
-            }
+            foundVFX.transform.parent = activeParent != null ? activeParent : null;
             foundVFX.transform.position = position;
             foundVFX.transform.rotation = rotation;
             

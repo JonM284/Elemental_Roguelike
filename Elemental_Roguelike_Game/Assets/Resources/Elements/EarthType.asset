@@ -12,10 +12,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15d0416d0e9a4f4a837a866f5c0a82cf, type: 3}
   m_Name: EarthType
   m_EditorClassIdentifier: 
-  elementName: earth
+  elementName: Earth
+  elementGUID: 232adf57-fe0f-4bd9-8739-f1019f253840
   weaknesses:
   - {fileID: 11400000, guid: 3007beed4b27d8b458961ac106f278d9, type: 2}
   weaponColors:
   - {r: 0.83137256, g: 0.50440073, b: 0.25490192, a: 1}
   - {r: 0.7176471, g: 0.4786869, b: 0.2352941, a: 1}
-  meepleColors: []
+  weaponMuzzleParticles: {fileID: 0}
+  meepleColors:
+  - {r: 0.972549, g: 0.7254902, b: 0.3882353, a: 1}
+  - {r: 0.7254902, g: 0.42745098, b: 0.08627451, a: 1}
+  defaultMeepleElementHat: {fileID: 0}

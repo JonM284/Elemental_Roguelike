@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace Runtime.Weapons
 {
+    [CreateAssetMenu(menuName = "Custom Data/Melee Weapon")]
     public class MeleeWeaponData: WeaponData
     {
 

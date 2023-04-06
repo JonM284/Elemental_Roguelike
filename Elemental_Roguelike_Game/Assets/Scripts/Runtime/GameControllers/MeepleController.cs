@@ -6,6 +6,7 @@ using Data.DataSaving;
 using Project.Scripts.Data;
 using Project.Scripts.Runtime.LevelGeneration;
 using Project.Scripts.Utils;
+using Runtime.Abilities;
 using Runtime.Character;
 using Runtime.UI;
 using UnityEngine;
@@ -114,7 +115,7 @@ namespace Runtime.GameControllers
 
         private void RandomizeCharacterVariables(CharacterStatsData _character)
         {
-            _character.type = ElementUtils.GetRandomElement();
+            _character.meepleElementTypeRef = ElementUtils.GetRandomElement().elementGUID;
             _character.initiativeNumber = Random.Range(1, 20);
             //TODO:assign default weapon ******
             _character.baseDamage = Random.Range(1f, 10f);
@@ -124,8 +125,12 @@ namespace Runtime.GameControllers
             _character.movementDistance = Random.Range(5, 10);
             for (int i = 0; i < 2; i++)
             {
-                _character.abilityReferences.Add(AbilityUtils.GetRandomAbilityByType(_character.type).abilityGUID);
+                var randomAbility = AbilityUtils.GetRandomAbilityByType(_character.meepleElementTypeRef);
+                _character.abilityReferences.Add(randomAbility.abilityGUID);
             }
+
+            _character.weaponReference = WeaponUtils.GetDefaultWeapon().weaponGUID;
+            _character.weaponElementTypeRef = ElementUtils.GetDefault().elementGUID;
         }
 
         public void InstantiatePremadeMeeple(KeyValuePair<string,CharacterStatsData> _meepleCharacter)

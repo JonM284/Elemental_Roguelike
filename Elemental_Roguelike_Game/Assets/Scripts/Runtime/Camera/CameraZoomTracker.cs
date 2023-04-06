@@ -46,6 +46,11 @@ namespace Runtime.Camera
 
         #region Unity Events
 
+        private void Awake()
+        {
+            m_localZoomZ = maxPos;
+        }
+
         private void Update()
         {
             if (!m_changingValue)

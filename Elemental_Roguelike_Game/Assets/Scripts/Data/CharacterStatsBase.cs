@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Data.Elements;
 using Runtime.Abilities;
+using Runtime.Weapons;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 
@@ -42,6 +43,10 @@ namespace Project.Scripts.Data
         public List<Ability> abilities;
 
         public AssetReference characterVisualReference;
+
+        public WeaponData weaponData;
+        
+        public ElementTyping weaponTyping;
 
 
         #endregion

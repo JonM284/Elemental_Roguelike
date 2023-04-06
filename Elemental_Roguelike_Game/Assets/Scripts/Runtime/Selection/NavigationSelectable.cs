@@ -42,6 +42,7 @@ namespace Runtime.Selection
                 var _magToPoint = Vector3.Magnitude(_newLocation.FlattenVector3Y() - activeCharacter.transform.position.FlattenVector3Y());
                 if (_magToPoint > activeCharacter.characterMovement.battleMoveDistance)
                 {
+                    Debug.LogError("<color=red>Position too far</color>");
                     return;
                 }    
             }
@@ -55,8 +56,11 @@ namespace Runtime.Selection
             }else if (activeCharacter.characterAbilityManager.isUsingAbilityAction)
             {
                 activeCharacter.characterAbilityManager.SelectAbilityTarget(clickedLocation.position);
+            }else if (activeCharacter.characterWeaponManager.isUsingWeapon)
+            {
+                activeCharacter.characterWeaponManager.SelectWeaponTarget(clickedLocation.position);
             }
-            
+
         }
 
         #endregion

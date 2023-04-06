@@ -14,15 +14,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   projectileDamage: 1
   projectileDamageRadius: 0.5
-  projectileSpeed: 5
-  projectileLifetime: 1
+  projectileSpeed: 14
   isArmorPiercing: 0
   projectileType: {fileID: 11400000, guid: dff32d43cdb15e64d9f95e5f1c9a2574, type: 2}
   statusEffect: {fileID: 11400000, guid: 105104d71c6a3354f95ca160d3294c22, type: 2}
   projectileCollisionLayers:
     serializedVersion: 2
     m_Bits: 768
-  projectileAsset:
+  projectilePrefab:
     m_AssetGUID: 30e2018a2d60d924082e6a3cf540faae
     m_SubObjectName: 
     m_SubObjectType: 
@@ -39,15 +38,6 @@ MonoBehaviour:
       weightedMode: 0
       inWeight: 0
       outWeight: 0
-    - serializedVersion: 3
-      time: 0.5
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
     - serializedVersion: 3
       time: 1
       value: 0

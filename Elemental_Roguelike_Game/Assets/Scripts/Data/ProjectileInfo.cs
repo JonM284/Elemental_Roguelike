@@ -25,8 +25,8 @@ namespace Data
 
         public LayerMask projectileCollisionLayers;
 
-        public AssetReference projectileAsset;
-
+        public AssetReference projectilePrefab;
+        
         public AnimationCurve projectileArcCurve = AnimationCurve.Constant(0, 1, 0);
 
         #endregion

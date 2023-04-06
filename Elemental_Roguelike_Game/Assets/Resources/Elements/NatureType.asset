@@ -13,9 +13,14 @@ MonoBehaviour:
   m_Name: NatureType
   m_EditorClassIdentifier: 
   elementName: nature
+  elementGUID: c97a785e-80da-4ebc-9883-bc2e6596313e
   weaknesses:
   - {fileID: 11400000, guid: dff32d43cdb15e64d9f95e5f1c9a2574, type: 2}
   weaponColors:
   - {r: 0.29053208, g: 0.83137256, b: 0.25490192, a: 1}
   - {r: 0.2352941, g: 0.7176471, b: 0.23574342, a: 1}
-  meepleColors: []
+  weaponMuzzleParticles: {fileID: 0}
+  meepleColors:
+  - {r: 0.4745098, g: 0.972549, b: 0.3882353, a: 1}
+  - {r: 0.08627451, g: 0.7254902, b: 0.09019608, a: 1}
+  defaultMeepleElementHat: {fileID: 0}

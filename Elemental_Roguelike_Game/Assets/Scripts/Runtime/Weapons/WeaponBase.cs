@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using Data.Elements;
+using UnityEngine;
 
 namespace Runtime.Weapons
 {
@@ -6,14 +8,16 @@ namespace Runtime.Weapons
     {
 
         #region Serialized Fields
-
-        [SerializeField] private WeaponData m_weaponData;
+        
+        [SerializeField] private List<Transform> weaponMuzzlePos = new List<Transform>();
 
         #endregion
 
         #region Protected Fields
 
         protected GameObject currentOwner;
+
+        protected Transform m_originTransform;
 
         protected Transform m_targetTransform;
 
@@ -23,28 +27,41 @@ namespace Runtime.Weapons
 
         #region Accessors
 
-        public WeaponData weaponData => m_weaponData;
+        public WeaponData weaponData { get; private set; }
+
+        public ElementTyping weaponElementType { get; private set; }
+
+        public int weaponMuzzleNum => weaponMuzzlePos.Count;
 
         #endregion
 
         #region Class Implementation
 
-        public void Initialize(GameObject _ownerObj)
+        public virtual void Initialize(GameObject _ownerObj, Transform _originTransform ,WeaponData _assignedWeaponData, ElementTyping _type)
         {
             currentOwner = _ownerObj;
+            m_originTransform = _originTransform;
+            weaponData = _assignedWeaponData;
+            weaponElementType = _type;
         }
+
+        public abstract void SelectPosition(Vector3 _inputPosition);
         
         public abstract void SelectTarget(Transform _inputTransform);
         
         public virtual void UseWeapon()
         {
-            currentOwner = null;
             m_targetTransform = null;
         }
-        
-        public void CancelAbilityUse()
+
+        public void CancelWeaponUse()
         {
-            currentOwner = null;
+            
+        }
+
+        public Transform GetMuzzleTransform(int _index)
+        {
+            return weaponMuzzlePos[_index];
         }
 
         #endregion

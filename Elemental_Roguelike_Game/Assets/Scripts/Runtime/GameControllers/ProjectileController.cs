@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Data;
 using Project.Scripts.Utils;
 using Runtime.Character;
 using Runtime.Weapons;
@@ -82,31 +83,34 @@ namespace Runtime.GameControllers
             m_cachedProjectiles.Add(projectile);
             projectile.transform.ResetTransform(disabledProjectilePool);
         }
-
-        public void GetProjectileAt(ProjectileBase projectileBase, Vector3 startPos, Vector3 startRotation, Vector3 endPos)
+        
+        public void GetProjectileAt(ProjectileInfo projectileInfo ,Vector3 startPos, Vector3 startRotation, Vector3 endPos)
         {
-            if (projectileBase == null)
+            if (projectileInfo == null)
             {
+                Debug.LogError("Projectile Info Null");
                 return;
             }
             
-            var foundProjectile = m_cachedProjectiles.FirstOrDefault(c => c.projectileRef == projectileBase.projectileRef);
+            var foundProjectile = m_cachedProjectiles.FirstOrDefault(c => c.m_projectileRef == projectileInfo);
 
             //projectile not found in cachedProjectiles
             if (foundProjectile == null)
             {
                 //instantiate gameobject
-                var handle = Addressables.LoadAssetAsync<GameObject>(projectileBase.projectileRef.projectileAsset);
+                var handle = Addressables.LoadAssetAsync<GameObject>(projectileInfo.projectilePrefab);
                 handle.Completed += operation =>
                 {
                     if (operation.Status == AsyncOperationStatus.Succeeded)
                     {
                         var newProjectileObj = Instantiate(handle.Result);
+                        newProjectileObj.transform.parent = null;
+                        newProjectileObj.transform.forward = startRotation;
                         var newProjectile = newProjectileObj.GetComponent<ProjectileBase>();
                         if (newProjectile != null)
                         {
                             foundProjectile = newProjectile;
-                            newProjectile.Initialize(startPos , endPos);
+                            newProjectile.Initialize(projectileInfo, startPos , endPos);
                         }
                     }
                 };
@@ -120,7 +124,7 @@ namespace Runtime.GameControllers
             foundProjectile.transform.forward = startRotation;
             
             m_activeProjectiles.Add(foundProjectile);
-            foundProjectile.Initialize(startPos, endPos);
+            foundProjectile.Initialize(projectileInfo, startPos, endPos);
         }
 
         #endregion

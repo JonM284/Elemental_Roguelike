@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 757e91a45f064f9aae2ce6a4b3e800b9, type: 3}
+  m_Name: DefaultWeapon
+  m_EditorClassIdentifier: 
+  weaponName: Default Pistol
+  weaponGUID: 5312af68-bb7b-43bb-bdf0-e9efbbf1395a
+  targetType: 0
+  weaponPrefab:
+    m_AssetGUID: 6c22d6b6bdf14574d8fb00ef629fbac0
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_EditorAssetChanged: 0
+  allPossibleProjectiles:
+  - {fileID: 11400000, guid: 98bf30290b0752f439b1ef198798cdba, type: 2}
+  - {fileID: 11400000, guid: 6e6a5d63946372a4c99a743b36a24d47, type: 2}
+  - {fileID: 11400000, guid: 7f63a8d8df9e2c343ad069bf04c92e84, type: 2}
+  - {fileID: 11400000, guid: 31c3493b8b7a200409e9ffed1ead96e9, type: 2}
+  - {fileID: 11400000, guid: d6d985400f7629447aabcdab8a4fc414, type: 2}
+  - {fileID: 11400000, guid: 4959098ea2f04344ba24e756852e4e5e, type: 2}
+  - {fileID: 11400000, guid: cb0c3e3a8d2e86c46b4990b12af19ea0, type: 2}
+  - {fileID: 11400000, guid: 72435e15d9c18274295c92593e3105ae, type: 2}
+  - {fileID: 11400000, guid: d6a57737dc70a9a4c80b496e332d1961, type: 2}

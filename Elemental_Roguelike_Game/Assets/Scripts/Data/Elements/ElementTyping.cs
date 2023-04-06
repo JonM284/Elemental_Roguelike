@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using Runtime.Weapons;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 
 namespace Data.Elements
 {
@@ -12,11 +14,19 @@ namespace Data.Elements
 
         public string elementName = "Default Change";
 
+        public string elementGUID = "";
+
         public List<ElementTyping> weaknesses = new List<ElementTyping>();
 
+        [Header("Weapon Related")]
         public List<Color> weaponColors = new List<Color>(2);
 
+        public AssetReference weaponMuzzleParticles = null;
+        
+        [Header("Meeple")]
         public List<Color> meepleColors = new List<Color>(2);
+
+        public AssetReference defaultMeepleElementHat = null;
 
         #endregion
 
@@ -36,6 +46,18 @@ namespace Data.Elements
             }
 
             return _incomingDamage * damageModifier;
+        }
+        
+        
+        [ContextMenu("Generate GUID")]
+        private void GenerateID()
+        {
+            if (elementGUID != string.Empty)
+            {
+                return;
+            }
+            
+            elementGUID = System.Guid.NewGuid().ToString();
         }
 
         #endregion

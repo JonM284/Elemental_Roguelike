@@ -12,6 +12,8 @@ namespace Runtime.Character
 
         private CharacterAbilityManager m_characterAbilityManager;
 
+        private CharacterWeaponManager m_characterWeaponManager;
+
         #endregion
         
         #region Accessors
@@ -27,6 +29,14 @@ namespace Runtime.Character
             var cam = GetComponentInParent<CharacterAbilityManager>();
             return cam;
         });
+
+        private CharacterWeaponManager characterWeaponManager => CommonUtils.GetRequiredComponent(
+            ref m_characterWeaponManager,
+            () =>
+            {
+                var cwm = GetComponentInParent<CharacterWeaponManager>();
+                return cwm;
+            });
 
         #endregion
 
@@ -60,7 +70,7 @@ namespace Runtime.Character
 
         public void Attack()
         {
-            
+            characterWeaponManager.UseWeapon();
         }
 
         #endregion

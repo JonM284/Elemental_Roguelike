@@ -241,7 +241,7 @@ namespace Runtime.GameControllers
                 }
             });
 
-            yield return new WaitForSeconds(0.05f);
+            yield return new WaitForSeconds(0.25f);
 
             Debug.Log($"{liveEnemyCount}");
             if (liveEnemyCount == 0)
@@ -250,7 +250,7 @@ namespace Runtime.GameControllers
                 yield break;
             }
 
-            yield return new WaitForSeconds(0.05f);
+            yield return new WaitForSeconds(0.25f);
 
             if (_deadCharacter == activeCharacter)
             {

@@ -101,6 +101,7 @@ GameObject:
   - component: {fileID: 5657833463934291898}
   - component: {fileID: 631976847981564846}
   - component: {fileID: 5657833463934291899}
+  - component: {fileID: 3095108148420025173}
   m_Layer: 8
   m_Name: EnemyRegular
   m_TagString: Untagged
@@ -140,6 +141,7 @@ MonoBehaviour:
   abilityUsageMask:
     serializedVersion: 2
     m_Bits: 512
+  abilityUseTransform: {fileID: 0}
   m_assignedAbilities: []
 --- !u!114 &5657833463934291846
 MonoBehaviour:
@@ -184,6 +186,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gravity: 5
+  obstacleLayer:
+    serializedVersion: 2
+    m_Bits: 0
 --- !u!114 &5657833463934291845
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -211,6 +216,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   characterVisual: {fileID: 0}
+  meepleSkinnedMeshRenderers: []
+  meepleMeshRenderers: []
 --- !u!114 &5657833463934291898
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -225,6 +232,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   characterSide: 1
   deathVFX: {fileID: 5269481490371825388, guid: a47c62049fca59048afe703c9e1ded0f,
+    type: 3}
+  damageVFX: {fileID: 8956745814830301739, guid: 36cb9e6760aafa04ea8ba4d86841ee3e,
     type: 3}
   characterVisualParent: {fileID: 5657833464208694327}
 --- !u!114 &631976847981564846
@@ -263,6 +272,22 @@ NavMeshObstacle:
   m_CarveOnlyStationary: 1
   m_Center: {x: 0, y: 0, z: 0}
   m_TimeToStationary: 0.5
+--- !u!114 &3095108148420025173
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5657833463934291900}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 32e13e238be748eebabea58bb6600c90, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  weaponHeldPos: {fileID: 0}
+  weaponCheckLayers:
+    serializedVersion: 2
+    m_Bits: 0
 --- !u!1 &5657833464208694324
 GameObject:
   m_ObjectHideFlags: 0

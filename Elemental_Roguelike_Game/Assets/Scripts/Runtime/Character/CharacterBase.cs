@@ -17,6 +17,7 @@ namespace Runtime.Character
     [RequireComponent(typeof(CharacterMovement))]
     [RequireComponent(typeof(CharacterRotation))]
     [RequireComponent(typeof(CharacterVisuals))]
+    [RequireComponent(typeof(CharacterWeaponManager))]
     public abstract class CharacterBase: MonoBehaviour, ISelectable, IDamageable, IEffectable
     {
 
@@ -44,6 +45,8 @@ namespace Runtime.Character
 
         [SerializeField] private VFXPlayer deathVFX;
 
+        [SerializeField] private VFXPlayer damageVFX;
+
         #endregion
 
         #region Protected Fields
@@ -61,6 +64,8 @@ namespace Runtime.Character
         protected CharacterVisuals m_characterVisuals;
 
         protected CharacterAnimations m_characterAnimations;
+
+        protected CharacterWeaponManager m_characterWeaponManager;
 
         private Transform m_statusEffectTransform;
         
@@ -107,6 +112,14 @@ namespace Runtime.Character
             {
                 var cam = GetComponentInChildren<CharacterAnimations>();
                 return cam;
+            });
+
+        public CharacterWeaponManager characterWeaponManager => CommonUtils.GetRequiredComponent(
+            ref m_characterWeaponManager,
+            () =>
+            {
+                var cwm = GetComponent<CharacterWeaponManager>();
+                return cwm;
             });
 
         public bool isAlive => characterLifeManager.isAlive;
@@ -185,6 +198,26 @@ namespace Runtime.Character
             Debug.Log($"<color=red>{this} has died</color>");
         }
 
+        private void PlayDamageVFX()
+        {
+            if (damageVFX == null)
+            {
+                return;
+            }
+
+            damageVFX.PlayAt(transform.position, Quaternion.identity);
+        }
+        
+        public void PlayDeathEffect()
+        {
+            if (deathVFX == null)
+            {
+                return;
+            }
+
+            deathVFX.PlayAt(transform.position, Quaternion.identity);
+        }
+
         public void InitializeCharacterBattle(bool _isInBattle)
         {
             characterMovement.SetCharacterBattleStatus(_isInBattle);
@@ -213,11 +246,12 @@ namespace Runtime.Character
                 return;
             }
             
-            Debug.Log("<color=yellow>Shoot</color>");
-            //ToDo: Add Weapons
-            
-            
-            
+            characterWeaponManager.SetupWeaponAction(OnAttackUsed);
+        }
+
+        private void OnAttackUsed()
+        {
+            characterAnimations.AttackAnim(true);
             UseActionPoint();
         }
 
@@ -310,6 +344,7 @@ namespace Runtime.Character
         public void OnDealDamage(int _damageAmount, bool _armorPiercing ,ElementTyping _damageElementType)
         {
             characterLifeManager.DealDamage(_damageAmount, _armorPiercing, _damageElementType);
+            PlayDamageVFX();
             if (characterAnimations != null)
             {
                 characterAnimations.DamageAnim(true);
@@ -333,16 +368,6 @@ namespace Runtime.Character
                 _newStatus.statusVFX.PlayAt(transform.position, Quaternion.identity, statusEffectTransform);    
             }
             
-        }
-
-        public void PlayDeathEffect()
-        {
-            if (deathVFX == null)
-            {
-                return;
-            }
-
-            deathVFX.PlayAt(transform.position, Quaternion.identity);
         }
 
         public void RemoveEffect()

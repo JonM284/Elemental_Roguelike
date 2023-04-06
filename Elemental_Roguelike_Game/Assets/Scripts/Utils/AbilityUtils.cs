@@ -36,6 +36,16 @@ namespace Utils
             return abilityController.GetRandomAbilityByType(_type);
         }
 
+        public static Ability GetRandomAbilityByType(string guid)
+        {
+            if (guid == string.Empty)
+            {
+                return default;
+            }
+
+            return abilityController.GetRandomAbilityByType(guid);
+        }
+
         public static Ability GetAbilityByGUID(string _guid)
         {
             if (_guid == string.Empty)

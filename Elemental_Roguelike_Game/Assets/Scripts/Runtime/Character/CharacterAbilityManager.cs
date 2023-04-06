@@ -183,7 +183,7 @@ namespace Runtime.Character
                 Debug.Log($"<color=red>Target Type:{m_assignedAbilities[m_activeAbilityIndex].ability.targetType}</color>");
                 return;
             }
-
+            
             if (!InLineOfSight(_targetTransform.position))
             {
                 Debug.Log("<color=red>Can't hit target</color>");

@@ -818,14 +818,17 @@ MonoBehaviour:
   roomLayout: {fileID: 2800000, guid: 6dd9c7a7ec8539b41b06cf08bc825d1d, type: 3}
   roomDecorations:
   - associatedColor: {r: 0, g: 0, b: 0, a: 1}
+    isObstacle: 0
     isEnemySpawnPosition: 0
     associatedPrefab: {fileID: 4777526194583307717, guid: 0ff3243bc1b038f4aaca1bd1bf97534e,
       type: 3}
   - associatedColor: {r: 0, g: 0.07450981, b: 1, a: 1}
+    isObstacle: 0
     isEnemySpawnPosition: 0
     associatedPrefab: {fileID: 1271381347346041601, guid: 6d3daeeccacb60b49abdfb4f322c272c,
       type: 3}
   - associatedColor: {r: 1, g: 0.93333334, b: 0, a: 1}
+    isObstacle: 0
     isEnemySpawnPosition: 1
     associatedPrefab: {fileID: 6979950628730557295, guid: dd4bc4860a8beac468a736addb6437af,
       type: 3}
@@ -1079,6 +1082,54 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 3c9c561ec5c01714b84d55420dbb7e71, type: 2}
   - {fileID: 11400000, guid: 95a8ef5f5dc6d1041b926a50980d0665, type: 2}
   - {fileID: 11400000, guid: 3007beed4b27d8b458961ac106f278d9, type: 2}
+  defaultElement: {fileID: 11400000, guid: c9878cd57e22d2f4294bb226cbe069b6, type: 2}
+--- !u!1 &1783162521
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1783162523}
+  - component: {fileID: 1783162522}
+  m_Layer: 0
+  m_Name: WeaponController
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1783162523
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1783162521}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7876103537793370367}
+  m_RootOrder: 13
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1783162522
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1783162521}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a0c58c002ad24cdda93d764a79eb4f0b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  weaponDataList:
+  - {fileID: 11400000, guid: f3ee36ecf34c26f46b4c1cc6f3d6a01a, type: 2}
+  - {fileID: 11400000, guid: e646ed24b73b06d4c97172bd275b941b, type: 2}
 --- !u!1 &1953941869
 GameObject:
   m_ObjectHideFlags: 0
@@ -1404,6 +1455,7 @@ Transform:
   - {fileID: 589762619}
   - {fileID: 1652226594}
   - {fileID: 5636724754545760627}
+  - {fileID: 1783162523}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1420,6 +1472,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   game_controllers:
+  - {fileID: 1783162522}
   - {fileID: 7876103537610162764}
   - {fileID: 7876103538860013621}
   - {fileID: 7876103538364230317}

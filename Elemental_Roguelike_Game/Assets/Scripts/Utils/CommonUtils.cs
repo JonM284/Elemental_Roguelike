@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Data.DataSaving;
+using UnityEngine;
 
 namespace Project.Scripts.Utils
 {
@@ -23,6 +23,24 @@ namespace Project.Scripts.Utils
         public static List<T> SelectNotNull<T>(this List<T> checkList)
         {
             return checkList.Where(c => c != null).ToList();
+        }
+        
+        public static bool IsNull(this object obj) {
+            var isObjectNull = obj == null || obj.Equals(null);
+            if (isObjectNull) {
+                return true;
+            }
+
+            if (obj is GameObject gameObject) {
+                return gameObject == null || gameObject.Equals(null) || gameObject.name.Equals("null");
+            }
+
+            if (obj is Component component) {
+                return component.gameObject == null || component.gameObject.Equals(null) 
+                                                    || component.gameObject.name.Equals("null");
+            }
+            
+            return false;
         }
 
         public static List<T> ToList<T>(this IEnumerable<T> list)

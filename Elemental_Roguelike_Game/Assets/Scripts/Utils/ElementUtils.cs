@@ -23,14 +23,19 @@ namespace Utils
 
         #region Class Implementation
 
-        public static ElementTyping GetElementTypeByName(string _name)
+        public static ElementTyping GetElementTypeByGUID(string guid)
         {
-            return elementController.GetElementByName(_name);
+            return elementController.GetElementByGUID(guid);
         }
 
         public static ElementTyping GetRandomElement()
         {
             return elementController.GetRandomElementTyping();
+        }
+
+        public static ElementTyping GetDefault()
+        {
+            return elementController.GetDefaultElement();
         }
 
         #endregion

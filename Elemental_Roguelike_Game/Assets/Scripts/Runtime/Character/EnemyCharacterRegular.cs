@@ -36,6 +36,8 @@ namespace Runtime.Character
             {
                 characterAbilityManager.InitializeCharacterAbilityList(m_enemyStats.abilities);
             }
+
+            characterWeaponManager.InitializeCharacterWeapon(m_enemyStats.weaponData, m_enemyStats.weaponTyping);
         }
 
         public override int GetInitiativeNumber()

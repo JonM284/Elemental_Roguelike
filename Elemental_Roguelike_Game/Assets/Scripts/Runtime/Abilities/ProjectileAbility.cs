@@ -1,4 +1,5 @@
-﻿using Project.Scripts.Utils;
+﻿using Data;
+using Project.Scripts.Utils;
 using Runtime.Weapons;
 using UnityEngine;
 using Utils;
@@ -11,7 +12,7 @@ namespace Runtime.Abilities
 
         #region Public Fields
 
-        public ProjectileBase projectilePrefab;
+        public ProjectileInfo projectileInfo;
 
         #endregion
 
@@ -45,7 +46,7 @@ namespace Runtime.Abilities
             }
 
             var m_endPos = m_targetTransform != null ? m_targetTransform.position : m_targetPosition;
-            ProjectileUtils.PlayAt(projectilePrefab, _ownerUsePos, currentOwner.transform.forward, m_endPos);
+            projectileInfo.PlayAt(_ownerUsePos, currentOwner.transform.forward, m_endPos);
             base.UseAbility(_ownerUsePos);
         }
 

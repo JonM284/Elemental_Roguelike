@@ -1,4 +1,5 @@
-﻿using Runtime.Damage;
+﻿using Project.Scripts.Utils;
+using Runtime.Damage;
 using UnityEngine;
 
 namespace Runtime.Weapons
@@ -12,6 +13,16 @@ namespace Runtime.Weapons
 
         #endregion
         
+        public override void SelectPosition(Vector3 _inputPosition)
+        {
+            if (_inputPosition.IsNan())
+            {
+                return;
+            }
+
+            m_targetPosition = _inputPosition;
+        }
+        
         
         public override void SelectTarget(Transform _inputTransform)
         {
@@ -21,8 +32,6 @@ namespace Runtime.Weapons
             }
             
             m_targetTransform = _inputTransform;
-            //ToDO: change the placement of this method to be during the swing animation
-            UseWeapon();
         }
 
 
@@ -42,7 +51,7 @@ namespace Runtime.Weapons
                 foreach (var collider in colliders)
                 {
                     var damageable = collider.GetComponent<IDamageable>();
-                    damageable?.OnDealDamage(meleeWeaponData.meleeDamage, meleeWeaponData.armorPiercing, meleeWeaponData.type);
+                    damageable?.OnDealDamage(meleeWeaponData.meleeDamage, meleeWeaponData.armorPiercing, weaponElementType);
                 }
             }
 

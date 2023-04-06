@@ -14,13 +14,15 @@ namespace Runtime.GameControllers
 
         [SerializeField] private List<ElementTyping> allElementTypes;
 
+        [SerializeField] private ElementTyping defaultElement;
+
         #endregion
 
         #region Class Implementation
 
-        public ElementTyping GetElementByName(string _name)
+        public ElementTyping GetElementByGUID(string guid)
         {
-            var foundElement = allElementTypes.FirstOrDefault(et => et.elementName == _name);
+            var foundElement = allElementTypes.FirstOrDefault(et => et.elementGUID == guid);
             if (foundElement == null)
             {
                 return default;
@@ -33,6 +35,11 @@ namespace Runtime.GameControllers
         {
             var randomElementIndex = Random.Range(0, allElementTypes.Count);
             return allElementTypes[randomElementIndex];
+        }
+
+        public ElementTyping GetDefaultElement()
+        {
+            return defaultElement;
         }
 
         #endregion

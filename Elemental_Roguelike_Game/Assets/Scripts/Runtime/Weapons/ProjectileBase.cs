@@ -10,29 +10,22 @@ using Utils;
 
 namespace Runtime.Weapons
 {
-    [RequireComponent(typeof(Rigidbody))]
+    [RequireComponent(typeof(SphereCollider))]
     public class ProjectileBase: MonoBehaviour
     {
 
         #region Public Fields
 
+        public UnityEvent onProjectileStart;
+
         public UnityEvent onProjectileEnd;
-
-        #endregion
-        
-        #region Serialized Fields
-
-        [Header("Info")]
-        [SerializeField] private ProjectileInfo m_info; 
 
         #endregion
 
         #region Private Fields
 
         private Vector3 m_velocity;
-
-        private Rigidbody m_rigidbody;
-
+        
         private float m_endTime;
 
         private float m_startTime;
@@ -41,31 +34,27 @@ namespace Runtime.Weapons
 
         private Vector3 m_endPos;
 
+        private bool isShot;
+
         #endregion
 
         #region Accessors
 
-        private float moveSpeed => m_info.projectileSpeed;
+        public ProjectileInfo m_projectileRef { get; private set; }
 
-        private int damage => m_info.projectileDamage;
+        private float moveSpeed => m_projectileRef.projectileSpeed;
+
+        private int damage => m_projectileRef.projectileDamage;
 
         private bool isDamageDealing => damage > 0;
 
-        private ElementTyping type => m_info.projectileType;
+        private ElementTyping type => m_projectileRef.projectileType;
 
-        private bool armorPiercing => m_info.isArmorPiercing;
+        private bool armorPiercing => m_projectileRef.isArmorPiercing;
+        
+        private bool hasStatusEffect => m_projectileRef.statusEffect != null;
 
-        public ProjectileInfo projectileRef => m_info;
-
-        private bool hasStatusEffect => m_info.statusEffect != null;
-
-        private Status.Status statusEffect => m_info.statusEffect;
-
-        private Rigidbody rb => CommonUtils.GetRequiredComponent(ref m_rigidbody, () =>
-        {
-            var r = GetComponent<Rigidbody>();
-            return r;
-        });
+        private Status.Status statusEffect => m_projectileRef.statusEffect;
 
         #endregion
 
@@ -73,10 +62,14 @@ namespace Runtime.Weapons
 
         void Update()
         {
+            if (!isShot)
+            {
+                return;
+            }
             var progress = (Time.time - m_startTime) / m_endTime;
             if (progress <= 1) {
                 m_velocity = Vector3.Lerp(m_startPos, m_endPos, progress);
-                m_velocity.y = m_info.projectileArcCurve.Evaluate(progress) + m_startPos.y;
+                m_velocity.y = m_projectileRef.projectileArcCurve.Evaluate(progress) + m_startPos.y;
             } else {
                 m_velocity = m_endPos;
                 onProjectileEnd?.Invoke();
@@ -103,18 +96,24 @@ namespace Runtime.Weapons
 
         #region Class Implementation
 
-        public void Initialize(Vector3 _startPos, Vector3 _endPos)
+        public void Initialize(ProjectileInfo _info, Vector3 _startPos, Vector3 _endPos)
         {
+            if (m_projectileRef == null)
+            {
+                m_projectileRef = _info;   
+            }
             m_startTime = Time.time;
             m_endTime = Vector3.Magnitude(_startPos - _endPos) / moveSpeed;
             m_startPos = _startPos;
             transform.position = m_startPos;
             m_endPos = _endPos;
+            isShot = true;
+            onProjectileStart?.Invoke();
         }
 
         private void DealDamage()
         {
-            Collider[] colliders = Physics.OverlapSphere(transform.position, m_info.projectileDamageRadius, m_info.projectileCollisionLayers);
+            Collider[] colliders = Physics.OverlapSphere(transform.position, m_projectileRef.projectileDamageRadius, m_projectileRef.projectileCollisionLayers);
 
             if (colliders.Length > 0)
             {
@@ -137,6 +136,7 @@ namespace Runtime.Weapons
 
         private void DeleteObject()
         {
+            isShot = false;
             this.ReturnToPool();
         }
 

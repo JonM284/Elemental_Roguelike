@@ -90,7 +90,55 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 30e2018a2d60d924082e6a3cf540faae
-    m_Address: Assets/Prefabs/Projectile/FireBall.prefab
+    m_Address: Assets/Prefabs/Projectile/Fireball.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 610e5b1a8957a9543b3e6050a91a12e8
+    m_Address: Assets/Prefabs/Weapons/SpreadWeapon@Prefab.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 6c22d6b6bdf14574d8fb00ef629fbac0
+    m_Address: Assets/Prefabs/Weapons/PistolWeapon@Prefab.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 762b7888743a8b94f8926eabe52a268b
+    m_Address: Assets/Prefabs/VFX/WeaponMuzzle/ShadowMuzzleParticles@VFX.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: c5fbe2599fb00904682158f359ac9f96
+    m_Address: Assets/Prefabs/Projectile/WeaponProjectiles/BulletMeshSmallNormal.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 4d86d32dee101b448b75648b91d389c0
+    m_Address: Assets/Prefabs/Projectile/WeaponProjectiles/BulletMeshSmallSuperNatural.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: a78b083b760e4b54381e2007ef9f7b52
+    m_Address: Assets/Prefabs/Projectile/WeaponProjectiles/BulletMeshSmallWater.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 6c32dc5158a73704ba54607a58d63f81
+    m_Address: Assets/Prefabs/Projectile/WeaponProjectiles/BulletMeshSmallLight.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 6f382c081af36df439375758f6a9a004
+    m_Address: Assets/Prefabs/Projectile/WeaponProjectiles/BulletMeshSmallShadow.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 1b196e94e4ee2d54bab99f895344321c
+    m_Address: Assets/Prefabs/Projectile/WeaponProjectiles/BulletMeshSmallNature.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 921de4dee3b2c8e4baa30cdc52b9e187
+    m_Address: Assets/Prefabs/Projectile/WeaponProjectiles/BulletMeshSmallFire.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 6868c25d0a6d9404b977824aaf45a021
+    m_Address: Assets/Prefabs/Projectile/WeaponProjectiles/BulletMeshSmallEarth.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 36cb9e6760aafa04ea8ba4d86841ee3e
+    m_Address: Assets/Prefabs/VFX/DamagedBase@VFX.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
   m_ReadOnly: 0

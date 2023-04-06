@@ -15,9 +15,5 @@ MonoBehaviour:
   abilityName: Fireball@Ability
   abilityGUID: 55d869f4-e356-4e41-9a58-e077320f3bd5
   roundCooldownTimer: 3
-  baseDamage: 2
-  abilityElement: {fileID: 11400000, guid: dff32d43cdb15e64d9f95e5f1c9a2574, type: 2}
-  criticalMultiplier: 1.2
   targetType: 0
-  projectilePrefab: {fileID: 7448458883257669756, guid: 30e2018a2d60d924082e6a3cf540faae,
-    type: 3}
+  projectileInfo: {fileID: 11400000, guid: 86a3a35d632d6ad46ac643e545ba3903, type: 2}

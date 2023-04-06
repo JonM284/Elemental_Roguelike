@@ -17,13 +17,19 @@ namespace Runtime.Character
 
         public override void InitializeCharacter()
         {
+            var elementType = ElementUtils.GetElementTypeByGUID(m_enemyMeepleStats.meepleElementTypeRef);
+            characterVisuals.InitializeMeepleCharacterVisuals(elementType);
             characterMovement.InitializeCharacterMovement(m_enemyMeepleStats.baseSpeed, m_enemyMeepleStats.movementDistance);
             characterLifeManager.InitializeCharacterHealth(m_enemyMeepleStats.baseHealth, m_enemyMeepleStats.baseShields,
-                m_enemyMeepleStats.currentHealth, m_enemyMeepleStats.currentShield, m_enemyMeepleStats.type);
+                m_enemyMeepleStats.currentHealth, m_enemyMeepleStats.currentShield, elementType);
             if (m_enemyMeepleStats.abilityReferences.Count > 0)
             {
                 characterAbilityManager.InitializeCharacterAbilityList(m_enemyMeepleStats.abilityReferences);
             }
+            
+            var weaponData = WeaponUtils.GetDataByRef(m_enemyMeepleStats.weaponReference);
+            var weaponElementType = ElementUtils.GetElementTypeByGUID(m_enemyMeepleStats.weaponElementTypeRef);
+            characterWeaponManager.InitializeCharacterWeapon(weaponData, weaponElementType);
         }
 
         public override int GetInitiativeNumber()

@@ -13,9 +13,14 @@ MonoBehaviour:
   m_Name: LightType
   m_EditorClassIdentifier: 
   elementName: light
+  elementGUID: b52a99ee-df35-46e6-bbfe-5cb740e6dd74
   weaknesses:
   - {fileID: 11400000, guid: 4457294a69c0af54c83492d26e8140bd, type: 2}
   weaponColors:
   - {r: 0.9811321, g: 0.9724536, b: 0.41189036, a: 1}
   - {r: 0.81632566, g: 0.8301887, b: 0.26237094, a: 1}
-  meepleColors: []
+  weaponMuzzleParticles: {fileID: 0}
+  meepleColors:
+  - {r: 0.99215686, g: 0.9882353, b: 0.80784315, a: 1}
+  - {r: 0.9019608, g: 0.90588236, b: 0.22745098, a: 1}
+  defaultMeepleElementHat: {fileID: 0}

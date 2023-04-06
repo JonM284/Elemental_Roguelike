@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
 using Data.Elements;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
@@ -14,9 +15,17 @@ namespace Runtime.Weapons
 
         public string weaponGUID;
 
-        public ElementTyping type;
+        public WeaponTargetType targetType;
+        
+        public List<AudioClip> weaponAudio = new List<AudioClip>();
 
-        public AssetReference weaponModelRef;
+        public AssetReference weaponPrefab;
+        
+        #endregion
+
+        #region Accessors
+
+        public bool hasMultipleWeaponAudios => weaponAudio.Count > 1;
 
         #endregion
 
@@ -26,6 +35,11 @@ namespace Runtime.Weapons
         [ContextMenu("Generate GUID")]
         private void GenerateID()
         {
+            if (weaponGUID != string.Empty)
+            {
+                return;
+            }
+            
             weaponGUID = System.Guid.NewGuid().ToString();
         }
 
