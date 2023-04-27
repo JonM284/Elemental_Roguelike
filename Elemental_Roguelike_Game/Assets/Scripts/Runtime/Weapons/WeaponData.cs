@@ -15,6 +15,8 @@ namespace Runtime.Weapons
 
         public string weaponGUID;
 
+        public float weaponAttackRange = 1;
+
         public WeaponTargetType targetType;
         
         public List<AudioClip> weaponAudio = new List<AudioClip>();

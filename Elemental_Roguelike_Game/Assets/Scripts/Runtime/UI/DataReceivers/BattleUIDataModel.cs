@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Data.Sides;
 using Runtime.Character;
 using Runtime.GameControllers;
 using UnityEngine;
@@ -18,6 +19,8 @@ namespace Runtime.UI.DataReceivers
         [SerializeField] private UIPopupCreator uiPopupCreator;
 
         [SerializeField] private GameObject playerOrderToken;
+
+        [SerializeField] private CharacterSide playerSide;
 
         #endregion
 
@@ -66,7 +69,7 @@ namespace Runtime.UI.DataReceivers
         
         private void OnChangeCharacterTurn(CharacterBase _character)
         {
-            isPlayerTurn = _character.side == CharacterSide.PLAYER;
+            isPlayerTurn = _character.side == playerSide;
             playerVisuals.SetActive(isPlayerTurn);
         }
 

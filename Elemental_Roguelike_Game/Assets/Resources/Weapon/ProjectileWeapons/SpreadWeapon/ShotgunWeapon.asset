@@ -1,0 +1,40 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 757e91a45f064f9aae2ce6a4b3e800b9, type: 3}
+  m_Name: ShotgunWeapon
+  m_EditorClassIdentifier: 
+  weaponName: Shotgun Weapon
+  weaponGUID: 2357995a-58e2-45b4-98c3-fb96d0d65166
+  weaponAttackRange: 5
+  targetType: 0
+  weaponAudio:
+  - {fileID: 8300000, guid: c922c34f559ead440a273a13a924cfc7, type: 3}
+  weaponPrefab:
+    m_AssetGUID: 610e5b1a8957a9543b3e6050a91a12e8
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_EditorAssetChanged: 0
+  isBurstWeapon: 1
+  coneSize: 6
+  amountOfShots: 10
+  fireRate: 0
+  shotMissDistance: 1
+  allPossibleProjectiles:
+  - {fileID: 11400000, guid: 14afcf5d5e8755a4486feaf9826a32f0, type: 2}
+  - {fileID: 11400000, guid: 693702f4d4f7ac9428050620511b9c45, type: 2}
+  - {fileID: 11400000, guid: 4ee4b75acfa616e4589e7daaf3a11065, type: 2}
+  - {fileID: 11400000, guid: 0b6014cd576309c468b7e724dd689222, type: 2}
+  - {fileID: 11400000, guid: b6f515398d8e4424e96ffaa16d23578a, type: 2}
+  - {fileID: 11400000, guid: 31dc2af32816f7a469cfcda7ab324c47, type: 2}
+  - {fileID: 11400000, guid: 65775c4aa0e94ca428753b7ff34600d8, type: 2}
+  - {fileID: 11400000, guid: 9fb44e55c0f3d5147ac9d002b2203e64, type: 2}
+  - {fileID: 11400000, guid: 7bfaa94f14e3e684b8c85d4df47dc201, type: 2}

@@ -8,70 +8,45 @@ namespace Runtime.Character
     public class EnemyCharacterRegular: CharacterBase
     {
 
-        #region Serialized Fields
-
-        [SerializeField] private Transform characterVisualParent;
-
-        #endregion
-
-        #region Private Fields
-
-        private CharacterStatsBase m_enemyStats;
-
-        #endregion
-
         #region CharacterBase Inherited Methods
 
         public override void InitializeCharacter()
         {
-            if (characterVisuals.characterModel == null)
+            characterVisuals.InitializeCharacterVisuals(); 
+            characterMovement.InitializeCharacterMovement(m_characterStatsBase.baseSpeed, m_characterStatsBase.movementDistance);
+            characterLifeManager.InitializeCharacterHealth(m_characterStatsBase.baseHealth, m_characterStatsBase.baseShields, m_characterStatsBase.baseHealth,
+                m_characterStatsBase.baseShields, m_characterStatsBase.typing);
+            if (m_characterStatsBase.abilities.Count > 0)
             {
-                var _visual = m_enemyStats.characterVisualReference.CloneAddressableReturn(characterVisualParent);
-                characterVisuals.InitializeCharacterVisuals(_visual);    
-            }
-            characterMovement.InitializeCharacterMovement(m_enemyStats.baseSpeed, m_enemyStats.movementDistance);
-            characterLifeManager.InitializeCharacterHealth(m_enemyStats.baseHealth, m_enemyStats.baseShields, m_enemyStats.baseHealth,
-                m_enemyStats.baseShields, m_enemyStats.typing);
-            if (m_enemyStats.abilities.Count > 0)
-            {
-                characterAbilityManager.InitializeCharacterAbilityList(m_enemyStats.abilities);
+                characterAbilityManager.InitializeCharacterAbilityList(m_characterStatsBase.abilities);
             }
 
-            characterWeaponManager.InitializeCharacterWeapon(m_enemyStats.weaponData, m_enemyStats.weaponTyping);
+            characterWeaponManager.InitializeCharacterWeapon(m_characterStatsBase.weaponData, m_characterStatsBase.weaponTyping);
         }
 
         public override int GetInitiativeNumber()
         {
-            if (m_enemyStats == null)
+            if (m_characterStatsBase == null)
             {
                 return 0;
             }
 
-            return m_enemyStats.initiativeNumber;
+            return m_characterStatsBase.initiativeNumber;
         }
 
         public override float GetBaseSpeed()
         {
-            if (m_enemyStats == null)
+            if (m_characterStatsBase == null)
             {
                 return 0;
             }
 
-            return m_enemyStats.baseSpeed;
+            return m_characterStatsBase.baseSpeed;
         }
 
         protected override void CharacterDeath()
         {
             this.CacheEnemy();
-        }
-
-        #endregion
-
-        #region Class Implementation
-
-        public void AssignStats(CharacterStatsBase _characterData)
-        {
-            m_enemyStats = _characterData;
         }
 
         #endregion

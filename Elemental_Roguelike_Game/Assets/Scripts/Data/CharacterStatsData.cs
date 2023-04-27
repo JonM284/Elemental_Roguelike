@@ -12,6 +12,8 @@ namespace Data
         #region Public Fields
 
         public string id;
+
+        public string givenName;
         
         //Speed character will normally move at
         public float baseSpeed;

@@ -17,6 +17,8 @@ namespace Runtime.GameControllers
 
         [SerializeField] private LevelGenerationManager levelGenerationManager;
 
+        [SerializeField] private bool isOnMenuScene;
+
         #endregion
 
         #region Private Fields
@@ -30,6 +32,10 @@ namespace Runtime.GameControllers
         public override void Initialize()
         {
             base.Initialize();
+            if (isOnMenuScene)
+            {
+                return;
+            }
             StartLevelGeneration();
         }
 

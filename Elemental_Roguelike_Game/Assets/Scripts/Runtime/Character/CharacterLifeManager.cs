@@ -29,7 +29,9 @@ namespace Runtime.Character
         
         public int currentHealthPoints { get; private set; }
 
-        public int currentShieldPoints { get; private set; } 
+        public int currentShieldPoints { get; private set; }
+
+        public int currentOverallHealth => currentHealthPoints + currentShieldPoints;
 
         public int maxHealthPoints { get; private set; }
 
@@ -60,6 +62,19 @@ namespace Runtime.Character
 
         public void DealDamage(int _incomingDamage, bool _armorPiercing, ElementTyping _type)
         {
+            if (_type == null)
+            {
+                Debug.LogError("<color=cyan>NULL is _type</color>");
+                return;
+            }
+
+            if (characterElementType == null)
+            {
+                Debug.LogError("<color=cyan>NULL is characterElementType</color>");
+                return;
+            }
+            
+            
             var _fixedIncomingDamage = characterElementType.CalculateDamageOnWeakness(_incomingDamage, _type);
             
             if (_armorPiercing)

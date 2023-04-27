@@ -4802,8 +4802,9 @@ GameObject:
   - component: {fileID: 7223643649542080904}
   - component: {fileID: 8951771830918691083}
   - component: {fileID: 3649148088989982882}
+  - component: {fileID: 7419827431941949173}
   m_Layer: 0
-  m_Name: Fireball
+  m_Name: FireBall
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -9686,8 +9687,19 @@ MonoBehaviour:
       m_Calls: []
   onProjectileEnd:
     m_PersistentCalls:
-      m_Calls: []
-  m_info: {fileID: 11400000, guid: 86a3a35d632d6ad46ac643e545ba3903, type: 2}
+      m_Calls:
+      - m_Target: {fileID: 7419827431941949173}
+        m_TargetAssemblyTypeName: Runtime.VFX.VFXCreator, Assembly-CSharp
+        m_MethodName: CreateVFX
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!135 &3649148088989982882
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -9701,6 +9713,20 @@ SphereCollider:
   serializedVersion: 2
   m_Radius: 0.25
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &7419827431941949173
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4113763185416912958}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8a2936376ce74678939c5e40b1a6e930, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  vfxToCreate: {fileID: 4231252248153234556, guid: 2c3035f9458f2d1459941f4c7abd5d2c,
+    type: 3}
 --- !u!1 &5777003382902929801
 GameObject:
   m_ObjectHideFlags: 0

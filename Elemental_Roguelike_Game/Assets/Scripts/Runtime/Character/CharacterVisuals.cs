@@ -39,16 +39,13 @@ namespace Runtime.Character
 
         #region Class Implementation
 
-        public void InitializeCharacterVisuals(GameObject _newCharacterModel)
+        public void InitializeCharacterVisuals()
         {
             if (characterVisual != null)
             {
                 characterModel = characterVisual;
-                return;
             }
-
-            characterVisual = _newCharacterModel;
-            characterModel = _newCharacterModel;
+            
         }
 
         public void InitializeMeepleCharacterVisuals(ElementTyping _type)

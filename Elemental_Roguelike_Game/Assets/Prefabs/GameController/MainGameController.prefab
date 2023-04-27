@@ -47,6 +47,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   levelGenerationManager: {fileID: 1470162928}
+  isOnMenuScene: 0
 --- !u!33 &676452653
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -1129,7 +1130,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   weaponDataList:
   - {fileID: 11400000, guid: f3ee36ecf34c26f46b4c1cc6f3d6a01a, type: 2}
-  - {fileID: 11400000, guid: e646ed24b73b06d4c97172bd275b941b, type: 2}
+  - {fileID: 11400000, guid: 8327011fc3f90294fbe767cb0f9c1f0b, type: 2}
 --- !u!1 &1953941869
 GameObject:
   m_ObjectHideFlags: 0
@@ -1368,6 +1369,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   battleUIData: {fileID: 11400000, guid: a3521c7b3aca2f042a02600402156282, type: 2}
+  playerSide: {fileID: 11400000, guid: 4f4a1f8261e23184aacfe1c2d1a7e5e2, type: 2}
+  battlersBySides:
+  - teamSide: {fileID: 11400000, guid: 4f4a1f8261e23184aacfe1c2d1a7e5e2, type: 2}
+    teamMembers: []
+  - teamSide: {fileID: 11400000, guid: c38c044ae08c0994d8a3f8033ae06bf5, type: 2}
+    teamMembers: []
   m_allBattlers: []
 --- !u!1 &7876103537610162765
 GameObject:

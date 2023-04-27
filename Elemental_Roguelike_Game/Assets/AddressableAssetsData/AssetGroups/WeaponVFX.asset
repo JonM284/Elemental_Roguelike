@@ -1,0 +1,45 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: WeaponVFX
+  m_EditorClassIdentifier: 
+  m_GroupName: WeaponVFX
+  m_Data:
+    m_SerializedData: []
+  m_GUID: ffaaf888f2f6a064d80296884fda7497
+  m_SerializeEntries:
+  - m_GUID: 762b7888743a8b94f8926eabe52a268b
+    m_Address: ShadowMuzzleParticles@VFX
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: f38466e7ea6acbc47a227a12cf720dbb
+    m_Address: FireMuzzleParticles@VFX
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 4fcfd94170950ea4ca5e0f873e51b4fe
+    m_Address: NatureMuzzleParticles@VFX
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 062520e6f9f123845948c688dee44f80
+    m_Address: EarthMuzzleParticles@VFX
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 9428afe5c0fbee84c9a18d3a35bcb94d
+    m_Address: SuperNaturalMuzzleParticles@VFX
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: c51bc8bdb2bb6e5479c05b7cf9bc0f75, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 1821f472344b64148b26e48de2db0500, type: 2}
+    - {fileID: 11400000, guid: 98a55b07e53bec3438b1bf65163949e1, type: 2}

@@ -82,17 +82,12 @@ namespace Runtime.Character
         protected override void CharacterDeath()
         {
             CharacterUtils.DeletePlayerMeeple(m_characterStatsData.id);
+            CharacterUtils.CachePlayerMeeple(this);
         }
 
         protected override void OnWalkActionPressed()
         {
-            movementRangeGO.SetActive(true);
-        }
-
-        protected override void OnBeginWalkAction()
-        {
-            movementRangeGO.SetActive(false);
-            base.OnBeginWalkAction();
+            
         }
 
         #endregion

@@ -1,5 +1,6 @@
 ﻿using System;
 using Data.Elements;
+using Data.Sides;
 using Project.Scripts.Data;
 using Project.Scripts.Utils;
 using Runtime.Damage;
@@ -7,6 +8,7 @@ using Runtime.Selection;
 using Runtime.Status;
 using Runtime.VFX;
 using UnityEngine;
+using UnityEngine.Networking;
 using Utils;
 
 namespace Runtime.Character
@@ -41,11 +43,15 @@ namespace Runtime.Character
 
         #region Serialized Fields
 
+        [SerializeField] protected CharacterStatsBase m_characterStatsBase;
+
         [SerializeField] private CharacterSide characterSide;
 
         [SerializeField] private VFXPlayer deathVFX;
 
         [SerializeField] private VFXPlayer damageVFX;
+
+        [SerializeField] private GameObject activeCharacterIndicator;
 
         #endregion
 
@@ -139,10 +145,9 @@ namespace Runtime.Character
         public bool isBusy => characterMovement.isMoving;
 
         public AppliedStatus appliedStatus { get; private set; }
-        
-        
-        public CharacterStatsBase m_characterStatsBase { get; private set; }
 
+        public CharacterStatsBase characterStatsBase => m_characterStatsBase;
+        
         
         #endregion
 
@@ -251,7 +256,10 @@ namespace Runtime.Character
 
         private void OnAttackUsed()
         {
-            characterAnimations.AttackAnim(true);
+            if (characterAnimations != null)
+            {
+                characterAnimations.AttackAnim(true);
+            }
             UseActionPoint();
         }
 
@@ -284,6 +292,17 @@ namespace Runtime.Character
             m_characterActionPoints = 2;
             characterAbilityManager.CheckAbilityCooldown();
             CheckStatus();
+            SetActiveVisual(true);
+        }
+
+        private void SetActiveVisual(bool isActive)
+        {
+            if (activeCharacterIndicator == null)
+            {
+                return;
+            }
+            
+            activeCharacterIndicator.SetActive(isActive);
         }
 
         private void CheckStatus()
@@ -314,6 +333,7 @@ namespace Runtime.Character
         {
             Debug.Log($"{this} has ended turn");
             m_finishedTurn = true;
+            SetActiveVisual(false);
             CharacterEndedTurn?.Invoke(this);
         }
 

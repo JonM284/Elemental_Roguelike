@@ -1,0 +1,45 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: Level
+  m_EditorClassIdentifier: 
+  m_GroupName: Level
+  m_Data:
+    m_SerializedData: []
+  m_GUID: 625af2ff18cddef4cb6613bf48922856
+  m_SerializeEntries:
+  - m_GUID: fd8f98e6b7b6cb94d911e9a4b38499a7
+    m_Address: ExampleRoom
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 8102c0ba86a598548a88387add62a4bd
+    m_Address: Barrel
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 97081832c82af1d4c9ce55773ce304b2
+    m_Address: ExplodingBarrel
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 0ff3243bc1b038f4aaca1bd1bf97534e
+    m_Address: FullCover
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 6d3daeeccacb60b49abdfb4f322c272c
+    m_Address: HalfCover
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: c51bc8bdb2bb6e5479c05b7cf9bc0f75, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 2ddd0b82b8025ab4c8fccb6c8c54c27b, type: 2}
+    - {fileID: 11400000, guid: b0509e63e87acf64792293e4df6cc341, type: 2}

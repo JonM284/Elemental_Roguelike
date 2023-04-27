@@ -1,0 +1,41 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: VFX
+  m_EditorClassIdentifier: 
+  m_GroupName: VFX
+  m_Data:
+    m_SerializedData: []
+  m_GUID: 73ffec7985ac2c74c96a510e873b4d02
+  m_SerializeEntries:
+  - m_GUID: a47c62049fca59048afe703c9e1ded0f
+    m_Address: DefaultEnemyDeathVFX
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 36cb9e6760aafa04ea8ba4d86841ee3e
+    m_Address: DamagedBase@VFX
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 2c3035f9458f2d1459941f4c7abd5d2c
+    m_Address: ExplosionFireballFire@VFX
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: f0c82631a5e58194c9956af50e459e12
+    m_Address: BurnEffect
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: c51bc8bdb2bb6e5479c05b7cf9bc0f75, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: bb052e0e4ea61f944be8025cfd470d65, type: 2}
+    - {fileID: 11400000, guid: 2cfade3a40217b844b7292752e95f53c, type: 2}

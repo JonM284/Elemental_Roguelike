@@ -18,19 +18,6 @@ namespace Runtime.GameControllers
 
         #endregion
 
-        #region Inherited Methods
-
-        public override void Initialize()
-        {
-            base.Initialize();
-        }
-
-        public override void Cleanup()
-        {
-            base.Cleanup();
-        }
-
-        #endregion
 
         #region Class Implementation
 

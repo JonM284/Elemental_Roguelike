@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Data.Elements;
 using UnityEngine;
 
@@ -22,6 +23,9 @@ namespace Runtime.Weapons
         protected Transform m_targetTransform;
 
         protected Vector3 m_targetPosition;
+        
+        protected List<ParticleSystem> m_assignedWeaponMuzzleVFX = new List<ParticleSystem>();
+
 
         #endregion
 
@@ -43,6 +47,11 @@ namespace Runtime.Weapons
             m_originTransform = _originTransform;
             weaponData = _assignedWeaponData;
             weaponElementType = _type;
+        }
+
+        public void AssignWeaponMuzzleFX(List<ParticleSystem> assignedParticles)
+        {
+            m_assignedWeaponMuzzleVFX = assignedParticles;
         }
 
         public abstract void SelectPosition(Vector3 _inputPosition);

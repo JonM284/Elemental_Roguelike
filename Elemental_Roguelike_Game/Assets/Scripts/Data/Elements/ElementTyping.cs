@@ -16,6 +16,8 @@ namespace Data.Elements
 
         public string elementGUID = "";
 
+        public int insanityAmount;
+
         public List<ElementTyping> weaknesses = new List<ElementTyping>();
 
         [Header("Weapon Related")]

@@ -14,12 +14,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   weaponName: Default Pistol
   weaponGUID: 5312af68-bb7b-43bb-bdf0-e9efbbf1395a
+  weaponAttackRange: 5
   targetType: 0
+  weaponAudio:
+  - {fileID: 8300000, guid: c922c34f559ead440a273a13a924cfc7, type: 3}
   weaponPrefab:
     m_AssetGUID: 6c22d6b6bdf14574d8fb00ef629fbac0
     m_SubObjectName: 
     m_SubObjectType: 
     m_EditorAssetChanged: 0
+  isBurstWeapon: 0
+  coneSize: 0
+  amountOfShots: 1
+  fireRate: 0
+  shotMissDistance: 1
   allPossibleProjectiles:
   - {fileID: 11400000, guid: 98bf30290b0752f439b1ef198798cdba, type: 2}
   - {fileID: 11400000, guid: 6e6a5d63946372a4c99a743b36a24d47, type: 2}

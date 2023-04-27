@@ -19,8 +19,16 @@ MonoBehaviour:
   weaponColors:
   - {r: 0.83137256, g: 0.50440073, b: 0.25490192, a: 1}
   - {r: 0.7176471, g: 0.4786869, b: 0.2352941, a: 1}
-  weaponMuzzleParticles: {fileID: 0}
+  weaponMuzzleParticles:
+    m_AssetGUID: 062520e6f9f123845948c688dee44f80
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_EditorAssetChanged: 0
   meepleColors:
   - {r: 0.972549, g: 0.7254902, b: 0.3882353, a: 1}
   - {r: 0.7254902, g: 0.42745098, b: 0.08627451, a: 1}
-  defaultMeepleElementHat: {fileID: 0}
+  defaultMeepleElementHat:
+    m_AssetGUID: 
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_EditorAssetChanged: 0

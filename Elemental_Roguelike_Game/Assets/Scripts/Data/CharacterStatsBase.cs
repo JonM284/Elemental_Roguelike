@@ -42,7 +42,9 @@ namespace Project.Scripts.Data
 
         public List<Ability> abilities;
 
-        public AssetReference characterVisualReference;
+        public AssetReference characterAssetRef;
+
+        public bool enemyPrioritizeCover;
 
         public WeaponData weaponData;
         

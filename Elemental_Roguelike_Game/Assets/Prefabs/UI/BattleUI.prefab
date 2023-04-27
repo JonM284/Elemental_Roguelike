@@ -2497,7 +2497,8 @@ MonoBehaviour:
   window: {fileID: 2020984170}
   playerVisuals: {fileID: 7824212080091716908}
   uiPopupCreator: {fileID: 5685808585438896982}
-  playerHealthSlider: {fileID: 0}
+  playerOrderToken: {fileID: 0}
+  playerSide: {fileID: 11400000, guid: 4f4a1f8261e23184aacfe1c2d1a7e5e2, type: 2}
 --- !u!1 &7824212080091716908
 GameObject:
   m_ObjectHideFlags: 0

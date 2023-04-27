@@ -139,7 +139,7 @@ namespace Runtime.Character
         {
             if (!m_canMove || isMoving)
             {
-                Debug.Log("<color=cyan>Character can't move</color>");
+                Debug.Log($"<color=cyan>Character can't move m_canMove:{m_canMove} // isMoving{isMoving} </color>");
                 return;
             }
             

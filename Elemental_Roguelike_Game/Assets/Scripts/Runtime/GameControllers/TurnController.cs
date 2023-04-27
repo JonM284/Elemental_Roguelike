@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Data;
+using Data.Sides;
 using Project.Scripts.Runtime.LevelGeneration;
 using Runtime.Character;
 using Unity.VisualScripting;
@@ -14,6 +15,17 @@ namespace Runtime.GameControllers
 {
     public class TurnController: GameControllerBase
     {
+
+        #region Nested Classes
+        
+        [Serializable]
+        public class BattlersBySide
+        {
+            public Data.Sides.CharacterSide teamSide;
+            public List<CharacterBase> teamMembers;
+        }
+
+        #endregion
 
         #region Events
 
@@ -27,11 +39,21 @@ namespace Runtime.GameControllers
 
         public static event Action OnBattleEnded;
 
+        public static event Action OnRunEnded;
+
         #endregion
         
         #region Public Fields
 
         public UIWindowData battleUIData;
+
+        #endregion
+
+        #region Serialized Fields
+        
+        [SerializeField] private CharacterSide playerSide;
+        
+        [SerializeField] private List<BattlersBySide> battlersBySides = new List<BattlersBySide>();
 
         #endregion
         
@@ -144,6 +166,12 @@ namespace Runtime.GameControllers
             {
                 AddCharacter(enemy);
             }
+
+            foreach (var battler in m_allBattlers)
+            {
+                var correctTeam = battlersBySides.FirstOrDefault(bbs => bbs.teamSide == battler.side);
+                correctTeam.teamMembers.Add(battler);
+            }
             
             StartBattle();
         }
@@ -159,6 +187,7 @@ namespace Runtime.GameControllers
             SetAllCharactersBattleStatus(isInBattle);
             SortCharacterOrder();
             UIUtils.OpenUI(battleUIData);
+
             OnBattlePreStart?.Invoke();
 
             yield return new WaitForSeconds(1f);
@@ -231,22 +260,26 @@ namespace Runtime.GameControllers
             });
 
             m_allBattlers = tempList;
-            
-            var liveEnemyCount = 0;
-            m_allBattlers.ForEach(c =>
-            {
-                if (c.side == CharacterSide.ENEMY && c != _deadCharacter)
-                {
-                    liveEnemyCount++;
-                }
-            });
+
+            var teamSide = battlersBySides.FirstOrDefault(b => b.teamSide == _deadCharacter.side);
+            teamSide.teamMembers.Remove(_deadCharacter);
+
+            var teamSideCount = teamSide.teamMembers.Count;
 
             yield return new WaitForSeconds(0.25f);
 
-            Debug.Log($"{liveEnemyCount}");
-            if (liveEnemyCount == 0)
+            if (teamSideCount == 0)
             {
-                EndBattle();
+                if (teamSide.teamSide == playerSide)
+                {
+                    //all players eliminated 
+                    RunEnded();
+                }
+                else
+                {
+                    //all enemies eliminated
+                    EndBattle();
+                }
                 yield break;
             }
 
@@ -261,6 +294,16 @@ namespace Runtime.GameControllers
         private void RemoveAllCharacters()
         {
             m_allBattlers.Clear();
+            battlersBySides.ForEach(bbs => bbs.teamMembers.Clear());
+        }
+
+        private void RunEnded()
+        {
+            isInBattle = false;
+            SetAllCharactersBattleStatus(isInBattle);
+            RemoveAllCharacters();
+            Debug.Log("RUN ENDED PLAYER DIED");
+            OnRunEnded?.Invoke();
         }
 
         private void EndBattle()
@@ -276,6 +319,11 @@ namespace Runtime.GameControllers
 
         public void SetNextCharacterActive()
         {
+            if (!isInBattle)
+            {
+                return;
+            }
+            
             //take next character out of queue
             var nextInTurn = m_allBattlers[0];
 

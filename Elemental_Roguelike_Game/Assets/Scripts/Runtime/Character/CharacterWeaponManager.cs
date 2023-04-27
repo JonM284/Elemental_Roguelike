@@ -173,18 +173,10 @@ namespace Runtime.Character
                 yield return new WaitUntil(() => vfxHandle.IsDone);
             }
             
+            currentOwnedWeapon.AssignWeaponMuzzleFX(weaponMuzzleVFX);
+            
         }
 
-        public void PlayWeaponVFX()
-        {
-            if (weaponMuzzleVFX.Count == 0)
-            {
-                return;
-            }
-            
-            weaponMuzzleVFX.ForEach(ps => ps.Play());
-        }
-        
         public void SetupWeaponAction(Action abilityUseCallback = null)
         {
             if (currentOwnedWeapon == null)
@@ -226,7 +218,9 @@ namespace Runtime.Character
             
             currentOwnedWeapon.SelectTarget(_targetTransform);
             characterRotation.SetRotationTarget(_targetTransform.position);
-            OnWeaponUsed?.Invoke();        }
+            OnWeaponUsed?.Invoke();
+            
+        }
         
         public void SelectWeaponTarget(Vector3 _targetPos)
         {
@@ -250,7 +244,6 @@ namespace Runtime.Character
 
         public void UseWeapon()
         {
-            PlayWeaponVFX();
             currentOwnedWeapon.UseWeapon();
             isUsingWeapon = false;
         }
