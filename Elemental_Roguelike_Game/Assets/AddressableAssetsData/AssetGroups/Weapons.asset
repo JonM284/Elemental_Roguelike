@@ -25,6 +25,10 @@ MonoBehaviour:
     m_Address: PistolWeapon@Prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
+  - m_GUID: 70528381278a5b84e9bf0ef5c72354d2
+    m_Address: BlankMeleeWeapon@Prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: c51bc8bdb2bb6e5479c05b7cf9bc0f75, type: 2}
   m_SchemaSet:

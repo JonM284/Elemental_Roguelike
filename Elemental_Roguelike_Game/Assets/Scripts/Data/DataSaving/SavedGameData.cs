@@ -7,14 +7,13 @@ namespace Data.DataSaving
     public class SavedGameData 
     {
         
-        public List<string> savedTeamUIDs;
+        public List<CharacterStatsData> savedTeamMembers;
 
-        public SerializableDictionary<string, CharacterStatsData> allOwnedCharacters;
+        public int savedFloorNumber;
 
         public SavedGameData()
         {
-            this.savedTeamUIDs = new List<string>();
-            this.allOwnedCharacters = new SerializableDictionary<string, CharacterStatsData>();
+            this.savedTeamMembers = new List<CharacterStatsData>();
         }
     }
 }

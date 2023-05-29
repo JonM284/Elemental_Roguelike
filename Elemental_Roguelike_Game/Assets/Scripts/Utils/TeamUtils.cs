@@ -49,6 +49,11 @@ namespace Utils
             return teamController.playerTeam;
         }
 
+        public static void SpawnTeamMembers()
+        {
+            teamController.SpawnTeamMembers();
+        }
+
         #endregion
 
     }

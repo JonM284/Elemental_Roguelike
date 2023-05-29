@@ -2,8 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Data.Sides;
-using Project.Scripts.Data;
 using Project.Scripts.Utils;
 using Runtime.Environment;
 using Runtime.GameControllers;

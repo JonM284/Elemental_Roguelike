@@ -17,9 +17,17 @@ using Random = UnityEngine.Random;
 
 namespace Runtime.GameControllers
 {
-    public class MeepleController: GameControllerBase, ISaveableData
+    public class MeepleController: GameControllerBase
     {
 
+        #region READ-ME
+
+        //The Purpose of this controller is to create meeples, this should not save data related to teams
+        //Create Meeple
+        //If meeple is selected to be on a team, do that somewhere else
+
+        #endregion
+        
         #region Events
 
         public static event Action<CharacterBase, CharacterStatsData> PlayerMeepleCreated;
@@ -31,23 +39,24 @@ namespace Runtime.GameControllers
         [SerializeField] private AssetReference meepleAsset;
 
         [SerializeField] private AssetReference enemyMeeplAsset;
-
-        [SerializeField] private bool randomizeCharacter;
-
+        
         #endregion
         
         #region Private Fields
-
-        //Saved data of all owned meeples
-        private SerializableDictionary<string, CharacterStatsData> m_allOwnedCharacters;
-
+        
+        private List<CharacterStatsData> m_randomGeneratedCharacters = new List<CharacterStatsData>();
+        
         private List<GameObject> m_cachedMeepleObjs = new List<GameObject>();
 
         private GameObject loadedPlayableMeeple;
 
         private GameObject loadedEnemyMeeple;
 
+        private int m_rerollsAmount = 2;
+
         private Transform m_cachedMeeplePoolTransform;
+
+        private const int playerTeamSize = 5;
 
         #endregion
 
@@ -66,19 +75,34 @@ namespace Runtime.GameControllers
 
         private void OnEnable()
         {
-            LevelGenerationManager.LevelGenerationFinished += PlaceStartCharacter;
+            LevelGenerationManager.LevelGenerationFinished += PlaceStartCharacters;
         }
 
         private void OnDisable()
         {
-            LevelGenerationManager.LevelGenerationFinished -= PlaceStartCharacter;
+            LevelGenerationManager.LevelGenerationFinished -= PlaceStartCharacters;
         }
 
         #endregion
         
         #region Class Implementation
 
-        private void PlaceStartCharacter(RoomTracker _roomTracker)
+        public void ResetVariablesForNewRun()
+        {
+            m_rerollsAmount = 2;
+            m_randomGeneratedCharacters.Clear();
+        }
+
+        private void CreateTeamForNewRun()
+        {
+            for (int i = 0; i < playerTeamSize; i++)
+            {
+                CreateNewCharacter();
+            }
+            
+        }
+
+        private void PlaceStartCharacters(RoomTracker _roomTracker)
         {
             if (meepleAsset == null)
             {
@@ -86,89 +110,80 @@ namespace Runtime.GameControllers
                 return;
             }
 
-            if (m_allOwnedCharacters.Count == 0)
-            {
-                CreateNewCharacter();
-            }
+            var _savedTeam = TeamUtils.GetCurrentTeam();
 
-            var firstCharacter = m_allOwnedCharacters.FirstOrDefault();
-            InstantiatePremadeMeeple(firstCharacter);
+            foreach (var teamMember in _savedTeam.teamMembers)
+            {
+                InstantiatePremadeMeeple(teamMember);
+            }
+            
         }
 
         public void DeletePlayerMeeple(string _meepleGUID)
         {
-            if (_meepleGUID == "")
-            {
-                return;
-            }
-
-            if (!m_allOwnedCharacters.ContainsKey(_meepleGUID))
-            {
-                Debug.LogError("Deleted meeple doesn't exist");
-                return;
-            }
-
-            m_allOwnedCharacters.Remove(_meepleGUID);
+           
         }
 
         [ContextMenu("Clear all characters")]
-        public void ClearAllCharacters()
+        public void ClearRandomMadeCharacters()
         {
-            m_allOwnedCharacters.Clear();
+            m_randomGeneratedCharacters.Clear();
         }
         
         [ContextMenu("Create Character")]
         public void CreateNewCharacter()
         {
-            if (m_allOwnedCharacters.Count > 10)
+            if (m_randomGeneratedCharacters.Count >= 5)
             {
                 return;
             }
             
             var newCharacter = new CharacterStatsData();
-            if (randomizeCharacter)
-            {
-                RandomizeCharacterVariables(newCharacter);
-            }
+            
+            RandomizeCharacterVariables(newCharacter);
+            
             newCharacter.id = System.Guid.NewGuid().ToString();
-            m_allOwnedCharacters.Add(newCharacter.id, newCharacter);
+            
+            m_randomGeneratedCharacters.Add(newCharacter);
         }
 
         private void RandomizeCharacterVariables(CharacterStatsData _character)
         {
             _character.meepleElementTypeRef = ElementUtils.GetRandomElement().elementGUID;
             _character.initiativeNumber = Random.Range(1, 20);
-            //TODO:assign default weapon ******
             _character.baseDamage = Random.Range(1f, 10f);
             _character.baseHealth = Random.Range(10, 20);
             _character.baseShields = Random.Range(10, 20);
-            _character.baseSpeed = Random.Range(1, 10);
-            _character.movementDistance = Random.Range(5, 10);
+            _character.baseSpeed = 5f;
+            _character.movementDistance = 3;
             for (int i = 0; i < 2; i++)
             {
                 var randomAbility = AbilityUtils.GetRandomAbilityByType(_character.meepleElementTypeRef);
                 _character.abilityReferences.Add(randomAbility.abilityGUID);
             }
 
+            //All meeples start with pistol
             _character.weaponReference = WeaponUtils.GetDefaultWeapon().weaponGUID;
-            _character.weaponElementTypeRef = ElementUtils.GetDefault().elementGUID;
+            //random element assigned to weapon
+            _character.weaponElementTypeRef = ElementUtils.GetRandomElement().elementGUID;
         }
 
-        public void InstantiatePremadeMeeple(KeyValuePair<string,CharacterStatsData> _meepleCharacter)
+        public void InstantiatePremadeMeeple(CharacterStatsData _meepleCharacter)
         {
-            //instantiate gameobject
-
+            
+            //if asset is loaded, use loaded asset to instantiate
             if (loadedPlayableMeeple != null)
             {
                 var newPlayerMeeple = loadedPlayableMeeple.Clone();
                 newPlayerMeeple.transform.position = new Vector3(0,newPlayerMeeple.transform.localScale.y / 2,0);
                 var playerMeeple = newPlayerMeeple.GetComponent<PlayableCharacter>();
-                playerMeeple.AssignStats(_meepleCharacter.Value);
+                playerMeeple.AssignStats(_meepleCharacter);
                 playerMeeple.InitializeCharacter();
-                PlayerMeepleCreated?.Invoke(playerMeeple, _meepleCharacter.Value);
+                PlayerMeepleCreated?.Invoke(playerMeeple, _meepleCharacter);
                 return;
             }
             
+            //if asset is not loaded, 1. load asset, 2. Instantiate loaded asset
             
             var handle = Addressables.LoadAssetAsync<GameObject>(meepleAsset);
             handle.Completed += operation =>
@@ -183,10 +198,10 @@ namespace Runtime.GameControllers
                     {
                         if (newMeeple is PlayableCharacter playableCharacter)
                         {
-                            playableCharacter.AssignStats(_meepleCharacter.Value);
+                            playableCharacter.AssignStats(_meepleCharacter);
                         }
                         newMeeple.InitializeCharacter();
-                        PlayerMeepleCreated?.Invoke(newMeeple, _meepleCharacter.Value);
+                        PlayerMeepleCreated?.Invoke(newMeeple, _meepleCharacter);
                     }
                 }
             };
@@ -225,24 +240,13 @@ namespace Runtime.GameControllers
             };
         }
 
-        public CharacterStatsData GetMeepleFromUID(string _UID)
-        {
-            return m_allOwnedCharacters.FirstOrDefault(c => c.Key == _UID).Value;
-        }
-
-        public Dictionary<string, CharacterStatsData> GetAllMeeples()
-        {
-            return m_allOwnedCharacters;
-        }
-
         public void CacheMeepleGameObject(GameObject _meepleCharacter)
         {
             if (_meepleCharacter == null)
             {
                 return;
             }
-            
-            
+
             m_cachedMeepleObjs.Add(_meepleCharacter);
             
             _meepleCharacter.transform.ResetTransform(cachedMeepleObjPool);
@@ -250,20 +254,5 @@ namespace Runtime.GameControllers
 
         #endregion
 
-        
-        #region ISaveableData Methods
-
-        public void LoadData(SavedGameData _savedGameData)
-        {
-            m_allOwnedCharacters = _savedGameData.allOwnedCharacters;
-        }
-
-        public void SaveData(ref SavedGameData _savedGameData)
-        {
-            _savedGameData.allOwnedCharacters = m_allOwnedCharacters;
-        }
-
-        #endregion
-        
     }
 }

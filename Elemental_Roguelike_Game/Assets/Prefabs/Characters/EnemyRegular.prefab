@@ -100,7 +100,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &6500246273872821780
 Transform:
   m_ObjectHideFlags: 0
@@ -109,7 +109,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5175139902381856391}
   m_LocalRotation: {x: 0.7071068, y: -0, z: -0, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: -0.5, z: 0}
+  m_LocalPosition: {x: 0, y: -0.485, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -347,13 +347,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e3731d14ead54c7c8487202672b57880, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_characterStatsBase: {fileID: 0}
   characterSide: {fileID: 11400000, guid: c38c044ae08c0994d8a3f8033ae06bf5, type: 2}
   deathVFX: {fileID: 5269481490371825388, guid: a47c62049fca59048afe703c9e1ded0f,
     type: 3}
   damageVFX: {fileID: 8956745814830301739, guid: 36cb9e6760aafa04ea8ba4d86841ee3e,
     type: 3}
   activeCharacterIndicator: {fileID: 5175139902381856391}
-  characterVisualParent: {fileID: 5657833464208694327}
 --- !u!114 &3095108148420025173
 MonoBehaviour:
   m_ObjectHideFlags: 0

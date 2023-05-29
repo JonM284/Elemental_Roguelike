@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: ShotgunEarthBullet
   m_EditorClassIdentifier: 
   projectileDamage: 1
-  projectileDamageRadius: 0.5
+  projectileDamageRadius: 0.15
   projectileSpeed: 25
   isArmorPiercing: 0
   projectileType: {fileID: 11400000, guid: e835342fdbc753849a4b2cb4161a5a57, type: 2}

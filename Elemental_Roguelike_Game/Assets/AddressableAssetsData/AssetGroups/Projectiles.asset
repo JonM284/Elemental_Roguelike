@@ -50,7 +50,7 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 30e2018a2d60d924082e6a3cf540faae
-    m_Address: Fireball
+    m_Address: Fireball@ProjectileAbility
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 14b2aa3087bc9984d8bba580da47882d

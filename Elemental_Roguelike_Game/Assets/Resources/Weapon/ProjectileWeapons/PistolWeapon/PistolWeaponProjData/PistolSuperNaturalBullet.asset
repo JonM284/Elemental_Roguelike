@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: PistolSuperNaturalBullet
   m_EditorClassIdentifier: 
   projectileDamage: 1
-  projectileDamageRadius: 0.5
+  projectileDamageRadius: 0.15
   projectileSpeed: 25
   isArmorPiercing: 0
   projectileType: {fileID: 11400000, guid: 4c531383c027c614d9454ba78f04a81c, type: 2}

@@ -1,4 +1,5 @@
 ﻿using System;
+using Data;
 using Project.Scripts.Utils;
 using UnityEngine;
 using UnityEngine.UI;
@@ -26,10 +27,10 @@ namespace Runtime.UI
 
         #region Class Implementation
 
-        public void InitializeSelectionItem(string meepleID, Action<string> callBack)
+        public void InitializeSelectionItem(CharacterStatsData meeple, Action<CharacterStatsData> callBack)
         {
             Debug.Log("Initializing Button");
-            if (meepleID == String.Empty || callBack == null)
+            if (meeple.IsNull() || callBack == null)
             {
                 Debug.Log("MeepleID empty or callback null");
                 return;
@@ -37,7 +38,7 @@ namespace Runtime.UI
             
             button.onClick.AddListener(() =>
             {
-                callBack?.Invoke(meepleID);
+                callBack?.Invoke(meeple);
                 Debug.Log("Pressed");
             });
         }

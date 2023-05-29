@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: PistolLightBullet
   m_EditorClassIdentifier: 
   projectileDamage: 1
-  projectileDamageRadius: 0.5
+  projectileDamageRadius: 0.15
   projectileSpeed: 25
   isArmorPiercing: 0
   projectileType: {fileID: 11400000, guid: b5ba9f007020f914f9c8d519cccd8f04, type: 2}

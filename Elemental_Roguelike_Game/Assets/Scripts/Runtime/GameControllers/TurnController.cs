@@ -150,8 +150,14 @@ namespace Runtime.GameControllers
                 Debug.LogError("Player doesn't have team");
                 yield break;
             }
+
+            //not enough team members created
+            if (playerTeam.teamMembers.Count < 3)
+            {
+                TeamUtils.SpawnTeamMembers();
+            }
             
-            foreach (var teamMember in playerTeam.teamMembers)
+            foreach (var teamMember in playerTeam.activeTeamMembers)
             {
                 AddCharacter(teamMember);
             }

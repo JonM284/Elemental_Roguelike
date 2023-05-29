@@ -285,6 +285,7 @@ namespace Runtime.Character
         {
             if (!isAlive)
             {
+                OnCharacterDied(this);
                 return;
             }
             
@@ -377,6 +378,14 @@ namespace Runtime.Character
 
         public void ApplyEffect(Status.Status _newStatus)
         {
+            //if the status only does something when applied, 
+            //do the effect to this player but don't save it
+            if (_newStatus.isImpactOnlyStatus)
+            {
+                _newStatus.TriggerStatusEffect(this);
+                return;
+            }
+            
             appliedStatus = new AppliedStatus
             {
                 status = _newStatus,

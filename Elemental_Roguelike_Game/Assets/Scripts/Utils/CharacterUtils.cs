@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Data;
 using Project.Scripts.Data;
 using Project.Scripts.Utils;
@@ -103,24 +104,19 @@ namespace Utils
             enemyController.CacheEnemy(_enemy);
         }
 
-        public static CharacterStatsData GetMeepleFromGUID(this string _UID)
-        {
-            return meepleController.GetMeepleFromUID(_UID);
-        }
-
         public static void CachePlayerMeeple(CharacterBase _playableMeeple)
         {
             meepleController.CacheMeepleGameObject(_playableMeeple.gameObject);
         }
 
-        public static Dictionary<string, CharacterStatsData> GetAllMeeples()
-        {
-            return meepleController.GetAllMeeples();
-        }
-
         public static void CreateNewMeeple()
         {
             meepleController.CreateNewCharacter();
+        }
+
+        public static void InstantiatePremadeMeeple(CharacterStatsData meepleData)
+        {
+            meepleController.InstantiatePremadeMeeple(meepleData);
         }
 
         public static void DeletePlayerMeeple(string _uid)

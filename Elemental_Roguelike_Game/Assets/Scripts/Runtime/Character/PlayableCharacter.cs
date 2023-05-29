@@ -98,6 +98,10 @@ namespace Runtime.Character
         {
             m_characterStatsData.currentHealth = characterLifeManager.currentHealthPoints;
             m_characterStatsData.currentShield = characterLifeManager.currentShieldPoints;
+            if (isInBattle)
+            {
+                InitializeCharacterBattle(false);
+            }
         }
         
         private void OnChangeCharacterTurn(CharacterBase _characterBase)

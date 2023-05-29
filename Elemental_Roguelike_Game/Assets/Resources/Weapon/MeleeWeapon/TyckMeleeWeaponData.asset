@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a9835c1c0b164927bf8bb32ed58c3816, type: 3}
+  m_Name: TyckMeleeWeaponData
+  m_EditorClassIdentifier: 
+  weaponName: TyckArms
+  weaponGUID: 078bfc7c-0dd2-43f5-9647-896ef215eb27
+  weaponAttackRange: 0.25
+  targetType: 0
+  weaponAudio: []
+  weaponPrefab:
+    m_AssetGUID: 70528381278a5b84e9bf0ef5c72354d2
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_EditorAssetChanged: 0
+  meleeRadius: 0.15
+  meleeDamage: 6
+  armorPiercing: 0
+  meleeCollisionLayers:
+    serializedVersion: 2
+    m_Bits: 256

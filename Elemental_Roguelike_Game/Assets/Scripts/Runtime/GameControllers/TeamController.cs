@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Data;
 using Data.DataSaving;
+using Project.Scripts.Utils;
 using Runtime.Character;
 using UnityEngine;
 using Utils;
@@ -11,9 +12,15 @@ namespace Runtime.GameControllers
     public class TeamController: GameControllerBase, ISaveableData
     {
 
+        #region READ-ME
+
+        //The Purpose of this Controller is to manage everything related to player teams per run
+
+        #endregion
+
         #region Private Fields
 
-        private List<string> savedTeamUIDs = new List<string>();
+        private List<CharacterStatsData> m_savedTeamMembers = new List<CharacterStatsData>();
 
         #endregion
 
@@ -27,26 +34,17 @@ namespace Runtime.GameControllers
 
         private void OnEnable()
         {
-            MeepleController.PlayerMeepleCreated += OnPlayerMeepleCreated;
+            
         }
 
         private void OnDisable()
         {
-            MeepleController.PlayerMeepleCreated -= OnPlayerMeepleCreated;
+            
         }
 
         #endregion
 
         #region Class Implementation
-        
-        private void OnPlayerMeepleCreated(CharacterBase _playerMeeple, CharacterStatsData _meepleData)
-        {
-            if (playerTeam == null || playerTeam.teamMembers.Count < 3)
-            {
-                AddTeamMember(_playerMeeple, _meepleData);
-            }
-            
-        }
 
         public void AddTeamMember(CharacterBase _teamMember, CharacterStatsData _meepleData)
         {
@@ -55,16 +53,6 @@ namespace Runtime.GameControllers
                 playerTeam = new Team();
             }
             
-            if (savedTeamUIDs.Contains(_meepleData.id) && !playerTeam.teamMembers.Contains(_teamMember))
-            {
-                Debug.Log("Team member added");
-                playerTeam.teamMembers.Add(_teamMember);
-            }else if (!savedTeamUIDs.Contains(_meepleData.id) && !playerTeam.teamMembers.Contains(_teamMember))
-            {
-                Debug.Log("Team member && Saved ID added");
-                savedTeamUIDs.Add(_meepleData.id);
-                playerTeam.teamMembers.Add(_teamMember);
-            }
         }
 
         public void RemoveTeamMember(CharacterBase _teamMemberToRemove, CharacterStatsData _meepleData)
@@ -73,34 +61,37 @@ namespace Runtime.GameControllers
             {
                 return;
             }
-
-            savedTeamUIDs.Remove(_meepleData.id);
-            playerTeam.teamMembers.Remove(_teamMemberToRemove);
+            
 
         }
 
         [ContextMenu("Clear Team Members")]
         public void RemoveAllTeamMembers()
         {
-            savedTeamUIDs.Clear();
             playerTeam.teamMembers.Clear();
         }
 
-        #endregion
-
-        #region ISaveableData Methods
-
-        public void LoadData(SavedGameData _savedGameData)
+        public void SpawnTeamMembers()
         {
-            this.savedTeamUIDs = _savedGameData.savedTeamUIDs;
-        }
-
-        public void SaveData(ref SavedGameData _savedGameData)
-        {
-            _savedGameData.savedTeamUIDs = this.savedTeamUIDs;
+           
         }
 
         #endregion
         
+        
+        #region ISaveableData Methods
+
+        public void LoadData(SavedGameData _savedGameData)
+        {
+            m_savedTeamMembers = _savedGameData.savedTeamMembers;
+        }
+
+        public void SaveData(ref SavedGameData _savedGameData)
+        {
+            _savedGameData.savedTeamMembers = m_savedTeamMembers;
+        }
+
+        #endregion
+
     }
 }

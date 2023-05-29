@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Data;
+using Project.Scripts.Utils;
 using Runtime.UI.Items;
 using UnityEngine;
 using UnityEngine.UI;
@@ -22,7 +23,7 @@ namespace Runtime.UI.DataReceivers
 
         #region Private Fields
 
-        private List<string> allOwnedMeepleGUIDs = new List<string>();
+        private List<CharacterStatsData> allOwnedMeeples = new List<CharacterStatsData>();
 
         private CharacterStatsData m_activeShownMeeple;
 
@@ -54,37 +55,20 @@ namespace Runtime.UI.DataReceivers
 
         private void UpdateScreen()
         {
-            allOwnedMeepleGUIDs = CharacterUtils.GetAllMeeples().Keys.ToList();
             
-            meepleSelectorItems.ForEach(g => g.gameObject.SetActive(false));
-
-            for (int i = 0; i < allOwnedMeepleGUIDs.Count; i++)
-            {
-                meepleSelectorItems[i].gameObject.SetActive(true);
-                meepleSelectorItems[i].InitializeSelectionItem(allOwnedMeepleGUIDs[i], OnSelectorButtonPressed);
-            }
-
-            meepleAdditionItem.gameObject.SetActive(allOwnedMeepleGUIDs.Count < 10);
+            //ToDo: fix this
             
         }
 
-        private void OnSelectorButtonPressed(string meepleID)
+        private void OnSelectorButtonPressed(CharacterStatsData meeple)
         {
-            if (meepleID == String.Empty)
-            {
-                Debug.LogError("Meeple ID Invalid");
-                return;
-            }
-
-            CharacterStatsData meepleStats = meepleID.GetMeepleFromGUID();
-
-            if (meepleStats == null)
+            if (meeple.IsNull())
             {
                 Debug.LogError("Meeple Invalid");
                 return;
             }
-
-            m_activeShownMeeple = meepleStats;
+            
+            m_activeShownMeeple = meeple;
 
         }
 
