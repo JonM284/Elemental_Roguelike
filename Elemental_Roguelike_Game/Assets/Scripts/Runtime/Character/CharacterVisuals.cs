@@ -73,6 +73,19 @@ namespace Runtime.Character
             
         }
 
+        
+        //ToDo: Implement Feature
+        /// <summary>
+        /// This will randomize facial colors, images, clothing, etc
+        /// </summary>
+        public void RandomizeMeepleDecorations()
+        {
+            
+            
+            
+            
+        }
+
         #endregion
 
     }

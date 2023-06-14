@@ -51,7 +51,7 @@ namespace Utils
 
         public static void SpawnTeamMembers()
         {
-            teamController.SpawnTeamMembers();
+            
         }
 
         #endregion

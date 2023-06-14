@@ -83,7 +83,7 @@ Material:
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _ReplaceColorB: {r: 1, g: 1, b: 1, a: 1}
     - _ReplaceColorG: {r: 0.18961796, g: 0.7254902, b: 0.094117664, a: 1}
-    - _ReplaceColorR: {r: 0.27551463, g: 1, b: 0.09019607, a: 1}
+    - _ReplaceColorR: {r: 0.09019607, g: 0.964738, b: 1, a: 1}
     - _WeaponColorB: {r: 1, g: 1, b: 1, a: 1}
     - _WeaponColorG: {r: 1, g: 1, b: 1, a: 1}
     - _WeaponColorR: {r: 1, g: 1, b: 1, a: 1}

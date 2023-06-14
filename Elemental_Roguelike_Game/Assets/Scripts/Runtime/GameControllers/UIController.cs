@@ -46,6 +46,8 @@ namespace Runtime.GameControllers
 
         [SerializeField] private List<CanvasByLayer> canvasByLayers = new List<CanvasByLayer>();
 
+        [SerializeField] private GameObject blackScreen;
+
         #endregion
 
         #region Private Fields

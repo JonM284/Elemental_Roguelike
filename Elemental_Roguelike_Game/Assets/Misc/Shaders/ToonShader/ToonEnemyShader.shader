@@ -1,28 +1,28 @@
-Shader "Custom/ToonLighting"
+﻿Shader "Custom/ToonEnemyShader"
 {
-    Properties
-    {
-        _MainTex ("Texture", 2D) = "white" {}
-        _MainColor ("Tint", Color) = (1,1,1,1)
-        _RampTex ("Texture", 2D) = "white" {}
+	Properties
+	{
+		_MainTex ("Main Texture", 2D) = "white" {}
+	    _ColorMaskTex ("Color Mask Texture", 2D) = "white" {}
+	    _WeaponColorR ("Color Override R value", Color) = (1,1,1,1)
+	    _WeaponColorG ("Color Override G value", Color) = (1,1,1,1)
+	    _WeaponColorB ("Color Override B value", Color) = (1,1,1,1)
+        _RampTex ("Ramp", 2D) = "white" {}
         _LightInt ("Light Instensity", Range(0,1)) = 1
         _OutlineColor ("Outline Color", Color) = (1,1,1,1)
         _OutlineThickness ("Outline Thickness", Range(0.001, 0.05)) = 0.1
-        [Header(Fresnel Effect)]
-        [Space(10)]
-        [Toggle]
-        _FresnelOption ("Fresnel calculations on?", float) = 1 
-        _FresnelPower ("Fresnel Power", Range(1,5)) = 1
-        _FresnelAmount ("Fresnel Amount", Range(0,1)) = 1
-        _FresnelColor ("Fresnel Tint", Color) = (1,1,1,1)
-        [Header(Rendering Over Environment)]
-        _ROEColor ("Color to render over obj", Color) = (1,1,1,1)
-    }
-    SubShader
+	}
+	SubShader
     {
+        Name "Toon Shading"
+        Tags { "RenderType"="Opaque" "Queue"="Geometry+2"}
         LOD 100
-
-        Name "Toon Textured Shader"
+        
+         Stencil{
+             Ref 6
+             Comp gequal   
+             Pass replace
+         }
         
         CGINCLUDE
             struct appdata
@@ -41,69 +41,28 @@ Shader "Custom/ToonLighting"
             };
 
         ENDCG
-        
+
         Pass
         {
-            Name "Render Over Environment"    
-            Tags { "RenderType"="Opaque" "Queue"="Geometry+5"}
-            
-            zwrite off
-            ztest greater
-            
-            Stencil{
-                Ref 10
-                Comp lequal 
-                pass replace
-            }
-            
             CGPROGRAM
             #pragma vertex vert
             #pragma fragment frag
-
-            #include "UnityCG.cginc"
-            
-            half4 _ROEColor;
-
-            v2f vert (appdata v)
-            {
-                v2f o;
-                o.vertex = UnityObjectToClipPos(v.vertex);
-                return o;
-            }
-
-            fixed4 frag (v2f i) : SV_Target
-            {
-                return _ROEColor;
-            }
-            ENDCG
-        }
-        
-        Pass
-        {
-            
-            Name "Toon Shading"
-            Tags { "RenderType"="Opaque" "Queue"="Geometry+2"}
-            LOD 100
-        
-            Stencil{
-                Ref 6
-                Comp gequal   
-                Pass replace
-            }
-            
-            CGPROGRAM
-            #pragma vertex vert
-            #pragma fragment frag
+            // make fog work
+            #pragma multi_compile_fog
 
             #include "UnityCG.cginc"
 
             sampler2D _MainTex;
             float4 _MainTex_ST;
-            half4 _MainColor;
+            sampler2D _ColorMaskTex;
+            float4 _ColorMaskTex_ST;
             sampler2D _RampTex;
             float4 _RampTex_ST;
             half _LightInt;
             half4 _LightColor0;
+            half4 _WeaponColorR;
+            half4 _WeaponColorG;
+            half4 _WeaponColorB;
 
             float3 LambertShading(float3 colorRefl, float lightInt, float3 normal, float3 lightDir)
 			{
@@ -124,21 +83,23 @@ Shader "Custom/ToonLighting"
             {
                 
                 fixed4 col = tex2D(_MainTex, i.uv);
+                fixed4 mask = tex2D(_ColorMaskTex, i.uv);
+                float cmask = min(1.0, mask.r + mask.g + mask.b);
                 float3 normal = i.normal_world;
-                float3 viewDir = normalize(_WorldSpaceCameraPos - i.vertex_world);
-				//Direction of Directional environmental lighting
 				float3 lightDir = normalize(_WorldSpaceLightPos0.xyz);
 				//Take only the rgb values of the light color (directional environmental lighting)
 				fixed3 colorRefl = _LightColor0.rgb;
 				float3 diffuse = LambertShading(colorRefl, _LightInt, normal, lightDir);
                 float2 diffuseUV = diffuse.xy;
                 fixed4 ramp = tex2D(_RampTex, diffuseUV);
-                col.rgb *= _MainColor;
+                col.rgb = col.rbg * (1 - cmask) + (_WeaponColorR * mask.r) + (_WeaponColorG * mask.g) + (_WeaponColorB * mask.b);
+                //(1 - cmask) invert mask and remove it from texture
+                //+ _Color * mask add mask back into texture with color
                 return col * ramp;
             }
             ENDCG
         }
-        
+
         Pass
         {
             Name "Outline"

@@ -18,9 +18,10 @@ namespace Runtime.GameControllers
 
         #endregion
 
-
         #region Class Implementation
 
+        //ToDo: have this automatically initialized itself depending on which screen it is on.
+        
         [ContextMenu("Initialize")]
         public override void Initialize()
         {

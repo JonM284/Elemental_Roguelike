@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 5179567}
   - component: {fileID: 5179568}
-  - component: {fileID: 676452653}
   m_Layer: 0
   m_Name: LevelController
   m_TagString: Untagged
@@ -47,15 +46,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   levelGenerationManager: {fileID: 1470162928}
-  isOnMenuScene: 0
---- !u!33 &676452653
-MeshFilter:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5179566}
-  m_Mesh: {fileID: 0}
+  isOnMenuScene: 1
 --- !u!1 &517807551
 GameObject:
   m_ObjectHideFlags: 0
@@ -534,7 +525,6 @@ MonoBehaviour:
     m_SubObjectName: 
     m_SubObjectType: 
     m_EditorAssetChanged: 0
-  randomizeCharacter: 1
 --- !u!1 &1062745213
 GameObject:
   m_ObjectHideFlags: 0
@@ -595,7 +585,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 0, g: 0, b: 0, a: 0}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -928,6 +918,7 @@ MonoBehaviour:
     associatedCanvas: {fileID: 942465978}
   - layer: {fileID: 11400000, guid: c0749339b4ff9874fa4fade0e4c2ae0f, type: 2}
     associatedCanvas: {fileID: 517807555}
+  blackScreen: {fileID: 0}
   m_cachedPopups: []
 --- !u!1 &1632139977
 GameObject:
@@ -1319,11 +1310,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e3e3eeeb921140b2a81e00c0dbc7939c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  regularEnemyReference:
-    m_AssetGUID: 28fa5f7e988678a4288888f1f74b901f
-    m_SubObjectName: 
-    m_SubObjectType: 
-    m_EditorAssetChanged: 0
 --- !u!1 &7876103537303073227
 GameObject:
   m_ObjectHideFlags: 0
@@ -1537,6 +1523,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5ee4854167c446da978cfe88db6fdf43, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  teamSize: 5
 --- !u!1 &7876103538769309302
 GameObject:
   m_ObjectHideFlags: 0

@@ -114,9 +114,9 @@ namespace Utils
             meepleController.CreateNewCharacter();
         }
 
-        public static void InstantiatePremadeMeeple(CharacterStatsData meepleData)
+        public static void InstantiatePremadeMeeple(CharacterStatsData meepleData, Vector3 spawnLocation)
         {
-            meepleController.InstantiatePremadeMeeple(meepleData);
+            meepleController.InstantiatePremadeMeeple(meepleData, spawnLocation);
         }
 
         public static void DeletePlayerMeeple(string _uid)
