@@ -11,7 +11,7 @@ using Utils;
 
 namespace Runtime.UI.DataReceivers
 {
-    public class MeepleTeamSelectionDataModel: MonoBehaviour
+    public class MeepleTeamSelectionDataModel: UIBase
     {
 
         #region Actions
@@ -174,7 +174,7 @@ namespace Runtime.UI.DataReceivers
             }
             
             ConfirmTeam();
-            
+
         }
 
         private void ConfirmTeam()
@@ -187,10 +187,17 @@ namespace Runtime.UI.DataReceivers
             });
             
             TeamMembersConfirmed?.Invoke(confirmedTeamMembers);
+            
+            UIUtils.CloseUI(this);
+            
         }
 
         #endregion
-        
-        
+
+
+        public override void AssignArguments(params object[] _arguments)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

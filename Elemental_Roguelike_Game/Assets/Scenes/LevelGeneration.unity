@@ -724,6 +724,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 5179568, guid: 117d9f0c612dc9949b8b0082137cfd17, type: 3}
+      propertyPath: isOnMenuScene
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7876103537793370361, guid: 117d9f0c612dc9949b8b0082137cfd17,
         type: 3}
       propertyPath: m_Name

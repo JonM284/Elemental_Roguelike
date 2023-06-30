@@ -9,6 +9,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1a2b30d564e44724a97ca624016cc653, type: 3}
-  m_Name: Ally
+  m_Script: {fileID: 11500000, guid: a3174c979e6e4c85960b7c354792b687, type: 3}
+  m_Name: Defender
   m_EditorClassIdentifier: 
+  AgilityStatMin: 60
+  AgilityStatMax: 80
+  ShootingStatMin: 40
+  ShootingStatMax: 60
+  PassingStatMin: 60
+  PassingStatMax: 75
+  DamageStatMin: 50
+  DamageStatMax: 75

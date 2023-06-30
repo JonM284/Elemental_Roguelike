@@ -3,6 +3,8 @@ using System.Linq;
 using Data;
 using Project.Scripts.Utils;
 using Runtime.Environment;
+using Runtime.GameControllers;
+using Runtime.Selection;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -26,6 +28,8 @@ namespace Runtime.Character
         [SerializeField] private float gravity;
 
         [SerializeField] private LayerMask obstacleLayer;
+
+        [SerializeField] private GameObject movementRangeIndicator;
         
         #endregion
 
@@ -41,13 +45,15 @@ namespace Runtime.Character
 
         private int m_currentMovePointIndex;
     
-        private bool m_canMove = true;
+        private bool m_canMove = false;
 
         private bool m_isMovingOnPath = false;
 
         private float m_timeToGetToPoint;
 
         private float m_startTime;
+
+        private bool m_isPerformingMelee;
         
         private CharacterController m_characterController;
     
@@ -68,7 +74,7 @@ namespace Runtime.Character
             var cc = GetComponent<CharacterController>();
             return cc;
         });
-
+        
         public Vector3 velocity => _velocity;
     
         public bool isInBattle { get; private set; }
@@ -76,11 +82,7 @@ namespace Runtime.Character
         public bool isMoving => m_isMovingOnPath;
 
         public bool isUsingMoveAction => m_canMove;
-
-        public CoverObstacles currentCover { get; private set; }
         
-        public bool isInCover => currentCover != null;
-
 
         #endregion
 
@@ -88,7 +90,7 @@ namespace Runtime.Character
 
         private void OnDrawGizmos()
         {
-            Gizmos.DrawWireSphere(transform.position, 0.5f);
+            Gizmos.DrawWireSphere(transform.position, battleMoveDistance);
             if (m_navMeshPath != null)
             {
                 if (m_navMeshPath.corners.Length > 0)
@@ -142,7 +144,7 @@ namespace Runtime.Character
                 Debug.Log($"<color=cyan>Character can't move m_canMove:{m_canMove} // isMoving{isMoving} </color>");
                 return;
             }
-            
+
             if (m_navMeshPath == null)
             {
                 m_navMeshPath = new NavMeshPath();
@@ -165,6 +167,9 @@ namespace Runtime.Character
             }
 
             Debug.Log("Has Created Path");
+            
+            movementRangeIndicator.SetActive(false);
+
             m_currentMovePointIndex = 1;
             m_currentMovePoint = m_navMeshPath.corners[m_currentMovePointIndex];
             m_startPos = playerPosition.position;
@@ -203,12 +208,13 @@ namespace Runtime.Character
                 else
                 {
                     m_isMovingOnPath = false;
-                    if (isInBattle)
-                    {
-                        m_canMove = false;    
-                    }
-                    CheckCover();
+                    m_canMove = false;    
+
                     OnFinishMovementCallback?.Invoke();
+                    
+                    OnFinishMovementCallback = null;
+                    OnBeforeMovementCallback = null;
+                    
                     return;
                 }
             }
@@ -219,12 +225,21 @@ namespace Runtime.Character
         public void SetCharacterBattleStatus(bool _isInBattle)
         {
             isInBattle = _isInBattle;
-            m_canMove = !_isInBattle;
         }
         
-        public void SetCharacterMovable(Action _beginningAction = null ,Action _finishActionCallback = null)
+        public void SetCharacterMovable(bool _canMove, Action _beginningAction = null ,Action _finishActionCallback = null)
         {
-            m_canMove = true;
+            m_canMove = _canMove;
+            
+            movementRangeIndicator.SetActive(_canMove);
+
+            if (!_canMove)
+            {
+                return;
+            }
+            
+            movementRangeIndicator.transform.localScale = Vector3.one * (battleMoveDistance * 2);
+            
             if (_beginningAction != null)
             {
                 OnBeforeMovementCallback = _beginningAction;
@@ -234,21 +249,6 @@ namespace Runtime.Character
             {
                 OnFinishMovementCallback = _finishActionCallback;
             }
-        }
-
-        public void CheckCover()
-        {
-            Collider[] colliders = Physics.OverlapSphere(transform.position, 0.5f, obstacleLayer);
-
-            if (colliders.Length > 0)
-            {
-                var primaryCover = colliders.FirstOrDefault().GetComponent<CoverObstacles>();
-                if (primaryCover != null)
-                {
-                    currentCover = primaryCover;
-                }
-            }
-            
         }
 
         public void TeleportCharacter(Vector3 teleportPosition)

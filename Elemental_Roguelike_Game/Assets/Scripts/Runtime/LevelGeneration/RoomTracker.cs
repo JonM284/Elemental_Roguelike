@@ -104,7 +104,7 @@ namespace Project.Scripts.Runtime.LevelGeneration
             foreach (var enemy in m_cachedEnemyStats)
             {
                 var randomInt = Random.Range(0, m_enemySpawnTransforms.Count);
-                StartCoroutine(enemy.AddEnemy(m_enemySpawnTransforms[randomInt].transform.position));
+                //StartCoroutine(enemy.AddEnemy(m_enemySpawnTransforms[randomInt].transform.position));
                 m_enemySpawnTransforms.Remove(m_enemySpawnTransforms[randomInt]);
                 yield return new WaitForSeconds(0.75f);
             }

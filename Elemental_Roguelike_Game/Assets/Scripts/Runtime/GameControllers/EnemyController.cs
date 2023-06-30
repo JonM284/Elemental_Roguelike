@@ -1,19 +1,30 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Data.Sides;
 using Project.Scripts.Data;
 using Project.Scripts.Utils;
 using Runtime.Character;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
-using Utils;
 
 namespace Runtime.GameControllers
 {
     public class EnemyController: GameControllerBase
     {
+        
+        #region Static
+
+        public static EnemyController Instance { get; private set; }
+
+        #endregion
+
+        #region Events
+
+        public static event Action<CharacterBase> EnemyCreated;
+
+        #endregion
         
         #region Private Fields
 
@@ -34,6 +45,18 @@ namespace Runtime.GameControllers
                 return poolTransform;
             });
         
+        
+
+        #endregion
+        
+        #region GameControllerBase Inherited Methods
+
+        public override void Initialize()
+        {
+            Instance = this;
+            base.Initialize();
+        }
+
         #endregion
 
         #region Class Implementation
@@ -58,23 +81,27 @@ namespace Runtime.GameControllers
             return m_cachedLoadedEnemies.FirstOrDefault(cb => cb.characterStatsBase == _stats);
         }
 
-        public IEnumerator C_AddEnemy(CharacterStatsBase _enemyStats, Vector3 _spawnPos)
+        public IEnumerator C_AddEnemy(CharacterStatsBase _enemyStats, Vector3 _spawnPos, Vector3 spawnRotation)
         {
             if (_enemyStats == null)
             {
                 yield break;
             }
+            
+            var adjustedSpawnLocation = _spawnPos != Vector3.zero ? _spawnPos : Vector3.zero;
+
+            var adjustedSpawnRotation = spawnRotation != Vector3.zero ? spawnRotation : Vector3.zero;
 
             var foundEnemy = GetCachedEnemy(_enemyStats);
-            var currentRoom = LevelUtils.GetCurrentRoom();
 
             if (foundEnemy != null)
             {
                 m_cachedEnemies.Remove(foundEnemy);
                 foundEnemy.transform.parent = null;
-                foundEnemy.transform.position = new Vector3(_spawnPos.x, foundEnemy.transform.localScale.y / 2, _spawnPos.z);
+                foundEnemy.transform.position = adjustedSpawnLocation;
+                foundEnemy.transform.rotation = Quaternion.Euler(adjustedSpawnRotation);
                 foundEnemy.InitializeCharacter();
-                currentRoom.AddEnemyToRoom(foundEnemy);
+                EnemyCreated?.Invoke(foundEnemy);
                 yield break;
             }
 
@@ -83,11 +110,10 @@ namespace Runtime.GameControllers
 
             if (foundLoadedEnemy != null)
             {
-                var _newEnemyGO = Instantiate(foundLoadedEnemy.gameObject, new Vector3(_spawnPos.x, 
-                    foundLoadedEnemy.transform.localScale.y / 2, _spawnPos.z), Quaternion.identity);
+                var _newEnemyGO = Instantiate(foundLoadedEnemy.gameObject, adjustedSpawnLocation, Quaternion.Euler(adjustedSpawnRotation));
                 var _enemyComp = _newEnemyGO.GetComponent<CharacterBase>();
                 _enemyComp.InitializeCharacter();
-                currentRoom.AddEnemyToRoom(_enemyComp);
+                EnemyCreated?.Invoke(_enemyComp);
                 yield break;
             }
             
@@ -95,21 +121,27 @@ namespace Runtime.GameControllers
             
             var handle = Addressables.LoadAssetAsync<GameObject>(_enemyStats.characterAssetRef);
             yield return handle;
-            handle.Completed += operation =>
+            
+            if (!handle.IsDone)
             {
-                if (operation.Status == AsyncOperationStatus.Succeeded)
+                yield return handle;
+            }
+            
+            if (handle.Status == AsyncOperationStatus.Succeeded)
+            {
+                var _newEnemyObject = Instantiate(handle.Result, adjustedSpawnLocation, Quaternion.Euler(adjustedSpawnRotation));
+                var _newEnemy = _newEnemyObject.GetComponent<CharacterBase>();
+                m_cachedLoadedEnemies.Add(handle.Result.GetComponent<CharacterBase>());
+                if (_newEnemy != null)
                 {
-                    var _newEnemyObject = Instantiate(handle.Result, new Vector3(_spawnPos.x, 
-                        handle.Result.transform.localScale.y / 2, _spawnPos.z), Quaternion.identity);
-                    var _newEnemy = _newEnemyObject.GetComponent<CharacterBase>();
-                    m_cachedLoadedEnemies.Add(handle.Result.GetComponent<CharacterBase>());
-                    if (_newEnemy != null)
-                    {
-                        _newEnemy.InitializeCharacter();
-                        currentRoom.AddEnemyToRoom(_newEnemy);
-                    }
+                    _newEnemy.InitializeCharacter();
                 }
-            };
+                EnemyCreated?.Invoke(_newEnemy);
+            }
+            else
+            {
+                Addressables.Release(handle);
+            }
             
         }
 

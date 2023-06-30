@@ -1,4 +1,5 @@
-﻿using Project.Scripts.Utils;
+﻿using System;
+using Project.Scripts.Utils;
 using Runtime.Character;
 using UnityEngine;
 using UnityEngine.AI;
@@ -9,15 +10,25 @@ namespace Runtime.Selection
     public class NavigationSelectable: Selectable
     {
 
+        #region Actions
+
+        public static event Action<Vector3> SelectPosition;
+
+        #endregion
+
         #region Serialized Fields
 
-        [SerializeField] private Transform associatedNewLocation;
 
         #endregion
         
         #region Accessors
 
         public CharacterBase activeCharacter => TurnUtils.GetActiveCharacter();
+
+        private bool activeCharacterDoingAction => activeCharacter.characterMovement.isUsingMoveAction ||
+                                                   activeCharacter.characterWeaponManager.isUsingWeapon
+                                                   || activeCharacter.characterAbilityManager.isUsingAbilityAction ||
+                                                   activeCharacter.isSetupThrowBall;
 
         public bool isInBattle => TurnUtils.isInBattle();
 
@@ -27,39 +38,35 @@ namespace Runtime.Selection
 
         public void SelectPathingLocation(Vector3 _pathPosition)
         {
-            if (isInBattle && activeCharacter == null)
+            if (activeCharacter.IsNull())
             {
                 Debug.Log($"isInBattle{isInBattle} /// active character null? {activeCharacter == null}");
                 return;
             }
 
-            var _newLocation = associatedNewLocation != null
-                ? associatedNewLocation.position
-                : _pathPosition;
-            
-            if (activeCharacter.characterMovement.isInBattle)
+            if (!activeCharacterDoingAction)
             {
-                var _magToPoint = Vector3.Magnitude(_newLocation.FlattenVector3Y() - activeCharacter.transform.position.FlattenVector3Y());
-                if (_magToPoint > activeCharacter.characterMovement.battleMoveDistance)
-                {
-                    Debug.LogError("<color=red>Position too far</color>");
-                    return;
-                }    
+                Debug.LogError("Active Character Not Doing Action");
+                return;
             }
 
-            
-            NavMesh.SamplePosition(_newLocation, out NavMeshHit clickedLocation, 100, NavMesh.AllAreas);
-
+            var setDistance = 100f;
             if (activeCharacter.characterMovement.isUsingMoveAction)
             {
-                activeCharacter.characterMovement.MoveCharacter(clickedLocation.position);    
-            }else if (activeCharacter.characterAbilityManager.isUsingAbilityAction)
-            {
-                activeCharacter.characterAbilityManager.SelectAbilityTarget(clickedLocation.position);
-            }else if (activeCharacter.characterWeaponManager.isUsingWeapon)
-            {
-                activeCharacter.characterWeaponManager.SelectWeaponTarget(clickedLocation.position);
+                setDistance = activeCharacter.characterMovement.battleMoveDistance;
             }
+            
+            var _magToPoint = Vector3.Magnitude(_pathPosition.FlattenVector3Y() - activeCharacter.transform.position.FlattenVector3Y());
+            if (_magToPoint > setDistance)
+            {
+                Debug.LogError("<color=red>Position too far</color>");
+                return;
+            }    
+
+            
+            NavMesh.SamplePosition(_pathPosition, out NavMeshHit clickedLocation, 100, NavMesh.AllAreas);
+            
+            SelectPosition?.Invoke(clickedLocation.position);
 
         }
 

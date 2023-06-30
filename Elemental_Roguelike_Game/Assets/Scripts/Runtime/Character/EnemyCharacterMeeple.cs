@@ -57,6 +57,11 @@ namespace Runtime.Character
             this.CacheEnemy();
         }
 
+        protected override void OnBattleEnded()
+        {
+            //undecided
+        }
+
         #endregion
 
         #region Class Implementation

@@ -42,6 +42,8 @@ namespace Runtime.Submodules
         [SerializeField] private List<MeepleLocation> allMeepleLocations = new List<MeepleLocation>();
         
         [SerializeField] private AssetReference displayMeepleRef;
+
+        [SerializeField] private UIWindowData uiWindowData;
         
         #endregion
 
@@ -93,6 +95,7 @@ namespace Runtime.Submodules
         private void Start()
         {
             SetupRandomGenerator();
+            OpenUI();
         }
 
         //ToDo: Add Events to buttons to add and subtract from teams
@@ -126,7 +129,12 @@ namespace Runtime.Submodules
             };
         }
 
-        
+        private void OpenUI()
+        {
+            UIUtils.OpenUI(uiWindowData);
+        }
+
+
         /// <summary>
         /// Create a new team, when player gets to this point, and if they chose to regenerate a new team
         /// </summary>
@@ -213,18 +221,14 @@ namespace Runtime.Submodules
 
             m_currentDisplayRandomMeepleObj.Add(_dispMeeple);
             
-            //ToDo: Create a Display meeple class, change it's color and size depending on it's generated stats
-
-            clonedMeepleObj.TryGetComponent(out DisplayMeeple displayMeepleComp);
-
             //Not exactly necessary, useful for debugging
-            if (displayMeepleComp.IsNull())
+            if (_dispMeeple.IsNull())
             {
                 Debug.LogError("Display meeple instantiated but doesn't have display meeple component");
                 return;
             }
 
-            displayMeepleComp.InitializeDisplay(data);
+            _dispMeeple.InitializeDisplay(data);
             
             
         }

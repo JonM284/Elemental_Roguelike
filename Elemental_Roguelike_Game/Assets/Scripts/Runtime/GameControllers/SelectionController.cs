@@ -1,16 +1,18 @@
 ﻿using Project.Scripts.Utils;
+using Runtime.Character;
 using Runtime.Selection;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using Utils;
 
 namespace Runtime.GameControllers
 {
-    public class SelectionController: GameControllerBase
+    public class SelectionController : GameControllerBase
     {
 
         #region Events
 
-        
+
 
         #endregion
 
@@ -24,7 +26,7 @@ namespace Runtime.GameControllers
 
         private float m_mouseDownTime;
 
-        private float m_mouseInputThreshold = 0.2f;
+        private float m_mouseInputThreshold = 0.1f;
 
         private UnityEngine.Camera m_mainCamera;
 
@@ -34,12 +36,14 @@ namespace Runtime.GameControllers
 
         public ISelectable currentSelectable { get; private set; }
 
+        public ISelectable currentHovered { get; private set; }
+
         public UnityEngine.Camera mainCamera => CommonUtils.GetRequiredComponent(ref m_mainCamera, () =>
         {
             var c = UnityEngine.Camera.main;
             return c;
         });
-
+        
         #endregion
         
         #region Unity Events
@@ -99,7 +103,7 @@ namespace Runtime.GameControllers
 
             if (selectable == null)
             {
-                Debug.LogError("No Selectable");
+                Debug.LogError($"No Selectable // Name:{hit.collider.name}", hit.collider);
                 return;
             }
 
@@ -121,6 +125,46 @@ namespace Runtime.GameControllers
             selectable.OnSelect();
             Debug.Log("<color=#00ff00>Selected</color>");
 
+        }
+
+        private void CheckHover()
+        {
+            if (EventSystem.current.IsPointerOverGameObject())
+            {
+                return;
+            }
+            
+            Debug.Log("TrySelect");
+            if (mainCamera == null)
+            {
+                Debug.LogError("No Camera");
+                return;
+            }
+
+            if (!Physics.Raycast(mainCamera.ScreenPointToRay(Input.mousePosition), out RaycastHit hit, 1000, selectableLayers))
+            {
+                Debug.LogError("No Hit Detected");
+                return;
+            }
+
+            hit.collider.TryGetComponent(out ISelectable selectable);
+
+            if (selectable.IsNull())
+            {
+                Debug.LogError("No Selectable");
+                return;
+            }
+
+            if (currentHovered != selectable)
+            {
+                if (currentHovered != null)
+                {
+                    currentHovered.OnUnHover();
+                }
+                currentHovered = selectable;
+            }
+            
+            selectable.OnHover();
         }
 
         #endregion

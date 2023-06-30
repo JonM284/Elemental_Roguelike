@@ -19,20 +19,6 @@ namespace Runtime.Selection
 
         #endregion
 
-        #region Unity Events
-
-        private void OnMouseEnter()
-        {
-            OnHover();
-        }
-
-        private void OnMouseExit()
-        {
-            OnUnhover();
-        }
-
-        #endregion
-
         #region Class Implementation
 
         public void OnSelect()
@@ -50,7 +36,7 @@ namespace Runtime.Selection
             onHover?.Invoke();
         }
 
-        public void OnUnhover()
+        public void OnUnHover()
         {
             onUnhover?.Invoke();
         }

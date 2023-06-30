@@ -44,11 +44,6 @@ namespace Utils
             teamController.RemoveTeamMember(_teamMember, _meepleData);
         }
 
-        public static Team GetCurrentTeam()
-        {
-            return teamController.playerTeam;
-        }
-
         public static void SpawnTeamMembers()
         {
             

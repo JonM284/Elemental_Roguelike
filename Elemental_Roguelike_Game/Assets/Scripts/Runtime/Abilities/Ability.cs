@@ -23,6 +23,10 @@ namespace Runtime.Abilities
         
         public AbilityTargetType targetType;
 
+        public float range = 1;
+
+        public bool isDamagingAbility;
+
         #endregion
 
         #region Protected Fields

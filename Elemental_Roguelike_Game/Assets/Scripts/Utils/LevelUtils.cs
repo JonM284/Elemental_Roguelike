@@ -20,7 +20,8 @@ namespace Utils
 
         #region Class Implementation
 
-
+        
+        /*
         public static void ChangeRooms(RoomTracker _roomTracker)
         {
             if (_roomTracker == null)
@@ -35,7 +36,7 @@ namespace Utils
         {
             return levelController.GetCurrentRoom();
         }
-
+        */
         
         #endregion
 

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Project.Scripts.Utils;
 using Runtime.Abilities;
 using Runtime.Environment;
+using Runtime.Selection;
 using UnityEngine;
 using Utils;
 
@@ -38,6 +39,8 @@ namespace Runtime.Character
         
         [SerializeField] private List<AssignedAbilities> m_assignedAbilities = new List<AssignedAbilities>();
 
+        [SerializeField] private GameObject abilityRangeIndicator;
+
         #endregion
 
         #region Private Fields
@@ -49,7 +52,8 @@ namespace Runtime.Character
         private CharacterMovement m_characterMovement;
 
         private CharacterRotation m_characterRotation;
-        
+
+        private CharacterBase m_characterBase;
         #endregion
 
         #region Accessors
@@ -69,9 +73,13 @@ namespace Runtime.Character
             var cr = this.GetComponent<CharacterRotation>();
             return cr;
         });
-
-        private bool isInCover => characterMovement.isInCover;
-
+        
+        private CharacterBase characterBase => CommonUtils.GetRequiredComponent(ref m_characterBase, () =>
+        {
+            var cr = this.GetComponent<CharacterBase>();
+            return cr;
+        });
+        
         #endregion
 
         #region Unity Events
@@ -93,6 +101,11 @@ namespace Runtime.Character
         private void OnCharacterSelected(CharacterBase _selectedCharacter)
         {
             if (!isUsingAbilityAction)
+            {
+                return;
+            }
+
+            if (_selectedCharacter == characterBase)
             {
                 return;
             }
@@ -152,6 +165,9 @@ namespace Runtime.Character
             
             m_assignedAbilities[_abilityIndex].ability.Initialize(this.gameObject);
             m_activeAbilityIndex = _abilityIndex;
+            abilityRangeIndicator.SetActive(true);
+            abilityRangeIndicator.transform.localScale = Vector3.one * (m_assignedAbilities[_abilityIndex].ability.range * 2);
+
             
             if (abilityUseCallback != null)
             {
@@ -165,6 +181,8 @@ namespace Runtime.Character
             {
                 return;
             }
+
+            abilityRangeIndicator.SetActive(false);
             
             m_assignedAbilities[m_activeAbilityIndex].ability.CancelAbilityUse();
             m_activeAbilityIndex = m_defaultInactiveAbilityIndex;
@@ -192,6 +210,7 @@ namespace Runtime.Character
             
             m_assignedAbilities[m_activeAbilityIndex].ability.SelectTarget(_targetTransform);
             characterRotation.SetRotationTarget(_targetTransform.position);
+            abilityRangeIndicator.SetActive(false);
             OnAbilityUsed?.Invoke();
         }
 
@@ -204,6 +223,11 @@ namespace Runtime.Character
 
         public void SelectAbilityTarget(Vector3 _targetPos)
         {
+            if (!isUsingAbilityAction)
+            {
+                return;
+            }
+            
             if (m_assignedAbilities[m_activeAbilityIndex] == null)
             {
                 return;
@@ -218,6 +242,7 @@ namespace Runtime.Character
             
             m_assignedAbilities[m_activeAbilityIndex].ability.SelectPosition(_targetPos);
             characterRotation.SetRotationTarget(_targetPos);
+            abilityRangeIndicator.SetActive(false);
             OnAbilityUsed?.Invoke();
         }
 

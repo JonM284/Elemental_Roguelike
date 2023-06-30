@@ -7,5 +7,9 @@
 
         public void OnUnselected();
 
+        public void OnHover();
+
+        public void OnUnHover();
+
     }
 }

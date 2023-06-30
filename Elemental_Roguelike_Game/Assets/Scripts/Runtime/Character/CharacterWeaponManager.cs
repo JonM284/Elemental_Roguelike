@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Data.Elements;
 using Project.Scripts.Utils;
 using Runtime.Environment;
+using Runtime.Selection;
 using Runtime.Weapons;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
@@ -59,6 +60,8 @@ namespace Runtime.Character
             var cr = this.GetComponent<CharacterRotation>();
             return cr;
         });
+
+        public Transform handPos => weaponHeldPos;
 
         #endregion
         
@@ -177,7 +180,7 @@ namespace Runtime.Character
             
         }
 
-        public void SetupWeaponAction(Action abilityUseCallback = null)
+        public void SetupWeaponAction(bool _isUsingWeapon, Action abilityUseCallback = null)
         {
             if (currentOwnedWeapon == null)
             {
@@ -185,7 +188,7 @@ namespace Runtime.Character
                 return;
             }
 
-            isUsingWeapon = true;
+            isUsingWeapon = _isUsingWeapon;
 
             if (abilityUseCallback != null)
             {
@@ -227,6 +230,11 @@ namespace Runtime.Character
             if (currentOwnedWeapon == null)
             {
                 Debug.Log("No Current Owned Weapon");
+                return;
+            }
+
+            if (!isUsingWeapon)
+            {
                 return;
             }
 

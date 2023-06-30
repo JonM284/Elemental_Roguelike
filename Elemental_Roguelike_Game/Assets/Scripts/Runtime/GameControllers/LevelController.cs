@@ -14,9 +14,7 @@ namespace Runtime.GameControllers
         #endregion
 
         #region Serialized Fields
-
-        [SerializeField] private LevelGenerationManager levelGenerationManager;
-
+        
         [SerializeField] private bool isOnMenuScene;
 
         #endregion
@@ -45,12 +43,12 @@ namespace Runtime.GameControllers
 
         private void OnEnable()
         {
-            LevelGenerationManager.LevelGenerationFinished += OnLevelGenerationFinished;
+            
         }
 
         private void OnDisable()
         {
-            LevelGenerationManager.LevelGenerationFinished -= OnLevelGenerationFinished;
+            
         }
 
         #endregion
@@ -59,12 +57,12 @@ namespace Runtime.GameControllers
 
         public void StartLevelGeneration()
         {
-            levelGenerationManager.GenerateLevel();
+            
         }
 
         public void OnLevelGenerationFinished(RoomTracker _startingRoom)
         {
-            levelGenerationManager.levelRooms.ForEach(rt => rt.gameObject.SetActive(false));
+            /*levelGenerationManager.levelRooms.ForEach(rt => rt.gameObject.SetActive(false));
             levelGenerationManager.levelRooms.ForEach(rt =>
             {
                 rt.gameObject.SetActive(true);
@@ -73,7 +71,9 @@ namespace Runtime.GameControllers
             });
 
             ChangeRoom(_startingRoom);
+            */      
         }
+    
         
         public void ChangeRoom(RoomTracker _newRoom)
         {
@@ -81,17 +81,13 @@ namespace Runtime.GameControllers
             {
                 return;
             }
-            
+            /*
             m_currentRoom = _newRoom;
             levelGenerationManager.levelRooms.ForEach(rt => rt.gameObject.SetActive(m_currentRoom == rt));
             OnRoomChanged?.Invoke(m_currentRoom);
+            */       
         }
-
-        public RoomTracker GetCurrentRoom()
-        {
-            return m_currentRoom;
-        }
-
+        
         #endregion
 
 

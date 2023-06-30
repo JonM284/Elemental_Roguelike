@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Data.Sides;
+using Project.Scripts.Utils;
 using Runtime.Character;
 using Runtime.GameControllers;
 using UnityEngine;
@@ -16,6 +17,8 @@ namespace Runtime.UI.DataReceivers
 
         [SerializeField] private GameObject playerVisuals;
 
+        [SerializeField] private GameObject shootButton;
+
         [SerializeField] private UIPopupCreator uiPopupCreator;
 
         [SerializeField] private GameObject playerOrderToken;
@@ -27,18 +30,15 @@ namespace Runtime.UI.DataReceivers
         #region Private Fields
 
         private bool isPlayerTurn;
-
-        private List<CharacterBase> m_activeBattleOrder = new List<CharacterBase>();
-
-        private List<CharacterBase> m_cachedBattleOrder = new List<CharacterBase>();
-
+        
         #endregion
 
         #region Accessors
 
         public CharacterBase activePlayer => TurnUtils.GetActiveCharacter();
 
-        public bool canDoAction => isPlayerTurn && !activePlayer.isBusy;
+        public bool canDoAction => isPlayerTurn && 
+                                   !activePlayer.IsNull() &&!activePlayer.isBusy;
 
         #endregion
 
@@ -47,15 +47,19 @@ namespace Runtime.UI.DataReceivers
         private void OnEnable()
         {
             TurnController.OnBattleEnded += OnBattleEnded;
+            TurnController.OnChangeActiveCharacter += OnChangeCharacterTurn;
             TurnController.OnChangeCharacterTurn += OnChangeCharacterTurn;
-            TurnController.OnTurnOrderChanged += OnTurnOrderChanged;
+            TurnController.OnChangeActiveTeam += OnChangeActiveTeam;
+            CharacterBase.BallPickedUp += OnBallPickedUp;
         }
 
         private void OnDisable()
         {
             TurnController.OnBattleEnded -= OnBattleEnded;   
+            TurnController.OnChangeActiveCharacter -= OnChangeCharacterTurn;
             TurnController.OnChangeCharacterTurn -= OnChangeCharacterTurn;
-            TurnController.OnTurnOrderChanged -= OnTurnOrderChanged;
+            TurnController.OnChangeActiveTeam -= OnChangeActiveTeam;
+            CharacterBase.BallPickedUp -= OnBallPickedUp;
         }
 
         #endregion
@@ -71,6 +75,18 @@ namespace Runtime.UI.DataReceivers
         {
             isPlayerTurn = _character.side == playerSide;
             playerVisuals.SetActive(isPlayerTurn);
+            if (isPlayerTurn)
+            {
+                shootButton.SetActive(!_character.heldBall.IsNull());
+            }
+        }
+        
+        private void OnBallPickedUp(CharacterBase _character)
+        {
+            if (_character == activePlayer)
+            {
+                shootButton.SetActive(!_character.heldBall.IsNull());
+            }
         }
 
         public void OnMoveClicked()
@@ -113,6 +129,16 @@ namespace Runtime.UI.DataReceivers
             activePlayer.UseCharacterAbility(1);
         }
 
+        public void UseShootBall()
+        {
+            if (!canDoAction)
+            {
+                return;
+            }
+            
+            activePlayer.SetCharacterThrowAction();
+        }
+
         public void EndTurn()
         {
             if (!canDoAction)
@@ -120,7 +146,8 @@ namespace Runtime.UI.DataReceivers
                 return;
             }
 
-            if (activePlayer.characterActionPoints > 0)
+            var activeTeamMembers = TurnController.Instance.GetActiveTeam();
+            if (!activeTeamMembers.TrueForAll(cb => cb.characterActionPoints == 0))
             {
                 uiPopupCreator.CreatePopup();
             }
@@ -132,19 +159,15 @@ namespace Runtime.UI.DataReceivers
 
         public void ConfirmEndTurn()
         {
-            activePlayer.EndTurn();
+            var activeTeamMembers = TurnController.Instance.GetActiveTeam();
+            activeTeamMembers.ForEach(cb => cb.EndTurn());
             Debug.Log("<color=red>Player Ended Turn</color>");
         }
         
-        private void OnTurnOrderChanged(List<CharacterBase> _orderList)
+        private void OnChangeActiveTeam(CharacterSide characterSide)
         {
-            if (_orderList.Count == 0)
-            {
-                return;
-            }
-            
-            
-
+            var _isPlayerTeam = characterSide == playerSide;   
+            playerVisuals.SetActive(_isPlayerTeam);
         }
 
         #endregion

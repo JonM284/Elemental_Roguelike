@@ -8,6 +8,8 @@ TagManager:
   - Door
   - Wall
   - Room
+  - ARMOR_ZONE
+  - BALL
   layers:
   - Default
   - TransparentFX
@@ -21,7 +23,7 @@ TagManager:
   - OBSTACLES
   - SELECTABLE
   - IGNORE_NAV_MESH
-  - 
+  - BALL_COLLIDER
   - 
   - 
   - 

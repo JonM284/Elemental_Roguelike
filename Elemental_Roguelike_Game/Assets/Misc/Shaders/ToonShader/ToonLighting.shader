@@ -8,13 +8,6 @@ Shader "Custom/ToonLighting"
         _LightInt ("Light Instensity", Range(0,1)) = 1
         _OutlineColor ("Outline Color", Color) = (1,1,1,1)
         _OutlineThickness ("Outline Thickness", Range(0.001, 0.05)) = 0.1
-        [Header(Fresnel Effect)]
-        [Space(10)]
-        [Toggle]
-        _FresnelOption ("Fresnel calculations on?", float) = 1 
-        _FresnelPower ("Fresnel Power", Range(1,5)) = 1
-        _FresnelAmount ("Fresnel Amount", Range(0,1)) = 1
-        _FresnelColor ("Fresnel Tint", Color) = (1,1,1,1)
         [Header(Rendering Over Environment)]
         _ROEColor ("Color to render over obj", Color) = (1,1,1,1)
     }

@@ -1,5 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using Runtime.Character;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
+using UnityEngine.ResourceManagement.AsyncOperations;
 
 namespace Runtime.GameControllers
 {
@@ -18,10 +22,17 @@ namespace Runtime.GameControllers
 
         #endregion
 
+        #region Unity Events
+
+        private void Awake()
+        {
+            Initialize();
+        }
+
+        #endregion
+
         #region Class Implementation
 
-        //ToDo: have this automatically initialized itself depending on which screen it is on.
-        
         [ContextMenu("Initialize")]
         public override void Initialize()
         {

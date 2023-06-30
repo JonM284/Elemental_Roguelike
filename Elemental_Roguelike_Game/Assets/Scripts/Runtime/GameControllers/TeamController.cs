@@ -18,6 +18,12 @@ namespace Runtime.GameControllers
         //The Purpose of this Controller is to manage everything related to player teams per run
 
         #endregion
+        
+        #region Static
+
+        public static TeamController Instance { get; private set; }
+
+        #endregion
 
         #region Serialized Fields
 
@@ -34,13 +40,13 @@ namespace Runtime.GameControllers
         #endregion
 
         #region Accessors
-
-        public Team playerTeam { get; private set; }
-
+        
         public int teamSize => m_teamSize;
 
         public int generatedTeamSize => m_generatedTeamSize;
-        
+
+        public List<CharacterStatsData> savedTeamMembers => m_savedTeamMembers;
+
         #endregion
 
         #region Unity Events
@@ -53,6 +59,16 @@ namespace Runtime.GameControllers
         private void OnDisable()
         {
             MeepleTeamSelectionDataModel.TeamMembersConfirmed -= OnTeamMembersConfirmed;
+        }
+
+        #endregion
+
+        #region GameControllerBase Inherited Methods
+
+        public override void Initialize()
+        {
+            Instance = this;
+            base.Initialize();
         }
 
         #endregion
@@ -83,38 +99,18 @@ namespace Runtime.GameControllers
 
         public void AddTeamMember(CharacterBase _teamMember, CharacterStatsData _meepleData)
         {
-            if (playerTeam == null)
-            {
-                playerTeam = new Team();
-            }
 
-            if (!playerTeam.teamMembers.Contains(_meepleData))
-            {
-                playerTeam.teamMembers.Add(_meepleData);
-            }
-            
         }
 
         public void RemoveTeamMember(CharacterBase _teamMemberToRemove, CharacterStatsData _meepleData)
         {
-            if (_teamMemberToRemove == null)
-            {
-                return;
-            }
-
-            if (!playerTeam.teamMembers.Contains(_meepleData))
-            {
-                return;
-            }
-
-            playerTeam.teamMembers.Remove(_meepleData);
 
         }
 
         [ContextMenu("Clear Team Members")]
         public void RemoveAllTeamMembers()
         {
-            playerTeam.teamMembers.Clear();
+            m_savedTeamMembers.Clear();
         }
 
         #endregion

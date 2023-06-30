@@ -4,6 +4,7 @@
     {
         CHARACTER_TRANSFORM,
         LOCATION,
-        FREE
+        FREE, 
+        DIRECTIONAL
     }
 }

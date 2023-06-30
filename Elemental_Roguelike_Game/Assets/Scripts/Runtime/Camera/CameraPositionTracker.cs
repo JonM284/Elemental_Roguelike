@@ -30,7 +30,7 @@ namespace Runtime.Camera
 
         private bool m_isDrag;
 
-        private bool m_isChangingRooms;
+        private bool m_isResettingCamera;
         
         private Vector3 m_centralPosition;
 
@@ -63,41 +63,28 @@ namespace Runtime.Camera
 
         private void OnEnable()
         {
-            LevelController.OnRoomChanged += OnRoomChanged;
         }
 
         private void OnDisable()
         {
-            LevelController.OnRoomChanged -= OnRoomChanged;
         }
 
         private void LateUpdate()
         {
-            if (!m_isChangingRooms)
+            if (!m_isResettingCamera)
             {
                 TrackPositionByDrag();
             }
             else
             {
-                ChangeRooms();
+                RecenterCamera();
             }
         }
 
         #endregion
 
         #region Class Implementation
-
         
-        //Start automatically moving camera to new room
-        private void OnRoomChanged(RoomTracker _newRoom)
-        {
-            m_centralPosition = _newRoom.transform.position;
-            m_changeRoomStartPosition = transform.position;
-            m_startTime = Time.time;
-            var dir = m_centralPosition - m_changeRoomStartPosition;
-            m_timeToTravel = dir.magnitude / autoMoveSpeed;
-            m_isChangingRooms = true;
-        }
 
         //Check dragging input of the player (mouse)
         private void TrackPositionByDrag()
@@ -145,13 +132,13 @@ namespace Runtime.Camera
             return new Vector3 {
                 x = Mathf.Max(minPosition.x - radius, Math.Min(maxPosition.x + radius, _inputVector.x)),
                 y = 0,
-                z = Mathf.Max(minPosition.z - radius, Math.Min(maxPosition.z + radius, _inputVector.z)),
+                z = Mathf.Max(minPosition.z - radius/2, Math.Min(maxPosition.z + radius/2, _inputVector.z)),
             };
         }
 
         
-        //Automatically move camera to new room
-        private void ChangeRooms()
+        //Automatically move camera to center
+        private void RecenterCamera()
         {
             if (m_centralPosition.IsNan())
             {
@@ -163,10 +150,10 @@ namespace Runtime.Camera
                 m_velocity = Vector3.Lerp(m_changeRoomStartPosition, m_centralPosition, progress);
             } else {
                 m_velocity = m_centralPosition;
-                m_isChangingRooms = false;
+                m_isResettingCamera = false;
             }
 
-            transform.position = m_velocity;
+            transform.position = m_velocity;            
         }
 
         #endregion

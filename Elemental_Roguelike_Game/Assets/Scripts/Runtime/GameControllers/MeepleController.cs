@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Data;
@@ -25,6 +26,12 @@ namespace Runtime.GameControllers
         //The Purpose of this controller is to create meeples, this should not save data related to teams
         //Create Meeple
         //If meeple is selected to be on a team, do that somewhere else
+
+        #endregion
+        
+        #region Static
+
+        public static MeepleController Instance { get; private set; }
 
         #endregion
         
@@ -69,6 +76,15 @@ namespace Runtime.GameControllers
 
         #endregion
 
+        #region GameControllerBase Inherited Methods
+
+        public override void Initialize()
+        {
+            Instance = this;
+            base.Initialize();
+        }
+
+        #endregion
         
         #region Class Implementation
 
@@ -94,12 +110,12 @@ namespace Runtime.GameControllers
         {
             _character.meepleElementTypeRef = ElementUtils.GetRandomElement().elementGUID;
             _character.initiativeNumber = Random.Range(1, 20);
-            _character.baseDamage = Random.Range(1f, 10f);
+            _character.damageScore = Random.Range(1, 10);
             _character.baseHealth = Random.Range(10, 20);
             _character.baseShields = Random.Range(10, 20);
             _character.baseSpeed = 5f;
             //ToDo: Change movement distance
-            _character.movementDistance = 3;
+            _character.movementDistance = 5;
             
             for (int i = 0; i < 2; i++)
             {
@@ -114,50 +130,60 @@ namespace Runtime.GameControllers
             _character.weaponElementTypeRef = ElementUtils.GetRandomElement().elementGUID;
         }
 
-        public void InstantiatePremadeMeeple(CharacterStatsData _meepleCharacter, Vector3 spawnLocation)
+        public IEnumerator InstantiatePremadeMeeple(CharacterStatsData _meepleCharacter, Vector3 spawnLocation, Vector3 spawnRotation)
         {
 
             var adjustedSpawnLocation = spawnLocation != Vector3.zero ? spawnLocation : Vector3.zero;
+
+            var adjustedSpawnRotation = spawnRotation != Vector3.zero ? spawnRotation : Vector3.zero;
             
             //if asset is loaded, use loaded asset to instantiate
-            if (loadedPlayableMeeple != null)
+            if (!loadedPlayableMeeple.IsNull())
             {
-                var newPlayerMeeple = loadedPlayableMeeple.Clone();
+                Debug.Log("<color=orange>Already Loaded</color>");
+                var newPlayerMeeple = Instantiate(loadedPlayableMeeple, adjustedSpawnLocation, Quaternion.Euler(adjustedSpawnRotation));
                 newPlayerMeeple.transform.position = adjustedSpawnLocation;
+                Debug.Log(adjustedSpawnLocation);
                 var playerMeeple = newPlayerMeeple.GetComponent<PlayableCharacter>();
                 playerMeeple.AssignStats(_meepleCharacter);
                 playerMeeple.InitializeCharacter();
                 PlayerMeepleCreated?.Invoke(playerMeeple, _meepleCharacter);
-                return;
+                yield break;
             }
             
             //if asset is not loaded, 1. load asset, 2. Instantiate loaded asset
             
             var handle = Addressables.LoadAssetAsync<GameObject>(meepleAsset);
-            handle.Completed += operation =>
+            
+            Debug.Log("<color=#00FF00>Loading Premade Meeple</color>");
+
+            if (!handle.IsDone)
             {
-                if (operation.Status == AsyncOperationStatus.Succeeded)
+                yield return handle;
+            }
+            
+            if (handle.Status == AsyncOperationStatus.Succeeded)
+            {
+                var newMeepleObject = Instantiate(handle.Result, adjustedSpawnLocation, Quaternion.Euler(adjustedSpawnRotation));
+                loadedPlayableMeeple = handle.Result;
+                if (newMeepleObject.TryGetComponent(out CharacterBase newMeeple))
                 {
-                    var newMeepleObject = Instantiate(handle.Result);
-                    loadedEnemyMeeple = handle.Result;
-                    newMeepleObject.transform.position = adjustedSpawnLocation;
-                    if (newMeepleObject.TryGetComponent(out CharacterBase newMeeple))
+                    if (newMeeple is PlayableCharacter playableCharacter)
                     {
-                        if (newMeeple is PlayableCharacter playableCharacter)
-                        {
-                            playableCharacter.AssignStats(_meepleCharacter);
-                        }
-                        newMeeple.InitializeCharacter();
-                        PlayerMeepleCreated?.Invoke(newMeeple, _meepleCharacter);
+                        playableCharacter.AssignStats(_meepleCharacter);
                     }
+                    newMeeple.InitializeCharacter();
+                    PlayerMeepleCreated?.Invoke(newMeeple, _meepleCharacter);
                 }
-            };
+            }else {
+                Addressables.Release(handle);
+            }
         }
 
         //ToDo: not added yet, add after getting regular enemies to work
         public void InstantiateMeepleEnemy(CharacterStatsData _meepleStats)
         {
-            if (loadedEnemyMeeple != null)
+            if (!loadedEnemyMeeple.IsNull())
             {
                 var newEnemyMeeple = loadedEnemyMeeple.Clone();
                 newEnemyMeeple.transform.position = new Vector3(0,newEnemyMeeple.transform.localScale.y / 2,0);

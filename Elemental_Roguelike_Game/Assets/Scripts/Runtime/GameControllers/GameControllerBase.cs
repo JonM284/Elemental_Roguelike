@@ -2,7 +2,7 @@
 
 namespace Runtime.GameControllers
 {
-    public class GameControllerBase : MonoBehaviour , IController
+    public abstract class GameControllerBase : MonoBehaviour , IController
     {
         public bool is_Initialized { get; private set; }
         

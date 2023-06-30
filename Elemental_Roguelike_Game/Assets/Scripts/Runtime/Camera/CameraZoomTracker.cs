@@ -48,6 +48,7 @@ namespace Runtime.Camera
 
         private void Awake()
         {
+            m_percentage = 1;
             m_localZoomZ = maxPos;
         }
 

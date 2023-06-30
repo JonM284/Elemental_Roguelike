@@ -1,0 +1,79 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &7916869325381400370
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3844246677081416894}
+  - component: {fileID: 3412945638239037383}
+  m_Layer: 0
+  m_Name: LevelGeneration
+  m_TagString: Untagged
+  m_Icon: {fileID: -1412012063857583412, guid: 0000000000000000d000000000000000, type: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3844246677081416894
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7916869325381400370}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3412945638239037383
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7916869325381400370}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e227deef5f00409d9d2681b106d99264, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  checkerRadius: 0.49
+  allRooms: []
+  startingRoom: {fileID: 0}
+  roomPrefab: {fileID: 7027676800734121700, guid: fd8f98e6b7b6cb94d911e9a4b38499a7,
+    type: 3}
+  levelGenerationRulesData: {fileID: 11400000, guid: 6d0a0eb421cda5d41a5d7ad33aafdd2c,
+    type: 2}
+  battleGenerationRulesData: {fileID: 11400000, guid: 7358650eb00d7e644be73e20a452423f,
+    type: 2}
+  levelOfDifficulty: 2
+  roomCheckLayer:
+    serializedVersion: 2
+    m_Bits: 64
+  doorCheckLayer:
+    serializedVersion: 2
+    m_Bits: 128
+  roomLayout: {fileID: 2800000, guid: 6dd9c7a7ec8539b41b06cf08bc825d1d, type: 3}
+  roomDecorations:
+  - associatedColor: {r: 0, g: 0, b: 0, a: 1}
+    isObstacle: 0
+    isEnemySpawnPosition: 0
+    associatedPrefab: {fileID: 4777526194583307717, guid: 0ff3243bc1b038f4aaca1bd1bf97534e,
+      type: 3}
+  - associatedColor: {r: 0, g: 0.07450981, b: 1, a: 1}
+    isObstacle: 0
+    isEnemySpawnPosition: 0
+    associatedPrefab: {fileID: 1271381347346041601, guid: 6d3daeeccacb60b49abdfb4f322c272c,
+      type: 3}
+  - associatedColor: {r: 1, g: 0.93333334, b: 0, a: 1}
+    isObstacle: 0
+    isEnemySpawnPosition: 1
+    associatedPrefab: {fileID: 6979950628730557295, guid: dd4bc4860a8beac468a736addb6437af,
+      type: 3}

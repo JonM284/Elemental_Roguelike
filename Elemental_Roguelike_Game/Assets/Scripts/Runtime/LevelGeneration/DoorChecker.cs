@@ -109,7 +109,7 @@ namespace Project.Scripts.Runtime.LevelGeneration
             yield return new WaitForSeconds(1f);
 
             playerObj.GetComponent<CharacterMovement>().TeleportCharacter(m_connectedRoom.transform.position);
-            LevelUtils.ChangeRooms(m_connectedRoom);
+            //LevelUtils.ChangeRooms(m_connectedRoom);
             
         }
 

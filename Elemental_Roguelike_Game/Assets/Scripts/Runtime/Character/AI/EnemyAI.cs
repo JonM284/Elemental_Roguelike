@@ -79,11 +79,6 @@ namespace Runtime.Character.AI
                 return;
             }
 
-            if (!characterBase.isInBattle)
-            {
-                return;
-            }
-            
             Debug.Log($"{this} start turn", this);
 
             StartCoroutine(C_Turn());
@@ -105,90 +100,9 @@ namespace Runtime.Character.AI
             
             while (characterBase.characterActionPoints > 0)
             {
-                //ToDo: Add attack range - probably needs weapon and range for weapon
-                if (PlayerInAttackRange())
-                {
-                    var allTargets = GetAllTargets(true);
-                    m_targetCharacter = GetClosestTarget(allTargets);
-                    
-                    //If they aren't: move to the closest possible position [either behind cover or straight to the player]
-                    if (m_targetCharacter != null)
-                    {
-                        if (InLineOfSight(m_targetCharacter.transform.position))
-                        {
-                            characterBase.UseCharacterWeapon();
-                            yield return new WaitForSeconds(0.5f);
-                            characterBase.characterWeaponManager.SelectWeaponTarget(m_targetCharacter.transform);
-                            Debug.Log("Should Use Enemy Weapon");
-
-                            yield return new WaitUntil(() => !characterBase.characterWeaponManager.isUsingWeapon);
-                            Debug.Log("Done Using Enemy Weapon");
-                        }
-                        else
-                        {
-                            characterBase.SetCharacterWalkAction();
-                            var coverPos = GetCoverPosition();
-                            characterBase.characterMovement.MoveCharacter(coverPos);
-                            Debug.Log("Player is in range, but not in light of sight");
-                            yield return new WaitUntil(() => !characterBase.characterMovement.isMoving);
-                        }
-
-                    }
-                    else
-                    {
-                        characterBase.UseActionPoint();
-                        Debug.Log("No Targets For Enemy ATTACK");
-                        continue;
-                    }
-                    
-                }
-                else
-                {
-                    var allTargets = GetAllTargets(true);
-
-                    if (allTargets.Count == 0)
-                    {
-                        characterBase.UseActionPoint();
-                        Debug.Log("No Targets For Enemy MOVEMENT");
-                        continue;
-                    }
-                    
-                    //Move Enemy Closer
-                    if (characterBase.characterStatsBase.enemyPrioritizeCover)
-                    {
-                        m_targetCharacter = GetClosestTarget(allTargets);
-                        characterBase.SetCharacterWalkAction();
-                        var coverPos = GetCoverPosition();
-                        characterBase.characterMovement.MoveCharacter(coverPos);
-                        Debug.Log("Should be moving to closest cover");
-                        yield return new WaitUntil(() => !characterBase.characterMovement.isMoving);
-                    }
-                    else
-                    {
-                        m_targetCharacter = GetClosestTarget(allTargets);
-                        characterBase.SetCharacterWalkAction();
-                        Vector3 closestValidPoint = GetClosestValidPos();
-                        characterBase.characterMovement.MoveCharacter(closestValidPoint);
-                        Debug.Log("Should be moving to closest point to player");
-                        yield return new WaitUntil(() => !characterBase.characterMovement.isMoving);
-                    }
-                    
-                }
                 
                 
-                //Look for all cover inside movement range. [if enemy hides behind cover]
-                //If none: check in double size, then use two movement slots
-                
-                
-                //This is temporary to check turn order
-
-                if (characterBase.characterActionPoints == 0)
-                {
-                    characterBase.EndTurn();
-                    yield break;
-                }
-
-                yield return new WaitForSeconds(1f);
+                characterBase.UseActionPoint();
 
                 yield return null;
             }
@@ -322,66 +236,6 @@ namespace Runtime.Character.AI
             }
 
             return false;
-        }
-
-        //Return cover position if enemy is type that hides behind cover
-        private Vector3 GetCoverPosition()
-        {
-            //default pos
-            var newMovePos = transform.position;
-            Collider[] colliders = Physics.OverlapSphere(transform.position, enemyMovementRange, obstacleCheckMask);
-            var targetPos = m_targetCharacter.transform.position;
-            int colAmount = colliders.Length;
-            int colReduction = 0;
-            for (int i = 0; i < colAmount; i++)
-            {
-                if (Vector3.Distance(colliders[i].transform.position, targetPos) < minPlayerHideDist)
-                {
-                    colliders[i] = null;
-                    colReduction++;
-                }
-            }
-
-            colAmount -= colReduction;
-            
-            Array.Sort(colliders, ColliderArraySortComparer);
-            
-            //Check through all obstacles normals that face away from Target
-            if (colliders.Length > 0)
-            {
-                for (int i = 0; i < colAmount; i++)
-                {
-                    if (NavMesh.SamplePosition(colliders[i].transform.position, out NavMeshHit hit, 100, NavMesh.AllAreas))
-                    {
-                        if (!NavMesh.FindClosestEdge(hit.position, out hit, NavMesh.AllAreas))
-                        {
-                            Debug.Log("No edge found");
-                        }
-
-                        if (Vector3.Dot(hit.normal, (targetPos - hit.position).normalized) < hideThreshold)
-                        {
-                            return hit.position;
-                        }
-                        else
-                        {
-                            if (NavMesh.SamplePosition(colliders[i].transform.position - (targetPos - hit.position).normalized * 2, out NavMeshHit secondAttemptHit, 100, NavMesh.AllAreas))
-                            {
-                                if (!NavMesh.FindClosestEdge(secondAttemptHit.position, out secondAttemptHit, NavMesh.AllAreas))
-                                {
-                                    Debug.Log("No edge found");
-                                }
-
-                                if (Vector3.Dot(secondAttemptHit.normal, (targetPos - secondAttemptHit.position).normalized) < hideThreshold)
-                                {
-                                    return secondAttemptHit.position;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            return newMovePos;
         }
 
         private Vector3 GetClosestValidPos()

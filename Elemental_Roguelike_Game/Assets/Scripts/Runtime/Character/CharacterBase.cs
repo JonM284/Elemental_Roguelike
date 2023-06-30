@@ -4,6 +4,8 @@ using Data.Sides;
 using Project.Scripts.Data;
 using Project.Scripts.Utils;
 using Runtime.Damage;
+using Runtime.GameControllers;
+using Runtime.Gameplay;
 using Runtime.Selection;
 using Runtime.Status;
 using Runtime.VFX;
@@ -20,7 +22,7 @@ namespace Runtime.Character
     [RequireComponent(typeof(CharacterRotation))]
     [RequireComponent(typeof(CharacterVisuals))]
     [RequireComponent(typeof(CharacterWeaponManager))]
-    public abstract class CharacterBase: MonoBehaviour, ISelectable, IDamageable, IEffectable
+    public abstract class CharacterBase: MonoBehaviour, ISelectable, IDamageable, IEffectable, IBallInteractable
     {
 
         #region Nested Classes
@@ -39,6 +41,8 @@ namespace Runtime.Character
 
         public static event Action<CharacterBase> CharacterSelected;
 
+        public static event Action<CharacterBase> BallPickedUp;
+
         #endregion
 
         #region Serialized Fields
@@ -51,7 +55,13 @@ namespace Runtime.Character
 
         [SerializeField] private VFXPlayer damageVFX;
 
-        [SerializeField] private GameObject activeCharacterIndicator;
+        [SerializeField] protected GameObject passivePassInterceptIndicator;
+
+        [SerializeField] protected GameObject passiveMeleeIndicator;
+        
+        [SerializeField] protected GameObject ballOwnerIndicator;
+
+        [SerializeField] protected GameObject activePlayerIndicator;
 
         #endregion
 
@@ -75,6 +85,8 @@ namespace Runtime.Character
 
         private Transform m_statusEffectTransform;
         
+        private float shootSpeed = 8f;
+
         #endregion
 
         #region Accessors
@@ -130,6 +142,8 @@ namespace Runtime.Character
 
         public bool isAlive => characterLifeManager.isAlive;
 
+        public bool isActiveCharacter { get; private set; }
+
         public bool finishedTurn => m_finishedTurn;
 
         public bool isInBattle => characterMovement.isInBattle;
@@ -144,23 +158,38 @@ namespace Runtime.Character
 
         public bool isBusy => characterMovement.isMoving;
 
+        public bool isDoingAction =>
+            characterAbilityManager.isUsingAbilityAction || characterWeaponManager.isUsingWeapon;
+
         public AppliedStatus appliedStatus { get; private set; }
 
         public CharacterStatsBase characterStatsBase => m_characterStatsBase;
-        
-        
+
+        public BallBehavior heldBall { get; private set; }
+
+        public bool isSetupThrowBall { get; private set; }
+
         #endregion
 
         #region Unity Events
 
         private void OnEnable()
         {
+            TurnController.OnBattleEnded += OnBattleEnded;
             CharacterLifeManager.OnCharacterDied += OnCharacterDied;
+            NavigationSelectable.SelectPosition += CheckAllAction;
+            TurnController.OnChangeActiveCharacter += OnChangeActiveCharacter;
+            TurnController.OnChangeActiveTeam += OnChangeTeam;
+            CharacterSelected += OnOtherCharacterSelected;
         }
 
         private void OnDisable()
         {
+            TurnController.OnBattleEnded -= OnBattleEnded;
             CharacterLifeManager.OnCharacterDied -= OnCharacterDied;
+            NavigationSelectable.SelectPosition -= CheckAllAction;
+            TurnController.OnChangeActiveCharacter -= OnChangeActiveCharacter;
+            TurnController.OnChangeActiveTeam -= OnChangeTeam;
         }
 
         #endregion
@@ -175,9 +204,43 @@ namespace Runtime.Character
         
         protected abstract void CharacterDeath();
 
+        protected abstract void OnBattleEnded();
+        
         protected virtual void OnWalkActionPressed()
         {
             
+        }
+        
+        private void OnOtherCharacterSelected(CharacterBase _character)
+        {
+            if (_character == null)
+            {
+                return;
+            }
+            
+            if (_character == this)
+            {
+                return;
+            }
+
+            if (_character.side != this.side)
+            {
+                if (characterMovement.isUsingMoveAction)
+                {
+                    //Do Melee Action
+                    
+
+                    return;
+                }   
+            }
+
+            if (_character.side == this.side && isSetupThrowBall)
+            {
+                ThrowBall(_character.transform.position - transform.position);
+                return;
+            }
+            
+
         }
 
         protected virtual void OnBeginWalkAction()
@@ -187,10 +250,13 @@ namespace Runtime.Character
 
         protected virtual void OnWalkActionEnded()
         {
-            
+            if (characterActionPoints == 0)
+            {
+                EndTurn();
+            }
         }
 
-        private void OnCharacterDied(CharacterBase _character)
+        protected void OnCharacterDied(CharacterBase _character)
         {
             if (_character != this)
             {
@@ -201,6 +267,30 @@ namespace Runtime.Character
             RemoveEffect();
             CharacterDeath();
             Debug.Log($"<color=red>{this} has died</color>");
+        }
+
+        protected void CheckAllAction(Vector3 _selectedPosition)
+        {
+            if (!isActiveCharacter)
+            {
+                return;
+            }
+
+            if (characterMovement.isUsingMoveAction)
+            {
+                characterMovement.MoveCharacter(_selectedPosition);
+            }else if (characterAbilityManager.isUsingAbilityAction)
+            {
+                characterAbilityManager.SelectAbilityTarget(_selectedPosition);
+            }else if (characterWeaponManager.isUsingWeapon)
+            {
+                characterWeaponManager.SelectWeaponTarget(_selectedPosition);
+            }else if (isSetupThrowBall)
+            {
+                ThrowBall(_selectedPosition - transform.position);
+            }
+            
+
         }
 
         private void PlayDamageVFX()
@@ -251,7 +341,7 @@ namespace Runtime.Character
                 return;
             }
             
-            characterWeaponManager.SetupWeaponAction(OnAttackUsed);
+            characterWeaponManager.SetupWeaponAction(!characterWeaponManager.isUsingWeapon,OnAttackUsed);
         }
 
         private void OnAttackUsed()
@@ -270,14 +360,78 @@ namespace Runtime.Character
                 return;
             }
 
+            if (characterMovement.isUsingMoveAction)
+            {
+                characterMovement.SetCharacterMovable(false);
+                return;
+            }
+
             OnWalkActionPressed();
-            characterMovement.SetCharacterMovable(OnBeginWalkAction, OnWalkActionEnded);
+            characterMovement.SetCharacterMovable(true, OnBeginWalkAction, OnWalkActionEnded);
+        }
+
+        public void SetCharacterThrowAction()
+        {
+            if (m_characterActionPoints <= 0)
+            {
+                return;
+            }
+
+            if (heldBall.IsNull())
+            {
+                return;
+            }
+
+            isSetupThrowBall = !isSetupThrowBall;
         }
 
         public void UseActionPoint()
         {
             m_characterActionPoints--;
             Debug.Log($"<color=yellow>Used action point // Action Points:{characterActionPoints} left</color>");
+        }
+        
+        protected void OnChangeActiveCharacter(CharacterBase _characterBase)
+        {
+            if (_characterBase != this)
+            {
+                if (isActiveCharacter)
+                {
+                    isActiveCharacter = false;
+                    activePlayerIndicator.SetActive(isActiveCharacter);
+                }
+                return;
+            }
+
+            if (!isAlive)
+            {
+                return;
+            }
+            
+            Debug.Log("Player start");
+            ActivePlayer();
+        }
+
+        private void ActivePlayer()
+        {
+            if (!isAlive)
+            {
+                OnCharacterDied(this);
+                return;
+            }
+
+            isActiveCharacter = true;
+            activePlayerIndicator.SetActive(isActiveCharacter);
+        }
+
+        private void OnChangeTeam(CharacterSide _side)
+        {
+            if (_side != this.side)
+            {
+                return;
+            }
+            
+            ResetCharacterActions();
         }
 
         [ContextMenu("Reset Actions")]
@@ -293,17 +447,6 @@ namespace Runtime.Character
             m_characterActionPoints = 2;
             characterAbilityManager.CheckAbilityCooldown();
             CheckStatus();
-            SetActiveVisual(true);
-        }
-
-        private void SetActiveVisual(bool isActive)
-        {
-            if (activeCharacterIndicator == null)
-            {
-                return;
-            }
-            
-            activeCharacterIndicator.SetActive(isActive);
         }
 
         private void CheckStatus()
@@ -332,9 +475,9 @@ namespace Runtime.Character
         [ContextMenu("Skip Turn")]
         public void EndTurn()
         {
-            Debug.Log($"{this} has ended turn");
+            Debug.Log($"{this} has ended turn", this);
             m_finishedTurn = true;
-            SetActiveVisual(false);
+            m_characterActionPoints = 0;
             CharacterEndedTurn?.Invoke(this);
         }
 
@@ -354,6 +497,16 @@ namespace Runtime.Character
         }
 
         public void OnUnselected()
+        {
+            
+        }
+
+        public void OnHover()
+        {
+            
+        }
+
+        public void OnUnHover()
         {
             
         }
@@ -411,6 +564,49 @@ namespace Runtime.Character
         }
 
         #endregion
-        
+
+        #region IBallInteractalbe Inherited Methods
+
+        public void PickUpBall(BallBehavior ball)
+        {
+            heldBall = ball;
+            heldBall.SetFollowTransform(characterWeaponManager.handPos);
+            ballOwnerIndicator.SetActive(true);
+            BallPickedUp?.Invoke(this);
+        }
+
+        public void KnockBallAway(Transform attacker)
+        {
+            if (heldBall.IsNull())
+            {
+                return;
+            }
+
+            var direction = transform.position - attacker.position;
+            heldBall.ThrowBall(direction, shootSpeed, false);
+            heldBall = null;
+            ballOwnerIndicator.SetActive(false);
+        }
+
+        public void ThrowBall(Vector3 direction)
+        {
+            if (heldBall.IsNull())
+            {
+                return;
+            }
+
+            if (!isSetupThrowBall)
+            {
+                return;
+            }
+            
+            heldBall.ThrowBall(direction, shootSpeed, true);
+            heldBall = null;
+            isSetupThrowBall = false;
+            ballOwnerIndicator.SetActive(false);
+            UseActionPoint();
+        }
+
+        #endregion
     }
 }

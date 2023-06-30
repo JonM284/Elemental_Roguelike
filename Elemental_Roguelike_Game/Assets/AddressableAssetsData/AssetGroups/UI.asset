@@ -25,6 +25,10 @@ MonoBehaviour:
     m_Address: BattleUI
     m_ReadOnly: 0
     m_SerializedLabels: []
+  - m_GUID: 74d141fe0e1c87047a23d13b44dd6520
+    m_Address: RandomTeamGeneration-Screen
+    m_ReadOnly: 0
+    m_SerializedLabels: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: c51bc8bdb2bb6e5479c05b7cf9bc0f75, type: 2}
   m_SchemaSet:

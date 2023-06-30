@@ -31,28 +31,25 @@ namespace Data
 
         public int currentShield;
 
+        public int passingScore;
+
+        public int shootingScore;
+
+        public int agilityScore;
+        
+        public int damageScore;
+
         //Distance from start position, character is able to move
         public float movementDistance;
-    
-        //Damage character does? NOTE: MAY BE CHANGED ****
-        public float baseDamage;
-        
+
+        //Distance from the idle character where they are able to intercept passes
+        public float passInterceptionDistance;
+
+        //Distance from the idle character where they can melee enemies moving close-by
+        public float passiveMeleeDistance;
+
         //Cosmetic items
-        public int cosmeticHat;
-
-        public int cosmeticHead;
-        
-        public int cosmeticBody;
-        
-        public int cosmeticHands;
-        
-        public int cosmeticLegs;
-        
-        public int cosmeticFeet;
-
-
-        //Character associated color
-        public Color characterColor;
+        public int costumeIndex;
 
         public string meepleElementTypeRef;
 
@@ -80,14 +77,8 @@ namespace Data
             this.baseShields = 10;
             this.currentShield = this.baseShields;
             this.movementDistance = 5f;
-            this.baseDamage = 1;
-            this.cosmeticHat = 0;
-            this.cosmeticHead = 0;
-            this.cosmeticBody = 0;
-            this.cosmeticHands = 0;
-            this.cosmeticLegs = 0;
-            this.cosmeticFeet = 0;
-            this.characterColor = Color.white;
+            this.damageScore = 1;
+            this.costumeIndex = 0;
             //Type must be added whenever creating a new meeple
             this.abilityReferences = new List<string>();
             //Abilities must also be added when creating a new meeple

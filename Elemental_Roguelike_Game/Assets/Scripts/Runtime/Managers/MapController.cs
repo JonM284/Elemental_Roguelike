@@ -2,13 +2,17 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Data;
+using Project.Scripts.Runtime.LevelGeneration;
 using Project.Scripts.Utils;
+using Runtime.GameplayEvents;
 using UnityEngine;
+using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
 
-namespace Runtime.GameControllers
+namespace Runtime.Managers
 {
-    public class MapController: GameControllerBase
+    public class MapController: MonoBehaviour
     {
 
         #region Nested Classes
@@ -23,8 +27,13 @@ namespace Runtime.GameControllers
         [Serializable]
         public class PointData
         {
-            public Transform attachedTransform;
-            public List<Transform> connectedPointsAbove = new List<Transform>();
+            public PoiLocation actualPoiLocation;
+            public List<PoiLocation> connectedPointsAbove = new List<PoiLocation>();
+        }
+        
+        public class GameplayEventsByType
+        {
+            
         }
 
         #endregion
@@ -56,10 +65,19 @@ namespace Runtime.GameControllers
 
         [SerializeField] private float offsetMultiplier = 0.1f;
         
+        [FormerlySerializedAs("matchEventType")]
+        [Space(20)]
+        [Header("POI Events")]
+        [SerializeField] private GameplayEventType matchEventType;
+        
+        [SerializeField] private List<GameplayEventType> allEventTypes = new List<GameplayEventType>();
+
         #endregion
 
         #region Private Fields
 
+        private int m_selectionLevel = 0;
+        
         private bool isGeneratingMap = false;
 
         private bool isGeneratingLines = false;
@@ -69,11 +87,14 @@ namespace Runtime.GameControllers
         private int maxColumns = 5;
 
         private int startingIterator = 0;
+
+        private PointData m_currentPoint;
         
-        [SerializeField]
         private List<RowData> allRowsByLevel = new List<RowData>();
 
         private List<GameObject> m_cachedDataPointObjects = new List<GameObject>();
+
+        private List<GameplayEventType> m_possibleEventTypes = new List<GameplayEventType>();
 
         #endregion
 
@@ -85,16 +106,17 @@ namespace Runtime.GameControllers
             {
                 CreateOverviewMap();
             }
+            
         }
 
-        #endregion
-
-        #region GameControllerBase Inherited Methods
-
-        public override void Initialize()
+        private void OnEnable()
         {
-            CreateOverviewMap();
-            base.Initialize();
+            PoiLocation.POILocationSelected += OnPOILocationSelected;
+        }
+
+        private void OnDisable()
+        {
+            PoiLocation.POILocationSelected -= OnPOILocationSelected;
         }
 
         #endregion
@@ -123,6 +145,54 @@ namespace Runtime.GameControllers
 
         }
         
+        private void OnPOILocationSelected(PoiLocation _pointLocation, GameplayEventType _event)
+        {
+            if (_pointLocation.IsNull())
+            {
+                return;
+            }
+            
+            m_currentPoint.connectedPointsAbove.ForEach(t =>
+            {
+                t.TryGetComponent(out PoiLocation poiLocation);
+                if (poiLocation)
+                {
+                    if (poiLocation != _pointLocation)
+                    {
+                        poiLocation.SetPointInactive();
+                    }
+                }
+            });
+
+            if (m_selectionLevel < maxAmountOfRows)
+            {
+                m_selectionLevel++;    
+            }
+            else
+            {
+                return;
+            }
+            
+            //ToDo: get this to work correctly, after selecting a point, have it highlight the next points
+
+            var checkPoint = allRowsByLevel[m_selectionLevel].rowPoints.FirstOrDefault(pd => pd.actualPoiLocation == _pointLocation);
+            if (checkPoint.IsNull())
+            {
+                Debug.LogError("No Point Found");
+                return;
+            }
+
+            m_currentPoint = checkPoint;
+
+            MarkConnectedActive(m_currentPoint);
+
+        }
+
+        private void DoEventAction(GameplayEventType _event)
+        {
+            
+        }
+
         /// <summary>
         /// Generate map by these rules:
         /// 1. Find Point positions by percent between current row and full amount of rows
@@ -144,9 +214,17 @@ namespace Runtime.GameControllers
                 {
                     //first point is always starting point
                     var firstPointTransform = InstantiatePointAt(starterPoint.localPosition);
+                    firstPointTransform.TryGetComponent(out PoiLocation poiLocation);
+                    
+                    if (poiLocation.IsNull())
+                    {
+                        Debug.Log("Doesn't have poiLocation Component");
+                        break;
+                    }
+                    
                     var firstPointData = new PointData
                     {
-                        attachedTransform = firstPointTransform,
+                        actualPoiLocation = poiLocation,
                     };
                     allRowsByLevel[currentIterator].rowIndex = currentIterator;
                     allRowsByLevel[currentIterator].rowPoints.Add(firstPointData);
@@ -158,21 +236,34 @@ namespace Runtime.GameControllers
                 {
                     //Create Boss Token
                     var lastPointTransform = InstantiatePointAt(finalPoint.localPosition);
+                    
+                    lastPointTransform.TryGetComponent(out PoiLocation poiLocation);
+                    
+                    if (poiLocation.IsNull())
+                    {
+                        Debug.Log("Doesn't have poiLocation Component");
+                        break;
+                    }
+                    
                     var lastPointData = new PointData
                     {
-                        attachedTransform = lastPointTransform,
+                        actualPoiLocation = poiLocation,
                     };
                     allRowsByLevel[currentIterator].rowIndex = currentIterator;
                     allRowsByLevel[currentIterator].rowPoints.Add(lastPointData);
                     foreach (var point in allRowsByLevel[currentIterator - 1].rowPoints)
                     {
-                        point.connectedPointsAbove.Add(lastPointData.attachedTransform);
-                        ConnectPoints(point.attachedTransform.localPosition,
-                            lastPointData.attachedTransform.localPosition);
+                        point.connectedPointsAbove.Add(lastPointData.actualPoiLocation);
+                        ConnectPoints(point.actualPoiLocation.transform.localPosition,
+                            lastPointData.actualPoiLocation.transform.localPosition);
                     }
                     isGeneratingMap = false;
                     Debug.Log("Finished Points");
                     OnMapGenerated?.Invoke();
+
+                    m_currentPoint = allRowsByLevel[0].rowPoints.FirstOrDefault();
+                    MarkConnectedActive(m_currentPoint);
+
                     yield break;
                 }
 
@@ -201,9 +292,18 @@ namespace Runtime.GameControllers
                     Vector3 _pointPosition = new Vector3(_Xposition, _Yposition, 0);
                     
                     var rowPointTransform = InstantiatePointAt(_pointPosition);
+                    
+                    rowPointTransform.TryGetComponent(out PoiLocation poiLocation);
+                    
+                    if (poiLocation.IsNull())
+                    {
+                        Debug.Log("Doesn't have poiLocation Component");
+                        break;
+                    }
+                    
                     var rowPointData = new PointData
                     {
-                        attachedTransform = rowPointTransform,
+                        actualPoiLocation = poiLocation,
                     };
                     currentRow.rowPoints.Add(rowPointData);
                     
@@ -228,9 +328,9 @@ namespace Runtime.GameControllers
                 {
                     foreach (var pointData in currentRow.rowPoints)
                     {
-                        previousRow.rowPoints[0].connectedPointsAbove.Add(pointData.attachedTransform);
-                        ConnectPoints(previousRow.rowPoints[0].attachedTransform.localPosition,
-                            pointData.attachedTransform.localPosition);
+                        previousRow.rowPoints[0].connectedPointsAbove.Add(pointData.actualPoiLocation);
+                        ConnectPoints(previousRow.rowPoints[0].actualPoiLocation.transform.localPosition,
+                            pointData.actualPoiLocation.transform.localPosition);
                     }
                     
                     currentIterator++;
@@ -245,9 +345,9 @@ namespace Runtime.GameControllers
                 {
                     foreach (var previousPoint in previousRow.rowPoints)
                     {
-                        previousPoint.connectedPointsAbove.Add(currentRow.rowPoints[0].attachedTransform);
-                        ConnectPoints(previousPoint.attachedTransform.localPosition, 
-                            currentRow.rowPoints[0].attachedTransform.localPosition);
+                        previousPoint.connectedPointsAbove.Add(currentRow.rowPoints[0].actualPoiLocation);
+                        ConnectPoints(previousPoint.actualPoiLocation.transform.localPosition, 
+                            currentRow.rowPoints[0].actualPoiLocation.transform.localPosition);
                     }
                     currentIterator++;
                     continue;
@@ -257,9 +357,9 @@ namespace Runtime.GameControllers
                 {
                     for (int i = 0; i < currentRow.rowPoints.Count; i++)
                     {
-                        previousRow.rowPoints[0].connectedPointsAbove.Add(currentRow.rowPoints[i].attachedTransform);
-                        ConnectPoints(previousRow.rowPoints[0].attachedTransform.localPosition,
-                            currentRow.rowPoints[i].attachedTransform.localPosition);
+                        previousRow.rowPoints[0].connectedPointsAbove.Add(currentRow.rowPoints[i].actualPoiLocation);
+                        ConnectPoints(previousRow.rowPoints[0].actualPoiLocation.transform.localPosition,
+                            currentRow.rowPoints[i].actualPoiLocation.transform.localPosition);
                     }
                     currentIterator++;
                     continue;
@@ -271,17 +371,17 @@ namespace Runtime.GameControllers
                     if (i == 0)
                     {
                         
-                        prevRowCurrentPoint.connectedPointsAbove.Add(currentRow.rowPoints[i].attachedTransform);
+                        prevRowCurrentPoint.connectedPointsAbove.Add(currentRow.rowPoints[i].actualPoiLocation);
                         
-                        ConnectPoints(prevRowCurrentPoint.attachedTransform.localPosition,
-                            currentRow.rowPoints[0].attachedTransform.localPosition);
+                        ConnectPoints(prevRowCurrentPoint.actualPoiLocation.transform.localPosition,
+                            currentRow.rowPoints[0].actualPoiLocation.transform.localPosition);
 
                         if (maxColumnsPreviousRow < maxColumnsCurrentRow)
                         {
-                            prevRowCurrentPoint.connectedPointsAbove.Add(currentRow.rowPoints[1].attachedTransform);
+                            prevRowCurrentPoint.connectedPointsAbove.Add(currentRow.rowPoints[1].actualPoiLocation);
                         
-                            ConnectPoints(prevRowCurrentPoint.attachedTransform.localPosition,
-                                currentRow.rowPoints[1].attachedTransform.localPosition);
+                            ConnectPoints(prevRowCurrentPoint.actualPoiLocation.transform.localPosition,
+                                currentRow.rowPoints[1].actualPoiLocation.transform.localPosition);
                         }
                         continue;
                         
@@ -289,17 +389,17 @@ namespace Runtime.GameControllers
                     {
                         var lastPointCurrentRow = currentRow.rowPoints.LastOrDefault();
                        
-                        prevRowCurrentPoint.connectedPointsAbove.Add(lastPointCurrentRow.attachedTransform);
+                        prevRowCurrentPoint.connectedPointsAbove.Add(lastPointCurrentRow.actualPoiLocation);
                         
-                        ConnectPoints(prevRowCurrentPoint.attachedTransform.localPosition,
-                            lastPointCurrentRow.attachedTransform.localPosition);
+                        ConnectPoints(prevRowCurrentPoint.actualPoiLocation.transform.localPosition,
+                            lastPointCurrentRow.actualPoiLocation.transform.localPosition);
 
                         if (maxColumnsPreviousRow < maxColumnsCurrentRow)
                         {
-                            prevRowCurrentPoint.connectedPointsAbove.Add(currentRow.rowPoints[currentRow.rowPoints.Count - 2].attachedTransform);
+                            prevRowCurrentPoint.connectedPointsAbove.Add(currentRow.rowPoints[currentRow.rowPoints.Count - 2].actualPoiLocation);
                         
-                            ConnectPoints(prevRowCurrentPoint.attachedTransform.localPosition,
-                                currentRow.rowPoints[currentRow.rowPoints.Count - 2].attachedTransform.localPosition);
+                            ConnectPoints(prevRowCurrentPoint.actualPoiLocation.transform.localPosition,
+                                currentRow.rowPoints[currentRow.rowPoints.Count - 2].actualPoiLocation.transform.localPosition);
                         }
 
                         continue;
@@ -332,18 +432,18 @@ namespace Runtime.GameControllers
                         {
                             var exactAbovePoint = currentRow.rowPoints[i];
                             availableConnects.Remove(exactAbovePoint);
-                            prevRowCurrentPoint.connectedPointsAbove.Add(exactAbovePoint.attachedTransform);
-                            ConnectPoints(prevRowCurrentPoint.attachedTransform.localPosition,
-                                exactAbovePoint.attachedTransform.localPosition);
+                            prevRowCurrentPoint.connectedPointsAbove.Add(exactAbovePoint.actualPoiLocation);
+                            ConnectPoints(prevRowCurrentPoint.actualPoiLocation.transform.localPosition,
+                                exactAbovePoint.actualPoiLocation.transform.localPosition);
                             continue;
                         }
 
                         var randomOtherConnect = Random.Range(0, availableConnects.Count);
                         var randomPoint = availableConnects[randomOtherConnect];
                         availableConnects.Remove(randomPoint);
-                        prevRowCurrentPoint.connectedPointsAbove.Add(randomPoint.attachedTransform);
-                        ConnectPoints(prevRowCurrentPoint.attachedTransform.localPosition,
-                            randomPoint.attachedTransform.localPosition);
+                        prevRowCurrentPoint.connectedPointsAbove.Add(randomPoint.actualPoiLocation);
+                        ConnectPoints(prevRowCurrentPoint.actualPoiLocation.transform.localPosition,
+                            randomPoint.actualPoiLocation.transform.localPosition);
 
                     }
 
@@ -363,11 +463,47 @@ namespace Runtime.GameControllers
             }
         }
 
+        private void MarkConnectedActive(PointData _currentPoint)
+        {
+            if (_currentPoint.IsNull())
+            {
+                Debug.LogError("Current Point null");
+                return;
+            }
+
+            foreach (var point in _currentPoint.connectedPointsAbove)
+            {
+                point.TryGetComponent(out PoiLocation pointLocation);
+                if (pointLocation)
+                {
+                    pointLocation.SetPointActive();
+                }
+            }
+            
+            
+            
+        }
+
+
+        //ToDo: This is set to completely random, this should be controlled randomness
+        private GameplayEventType GetRandomEventType()
+        {
+            var randomInt = Random.Range(0, allEventTypes.Count);
+            return allEventTypes[randomInt];
+        }
 
         private Transform InstantiatePointAt(Vector3 _instPosition)
         {
             var go = Instantiate(poiPrefab, mapGenParent);
             go.transform.localPosition = _instPosition;
+            
+            //Initialize Point
+            go.TryGetComponent(out PoiLocation pointLocation);
+            if (pointLocation)
+            {
+                pointLocation.Initialize(GetRandomEventType());
+            }
+            
             return go.transform;
         }
 

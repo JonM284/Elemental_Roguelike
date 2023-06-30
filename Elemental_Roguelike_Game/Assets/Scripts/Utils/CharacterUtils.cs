@@ -93,9 +93,9 @@ namespace Utils
             return (i + 1);
         }
 
-        public static IEnumerator AddEnemy(this CharacterStatsBase _enemyStats, Vector3 _spawnPos)
+        public static IEnumerator AddEnemy(this CharacterStatsBase _enemyStats, Vector3 _spawnPos, Vector3 _spawnRot)
         {
-            var waiting = enemyController.C_AddEnemy(_enemyStats, _spawnPos);
+            var waiting = enemyController.C_AddEnemy(_enemyStats, _spawnPos, _spawnRot);
             yield return waiting;
         }
 
@@ -116,7 +116,7 @@ namespace Utils
 
         public static void InstantiatePremadeMeeple(CharacterStatsData meepleData, Vector3 spawnLocation)
         {
-            meepleController.InstantiatePremadeMeeple(meepleData, spawnLocation);
+           // meepleController.InstantiatePremadeMeeple(meepleData, spawnLocation);
         }
 
         public static void DeletePlayerMeeple(string _uid)
