@@ -12,6 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3174c979e6e4c85960b7c354792b687, type: 3}
   m_Name: Defender
   m_EditorClassIdentifier: 
+  classType: 1
+  radius: 2.5
   AgilityStatMin: 60
   AgilityStatMax: 80
   ShootingStatMin: 40
@@ -20,3 +22,5 @@ MonoBehaviour:
   PassingStatMax: 75
   DamageStatMin: 50
   DamageStatMax: 75
+  passiveColor: {r: 0.30989075, g: 1, b: 0.23137254, a: 1}
+  classGUID: 9d38c2b5-8615-4d56-8dd8-4cebfb42703b

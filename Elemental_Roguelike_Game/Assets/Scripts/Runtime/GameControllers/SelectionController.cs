@@ -35,9 +35,7 @@ namespace Runtime.GameControllers
         #region Accessors
 
         public ISelectable currentSelectable { get; private set; }
-
-        public ISelectable currentHovered { get; private set; }
-
+        
         public UnityEngine.Camera mainCamera => CommonUtils.GetRequiredComponent(ref m_mainCamera, () =>
         {
             var c = UnityEngine.Camera.main;
@@ -125,46 +123,6 @@ namespace Runtime.GameControllers
             selectable.OnSelect();
             Debug.Log("<color=#00ff00>Selected</color>");
 
-        }
-
-        private void CheckHover()
-        {
-            if (EventSystem.current.IsPointerOverGameObject())
-            {
-                return;
-            }
-            
-            Debug.Log("TrySelect");
-            if (mainCamera == null)
-            {
-                Debug.LogError("No Camera");
-                return;
-            }
-
-            if (!Physics.Raycast(mainCamera.ScreenPointToRay(Input.mousePosition), out RaycastHit hit, 1000, selectableLayers))
-            {
-                Debug.LogError("No Hit Detected");
-                return;
-            }
-
-            hit.collider.TryGetComponent(out ISelectable selectable);
-
-            if (selectable.IsNull())
-            {
-                Debug.LogError("No Selectable");
-                return;
-            }
-
-            if (currentHovered != selectable)
-            {
-                if (currentHovered != null)
-                {
-                    currentHovered.OnUnHover();
-                }
-                currentHovered = selectable;
-            }
-            
-            selectable.OnHover();
         }
 
         #endregion

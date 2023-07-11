@@ -55,6 +55,8 @@ namespace Data
 
         public List<string> abilityReferences;
 
+        public string classReferenceType;
+
         public string weaponReference;
 
         public string weaponElementTypeRef;

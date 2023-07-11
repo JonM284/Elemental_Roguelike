@@ -1,4 +1,5 @@
 ﻿using System;
+using Data.Sides;
 using Project.Scripts.Utils;
 using Runtime.Character;
 using UnityEngine;
@@ -10,9 +11,13 @@ namespace Runtime.Gameplay
 
         #region Serialized Field
 
-        [Header("Ball Variables")] [SerializeField]
-        private float travelSpeed;
+        [Header("Ball Variables")]
+        [SerializeField] private float m_dragSpeed = 4;
 
+        [SerializeField] private float m_wallRayLegnth = 0.3f;
+
+        [SerializeField] private LayerMask wallLayers;
+        
         [Space(15)] [Header("Player Check")] [SerializeField]
         private float playerCheckRadius;
 
@@ -42,6 +47,12 @@ namespace Runtime.Gameplay
 
         private float m_currentThrowTime;
 
+        private float m_currentBallForce;
+
+        private Vector3 m_ballThrownDirection;
+
+        private bool m_isBallPaused;
+
         #endregion
 
         #region Accessors
@@ -62,7 +73,15 @@ namespace Runtime.Gameplay
         
         public Transform followerTransform { get; private set; }
 
+        public CharacterBase currentOwner { get; private set; }
+
         public bool isThrown { get; private set; }
+
+        public int thrownBallStat { get; private set; }
+
+        public CharacterSide lastThrownCharacterSide { get; private set; }
+
+        public CharacterSide controlledCharacterSide { get; private set; }
 
         #endregion
 
@@ -80,6 +99,11 @@ namespace Runtime.Gameplay
 
         private void Update()
         {
+            if (m_isBallPaused)
+            {
+                return;
+            }
+            
             if (isControlled)
             {
                 FollowTransform();
@@ -94,13 +118,21 @@ namespace Runtime.Gameplay
         
         #region Class Implementation
 
-        public void ThrowBall(Vector3 direction, float throwForce, bool _isThrown)
+        public void ThrowBall(Vector3 direction, float throwForce, bool _isThrown, CharacterSide _characterSide, int _thrownBallStat)
         {
+            thrownBallStat = _thrownBallStat;
             m_currentThrowTime = 0;
             isThrown = _isThrown;
+            if (isThrown)
+            {
+                lastThrownCharacterSide = _characterSide;
+            }
             isControlled = false;
+            controlledCharacterSide = null;
             followerTransform = null;
-            rb.AddForce(direction.normalized * throwForce, ForceMode.Impulse);
+            currentOwner = null;
+            m_ballThrownDirection = direction;
+            m_currentBallForce = throwForce;
         }
 
         private void FollowTransform()
@@ -117,12 +149,29 @@ namespace Runtime.Gameplay
             
             BouncyFloat();
             MarkGround();
+
+            if (m_currentBallForce > 0)
+            {
+                if (Physics.Raycast(transform.position, m_ballThrownDirection, out RaycastHit hit, m_wallRayLegnth, wallLayers))
+                {
+                    m_ballThrownDirection = Vector3.Reflect(m_ballThrownDirection, hit.normal);
+                }
+                
+                m_currentBallForce -= m_dragSpeed * Time.deltaTime;
+                var ballVelocity = m_ballThrownDirection.normalized * (m_currentBallForce * Time.deltaTime);
+                rb.MovePosition(rb.position + ballVelocity);
+            }
+            
             if (m_currentThrowTime > m_afterThrowThreshold)
             {
                 CheckForPlayer();
-                if (isThrown)
+                if (rb.velocity == Vector3.zero)
                 {
-                    isThrown = false;
+                    if (isThrown)
+                    {
+                        isThrown = false;
+                        thrownBallStat = 0;
+                    }    
                 }
             }
             else
@@ -167,6 +216,18 @@ namespace Runtime.Gameplay
                     if (!interactable.IsNull())
                     { 
                         isControlled = true;
+                        if (isThrown)
+                        {
+                            m_currentBallForce = 0;
+                        }
+                        if (interactable is CharacterBase characterBase)
+                        {
+                            if (!characterBase.canPickupBall)
+                            {
+                                return;
+                            }
+                            controlledCharacterSide = characterBase.side;
+                        }
                         interactable?.PickUpBall(this);
                         groundIndicator.SetActive(!isControlled);
                     }
@@ -174,12 +235,23 @@ namespace Runtime.Gameplay
             }
         }
 
-        public void SetFollowTransform(Transform _follower)
+        public void SetFollowTransform(Transform _follower, CharacterBase _ownerCharacter)
         {
             followerTransform = _follower.transform;
+            currentOwner = _ownerCharacter;
         }
-        
-        
+
+
+        public void SetBallPause(bool _isPaused)
+        {
+            m_isBallPaused = _isPaused;
+        }
+
+        public void ForceStopBall()
+        {
+            m_currentBallForce = 0;
+        }
+
 
         #endregion
 

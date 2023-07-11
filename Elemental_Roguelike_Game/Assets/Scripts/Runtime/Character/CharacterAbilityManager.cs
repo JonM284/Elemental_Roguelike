@@ -41,6 +41,10 @@ namespace Runtime.Character
 
         [SerializeField] private GameObject abilityRangeIndicator;
 
+        [SerializeField] private GameObject abilityPositionIndicator;
+
+        [SerializeField] private LineRenderer abilityDirectionIndicator;
+
         #endregion
 
         #region Private Fields
@@ -54,6 +58,9 @@ namespace Runtime.Character
         private CharacterRotation m_characterRotation;
 
         private CharacterBase m_characterBase;
+
+        private float m_floorOffset = 0.1f;
+        
         #endregion
 
         #region Accessors
@@ -112,6 +119,11 @@ namespace Runtime.Character
             
             SelectAbilityTarget(_selectedCharacter.transform);
         }
+
+        public List<AssignedAbilities> GetAssignedAbilities()
+        {
+            return m_assignedAbilities;
+        }
         
         public void InitializeCharacterAbilityList(List<string> _abilities)
         {
@@ -165,14 +177,59 @@ namespace Runtime.Character
             
             m_assignedAbilities[_abilityIndex].ability.Initialize(this.gameObject);
             m_activeAbilityIndex = _abilityIndex;
-            abilityRangeIndicator.SetActive(true);
+            SetIndicators(true, m_assignedAbilities[_abilityIndex].ability.targetType == AbilityTargetType.DIRECTIONAL);
             abilityRangeIndicator.transform.localScale = Vector3.one * (m_assignedAbilities[_abilityIndex].ability.range * 2);
 
-            
             if (abilityUseCallback != null)
             {
                 OnAbilityUsed = abilityUseCallback;
             }
+            
+            if (m_assignedAbilities[_abilityIndex].ability.targetType == AbilityTargetType.SELF)
+            {
+                UseActiveAbility();   
+            }
+        }
+
+        public void MarkAbility(Vector3 _position)
+        {
+            if (m_activeAbilityIndex == -1)
+            {
+                return;
+            }
+            
+            if (m_assignedAbilities[m_activeAbilityIndex].IsNull())
+            {
+                return;
+            }
+            
+            switch (m_assignedAbilities[m_activeAbilityIndex].ability.targetType)
+            {
+                case AbilityTargetType.CHARACTER_TRANSFORM:
+                    if (abilityPositionIndicator.activeInHierarchy)
+                    {
+                        abilityPositionIndicator.SetActive(false);
+                    }
+                    break;
+                case AbilityTargetType.LOCATION: case AbilityTargetType.FREE:
+                    var direction = _position - transform.position;
+                    if (direction.magnitude > m_assignedAbilities[m_activeAbilityIndex].ability.range)
+                    {
+                        return;
+                    }
+                    abilityPositionIndicator.transform.position = new Vector3(_position.x, m_floorOffset, _position.z);
+                    break;
+                case AbilityTargetType.DIRECTIONAL:
+                    var localDirection = _position - transform.localPosition;
+                    var finalPoint = (localDirection.normalized * m_assignedAbilities[m_activeAbilityIndex].ability.range);
+                    
+                    abilityDirectionIndicator.SetPosition(1, new Vector3(finalPoint.x, finalPoint.z, 0));
+                    break;
+                case AbilityTargetType.SELF:
+                    abilityPositionIndicator.transform.position = new Vector3(_position.x, m_floorOffset, _position.z);
+                    break;
+            }
+            
         }
 
         public void CancelAbilityUse()
@@ -182,7 +239,7 @@ namespace Runtime.Character
                 return;
             }
 
-            abilityRangeIndicator.SetActive(false);
+            SetIndicators(false,false);
             
             m_assignedAbilities[m_activeAbilityIndex].ability.CancelAbilityUse();
             m_activeAbilityIndex = m_defaultInactiveAbilityIndex;
@@ -207,10 +264,16 @@ namespace Runtime.Character
                 Debug.Log("<color=red>Can't hit target</color>");
                 return;
             }
+
+            if (!IsInRange(_targetTransform.position))
+            {
+                Debug.Log($"<color=red>Target OUT OF RANGE</color>");
+                return;
+            }
             
             m_assignedAbilities[m_activeAbilityIndex].ability.SelectTarget(_targetTransform);
             characterRotation.SetRotationTarget(_targetTransform.position);
-            abilityRangeIndicator.SetActive(false);
+            SetIndicators(false, false);
             OnAbilityUsed?.Invoke();
         }
 
@@ -239,11 +302,35 @@ namespace Runtime.Character
                 CancelAbilityUse();
                 return;
             }
+
+            if (!IsInRange(_targetPos))
+            {
+                Debug.Log($"<color=red>Target OUT OF RANGE</color>");
+                return;
+            }
             
             m_assignedAbilities[m_activeAbilityIndex].ability.SelectPosition(_targetPos);
             characterRotation.SetRotationTarget(_targetPos);
-            abilityRangeIndicator.SetActive(false);
+            SetIndicators(false,false);
             OnAbilityUsed?.Invoke();
+        }
+
+        private void SetIndicators(bool _active, bool isDir)
+        {
+            if (abilityDirectionIndicator.IsNull() || abilityPositionIndicator.IsNull() || abilityRangeIndicator.IsNull())
+            {
+                return;
+            }
+            
+            if (isDir)
+            {
+                abilityDirectionIndicator.gameObject.SetActive(_active);
+            }
+            else
+            {
+                abilityPositionIndicator.SetActive(_active);
+            }
+            abilityRangeIndicator.SetActive(_active);
         }
 
         public void CheckAbilityCooldown()
@@ -283,6 +370,24 @@ namespace Runtime.Character
             }
 
             return true;
+        }
+
+        private bool IsInRange(Vector3 _checkPos)
+        {
+            if (m_assignedAbilities[m_activeAbilityIndex].IsNull())
+            {
+                return false;
+            }
+            
+            var dir = _checkPos - transform.position;
+            var magnitude = dir.magnitude;
+
+            if (magnitude <= m_assignedAbilities[m_activeAbilityIndex].ability.range)
+            {
+                return true;
+            }
+
+            return false;
         }
 
         #endregion

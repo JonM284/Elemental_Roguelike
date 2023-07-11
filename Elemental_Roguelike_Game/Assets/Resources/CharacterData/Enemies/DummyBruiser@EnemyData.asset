@@ -10,22 +10,20 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6e30cf3dd6a8ee349ac5bc304a59fcb7, type: 3}
-  m_Name: DummyEnemyData
+  m_Name: DummyBruiser@EnemyData
   m_EditorClassIdentifier: 
   initiativeNumber: 10
   baseSpeed: 4.3
-  baseHealth: 10
-  baseShields: 0
-  movementDistance: 3
-  baseDamage: 1
+  baseHealth: 100
+  baseShields: 100
+  movementDistance: 4
+  baseDamage: 10
   characterColor: {r: 0.9607843, g: 0.30588236, b: 0.30588236, a: 1}
-  typing: {fileID: 11400000, guid: 3007beed4b27d8b458961ac106f278d9, type: 2}
+  typing: {fileID: 11400000, guid: e835342fdbc753849a4b2cb4161a5a57, type: 2}
   abilities: []
+  classTyping: {fileID: 11400000, guid: 2c9f419d2dfa1b84489eb60e15d61b2e, type: 2}
   characterAssetRef:
-    m_AssetGUID: 7d1b484c198848749923dbd53bcf7f19
+    m_AssetGUID: 1a99046e5ff561246ac6f06794a8e1bc
     m_SubObjectName: 
     m_SubObjectType: 
     m_EditorAssetChanged: 0
-  enemyPrioritizeCover: 0
-  weaponData: {fileID: 11400000, guid: f3ee36ecf34c26f46b4c1cc6f3d6a01a, type: 2}
-  weaponTyping: {fileID: 11400000, guid: dff32d43cdb15e64d9f95e5f1c9a2574, type: 2}

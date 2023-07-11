@@ -33,6 +33,10 @@ MonoBehaviour:
     m_Address: BurnEffect
     m_ReadOnly: 0
     m_SerializedLabels: []
+  - m_GUID: bf1afa4991ef8fd42b3876f4083dc667
+    m_Address: BubbleExplosion@VFX
+    m_ReadOnly: 0
+    m_SerializedLabels: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: c51bc8bdb2bb6e5479c05b7cf9bc0f75, type: 2}
   m_SchemaSet:

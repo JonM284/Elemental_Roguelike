@@ -44,9 +44,6 @@ namespace Runtime.GameControllers
         public static event Action OnBattleStarted;
 
         public static event Action<CharacterSide> OnChangeActiveTeam;
-
-        public static event Action<CharacterBase> OnChangeCharacterTurn;
-
         public static event Action<CharacterBase> OnChangeActiveCharacter;
 
         public static event Action OnBattleEnded;
@@ -91,6 +88,8 @@ namespace Runtime.GameControllers
 
         private int activeTeamID = 0;
 
+        private Vector3 ballInitialPosition;
+
         #endregion
 
         #region Accessors
@@ -100,6 +99,8 @@ namespace Runtime.GameControllers
         public BallBehavior ball { get; private set; }
 
         public CharacterBase activeCharacter { get; private set; }
+
+        public bool isPlayerTurn => battlersBySides[activeTeamID].teamSide == playerSide;
         
         public Transform knockedOutPlayerPool =>
             CommonUtils.GetRequiredComponent(ref m_knockedPlayerPool, ()=>
@@ -149,6 +150,21 @@ namespace Runtime.GameControllers
             return battlersBySides[activeTeamID].teamMembers;
         }
 
+        public CharacterSide GetActiveTeamSide()
+        {
+            return battlersBySides[activeTeamID].teamSide;
+        }
+
+        public ArenaTeamManager GetTeamManager(CharacterSide _side)
+        {
+            return teamManagers.FirstOrDefault(atm => atm.characterSide == _side);
+        }
+
+        public ArenaTeamManager GetPlayerManager()
+        {
+            return teamManagers.FirstOrDefault(atm => atm.characterSide == playerSide);
+        }
+
         [ContextMenu("Start Match")]
         public void SetupMatch()
         {
@@ -176,7 +192,7 @@ namespace Runtime.GameControllers
 
             if (ballRef.IsNull())
             {
-                
+                //spawn ball
             }
 
             ball = ballRef;
@@ -353,19 +369,28 @@ namespace Runtime.GameControllers
             }
             
             activeCharacter = _character;
+
+            CameraUtils.SetCameraTrackPos(activeCharacter.transform.position, false);
+            CameraUtils.SetCameraZoom(0.7f);
             
             OnChangeActiveCharacter?.Invoke(activeCharacter);
 
         }
         
+        //Use this for AI only
         private void OnCharacterEndedTurn(CharacterBase _character)
         {
             if (_character == activeCharacter)
             {
                 activeCharacter = null;
             }
+
+            if (_character.side == playerSide)
+            {
+                return;
+            }
             
-            if (!battlersBySides[activeTeamID].teamMembers.TrueForAll(cb => cb.characterActionPoints == 0))
+            if (!battlersBySides[activeTeamID].teamMembers.FindAll(cb => cb.isAlive).TrueForAll(cb => cb.finishedTurn))
             {
                 return;
             }
@@ -374,10 +399,14 @@ namespace Runtime.GameControllers
             StartCoroutine(C_EndTeamTurn());
         }
 
+        public void EndTeamTurn()
+        {
+            StartCoroutine(C_EndTeamTurn());
+        }
+
         private IEnumerator C_EndTeamTurn()
         {
             
-
             yield return new WaitForSeconds(0.5f);
 
             activeTeamID++;
@@ -385,7 +414,13 @@ namespace Runtime.GameControllers
             {
                 activeTeamID = 0;
             }
-            
+
+            if (battlersBySides[activeTeamID].teamMembers.Count == 0)
+            {
+                StartCoroutine(C_EndTeamTurn());
+                yield break;
+            }
+
             SetTeamActive();
 
         }
@@ -403,6 +438,9 @@ namespace Runtime.GameControllers
                 Debug.Log("<color=red>IS ENEMY TEAM START</color>");
                 StartCoroutine(C_EnemyAITurn());
             }
+            
+            CameraUtils.SetCameraZoom(1f);
+            CameraUtils.SetCameraTrackPos(Vector3.zero, false);
             
             OnChangeActiveTeam?.Invoke(battlersBySides[activeTeamID].teamSide);
         }
@@ -422,20 +460,103 @@ namespace Runtime.GameControllers
 
             foreach (var currentMember in enemySide.teamMembers)
             {
+                if (!currentMember.isAlive)
+                {
+                    continue;
+                }
+                
+                activeCharacter = currentMember;
+                
                 Debug.Log("Invoking");
-                OnChangeCharacterTurn?.Invoke(currentMember);
+                OnChangeActiveCharacter?.Invoke(currentMember);
 
+                CameraUtils.SetCameraTrackPos(activeCharacter.transform, true);
+                CameraUtils.SetCameraZoom(0.5f);
+                
                 yield return null;
                 
                 Debug.Log("BEFORE ENEMY CHARACTER TURN");
-                yield return new WaitUntil(() => currentMember.characterActionPoints == 0);
+                yield return new WaitUntil(() => currentMember.finishedTurn);
                 Debug.Log("AFTER ENEMY CHARACTER TURN");
 
                 yield return new WaitForSeconds(0.5f);
 
+                CameraUtils.SetCameraZoom(1f);
+
             }
 
 
+        }
+
+        public IEnumerator C_ResetField(CharacterSide _characterSide)
+        {
+            
+            UIUtils.FadeBlack(true);
+            
+            yield return new WaitForSeconds(1f);
+            
+            if (!ball.IsNull())
+            {
+                ball.transform.position = ballInitialPosition;
+                ball.gameObject.SetActive(true);
+            }
+
+            var playerTeam = battlersBySides.FirstOrDefault(bbs => bbs.teamSide == playerSide);
+            var playerManager = GetPlayerManager();
+            
+            if (playerTeam.teamMembers.Count > 0)
+            {
+                for (int i = 0; i < playerTeam.teamMembers.Count; i++)
+                {
+                    var currentMember = playerTeam.teamMembers[i];
+                    if (!currentMember.isAlive)
+                    {
+                        currentMember.OnRevive();
+                    }
+                    currentMember.transform.position = playerManager.startPositions[i].transform.position;
+                }
+            }
+            
+            
+            var enemyTeam = battlersBySides.FirstOrDefault(bbs => bbs.teamSide == enemySide);
+            var enemyManager = GetTeamManager(enemySide);
+            
+            if (enemyTeam.teamMembers.Count > 0)
+            {
+                for (int i = 0; i < enemyTeam.teamMembers.Count; i++)
+                { 
+                    var currentMember = enemyTeam.teamMembers[i];
+                    if (!currentMember.isAlive)
+                    {
+                        currentMember.OnRevive();
+                    }
+                    currentMember.transform.position = enemyManager.startPositions[i].transform.position;
+                }
+            }
+            
+            var neutralTeam = battlersBySides.FirstOrDefault(bbs => bbs.teamSide == neutralSide);
+
+            if (neutralTeam.teamMembers.Count > 0)
+            {
+                //ToDo: Reset them somehow
+            }
+
+            //Set other team active
+            for (int i = 0; i < battlersBySides[m_currentTeamTurnIndex].teamMembers.Count; i++)
+            {
+                var activeTeamBattler = battlersBySides[m_currentTeamTurnIndex].teamMembers[i];
+                activeTeamBattler.EndTurn();
+            }
+
+            yield return new WaitForSeconds(0.5f);
+            
+            UIUtils.FadeBlack(false);
+
+        }
+
+        public void ResetField(CharacterSide _characterSide)
+        {
+            StartCoroutine(C_ResetField(_characterSide));
         }
 
         private void OnCharacterDied(CharacterBase _character)

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Data.Elements;
+using Project.Scripts.Utils;
 using UnityEngine;
 
 namespace Runtime.Character
@@ -13,11 +14,17 @@ namespace Runtime.Character
         
         private static readonly int DarkColor = Shader.PropertyToID("_DarkColor");
         
+        private static readonly int OutlineThickness = Shader.PropertyToID("_OutlineThickness");
+        
+        private static readonly int OutlineColor = Shader.PropertyToID("_OutlineColor");
+
         #endregion
         
         #region Serialized Fields
 
         [SerializeField] private GameObject characterVisual;
+
+        [SerializeField] private Color highlightColor;
 
         [SerializeField] private List<SkinnedMeshRenderer> meepleSkinnedMeshRenderers = new List<SkinnedMeshRenderer>();
 
@@ -28,6 +35,14 @@ namespace Runtime.Character
         #region Private Fields
 
         private Material m_clonedMaterial;
+
+        private float m_originalHighlightThickness;
+
+        private float m_highlightMaxThickness = 0.05f;
+
+        private Color m_originalHighlightColor;
+
+        private Material m_highlightMaterial;
 
         #endregion
 
@@ -45,7 +60,17 @@ namespace Runtime.Character
             {
                 characterModel = characterVisual;
             }
-            
+
+            var _mat = characterModel.GetComponent<SkinnedMeshRenderer>().materials[0];
+            if (_mat.IsNull())
+            {
+                Debug.Log("Can not find material // or skinned mesh renderer");
+                return;
+            }
+
+            InitializeHighlightVariables(_mat);
+
+
         }
 
         public void InitializeMeepleCharacterVisuals(ElementTyping _type)
@@ -70,7 +95,28 @@ namespace Runtime.Character
             
             m_clonedMaterial.SetColor(LightColor, _type.meepleColors[0]);
             m_clonedMaterial.SetColor(DarkColor, _type.meepleColors[1]);
-            
+
+            InitializeHighlightVariables(m_clonedMaterial);
+        }
+
+        private void InitializeHighlightVariables(Material _associatedMaterial)
+        {
+            m_highlightMaterial = _associatedMaterial;
+
+            m_originalHighlightThickness = m_highlightMaterial.GetFloat(OutlineThickness);
+            m_originalHighlightColor = m_highlightMaterial.GetColor(OutlineColor);
+        }
+        
+        public void SetHighlight()
+        {
+            m_highlightMaterial.SetFloat(OutlineThickness, m_highlightMaxThickness);
+            m_highlightMaterial.SetColor(OutlineColor, highlightColor);
+        }
+
+        public void SetUnHighlight()
+        {
+            m_highlightMaterial.SetFloat(OutlineThickness, m_originalHighlightThickness);
+            m_highlightMaterial.SetColor(OutlineColor, m_originalHighlightColor);
         }
 
         

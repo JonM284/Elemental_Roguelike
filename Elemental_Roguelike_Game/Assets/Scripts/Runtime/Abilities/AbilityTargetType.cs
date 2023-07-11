@@ -5,6 +5,7 @@
         CHARACTER_TRANSFORM,
         LOCATION,
         FREE, 
-        DIRECTIONAL
+        DIRECTIONAL,
+        SELF
     }
 }

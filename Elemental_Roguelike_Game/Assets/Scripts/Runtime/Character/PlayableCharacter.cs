@@ -21,9 +21,11 @@ namespace Runtime.Character
         public override void InitializeCharacter()
         {
             var elementType = ElementUtils.GetElementTypeByGUID(m_characterStatsData.meepleElementTypeRef);
+            var classType = MeepleController.Instance.GetClassByGUID(m_characterStatsData.classReferenceType);
+
             characterVisuals.InitializeMeepleCharacterVisuals(elementType);
             
-            characterMovement.InitializeCharacterMovement(m_characterStatsData.baseSpeed, m_characterStatsData.movementDistance);
+            characterMovement.InitializeCharacterMovement(m_characterStatsData.baseSpeed, m_characterStatsData.movementDistance, m_characterStatsData.damageScore, elementType);
             
             characterLifeManager.InitializeCharacterHealth(m_characterStatsData.baseHealth, m_characterStatsData.baseShields,
                 m_characterStatsData.currentHealth, m_characterStatsData.currentShield, elementType);
@@ -32,7 +34,8 @@ namespace Runtime.Character
             {
                 characterAbilityManager.InitializeCharacterAbilityList(m_characterStatsData.abilityReferences);
             }
-
+            
+            characterClassManager.InitializedCharacterPassive(classType);
             
             /*
             var weaponData = WeaponUtils.GetDataByRef(m_characterStatsData.weaponReference);
@@ -93,6 +96,6 @@ namespace Runtime.Character
 
         #endregion
 
-        
+
     }
 }

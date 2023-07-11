@@ -1,9 +1,12 @@
 using System;
 using System.Linq;
 using Data;
+using Data.Elements;
 using Project.Scripts.Utils;
+using Runtime.Damage;
 using Runtime.Environment;
 using Runtime.GameControllers;
+using Runtime.Gameplay;
 using Runtime.Selection;
 using UnityEngine;
 using UnityEngine.AI;
@@ -26,10 +29,10 @@ namespace Runtime.Character
         #region SerializedFields
     
         [SerializeField] private float gravity;
-
-        [SerializeField] private LayerMask obstacleLayer;
-
+        
         [SerializeField] private GameObject movementRangeIndicator;
+
+        [SerializeField] private GameObject movementPositionIndicator;
         
         #endregion
 
@@ -54,7 +57,21 @@ namespace Runtime.Character
         private float m_startTime;
 
         private bool m_isPerformingMelee;
-        
+
+        private bool m_hasPerformedMelee;
+
+        private bool m_isKnockedBack;
+
+        private float m_knockbackTimer;
+
+        private float m_knockbackForce;
+
+        private float m_originalMoveDistance;
+
+        private float m_floorOffset = 0.1f;
+
+        private Vector3 m_knockbackDir;
+
         private CharacterController m_characterController;
     
         private NavMeshPath m_navMeshPath;
@@ -66,6 +83,10 @@ namespace Runtime.Character
         public float speed { get; private set; }
 
         public float battleMoveDistance { get; private set; }
+
+        public int tackleDamage { get; private set; }
+
+        public ElementTyping tackleDamageType { get; private set; }
 
         public float maxGravity => gravity * 20f;
 
@@ -82,38 +103,19 @@ namespace Runtime.Character
         public bool isMoving => m_isMovingOnPath;
 
         public bool isUsingMoveAction => m_canMove;
-        
 
         #endregion
 
         #region Unity Events
 
-        private void OnDrawGizmos()
-        {
-            Gizmos.DrawWireSphere(transform.position, battleMoveDistance);
-            if (m_navMeshPath != null)
-            {
-                if (m_navMeshPath.corners.Length > 0)
-                {
-                    for (int i = 0; i < m_navMeshPath.corners.Length; i++)
-                    {
-                        Gizmos.color = Color.green;
-                        Gizmos.DrawWireSphere(m_navMeshPath.corners[i], 0.5f);
-                        if (i > 0)
-                        {
-                            Gizmos.DrawLine(m_navMeshPath.corners[i-1], m_navMeshPath.corners[i]);
-                        }
-                    }
-                    
-                }
-            }
-            
-        }
-
         private void Update()
         {
             if (!m_canMove)
             {
+                if (!characterController.isGrounded)
+                {
+                    DoGravity();
+                }
                 return;
             }
             
@@ -125,19 +127,40 @@ namespace Runtime.Character
             {
                 HandleMovement();
             }
+
+            CheckKnockback();
         }
 
         #endregion
     
         #region Class Implementation
 
-        public void InitializeCharacterMovement(float _speed, float _moveDistance)
+        public void InitializeCharacterMovement(float _speed, float _moveDistance, int _tackleDamage, ElementTyping _damageType)
         {
             speed = _speed;
             battleMoveDistance = _moveDistance;
+            m_originalMoveDistance = _moveDistance;
+            tackleDamage = _tackleDamage;
+            tackleDamageType = _damageType;
         }
 
-        public void MoveCharacter(Vector3 _movePosition)
+        public void MarkMovementLocation(Vector3 _position)
+        {
+            if (movementPositionIndicator.IsNull())
+            {
+                return;
+            }
+
+            var distanceToPos = _position - transform.position;
+            if (distanceToPos.magnitude >= battleMoveDistance)
+            {
+                return;
+            }
+            
+            movementPositionIndicator.transform.position = new Vector3(_position.x, m_floorOffset, _position.z);
+        }
+
+        public void MoveCharacter(Vector3 _movePosition, bool _isTackle)
         {
             if (!m_canMove || isMoving)
             {
@@ -167,9 +190,9 @@ namespace Runtime.Character
             }
 
             Debug.Log("Has Created Path");
-            
-            movementRangeIndicator.SetActive(false);
 
+            SetIndicators(false);
+            m_isPerformingMelee = _isTackle;
             m_currentMovePointIndex = 1;
             m_currentMovePoint = m_navMeshPath.corners[m_currentMovePointIndex];
             m_startPos = playerPosition.position;
@@ -192,6 +215,24 @@ namespace Runtime.Character
                 return;
             }
 
+            if (m_isPerformingMelee)
+            {
+                if (m_currentMovePointIndex == m_navMeshPath.corners.Length - 1)
+                {
+                    var percentage = (transform.position - m_startPos).magnitude / (m_finalPos - m_startPos).magnitude;
+
+                    if (percentage > 0.9)
+                    {
+                        if (!m_hasPerformedMelee)
+                        {
+                            PerformMelee();
+                        }    
+                    }
+                    
+                }
+            }
+            
+            
             var diff = m_currentMovePoint - transform.position.FlattenVector3Y();
             if (Vector3.Distance(transform.position.FlattenVector3Y(), m_currentMovePoint.FlattenVector3Y()) > 0.1f) {
                 
@@ -207,14 +248,7 @@ namespace Runtime.Character
                 }
                 else
                 {
-                    m_isMovingOnPath = false;
-                    m_canMove = false;    
-
-                    OnFinishMovementCallback?.Invoke();
-                    
-                    OnFinishMovementCallback = null;
-                    OnBeforeMovementCallback = null;
-                    
+                    ForceStopMovement();
                     return;
                 }
             }
@@ -226,12 +260,65 @@ namespace Runtime.Character
         {
             isInBattle = _isInBattle;
         }
+
+        public void ForceStopMovement()
+        {
+            m_isMovingOnPath = false;
+            m_canMove = false;    
+
+            OnFinishMovementCallback?.Invoke();
+                    
+            OnFinishMovementCallback = null;
+            OnBeforeMovementCallback = null;
+                    
+            if (m_isPerformingMelee)
+            {
+                m_isPerformingMelee = false;
+                m_hasPerformedMelee = false;
+            }
+
+            if (battleMoveDistance > m_originalMoveDistance)
+            {
+                battleMoveDistance = m_originalMoveDistance;
+            }
+        }
+
+        public void ApplyKnockback(float _knockbackForce, Vector3 _direction, float _duration)
+        {
+            m_knockbackTimer = _duration;
+            m_knockbackDir = _direction;
+            m_knockbackForce = _knockbackForce;
+            m_isKnockedBack = true;
+            m_canMove = true;
+        }
+
+        private void CheckKnockback()
+        {
+            if (!m_isKnockedBack)
+            {
+                return;
+            }
+
+            if (m_knockbackTimer > 0)
+            {
+                Debug.Log("Knockback countdown");
+                m_knockbackTimer -= Time.deltaTime;
+            }else if (m_knockbackTimer <= 0)
+            {
+                Debug.Log("Finish KnockBack");
+                m_isKnockedBack = false;
+                m_canMove = false;
+            }
+            
+            Vector3 knockbackVelocity = m_knockbackDir.normalized * m_knockbackForce;
+            characterController.Move(knockbackVelocity * Time.deltaTime);
+        }
         
         public void SetCharacterMovable(bool _canMove, Action _beginningAction = null ,Action _finishActionCallback = null)
         {
             m_canMove = _canMove;
-            
-            movementRangeIndicator.SetActive(_canMove);
+
+            SetIndicators(_canMove);
 
             if (!_canMove)
             {
@@ -267,6 +354,46 @@ namespace Runtime.Character
             characterController.enabled = false;
             transform.position = _fixedTeleportPos;
             characterController.enabled = true;
+        }
+
+        public void ChangeMovementRange(float _newRange)
+        {
+            battleMoveDistance = _newRange;
+        }
+
+        private void SetIndicators(bool _isActive)
+        {
+            if (movementRangeIndicator.IsNull() || movementPositionIndicator.IsNull())
+            {
+                return;
+            }
+            
+            movementRangeIndicator.SetActive(_isActive);
+            movementPositionIndicator.SetActive(_isActive);
+        }
+        
+        private void PerformMelee()
+        {
+            Collider[] colliders = Physics.OverlapSphere(transform.position, 1);
+
+            if (colliders.Length > 0)
+            {
+                foreach (var collider in colliders)
+                {
+                    if (collider == characterController)
+                    {
+                        continue;
+                    }
+
+                    collider.TryGetComponent(out IDamageable damageable);
+                    if (!damageable.IsNull())
+                    {
+                        damageable?.OnDealDamage(this.transform, tackleDamage, false, tackleDamageType, true);
+                    }
+                }
+            }
+
+            m_hasPerformedMelee = true;
         }
 
         #endregion

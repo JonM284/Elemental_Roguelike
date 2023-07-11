@@ -46,7 +46,9 @@ namespace Runtime.GameControllers
         [SerializeField] private AssetReference meepleAsset;
 
         [SerializeField] private AssetReference enemyMeeplAsset;
-        
+
+        [SerializeField] private List<CharacterClassData> m_possibleClasses = new List<CharacterClassData>();
+
         #endregion
         
         #region Private Fields
@@ -92,6 +94,17 @@ namespace Runtime.GameControllers
         {
            
         }
+
+        private CharacterClassData GetRandomClassType()
+        {
+            var randomInt = Random.Range(0, m_possibleClasses.Count);
+            return m_possibleClasses[randomInt];
+        }
+        public CharacterClassData GetClassByGUID(string _guid)
+        {
+            Debug.Log(_guid);
+            return m_possibleClasses.FirstOrDefault(ccd => ccd.classGUID == _guid);
+        }
         
         
         [ContextMenu("Create Character")]
@@ -109,11 +122,12 @@ namespace Runtime.GameControllers
         private void RandomizeCharacterVariables(CharacterStatsData _character)
         {
             _character.meepleElementTypeRef = ElementUtils.GetRandomElement().elementGUID;
+            _character.classReferenceType = GetRandomClassType().classGUID;
             _character.initiativeNumber = Random.Range(1, 20);
             _character.damageScore = Random.Range(1, 10);
             _character.baseHealth = Random.Range(10, 20);
             _character.baseShields = Random.Range(10, 20);
-            _character.baseSpeed = 5f;
+            _character.baseSpeed = 10f;
             //ToDo: Change movement distance
             _character.movementDistance = 5;
             

@@ -24,7 +24,7 @@ namespace Runtime.Status
                 return;
             }
             
-            affectedCharacter.OnDealDamage(damageOverTime, isArmorPiercing, abilityElement);
+            affectedCharacter.OnDealDamage(affectedCharacter.transform, damageOverTime, isArmorPiercing, abilityElement, false);
         }
 
         #endregion

@@ -38,11 +38,19 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 7d1b484c198848749923dbd53bcf7f19
-    m_Address: DummyEnemy@Enemy
+    m_Address: DummyStrikerEnemy@Enemy
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: bf3ff5bde6d13c74f81c699356691840
     m_Address: DisplayMeeple
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 1a99046e5ff561246ac6f06794a8e1bc
+    m_Address: DummyBruiserEnemy@Enemy
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 025833770be343149b0bc011b785969e
+    m_Address: DummyDefenderEnemy@Enemy
     m_ReadOnly: 0
     m_SerializedLabels: []
   m_ReadOnly: 0

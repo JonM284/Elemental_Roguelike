@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Data;
 using Data.Elements;
 using Runtime.Abilities;
 using Runtime.Weapons;
@@ -42,13 +43,9 @@ namespace Project.Scripts.Data
 
         public List<Ability> abilities;
 
+        public CharacterClassData classTyping;
+
         public AssetReference characterAssetRef;
-
-        public bool enemyPrioritizeCover;
-
-        public WeaponData weaponData;
-        
-        public ElementTyping weaponTyping;
 
 
         #endregion

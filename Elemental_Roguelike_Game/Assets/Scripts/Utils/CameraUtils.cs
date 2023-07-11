@@ -1,4 +1,6 @@
 ﻿using Project.Scripts.Utils;
+using Runtime.Camera;
+using UnityEngine;
 
 namespace Utils
 {
@@ -9,6 +11,10 @@ namespace Utils
 
         private static UnityEngine.Camera m_mainCamera;
 
+        private static CameraPositionTracker m_cameraPositionTracker;
+
+        private static CameraZoomTracker m_cameraZoomTracker;
+        
         #endregion
 
         #region Accessors
@@ -19,6 +25,22 @@ namespace Utils
             return c;
         });
 
+        private static CameraPositionTracker cameraPositionTracker => CommonUtils.GetRequiredComponent(
+            ref m_cameraPositionTracker,
+            () =>
+            {
+                var cpt = mainCamera.GetComponentInParent<CameraPositionTracker>();
+                return cpt;
+            });
+        
+        private static CameraZoomTracker cameraZoomTracker => CommonUtils.GetRequiredComponent(
+            ref m_cameraZoomTracker,
+            () =>
+            {
+                var cpt = mainCamera.GetComponentInParent<CameraZoomTracker>();
+                return cpt;
+            });
+
         #endregion
 
         #region Class Implementation
@@ -26,6 +48,21 @@ namespace Utils
         public static UnityEngine.Camera GetMainCamera()
         {
             return mainCamera;
+        }
+
+        public static void SetCameraTrackPos(Vector3 _trackPos, bool _isLocked)
+        {
+            cameraPositionTracker.SetTrackCamera(_trackPos, _isLocked);
+        }
+        
+        public static void SetCameraTrackPos(Transform _trackPos, bool _isLocked)
+        {
+            cameraPositionTracker.SetTrackCamera(_trackPos, _isLocked);
+        }
+
+        public static void SetCameraZoom(float _zoomPercentage)
+        {
+            cameraZoomTracker.SetNewValue(_zoomPercentage);
         }
 
         #endregion

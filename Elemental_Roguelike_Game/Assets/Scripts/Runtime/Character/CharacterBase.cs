@@ -9,9 +9,11 @@ using Runtime.Gameplay;
 using Runtime.Selection;
 using Runtime.Status;
 using Runtime.VFX;
+using UnityEditor;
 using UnityEngine;
-using UnityEngine.Networking;
 using Utils;
+using Random = UnityEngine.Random;
+using TransformUtils = Project.Scripts.Utils.TransformUtils;
 
 namespace Runtime.Character
 {
@@ -22,6 +24,7 @@ namespace Runtime.Character
     [RequireComponent(typeof(CharacterRotation))]
     [RequireComponent(typeof(CharacterVisuals))]
     [RequireComponent(typeof(CharacterWeaponManager))]
+    [RequireComponent(typeof(CharacterClassManager))]
     public abstract class CharacterBase: MonoBehaviour, ISelectable, IDamageable, IEffectable, IBallInteractable
     {
 
@@ -55,14 +58,12 @@ namespace Runtime.Character
 
         [SerializeField] private VFXPlayer damageVFX;
 
-        [SerializeField] protected GameObject passivePassInterceptIndicator;
-
-        [SerializeField] protected GameObject passiveMeleeIndicator;
-        
         [SerializeField] protected GameObject ballOwnerIndicator;
 
         [SerializeField] protected GameObject activePlayerIndicator;
 
+        [SerializeField] protected LineRenderer ballThrowIndicator;
+ 
         #endregion
 
         #region Protected Fields
@@ -82,10 +83,17 @@ namespace Runtime.Character
         protected CharacterAnimations m_characterAnimations;
 
         protected CharacterWeaponManager m_characterWeaponManager;
-
+        
+        protected CharacterClassManager m_characterClassManager;
+        
         private Transform m_statusEffectTransform;
         
         private float shootSpeed = 8f;
+
+        private bool m_canPickupBall = true;
+        
+        //Temp
+        private Vector3 arcPosition;
 
         #endregion
 
@@ -139,6 +147,14 @@ namespace Runtime.Character
                 var cwm = GetComponent<CharacterWeaponManager>();
                 return cwm;
             });
+        
+        public CharacterClassManager characterClassManager => CommonUtils.GetRequiredComponent(
+            ref m_characterClassManager,
+            () =>
+            {
+                var ccm = GetComponent<CharacterClassManager>();
+                return ccm;
+            });
 
         public bool isAlive => characterLifeManager.isAlive;
 
@@ -159,7 +175,8 @@ namespace Runtime.Character
         public bool isBusy => characterMovement.isMoving;
 
         public bool isDoingAction =>
-            characterAbilityManager.isUsingAbilityAction || characterWeaponManager.isUsingWeapon;
+            characterAbilityManager.isUsingAbilityAction || characterWeaponManager.isUsingWeapon || characterMovement.isUsingMoveAction 
+            || isSetupThrowBall;
 
         public AppliedStatus appliedStatus { get; private set; }
 
@@ -169,9 +186,23 @@ namespace Runtime.Character
 
         public bool isSetupThrowBall { get; private set; }
 
+        public bool canPickupBall => m_canPickupBall;
+
+        public float shotStrength => shootSpeed;
+
+        public CharacterClass assignedClass { get; protected set; }
+
         #endregion
 
         #region Unity Events
+
+        private void OnDrawGizmos()
+        {
+            var radius = 0.13f;
+            Gizmos.color = Color.blue;
+            Gizmos.DrawWireSphere(transform.position, radius);
+            Gizmos.DrawWireSphere(arcPosition, radius);
+        }
 
         private void OnEnable()
         {
@@ -210,7 +241,7 @@ namespace Runtime.Character
         {
             
         }
-        
+
         private void OnOtherCharacterSelected(CharacterBase _character)
         {
             if (_character == null)
@@ -227,9 +258,7 @@ namespace Runtime.Character
             {
                 if (characterMovement.isUsingMoveAction)
                 {
-                    //Do Melee Action
-                    
-
+                    characterMovement.MoveCharacter(_character.transform.position, true);
                     return;
                 }   
             }
@@ -269,16 +298,61 @@ namespace Runtime.Character
             Debug.Log($"<color=red>{this} has died</color>");
         }
 
-        protected void CheckAllAction(Vector3 _selectedPosition)
+        public void MarkHighlightArea(Vector3 _selectedPosition)
         {
-            if (!isActiveCharacter)
+            if (!isActiveCharacter || !isDoingAction)
             {
                 return;
             }
 
             if (characterMovement.isUsingMoveAction)
             {
-                characterMovement.MoveCharacter(_selectedPosition);
+                characterMovement.MarkMovementLocation(_selectedPosition);
+            }else if (characterAbilityManager.isUsingAbilityAction)
+            {
+                characterAbilityManager.MarkAbility(_selectedPosition);
+            }else if (isSetupThrowBall)
+            {
+                Debug.Log("Throwing ball");
+                MarkThrowBall(_selectedPosition);
+            }
+            
+            
+        }
+
+        public void CheckAllAction(Vector3 _selectedPosition, bool _isReaction)
+        {
+            if (!isActiveCharacter && !_isReaction)
+            {
+                return;
+            }
+
+            if (characterMovement.isUsingMoveAction)
+            {
+                //check if this will be a tackle
+                var dirToTarget = _selectedPosition - transform.position;
+                
+                RaycastHit[] hits = Physics.CapsuleCastAll(transform.position, _selectedPosition, 0.2f, dirToTarget, dirToTarget.magnitude);
+
+                bool _isTackle = false;
+                var _adjustedFinalPosition = _selectedPosition;
+                
+                foreach (RaycastHit hit in hits)
+                {
+                    
+                    //if they are running into an enemy character, make them stop at that character and perform melee
+                    if (hit.collider.TryGetComponent(out CharacterBase otherCharacter))
+                    { 
+                        if (otherCharacter.side != side && otherCharacter != this)
+                        {
+                            _adjustedFinalPosition = otherCharacter.transform.position;
+                            _isTackle = true;
+                            break;
+                        }
+                    }
+                }
+
+                characterMovement.MoveCharacter(_adjustedFinalPosition, _isTackle);
             }else if (characterAbilityManager.isUsingAbilityAction)
             {
                 characterAbilityManager.SelectAbilityTarget(_selectedPosition);
@@ -290,6 +364,7 @@ namespace Runtime.Character
                 ThrowBall(_selectedPosition - transform.position);
             }
             
+            CameraUtils.SetCameraTrackPos(transform, true);
 
         }
 
@@ -322,6 +397,12 @@ namespace Runtime.Character
         {
             if (m_characterActionPoints <= 0)
             {
+                return;
+            }
+
+            if (characterAbilityManager.isUsingAbilityAction)
+            {
+                characterAbilityManager.CancelAbilityUse();
                 return;
             }
 
@@ -383,6 +464,10 @@ namespace Runtime.Character
             }
 
             isSetupThrowBall = !isSetupThrowBall;
+            if (!ballThrowIndicator.IsNull())
+            {
+                ballThrowIndicator.gameObject.SetActive(isSetupThrowBall);
+            }
         }
 
         public void UseActionPoint()
@@ -405,6 +490,7 @@ namespace Runtime.Character
 
             if (!isAlive)
             {
+                m_finishedTurn = true;
                 return;
             }
             
@@ -486,7 +572,20 @@ namespace Runtime.Character
         {
             characterAnimations.DamageAnim(true);
         }
-        
+
+        private void MarkThrowBall(Vector3 _position)
+        {
+            if (ballThrowIndicator.IsNull())
+            {
+                return;
+            }
+            
+            Debug.Log("Ball throw Ind not null");
+            var dir = _position - transform.localPosition;
+            var furthestPoint = (dir.normalized * 2);
+            ballThrowIndicator.SetPosition(1, new Vector3(furthestPoint.x, furthestPoint.z, 0));
+        }
+
         #endregion
 
         #region ISelectable Inherited Methods
@@ -503,22 +602,39 @@ namespace Runtime.Character
 
         public void OnHover()
         {
-            
+            characterVisuals.SetHighlight();
         }
 
         public void OnUnHover()
         {
-            
+            characterVisuals.SetUnHighlight();
         }
 
         #endregion
 
         #region IDamageable Inherited Methods
 
-        public void OnDealDamage(int _damageAmount, bool _armorPiercing ,ElementTyping _damageElementType)
+        public void OnRevive()
+        {
+            characterLifeManager.FullReviveCharacter();
+        }
+
+        public void OnDealDamage(Transform _attacker, int _damageAmount, bool _armorPiercing ,ElementTyping _damageElementType, bool _hasKnockback)
         {
             characterLifeManager.DealDamage(_damageAmount, _armorPiercing, _damageElementType);
             PlayDamageVFX();
+
+            if (_hasKnockback)
+            {
+                Debug.Log("Has Knockback");
+                var _direction = transform.position - _attacker.position;
+                characterMovement.ApplyKnockback(10, _direction.FlattenVector3Y(), 0.5f);
+                if (!heldBall.IsNull())
+                {
+                    KnockBallAway(_attacker);
+                }
+            }
+            
             if (characterAnimations != null)
             {
                 characterAnimations.DamageAnim(true);
@@ -569,8 +685,13 @@ namespace Runtime.Character
 
         public void PickUpBall(BallBehavior ball)
         {
+            if (!canPickupBall)
+            {
+                return;
+            }
+            
             heldBall = ball;
-            heldBall.SetFollowTransform(characterWeaponManager.handPos);
+            heldBall.SetFollowTransform(characterWeaponManager.handPos, this);
             ballOwnerIndicator.SetActive(true);
             BallPickedUp?.Invoke(this);
         }
@@ -582,8 +703,9 @@ namespace Runtime.Character
                 return;
             }
 
-            var direction = transform.position - attacker.position;
-            heldBall.ThrowBall(direction, shootSpeed, false);
+            var randomPos = Random.insideUnitCircle;
+            var direction = (transform.position + new Vector3(randomPos.x, 0 , randomPos.y) - transform.position);
+            heldBall.ThrowBall(direction, shootSpeed, false, side, 0);
             heldBall = null;
             ballOwnerIndicator.SetActive(false);
         }
@@ -599,11 +721,15 @@ namespace Runtime.Character
             {
                 return;
             }
+
+            /*var stat = Random.Range(characterClassManager.assignedClass.ShootingStatMin,
+                characterClassManager.assignedClass.ShootingStatMax);*/
             
-            heldBall.ThrowBall(direction, shootSpeed, true);
+            heldBall.ThrowBall(direction, shootSpeed, true, side, 20);
             heldBall = null;
             isSetupThrowBall = false;
             ballOwnerIndicator.SetActive(false);
+            ballThrowIndicator.gameObject.SetActive(false);
             UseActionPoint();
         }
 

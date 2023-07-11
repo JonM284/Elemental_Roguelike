@@ -191,9 +191,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   allAbilities:
-  - {fileID: 11400000, guid: 7526ce1770d98fc4393baaf33315a4dc, type: 2}
   - {fileID: 11400000, guid: 52047ebd3020b114cb162a4a6540ef69, type: 2}
-  - {fileID: 11400000, guid: 7526ce1770d98fc4393baaf33315a4dc, type: 2}
+  - {fileID: 11400000, guid: 7a5a716447f59704085359a9966f8e34, type: 2}
+  - {fileID: 11400000, guid: 70ca74885c596064c8307efc7c8f13ba, type: 2}
   - {fileID: 11400000, guid: 7526ce1770d98fc4393baaf33315a4dc, type: 2}
   abilitiesByType:
   - type: {fileID: 11400000, guid: c9878cd57e22d2f4294bb226cbe069b6, type: 2}
@@ -216,7 +216,8 @@ MonoBehaviour:
     - {fileID: 11400000, guid: 7526ce1770d98fc4393baaf33315a4dc, type: 2}
   - type: {fileID: 11400000, guid: 4457294a69c0af54c83492d26e8140bd, type: 2}
     abilitiesOfType:
-    - {fileID: 11400000, guid: 7526ce1770d98fc4393baaf33315a4dc, type: 2}
+    - {fileID: 11400000, guid: 70ca74885c596064c8307efc7c8f13ba, type: 2}
+    - {fileID: 11400000, guid: 7a5a716447f59704085359a9966f8e34, type: 2}
   - type: {fileID: 11400000, guid: 4c531383c027c614d9454ba78f04a81c, type: 2}
     abilitiesOfType:
     - {fileID: 11400000, guid: 7526ce1770d98fc4393baaf33315a4dc, type: 2}
@@ -524,6 +525,10 @@ MonoBehaviour:
     m_SubObjectName: 
     m_SubObjectType: 
     m_EditorAssetChanged: 0
+  m_possibleClasses:
+  - {fileID: 11400000, guid: 2c9f419d2dfa1b84489eb60e15d61b2e, type: 2}
+  - {fileID: 11400000, guid: c187bfa56bf1fa8458a541f355280f7f, type: 2}
+  - {fileID: 11400000, guid: b4466eb0195bc9f4596847e268136c87, type: 2}
 --- !u!1 &1062745213
 GameObject:
   m_ObjectHideFlags: 0
@@ -757,7 +762,7 @@ GameObject:
   m_Layer: 0
   m_Name: LevelGeneration
   m_TagString: Untagged
-  m_Icon: {fileID: -1412012063857583412, guid: 0000000000000000d000000000000000, type: 0}
+  m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
@@ -1353,11 +1358,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   battleUIData: {fileID: 11400000, guid: a3521c7b3aca2f042a02600402156282, type: 2}
   playerSide: {fileID: 11400000, guid: 4f4a1f8261e23184aacfe1c2d1a7e5e2, type: 2}
+  enemySide: {fileID: 11400000, guid: c38c044ae08c0994d8a3f8033ae06bf5, type: 2}
+  neutralSide: {fileID: 11400000, guid: c5a6c385d5632e147ac1e46ecf3988d6, type: 2}
   battlersBySides:
   - teamSide: {fileID: 11400000, guid: 4f4a1f8261e23184aacfe1c2d1a7e5e2, type: 2}
     teamMembers: []
   - teamSide: {fileID: 11400000, guid: c38c044ae08c0994d8a3f8033ae06bf5, type: 2}
     teamMembers: []
+  - teamSide: {fileID: 11400000, guid: c5a6c385d5632e147ac1e46ecf3988d6, type: 2}
+    teamMembers: []
+  temporaryEnemyTeamData: {fileID: 11400000, guid: b69cd7e6d48ac424d9bf51d40fdae3f2,
+    type: 2}
+  ballReference:
+    m_AssetGUID: 4e98a61ba661e6d4b815d23faff16b5d
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_EditorAssetChanged: 0
   m_allBattlers: []
 --- !u!1 &7876103537610162765
 GameObject:
@@ -1416,7 +1432,7 @@ GameObject:
   m_Layer: 0
   m_Name: MainGameController
   m_TagString: Untagged
-  m_Icon: {fileID: 0}
+  m_Icon: {fileID: -1412012063857583412, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
@@ -1463,21 +1479,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   game_controllers:
+  - {fileID: 1230666661}
+  - {fileID: 7876103538364230317}
+  - {fileID: 1570983833}
+  - {fileID: 1530732279}
   - {fileID: 1783162522}
   - {fileID: 7876103537610162764}
   - {fileID: 7876103538860013621}
-  - {fileID: 7876103538364230317}
-  - {fileID: 7876103537303073226}
   - {fileID: 7876103538769309301}
   - {fileID: 5179568}
-  - {fileID: 1530732279}
   - {fileID: 615721580}
-  - {fileID: 1230666661}
   - {fileID: 1020111897}
   - {fileID: 589762620}
   - {fileID: 1652226595}
   - {fileID: 3121889611319428811}
-  - {fileID: 1570983833}
+  - {fileID: 7876103537303073226}
 --- !u!1 &7876103538364230318
 GameObject:
   m_ObjectHideFlags: 0
@@ -1568,6 +1584,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d49e1f5adb3d4ec44b5b462622bc4c55, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerSide: {fileID: 0}
+  pointsToWin: 0
 --- !u!1 &7876103538860013622
 GameObject:
   m_ObjectHideFlags: 0

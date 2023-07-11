@@ -2,22 +2,21 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Data;
 using Project.Scripts.Utils;
 using Runtime.Environment;
 using Runtime.GameControllers;
+using Runtime.Gameplay;
+using Runtime.Managers;
 using UnityEngine;
 using UnityEngine.AI;
 
 namespace Runtime.Character.AI
 {
     [RequireComponent(typeof(CharacterBase))]
-    public class EnemyAI: MonoBehaviour
+    public abstract class EnemyAIBase: MonoBehaviour
     {
         #region Serialized Fields
-
-        [SerializeField] private float hideThreshold;
-
-        [SerializeField] private float minPlayerHideDist = 1;
 
         [SerializeField] private LayerMask characterCheckMask;
 
@@ -45,23 +44,30 @@ namespace Runtime.Character.AI
         public bool isMeepleEnemy => characterBase is EnemyCharacterMeeple;
 
         public float enemyMovementRange => characterBase.characterMovement.battleMoveDistance;
+        
+        protected Transform playerTeamGoal => TurnController.Instance.GetPlayerManager().goalPosition;
 
-        public float enemyAttackRange => characterBase.characterStatsBase.weaponData.weaponAttackRange;
-
-
+        protected BallBehavior ballReference => TurnController.Instance.ball;
+        
         #endregion
 
         #region Unity Events
 
         private void OnEnable()
         {
-            TurnController.OnChangeCharacterTurn += OnChangeCharacterTurn;
+            TurnController.OnChangeActiveCharacter += OnChangeCharacterTurn;
         }
 
         private void OnDisable()
         {
-            TurnController.OnChangeCharacterTurn -= OnChangeCharacterTurn;
+            TurnController.OnChangeActiveCharacter -= OnChangeCharacterTurn;
         }
+
+        #endregion
+
+        #region Abstract Methods
+
+        public abstract IEnumerator C_PerformEnemyAction();
 
         #endregion
 
@@ -100,9 +106,38 @@ namespace Runtime.Character.AI
             
             while (characterBase.characterActionPoints > 0)
             {
-                
-                
-                characterBase.UseActionPoint();
+
+                if (!TurnController.Instance.ball.isControlled)
+                {
+                    if (IsBallInMovementRange())
+                    {
+                        yield return C_GoForBall();
+                    }
+                    else
+                    {
+                        //ToDo: Change with Different Action
+                        yield return C_GoForBall();
+                    }
+                }
+                else
+                {
+                    //This character has the ball
+                    if (!characterBase.heldBall.IsNull())
+                    {
+                        if (IsInShootRange())
+                        {
+                            yield return C_ShootBall();
+                        }
+                        else
+                        {
+                            yield return C_PositionToScore();
+                        }
+                    }
+                    else
+                    {
+                        yield return C_PerformEnemyAction();
+                    }
+                }
 
                 yield return null;
             }
@@ -110,8 +145,87 @@ namespace Runtime.Character.AI
             characterBase.EndTurn();
         }
 
+        protected IEnumerator C_GoForBall()
+        {
+            
+            characterBase.characterMovement.SetCharacterMovable(true, null, characterBase.UseActionPoint);
+            var ballPosition = ballReference.transform.position;
+            var direction = ballPosition - transform.position;
+            var adjustedPos = Vector3.zero;
+            
+            if (direction.magnitude > enemyMovementRange)
+            {
+                adjustedPos = transform.position + (direction.normalized * enemyMovementRange);
+            }
+            else
+            {
+                adjustedPos = ballPosition;
+            }
+            
+            characterBase.CheckAllAction(adjustedPos, false);
+
+            yield return new WaitUntil(() => characterBase.characterMovement.isUsingMoveAction == false);
+
+        }
+
+        protected IEnumerator C_GoForBallCarrier()
+        {
+            characterBase.characterMovement.SetCharacterMovable(true, null, characterBase.UseActionPoint);
+            var ballCarrierPosition = ballReference.currentOwner.transform.position;
+            var direction = ballCarrierPosition - transform.position;
+            var adjustedPos = Vector3.zero;
+            
+            if (direction.magnitude > enemyMovementRange)
+            {
+                adjustedPos = transform.position + (direction.normalized * enemyMovementRange);
+            }
+            else
+            {
+                adjustedPos = ballCarrierPosition;
+            }
+            
+            characterBase.CheckAllAction(adjustedPos, false);
+            
+            
+            yield return new WaitUntil(() => characterBase.characterMovement.isUsingMoveAction == false);
+        }
+        
+
+        protected IEnumerator C_ShootBall()
+        {
+
+            characterBase.SetCharacterThrowAction();
+            characterBase.CheckAllAction(playerTeamGoal.position , false);
+
+            yield return new WaitUntil(() => characterBase.isSetupThrowBall == false);
+
+        }
+
+        protected IEnumerator C_PositionToScore()
+        {
+            
+            characterBase.characterMovement.SetCharacterMovable(true, null, characterBase.UseActionPoint);
+
+            var direction = playerTeamGoal.position - transform.position;
+            var adjustedPos = Vector3.zero;
+            
+            if (direction.magnitude > enemyMovementRange)
+            {
+                adjustedPos = transform.position + (direction.normalized * enemyMovementRange);
+            }
+            else
+            {
+                adjustedPos = playerTeamGoal.position;
+            }
+            
+            characterBase.CheckAllAction(adjustedPos, false); 
+            
+            yield return new WaitUntil(() => characterBase.characterMovement.isUsingMoveAction == false);
+        }
+        
+        
         //Checks if there is a target in attack range
-        private List<CharacterBase> GetAllTargets(bool isPlayerTeam)
+        protected List<CharacterBase> GetAllTargets(bool isPlayerTeam)
         {
             Collider[] colliders = Physics.OverlapSphere(transform.position, 10f, characterCheckMask);
             List<CharacterBase> _targetTransforms = new List<CharacterBase>();
@@ -142,7 +256,7 @@ namespace Runtime.Character.AI
             return _targetTransforms;
         }
 
-        private CharacterBase GetClosestTarget(List<CharacterBase> _possibleTargets)
+        protected CharacterBase GetClosestTarget(List<CharacterBase> _possibleTargets)
         {
             if (_possibleTargets.Count == 0)
             {
@@ -169,7 +283,7 @@ namespace Runtime.Character.AI
             return bestTarget;
         }
 
-        private CharacterBase GetHealthiestTarget(List<CharacterBase> _possibleTargets)
+        protected CharacterBase GetHealthiestTarget(List<CharacterBase> _possibleTargets)
         {
             if (_possibleTargets.Count == 0)
             {
@@ -194,7 +308,7 @@ namespace Runtime.Character.AI
             return bestTarget;
         }
 
-        private CharacterBase GetWeakestTarget(List<CharacterBase> _possibleTargets)
+        protected CharacterBase GetWeakestTarget(List<CharacterBase> _possibleTargets)
         {
             if (_possibleTargets.Count == 0)
             {
@@ -219,9 +333,24 @@ namespace Runtime.Character.AI
             return bestTarget;
         }
 
-        private bool PlayerInAttackRange()
+        protected bool IsInShootRange()
         {
-            Collider[] colliders = Physics.OverlapSphere(transform.position, enemyAttackRange, characterCheckMask);
+            bool inRange = false;
+            var directionToGoal = playerTeamGoal.position - transform.position;
+            var distanceToGoal = directionToGoal.magnitude;
+            var enemyMovementThreshold = enemyMovementRange * characterBase.characterActionPoints;
+            if (enemyMovementThreshold >= distanceToGoal || characterBase.shotStrength >= distanceToGoal)
+            {
+                inRange = true;
+            }
+
+            return inRange;
+        }
+
+        //ToDo: use to have enemies decide ability
+        protected bool PlayerInAbilityRange()
+        {
+            Collider[] colliders = Physics.OverlapSphere(transform.position, 0, characterCheckMask);
 
             if (colliders.Length > 0)
             {
@@ -238,28 +367,27 @@ namespace Runtime.Character.AI
             return false;
         }
 
-        private Vector3 GetClosestValidPos()
+        protected bool IsBallInMovementRange()
         {
-            var newMovePos = transform.position;
-            var targetPos = m_targetCharacter.transform.position;
-            var dirToTarget = targetPos - newMovePos;
-            var farthestMovablePoint = dirToTarget.magnitude > enemyMovementRange ? 
-                newMovePos + dirToTarget.normalized * enemyMovementRange:
-                newMovePos + dirToTarget.normalized * enemyAttackRange;
-            if (NavMesh.SamplePosition(farthestMovablePoint, out NavMeshHit hit, 100, NavMesh.AllAreas))
+            bool inMovementRange = false;
+            var directionToBall = ballReference.transform.position - transform.position;
+            var distanceToBall = directionToBall.magnitude;
+            var enemyMovementThreshold = enemyMovementRange * characterBase.characterActionPoints;
+            if (enemyMovementThreshold >= distanceToBall)
             {
-                if (!NavMesh.FindClosestEdge(hit.position, out hit, NavMesh.AllAreas))
-                {
-                    Debug.Log("No edge found");
-                }
-
-                return hit.position;
+                inMovementRange = true;
             }
 
-            return newMovePos;
+            return inMovementRange;
+
         }
-        
-        private bool InLineOfSight(Vector3 _checkPos)
+
+        protected bool IsNearEnemyMember()
+        {
+            return GetAllTargets(true).Count > 0;
+        }
+
+        protected bool InLineOfSight(Vector3 _checkPos)
         {
             var dir = transform.position - _checkPos;
             var dirMagnitude = dir.magnitude;
@@ -277,7 +405,7 @@ namespace Runtime.Character.AI
             return true;
         }
 
-        private int ColliderArraySortComparer(Collider A, Collider B)
+        protected int ColliderArraySortComparer(Collider A, Collider B)
         {
             if (A == null && B != null)
             {

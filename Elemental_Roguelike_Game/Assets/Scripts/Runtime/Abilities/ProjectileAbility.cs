@@ -6,7 +6,7 @@ using Utils;
 
 namespace Runtime.Abilities
 {
-    [CreateAssetMenu(menuName = "Ability/ Projectile Ability")]
+    [CreateAssetMenu(menuName = "Ability/Projectile Ability")]
     public class ProjectileAbility : Ability
     {
 

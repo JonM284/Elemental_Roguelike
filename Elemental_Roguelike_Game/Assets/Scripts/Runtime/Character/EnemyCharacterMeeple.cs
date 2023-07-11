@@ -19,7 +19,7 @@ namespace Runtime.Character
         {
             var elementType = ElementUtils.GetElementTypeByGUID(m_enemyMeepleStats.meepleElementTypeRef);
             characterVisuals.InitializeMeepleCharacterVisuals(elementType);
-            characterMovement.InitializeCharacterMovement(m_enemyMeepleStats.baseSpeed, m_enemyMeepleStats.movementDistance);
+            characterMovement.InitializeCharacterMovement(m_enemyMeepleStats.baseSpeed, m_enemyMeepleStats.movementDistance, m_enemyMeepleStats.damageScore, elementType);
             characterLifeManager.InitializeCharacterHealth(m_enemyMeepleStats.baseHealth, m_enemyMeepleStats.baseShields,
                 m_enemyMeepleStats.currentHealth, m_enemyMeepleStats.currentShield, elementType);
             if (m_enemyMeepleStats.abilityReferences.Count > 0)

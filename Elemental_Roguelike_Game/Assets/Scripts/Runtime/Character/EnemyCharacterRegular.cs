@@ -13,15 +13,16 @@ namespace Runtime.Character
         public override void InitializeCharacter()
         {
             characterVisuals.InitializeCharacterVisuals(); 
-            characterMovement.InitializeCharacterMovement(m_characterStatsBase.baseSpeed, m_characterStatsBase.movementDistance);
+            characterMovement.InitializeCharacterMovement(m_characterStatsBase.baseSpeed, m_characterStatsBase.movementDistance, m_characterStatsBase.baseDamage, m_characterStatsBase.typing);
             characterLifeManager.InitializeCharacterHealth(m_characterStatsBase.baseHealth, m_characterStatsBase.baseShields, m_characterStatsBase.baseHealth,
                 m_characterStatsBase.baseShields, m_characterStatsBase.typing);
+            
             if (m_characterStatsBase.abilities.Count > 0)
             {
                 characterAbilityManager.InitializeCharacterAbilityList(m_characterStatsBase.abilities);
             }
-
-            characterWeaponManager.InitializeCharacterWeapon(m_characterStatsBase.weaponData, m_characterStatsBase.weaponTyping);
+            
+            characterClassManager.InitializedCharacterPassive(m_characterStatsBase.classTyping);
         }
 
         public override int GetInitiativeNumber()

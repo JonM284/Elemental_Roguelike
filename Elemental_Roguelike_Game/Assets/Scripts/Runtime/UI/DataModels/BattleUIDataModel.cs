@@ -48,7 +48,6 @@ namespace Runtime.UI.DataReceivers
         {
             TurnController.OnBattleEnded += OnBattleEnded;
             TurnController.OnChangeActiveCharacter += OnChangeCharacterTurn;
-            TurnController.OnChangeCharacterTurn += OnChangeCharacterTurn;
             TurnController.OnChangeActiveTeam += OnChangeActiveTeam;
             CharacterBase.BallPickedUp += OnBallPickedUp;
         }
@@ -57,7 +56,6 @@ namespace Runtime.UI.DataReceivers
         {
             TurnController.OnBattleEnded -= OnBattleEnded;   
             TurnController.OnChangeActiveCharacter -= OnChangeCharacterTurn;
-            TurnController.OnChangeCharacterTurn -= OnChangeCharacterTurn;
             TurnController.OnChangeActiveTeam -= OnChangeActiveTeam;
             CharacterBase.BallPickedUp -= OnBallPickedUp;
         }
@@ -141,11 +139,6 @@ namespace Runtime.UI.DataReceivers
 
         public void EndTurn()
         {
-            if (!canDoAction)
-            {
-                return;
-            }
-
             var activeTeamMembers = TurnController.Instance.GetActiveTeam();
             if (!activeTeamMembers.TrueForAll(cb => cb.characterActionPoints == 0))
             {
@@ -162,6 +155,7 @@ namespace Runtime.UI.DataReceivers
             var activeTeamMembers = TurnController.Instance.GetActiveTeam();
             activeTeamMembers.ForEach(cb => cb.EndTurn());
             Debug.Log("<color=red>Player Ended Turn</color>");
+            TurnController.Instance.EndTeamTurn();
         }
         
         private void OnChangeActiveTeam(CharacterSide characterSide)

@@ -9572,17 +9572,17 @@ MonoBehaviour:
       currentHealth: 10
       baseShields: 10
       currentShield: 10
+      passingScore: 0
+      shootingScore: 0
+      agilityScore: 0
+      damageScore: 1
       movementDistance: 5
-      baseDamage: 1
-      cosmeticHat: 0
-      cosmeticHead: 0
-      cosmeticBody: 0
-      cosmeticHands: 0
-      cosmeticLegs: 0
-      cosmeticFeet: 0
-      characterColor: {r: 1, g: 1, b: 1, a: 1}
+      passInterceptionDistance: 0
+      passiveMeleeDistance: 0
+      costumeIndex: 0
       meepleElementTypeRef: 
       abilityReferences: []
+      classReferenceType: 
       weaponReference: 
       weaponElementTypeRef: 
     isSelected: 0
@@ -9596,17 +9596,17 @@ MonoBehaviour:
       currentHealth: 10
       baseShields: 10
       currentShield: 10
+      passingScore: 0
+      shootingScore: 0
+      agilityScore: 0
+      damageScore: 1
       movementDistance: 5
-      baseDamage: 1
-      cosmeticHat: 0
-      cosmeticHead: 0
-      cosmeticBody: 0
-      cosmeticHands: 0
-      cosmeticLegs: 0
-      cosmeticFeet: 0
-      characterColor: {r: 1, g: 1, b: 1, a: 1}
+      passInterceptionDistance: 0
+      passiveMeleeDistance: 0
+      costumeIndex: 0
       meepleElementTypeRef: 
       abilityReferences: []
+      classReferenceType: 
       weaponReference: 
       weaponElementTypeRef: 
     isSelected: 0
@@ -9620,17 +9620,17 @@ MonoBehaviour:
       currentHealth: 10
       baseShields: 10
       currentShield: 10
+      passingScore: 0
+      shootingScore: 0
+      agilityScore: 0
+      damageScore: 1
       movementDistance: 5
-      baseDamage: 1
-      cosmeticHat: 0
-      cosmeticHead: 0
-      cosmeticBody: 0
-      cosmeticHands: 0
-      cosmeticLegs: 0
-      cosmeticFeet: 0
-      characterColor: {r: 1, g: 1, b: 1, a: 1}
+      passInterceptionDistance: 0
+      passiveMeleeDistance: 0
+      costumeIndex: 0
       meepleElementTypeRef: 
       abilityReferences: []
+      classReferenceType: 
       weaponReference: 
       weaponElementTypeRef: 
     isSelected: 0
@@ -9644,17 +9644,17 @@ MonoBehaviour:
       currentHealth: 10
       baseShields: 10
       currentShield: 10
+      passingScore: 0
+      shootingScore: 0
+      agilityScore: 0
+      damageScore: 1
       movementDistance: 5
-      baseDamage: 1
-      cosmeticHat: 0
-      cosmeticHead: 0
-      cosmeticBody: 0
-      cosmeticHands: 0
-      cosmeticLegs: 0
-      cosmeticFeet: 0
-      characterColor: {r: 1, g: 1, b: 1, a: 1}
+      passInterceptionDistance: 0
+      passiveMeleeDistance: 0
+      costumeIndex: 0
       meepleElementTypeRef: 
       abilityReferences: []
+      classReferenceType: 
       weaponReference: 
       weaponElementTypeRef: 
     isSelected: 0
@@ -9668,17 +9668,17 @@ MonoBehaviour:
       currentHealth: 10
       baseShields: 10
       currentShield: 10
+      passingScore: 0
+      shootingScore: 0
+      agilityScore: 0
+      damageScore: 1
       movementDistance: 5
-      baseDamage: 1
-      cosmeticHat: 0
-      cosmeticHead: 0
-      cosmeticBody: 0
-      cosmeticHands: 0
-      cosmeticLegs: 0
-      cosmeticFeet: 0
-      characterColor: {r: 1, g: 1, b: 1, a: 1}
+      passInterceptionDistance: 0
+      passiveMeleeDistance: 0
+      costumeIndex: 0
       meepleElementTypeRef: 
       abilityReferences: []
+      classReferenceType: 
       weaponReference: 
       weaponElementTypeRef: 
     isSelected: 0
@@ -9692,17 +9692,17 @@ MonoBehaviour:
       currentHealth: 10
       baseShields: 10
       currentShield: 10
+      passingScore: 0
+      shootingScore: 0
+      agilityScore: 0
+      damageScore: 1
       movementDistance: 5
-      baseDamage: 1
-      cosmeticHat: 0
-      cosmeticHead: 0
-      cosmeticBody: 0
-      cosmeticHands: 0
-      cosmeticLegs: 0
-      cosmeticFeet: 0
-      characterColor: {r: 1, g: 1, b: 1, a: 1}
+      passInterceptionDistance: 0
+      passiveMeleeDistance: 0
+      costumeIndex: 0
       meepleElementTypeRef: 
       abilityReferences: []
+      classReferenceType: 
       weaponReference: 
       weaponElementTypeRef: 
     isSelected: 0
@@ -9716,17 +9716,17 @@ MonoBehaviour:
       currentHealth: 10
       baseShields: 10
       currentShield: 10
+      passingScore: 0
+      shootingScore: 0
+      agilityScore: 0
+      damageScore: 1
       movementDistance: 5
-      baseDamage: 1
-      cosmeticHat: 0
-      cosmeticHead: 0
-      cosmeticBody: 0
-      cosmeticHands: 0
-      cosmeticLegs: 0
-      cosmeticFeet: 0
-      characterColor: {r: 1, g: 1, b: 1, a: 1}
+      passInterceptionDistance: 0
+      passiveMeleeDistance: 0
+      costumeIndex: 0
       meepleElementTypeRef: 
       abilityReferences: []
+      classReferenceType: 
       weaponReference: 
       weaponElementTypeRef: 
     isSelected: 0
@@ -9740,17 +9740,17 @@ MonoBehaviour:
       currentHealth: 10
       baseShields: 10
       currentShield: 10
+      passingScore: 0
+      shootingScore: 0
+      agilityScore: 0
+      damageScore: 1
       movementDistance: 5
-      baseDamage: 1
-      cosmeticHat: 0
-      cosmeticHead: 0
-      cosmeticBody: 0
-      cosmeticHands: 0
-      cosmeticLegs: 0
-      cosmeticFeet: 0
-      characterColor: {r: 1, g: 1, b: 1, a: 1}
+      passInterceptionDistance: 0
+      passiveMeleeDistance: 0
+      costumeIndex: 0
       meepleElementTypeRef: 
       abilityReferences: []
+      classReferenceType: 
       weaponReference: 
       weaponElementTypeRef: 
     isSelected: 0
@@ -9764,17 +9764,17 @@ MonoBehaviour:
       currentHealth: 10
       baseShields: 10
       currentShield: 10
+      passingScore: 0
+      shootingScore: 0
+      agilityScore: 0
+      damageScore: 1
       movementDistance: 5
-      baseDamage: 1
-      cosmeticHat: 0
-      cosmeticHead: 0
-      cosmeticBody: 0
-      cosmeticHands: 0
-      cosmeticLegs: 0
-      cosmeticFeet: 0
-      characterColor: {r: 1, g: 1, b: 1, a: 1}
+      passInterceptionDistance: 0
+      passiveMeleeDistance: 0
+      costumeIndex: 0
       meepleElementTypeRef: 
       abilityReferences: []
+      classReferenceType: 
       weaponReference: 
       weaponElementTypeRef: 
     isSelected: 0
@@ -9788,17 +9788,17 @@ MonoBehaviour:
       currentHealth: 10
       baseShields: 10
       currentShield: 10
+      passingScore: 0
+      shootingScore: 0
+      agilityScore: 0
+      damageScore: 1
       movementDistance: 5
-      baseDamage: 1
-      cosmeticHat: 0
-      cosmeticHead: 0
-      cosmeticBody: 0
-      cosmeticHands: 0
-      cosmeticLegs: 0
-      cosmeticFeet: 0
-      characterColor: {r: 1, g: 1, b: 1, a: 1}
+      passInterceptionDistance: 0
+      passiveMeleeDistance: 0
+      costumeIndex: 0
       meepleElementTypeRef: 
       abilityReferences: []
+      classReferenceType: 
       weaponReference: 
       weaponElementTypeRef: 
     isSelected: 0
@@ -13531,6 +13531,25 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1020111897, guid: 117d9f0c612dc9949b8b0082137cfd17, type: 3}
+      propertyPath: m_possibleClasses.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 1020111897, guid: 117d9f0c612dc9949b8b0082137cfd17, type: 3}
+      propertyPath: m_possibleClasses.Array.data[0]
+      value: 
+      objectReference: {fileID: 11400000, guid: 2c9f419d2dfa1b84489eb60e15d61b2e,
+        type: 2}
+    - target: {fileID: 1020111897, guid: 117d9f0c612dc9949b8b0082137cfd17, type: 3}
+      propertyPath: m_possibleClasses.Array.data[1]
+      value: 
+      objectReference: {fileID: 11400000, guid: c187bfa56bf1fa8458a541f355280f7f,
+        type: 2}
+    - target: {fileID: 1020111897, guid: 117d9f0c612dc9949b8b0082137cfd17, type: 3}
+      propertyPath: m_possibleClasses.Array.data[2]
+      value: 
+      objectReference: {fileID: 11400000, guid: b4466eb0195bc9f4596847e268136c87,
+        type: 2}
     - target: {fileID: 7876103537793370361, guid: 117d9f0c612dc9949b8b0082137cfd17,
         type: 3}
       propertyPath: m_Name

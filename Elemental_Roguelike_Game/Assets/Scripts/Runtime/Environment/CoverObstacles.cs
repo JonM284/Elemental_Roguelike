@@ -18,7 +18,8 @@ namespace Runtime.Environment
         #region Private Fields
 
         private int m_currentAmountOfHits;
-        
+        private IDamageable damageableImplementation;
+
         #endregion
 
         #region Accessors
@@ -38,7 +39,12 @@ namespace Runtime.Environment
 
         #region IDamageable Inherited Methods
 
-        public void OnDealDamage(int _damageAmount, bool _armorPiercing, ElementTyping _damageElementType)
+        public void OnRevive()
+        {
+            //Nothing for now
+        }
+
+        public void OnDealDamage(Transform _attacker, int _damageAmount, bool _armorPiercing, ElementTyping _damageElementType, bool _hasKnockback)
         {
             m_currentAmountOfHits--;
             if (m_currentAmountOfHits <= 0)

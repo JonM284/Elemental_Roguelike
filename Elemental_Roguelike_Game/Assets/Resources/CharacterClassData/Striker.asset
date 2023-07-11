@@ -12,6 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3174c979e6e4c85960b7c354792b687, type: 3}
   m_Name: Striker
   m_EditorClassIdentifier: 
+  classType: 0
+  radius: 1
   AgilityStatMin: 75
   AgilityStatMax: 90
   ShootingStatMin: 80
@@ -20,3 +22,5 @@ MonoBehaviour:
   PassingStatMax: 75
   DamageStatMin: 70
   DamageStatMax: 85
+  passiveColor: {r: 1, g: 0.70980394, b: 0.23137255, a: 1}
+  classGUID: 9f1bfb9b-bd5c-4e49-b319-75fea0cb1b51

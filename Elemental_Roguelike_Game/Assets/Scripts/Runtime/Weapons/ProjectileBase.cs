@@ -120,7 +120,7 @@ namespace Runtime.Weapons
                 foreach (var collider in colliders)
                 {
                     var damageable = collider.GetComponent<IDamageable>();
-                    damageable?.OnDealDamage(damage, armorPiercing, type);
+                    damageable?.OnDealDamage(transform, damage, armorPiercing, type, false);
                     
                     if (hasStatusEffect)
                     {

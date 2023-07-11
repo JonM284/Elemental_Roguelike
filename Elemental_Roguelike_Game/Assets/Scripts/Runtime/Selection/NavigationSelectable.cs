@@ -12,12 +12,13 @@ namespace Runtime.Selection
 
         #region Actions
 
-        public static event Action<Vector3> SelectPosition;
+        public static event Action<Vector3, bool> SelectPosition;
 
         #endregion
 
         #region Serialized Fields
 
+        
 
         #endregion
         
@@ -66,7 +67,7 @@ namespace Runtime.Selection
             
             NavMesh.SamplePosition(_pathPosition, out NavMeshHit clickedLocation, 100, NavMesh.AllAreas);
             
-            SelectPosition?.Invoke(clickedLocation.position);
+            SelectPosition?.Invoke(clickedLocation.position, false);
 
         }
 

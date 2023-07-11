@@ -21,6 +21,8 @@ namespace Runtime.Camera
         #region Private Fields
 
         private Vector3 m_localZoomZ;
+
+        private float m_prevPercentage;
         
         private float m_percentage;
 
@@ -33,6 +35,8 @@ namespace Runtime.Camera
         private float m_startTime;
 
         private bool m_changingValue;
+
+        private bool m_isLocked;
 
         #endregion
 
@@ -90,7 +94,13 @@ namespace Runtime.Camera
 
         public void SetNewValue(float _newPercentage)
         {
-            m_timeToTravel = Mathf.Abs(( m_initialValue - m_endValue) / automaticZoomSpeed);
+            m_prevPercentage = m_percentage;
+            m_percentage = _newPercentage;
+        }
+
+        public void ResetValueBeforeLock()
+        {
+            m_percentage = m_prevPercentage;
         }
 
         #endregion

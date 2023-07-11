@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Project.Scripts.Runtime.LevelGeneration;
 using Project.Scripts.Utils;
 using Runtime.GameControllers;
@@ -13,9 +14,7 @@ namespace Runtime.Camera
         #region Serialized Fields
 
         [SerializeField] private float moveSpeed;
-
-        [SerializeField] private float autoMoveSpeed;
-
+        
         [SerializeField] private float radius;
 
         [SerializeField] private float padding;
@@ -31,16 +30,24 @@ namespace Runtime.Camera
         private bool m_isDrag;
 
         private bool m_isResettingCamera;
-        
+
+        private Transform m_trackedTransform;
+
+        private Vector3 m_trackedPosition;
+
         private Vector3 m_centralPosition;
 
         private Vector3 m_dragStartPos;
 
         private Vector3 m_velocity;
 
+        private Vector3 m_prevLocationBeforeLock;
+
         private Vector3 m_changeRoomStartPosition;
 
         private Plane m_dragPlane = new Plane(Vector3.up, Vector3.zero);
+
+        private bool m_isLocked;
 
         #endregion
 
@@ -48,26 +55,17 @@ namespace Runtime.Camera
 
         public UnityEngine.Camera mainCamera => CameraUtils.GetMainCamera();
 
-        Vector3 relativeRight => mainCamera.transform.right.normalized.FlattenVector3Y();
-        
-        Vector3 relativeForward => mainCamera.transform.forward.normalized.FlattenVector3Y();
-
         private Vector3 maxPosition => new Vector3(m_centralPosition.x + padding, 0, m_centralPosition.z + padding);
         
         private Vector3 minPosition => new Vector3(m_centralPosition.x - padding, 0, m_centralPosition.z - padding);
+
+        private Vector3 trackedPosition => m_trackedTransform != null ? m_trackedTransform.position : 
+            m_trackedPosition != Vector3.zero ? m_trackedPosition : Vector3.zero;
         
 
         #endregion
 
         #region Unity Events
-
-        private void OnEnable()
-        {
-        }
-
-        private void OnDisable()
-        {
-        }
 
         private void LateUpdate()
         {
@@ -78,7 +76,13 @@ namespace Runtime.Camera
             else
             {
                 RecenterCamera();
+            }   
+            
+            if(m_isLocked)
+            {
+                m_velocity = trackedPosition;
             }
+            
         }
 
         #endregion
@@ -92,6 +96,10 @@ namespace Runtime.Camera
             if (Input.GetMouseButtonDown(0))
             {
                 m_isDrag = true;
+                if (m_isLocked)
+                {
+                    UnlockCameraPosition();
+                }
                 Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
                 float entry;
                 if (m_dragPlane.Raycast(ray, out entry))
@@ -154,6 +162,103 @@ namespace Runtime.Camera
             }
 
             transform.position = m_velocity;            
+        }
+
+        public void SetTrackCamera(Vector3 _trackPosition, bool _isLocked)
+        {
+            m_isLocked = _isLocked;
+            
+            if (m_isLocked)
+            {
+                m_trackedPosition = _trackPosition;    
+            }
+
+            m_velocity = _trackPosition;
+
+        }
+
+        public void SetTrackCamera(Transform _trackTransform, bool _isLocked)
+        {
+            m_isLocked = _isLocked;
+
+            if (m_isLocked)
+            {
+                m_trackedTransform = _trackTransform;    
+            }
+
+            m_velocity = _trackTransform.position;
+            
+        }
+
+        public void SetCentralPosition(List<Transform> _transforms, bool _isLocked)
+        {
+            m_isLocked = _isLocked;
+
+            if (!m_isLocked)
+            {
+                return;
+            }
+
+            var centralPos = GetCentralPosition(_transforms);
+            m_trackedPosition = centralPos;
+            m_velocity = centralPos;
+        }
+
+        public void ResetCameraBeforeLock()
+        {
+            if (!m_isLocked)
+            {
+                return;
+            }
+
+            UnlockCameraPosition();
+            m_velocity = m_prevLocationBeforeLock;
+        }
+        
+        
+        private Vector3 GetCentralPosition(List<Vector3> _transforms){
+            Vector3 centralPos = Vector3.zero;
+            Vector3 addedPos = Vector3.zero;
+
+            foreach (var pos in _transforms)
+            {
+                addedPos.x += pos.x;
+                addedPos.y += pos.y;
+                addedPos.z += pos.z;
+            }
+
+            var centerX = addedPos.x / _transforms.Count;
+            var centerY = addedPos.y / _transforms.Count;
+            var centerZ = addedPos.z / _transforms.Count;
+
+            centralPos = new Vector3(centerX, centerY, centerZ);
+            
+            return centralPos;
+        }
+        
+        private Vector3 GetCentralPosition(List<Transform> _transforms){
+            Vector3 centralPos = Vector3.zero;
+            Vector3 addedPos = Vector3.zero;
+
+            foreach (var pos in _transforms)
+            {
+                addedPos.x += pos.position.x;
+                addedPos.y += pos.position.y;
+                addedPos.z += pos.position.z;
+            }
+
+            var centerX = addedPos.x / _transforms.Count;
+            var centerY = addedPos.y / _transforms.Count;
+            var centerZ = addedPos.z / _transforms.Count;
+
+            centralPos = new Vector3(centerX, centerY, centerZ);
+            
+            return centralPos;
+        }
+
+        public void UnlockCameraPosition()
+        {
+            m_isLocked = false;
         }
 
         #endregion

@@ -21,11 +21,9 @@ MonoBehaviour:
   characterColor: {r: 0.9607843, g: 0.30588236, b: 0.30588236, a: 1}
   typing: {fileID: 11400000, guid: b5ba9f007020f914f9c8d519cccd8f04, type: 2}
   abilities: []
+  classTyping: {fileID: 11400000, guid: b4466eb0195bc9f4596847e268136c87, type: 2}
   characterAssetRef:
     m_AssetGUID: 2218a12dda0cddb4eb51e9fd7363f3ac
     m_SubObjectName: 
     m_SubObjectType: 
     m_EditorAssetChanged: 0
-  enemyPrioritizeCover: 0
-  weaponData: {fileID: 11400000, guid: 8327011fc3f90294fbe767cb0f9c1f0b, type: 2}
-  weaponTyping: {fileID: 11400000, guid: e835342fdbc753849a4b2cb4161a5a57, type: 2}

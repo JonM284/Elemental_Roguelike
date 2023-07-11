@@ -14,6 +14,8 @@ namespace Runtime.Weapons
 
         public int meleeDamage;
 
+        public bool hasKnockback;
+
         public bool armorPiercing;
         
         public LayerMask meleeCollisionLayers;

@@ -40,16 +40,7 @@ namespace Runtime.GameControllers
         #endregion
 
         #region Unity Events
-
-        private void OnEnable()
-        {
-            
-        }
-
-        private void OnDisable()
-        {
-            
-        }
+        
 
         #endregion
 

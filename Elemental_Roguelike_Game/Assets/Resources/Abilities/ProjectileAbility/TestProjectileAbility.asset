@@ -16,4 +16,6 @@ MonoBehaviour:
   abilityGUID: 36901bdf-823e-4a6a-b552-94d9955b137a
   roundCooldownTimer: 3
   targetType: 0
+  range: 5
+  isDamagingAbility: 0
   projectileInfo: {fileID: 11400000, guid: 36b789e983e06834db3782e1a25599ec, type: 2}
