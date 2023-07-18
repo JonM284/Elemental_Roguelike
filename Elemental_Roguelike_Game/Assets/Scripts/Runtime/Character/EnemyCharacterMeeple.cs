@@ -31,17 +31,7 @@ namespace Runtime.Character
             var weaponElementType = ElementUtils.GetElementTypeByGUID(m_enemyMeepleStats.weaponElementTypeRef);
             characterWeaponManager.InitializeCharacterWeapon(weaponData, weaponElementType);
         }
-
-        public override int GetInitiativeNumber()
-        {
-            if (m_enemyMeepleStats == null)
-            {
-                return 0;
-            }
-
-            return m_enemyMeepleStats.initiativeNumber;
-        }
-
+        
         public override float GetBaseSpeed()
         {
             if (m_enemyMeepleStats == null)

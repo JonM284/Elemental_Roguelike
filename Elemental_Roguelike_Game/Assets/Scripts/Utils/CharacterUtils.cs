@@ -74,7 +74,7 @@ namespace Utils
         {
             var pivot = characters[high];
             var i = low - 1;
-            for (int j = low; j <= high - 1; j++)
+            /*for (int j = low; j <= high - 1; j++)
             {
                 if (characters[j].initiativeNum < pivot.initiativeNum)
                 {
@@ -88,7 +88,7 @@ namespace Utils
                         Swap(characters, i, j);
                     }
                 }
-            }
+            }*/
             Swap(characters, i+1, high);
             return (i + 1);
         }

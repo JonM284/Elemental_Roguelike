@@ -52,6 +52,8 @@ namespace Runtime.Character
 
         private bool m_isMovingOnPath = false;
 
+        private bool m_isPaused = false;
+
         private float m_timeToGetToPoint;
 
         private float m_startTime;
@@ -100,7 +102,9 @@ namespace Runtime.Character
     
         public bool isInBattle { get; private set; }
 
-        public bool isMoving => m_isMovingOnPath;
+        public bool isMoving => m_isMovingOnPath && !isPaused;
+
+        public bool isPaused => m_isPaused;
 
         public bool isUsingMoveAction => m_canMove;
 
@@ -198,6 +202,9 @@ namespace Runtime.Character
             m_startPos = playerPosition.position;
             m_finalPos = _movePosition;
             m_isMovingOnPath = true;
+            
+            Debug.Log("Setting to moving on path");
+            
             OnBeforeMovementCallback?.Invoke();
         }
     
@@ -210,7 +217,7 @@ namespace Runtime.Character
 
         private void HandleMovement()
         {
-            if (!m_isMovingOnPath)
+            if (!m_isMovingOnPath || m_isPaused)
             {
                 return;
             }
@@ -261,15 +268,25 @@ namespace Runtime.Character
             isInBattle = _isInBattle;
         }
 
+        public void PauseMovement(bool _isPaused)
+        {
+            m_isPaused = _isPaused;
+        }
+
         public void ForceStopMovement()
         {
             m_isMovingOnPath = false;
-            m_canMove = false;    
+            m_canMove = false;
 
             OnFinishMovementCallback?.Invoke();
                     
             OnFinishMovementCallback = null;
             OnBeforeMovementCallback = null;
+            
+            if (m_isPaused)
+            {
+                PauseMovement(false);
+            }
                     
             if (m_isPerformingMelee)
             {

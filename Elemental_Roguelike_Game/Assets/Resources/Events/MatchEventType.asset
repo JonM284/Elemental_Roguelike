@@ -13,5 +13,4 @@ MonoBehaviour:
   m_Name: MatchEventType
   m_EditorClassIdentifier: 
   arenaID: 0
-  sceneName: 0
-  matchEventScript: {fileID: 0}
+  sceneName: 1

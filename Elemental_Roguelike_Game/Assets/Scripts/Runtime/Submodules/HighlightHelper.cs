@@ -113,6 +113,7 @@ namespace Runtime.Submodules
         {
             if (EventSystem.current.IsPointerOverGameObject())
             {
+                CheckHoveredObject();
                 return;
             }
             
@@ -123,6 +124,7 @@ namespace Runtime.Submodules
 
             if (!Physics.Raycast(mainCamera.ScreenPointToRay(Input.mousePosition), out RaycastHit hit, 1000, selectableLayers))
             {
+                CheckHoveredObject();
                 return;
             }
 
@@ -130,19 +132,28 @@ namespace Runtime.Submodules
 
             if (selectable.IsNull())
             {
+                CheckHoveredObject();
                 return;
             }
 
             if (currentHovered != selectable)
             {
-                if (currentHovered != null)
-                {
-                    currentHovered.OnUnHover();
-                }
+                CheckHoveredObject();
                 currentHovered = selectable;
                 selectable.OnHover();
             }
 
+        }
+
+        private void CheckHoveredObject()
+        {
+            if (currentHovered.IsNull())
+            {
+                return;
+            }
+            
+            currentHovered.OnUnHover();
+            currentHovered = null;
         }
 
         #endregion

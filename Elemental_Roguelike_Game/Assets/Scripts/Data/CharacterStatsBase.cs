@@ -31,9 +31,11 @@ namespace Project.Scripts.Data
         [Tooltip("Distance from start position, character is able to move")]
         public float movementDistance = 1f;
 
-        [Header("To be decided")]
-        [Tooltip("Damage character does? NOTE: MAY BE CHANGED")]
-        public int baseDamage = 1;
+        [Header("Stats")]
+        [Tooltip("tackle score and damage")]
+        public int tackleScore = 1;
+        public int agilityScore = 1;
+        public int shootingScore = 1;
 
         [Tooltip("Character associated color")]
         public Color characterColor = Color.white;

@@ -12,7 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4d428ed9619a4c8cb1f0e3a7d904ddff, type: 3}
   m_Name: MovementUpgrade
   m_EditorClassIdentifier: 
-  abilityName: Charge Movement
+  abilityName: Charged Step
+  abilityDescription: 'Increse character range of movement by (0).
+
+    Cooldown:
+    (1) Turn(s)'
   abilityGUID: a0212110-8283-4653-b41b-b878a85eaa1d
   roundCooldownTimer: 3
   targetType: 4

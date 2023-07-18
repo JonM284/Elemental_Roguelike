@@ -28,6 +28,8 @@ namespace Data.Elements
         [Header("Meeple")]
         public List<Color> meepleColors = new List<Color>(2);
 
+        public Sprite elementSprite;
+
         public AssetReference defaultMeepleElementHat = null;
 
         #endregion

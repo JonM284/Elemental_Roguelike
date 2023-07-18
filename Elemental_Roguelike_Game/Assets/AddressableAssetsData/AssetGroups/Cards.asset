@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: Cards
+  m_EditorClassIdentifier: 
+  m_GroupName: Cards
+  m_Data:
+    m_SerializedData: []
+  m_GUID: 2876b3b96c40ad047ab34bc73bfcd797
+  m_SerializeEntries:
+  - m_GUID: 91bc0e462ca8a644baa8bc42e524ef05
+    m_Address: StrikerCard@Prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 7c6cabd825f7ea940b4912be52ccbbae
+    m_Address: BruiserCard@Prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 66fc3ceb0ab150d4583dbf0c6f062de5
+    m_Address: DefenderCard@Prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: c51bc8bdb2bb6e5479c05b7cf9bc0f75, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 01722fa5d39651c4c8431b900466411f, type: 2}
+    - {fileID: 11400000, guid: ac7984aca82a5d14d9a00b596d92f337, type: 2}

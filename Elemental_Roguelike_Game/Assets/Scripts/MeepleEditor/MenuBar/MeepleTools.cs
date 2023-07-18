@@ -10,24 +10,35 @@ namespace MeepleEditor.MenuBar
 #if UNITY_EDITOR
 
         private const string mainMeeplPath = "Meeple Tools";
-        private const string weaponSubPath = "/Weapon";
+        private const string scriptableToolSubPath = "/Scriptable Object Tool";
+        private const string csvToolSubPath = "/CSV Tool";
 
-        private const string weaponPath = mainMeeplPath + weaponSubPath;
+        private const string scriptablePath = mainMeeplPath + scriptableToolSubPath;
+        private const string csvPath = mainMeeplPath + csvToolSubPath;
         
-        [MenuItem(weaponPath + "/Weapon Generation")]
-        private static void CreateAllNewWeapons()
+        
+        [MenuItem(scriptablePath + "/Scriptable Object Generation")]
+        private static void CreateScriptableObjectWindow()
         {
-            CreateCustomWindow();
+            EditorWindow newWindow = EditorWindow.GetWindow<ScriptableObjectCreation>();
+            newWindow.titleContent = new GUIContent("Scriptable Object Creation Tools");
         }
 
         //[MenuItem(PathName, priority = #)] priority will sort itself in the menu area
         // if the gap is more than 10, it will create a nice gap
-        [MenuItem(weaponPath + "/other weapon thing", priority = 11)]
+        [MenuItem(csvPath + "/CSV Converter", priority = 11)]
         private static void AddNewWeaponsOfType()
         {
+            //TODO: change to csv converter
             CreateCustomWindow();
         }
 
+
+        private static void CreateScriptableObjectCreationWindow()
+        {
+            EditorWindow newWindow = EditorWindow.GetWindow<ScriptableObjectCreation>();
+            newWindow.titleContent = new GUIContent("Scriptable Object Creation Tools");
+        }
 
         private static void CreateCustomWindow()
         {

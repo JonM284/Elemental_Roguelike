@@ -48,6 +48,12 @@ namespace Runtime.Character
         private CharacterBase m_inRangeCharacter;
 
         private bool m_canPerformReaction = true;
+
+        private int m_agilityScore;
+        
+        private int m_shootingScore;
+        
+        private int m_tacklingScore;
         
         #endregion
 
@@ -102,7 +108,7 @@ namespace Runtime.Character
 
         #region Class Implementation
 
-        public void InitializedCharacterPassive(CharacterClassData _data)
+        public void InitializedCharacterPassive(CharacterClassData _data, int agilityScore, int shootingScore, int tacklingScore)
         {
             if (_data.IsNull())
             {
@@ -112,6 +118,10 @@ namespace Runtime.Character
             
             m_assignedClass = _data;
             passiveRadius = _data.radius;
+            
+            m_agilityScore = agilityScore;
+            m_shootingScore = shootingScore;
+            m_tacklingScore = tacklingScore;
             
             if (m_passiveIndicator.IsNull())
             {
@@ -170,6 +180,7 @@ namespace Runtime.Character
                 case CharacterClass.DEFENDER:
                     if (IsBallThrownInRange())
                     {
+                        Debug.Log("Ball In Range");
                         m_isPerformingReaction = true;
                         StartCoroutine(C_AttemptGrabBall());
                     }
@@ -197,14 +208,14 @@ namespace Runtime.Character
             {
                 //Didn't intercept ball
                 //ToDo: Miss Animation, restart ball regular movement
-                Debug.Log("<color=orange>BIG MISS ON PASS INTERCEPT</color>", this);
+                Debug.Log($"<color=orange>BIG MISS ON PASS INTERCEPT /// Ball: {ball.thrownBallStat} // Self: {rollToGrab}</color>", this);
                 ball.SetBallPause(false);
                 HasPerformedReaction();
                 yield break;
             }
 
             //Grab ball
-            Debug.Log("<color=orange>HAS HIT PASS INTERCEPT REACTION</color>", this);
+            Debug.Log($"<color=orange>HAS HIT PASS INTERCEPT REACTION /// Ball: {ball.thrownBallStat} // Self: {rollToGrab}</color>", this);
             characterBase.characterMovement.SetCharacterMovable(true, null, HasPerformedReaction);
             characterBase.CheckAllAction(ball.transform.position, true);
             
@@ -224,12 +235,15 @@ namespace Runtime.Character
 
             yield return new WaitUntil(() => !m_inRangeCharacter.IsNull());
             
+            m_inRangeCharacter.characterMovement.PauseMovement(true);
+            
             var enemyAttackRoll = m_inRangeCharacter.characterClassManager.GetRandomDamageStat();
             
             if (enemyAttackRoll >= rollToAttack)
             {
                 //ToDo: Miss attack on moving character, trip don't fall?
-                Debug.Log("<color=orange>BIG MISS ON ATTACK</color>", this);
+                Debug.Log($"<color=orange>BIG MISS ON ATTACK /// Other: {enemyAttackRoll} // Self: {rollToAttack}</color>", this);
+                m_inRangeCharacter.characterMovement.PauseMovement(false);
                 OnMissedReaction();
                 HasPerformedReaction();
                 yield break;
@@ -333,22 +347,17 @@ namespace Runtime.Character
 
         public int GetRandomAgilityStat()
         {
-            return Random.Range(m_assignedClass.AgilityStatMin, m_assignedClass.AgilityStatMax);
+            return Random.Range(1, m_agilityScore);
         }
         
         public int GetRandomShootStat()
         {
-            return Random.Range(m_assignedClass.ShootingStatMin, m_assignedClass.ShootingStatMax);
+            return Random.Range(1, m_shootingScore);
         }
         
         public int GetRandomDamageStat()
         {
-            return Random.Range(m_assignedClass.DamageStatMin, m_assignedClass.DamageStatMax);
-        }
-        
-        public int GetRandomPassingStat()
-        {
-            return Random.Range(m_assignedClass.PassingStatMin, m_assignedClass.PassingStatMax);
+            return Random.Range(1, m_tacklingScore);
         }
 
         public int GetReroll()

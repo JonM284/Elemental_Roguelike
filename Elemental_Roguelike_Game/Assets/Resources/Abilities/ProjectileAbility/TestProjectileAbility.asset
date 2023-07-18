@@ -13,9 +13,13 @@ MonoBehaviour:
   m_Name: TestProjectileAbility
   m_EditorClassIdentifier: 
   abilityName: TestProjectile@Ability
+  abilityDescription: 
   abilityGUID: 36901bdf-823e-4a6a-b552-94d9955b137a
   roundCooldownTimer: 3
   targetType: 0
   range: 5
   isDamagingAbility: 0
+  abilityAnimationOverride: {fileID: 6557745755801676397, guid: 0482992e3f9407b4586dac22cbbd90f7,
+    type: 3}
+  abilityVFX: {fileID: 0}
   projectileInfo: {fileID: 11400000, guid: 36b789e983e06834db3782e1a25599ec, type: 2}

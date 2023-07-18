@@ -1,5 +1,7 @@
-﻿using Project.Scripts.Utils;
+﻿using System.Collections.Generic;
+using Project.Scripts.Utils;
 using UnityEngine;
+using Utils;
 
 namespace Runtime.Character
 {
@@ -13,6 +15,12 @@ namespace Runtime.Character
         private CharacterAbilityManager m_characterAbilityManager;
 
         private CharacterWeaponManager m_characterWeaponManager;
+
+        #endregion
+
+        #region Serialized Fields
+
+        [SerializeField] private List<Transform> vfxPositions = new List<Transform>();
 
         #endregion
         
@@ -50,7 +58,7 @@ namespace Runtime.Character
 
         public void OnAbilityEnded()
         {
-            characterAnimations.AbilityAnim(false);
+            characterAnimations.AbilityAnim(characterAbilityManager.GetActiveAbilityIndex(),false);
         }
 
         public void OnDeathAnimationEnded()
@@ -71,6 +79,32 @@ namespace Runtime.Character
         public void Attack()
         {
             characterWeaponManager.UseWeapon();
+        }
+
+        public void PlayVFX()
+        {
+            var ability = characterAbilityManager.GetActiveAbility();
+            var abilityVFX = ability.abilityVFX;
+            if (abilityVFX.IsNull())
+            {
+                return;
+            }
+            abilityVFX.PlayAt(transform.position, Quaternion.identity);
+        }
+
+        public void PlayVFX(int _locIndex)
+        {
+            var ability = characterAbilityManager.GetActiveAbility();
+            if (!ability.playVFXAtTransform)
+            {
+                return;
+            }
+            var abilityVFX = ability.abilityVFX;
+            if (abilityVFX.IsNull() || vfxPositions[_locIndex].IsNull())
+            {
+                return;
+            }
+            abilityVFX.PlayAt(vfxPositions[_locIndex].position, Quaternion.identity);
         }
 
         #endregion

@@ -102,7 +102,6 @@ namespace Runtime.GameControllers
         }
         public CharacterClassData GetClassByGUID(string _guid)
         {
-            Debug.Log(_guid);
             return m_possibleClasses.FirstOrDefault(ccd => ccd.classGUID == _guid);
         }
         
@@ -123,17 +122,15 @@ namespace Runtime.GameControllers
         {
             _character.meepleElementTypeRef = ElementUtils.GetRandomElement().elementGUID;
             _character.classReferenceType = GetRandomClassType().classGUID;
-            _character.initiativeNumber = Random.Range(1, 20);
-            _character.damageScore = Random.Range(1, 10);
-            _character.baseHealth = Random.Range(10, 20);
-            _character.baseShields = Random.Range(10, 20);
+            _character.baseHealth = Random.Range(100, 150);
+            _character.baseShields = Random.Range(100, 200);
             _character.baseSpeed = 10f;
             //ToDo: Change movement distance
             _character.movementDistance = 5;
             
             for (int i = 0; i < 2; i++)
             {
-                var randomAbility = AbilityUtils.GetRandomAbilityByType(_character.meepleElementTypeRef);
+                var randomAbility = AbilityUtils.GetRandomAbilityByType(_character.meepleElementTypeRef, _character.classReferenceType);
                 _character.abilityReferences.Add(randomAbility.abilityGUID);
             }
 
@@ -142,6 +139,11 @@ namespace Runtime.GameControllers
             _character.weaponReference = WeaponUtils.GetDefaultWeapon().weaponGUID;
             //random element assigned to weapon
             _character.weaponElementTypeRef = ElementUtils.GetRandomElement().elementGUID;
+            
+            var foundClass = GetClassByGUID(_character.classReferenceType);
+            _character.agilityScore = foundClass.GetRandomAgilityScore();
+            _character.shootingScore = foundClass.GetRandomShootingScore();
+            _character.damageScore = foundClass.GetRandomDamageScore();
         }
 
         public IEnumerator InstantiatePremadeMeeple(CharacterStatsData _meepleCharacter, Vector3 spawnLocation, Vector3 spawnRotation)

@@ -18,9 +18,6 @@ namespace Data
         //Speed character will normally move at
         public float baseSpeed;
 
-        //Higher initiative goes first
-        public int initiativeNumber;
-        
         //Max health of character
         public int baseHealth;
 
@@ -30,9 +27,7 @@ namespace Data
         public int baseShields;
 
         public int currentShield;
-
-        public int passingScore;
-
+        
         public int shootingScore;
 
         public int agilityScore;
@@ -73,7 +68,6 @@ namespace Data
         public CharacterStatsData()
         {
             this.baseSpeed = 10;
-            this.initiativeNumber = 1;
             this.baseHealth = 10;
             this.currentHealth = this.baseHealth;
             this.baseShields = 10;

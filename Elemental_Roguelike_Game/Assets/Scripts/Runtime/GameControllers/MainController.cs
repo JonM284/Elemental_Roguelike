@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using Runtime.Character;
 using UnityEngine;
@@ -22,6 +23,12 @@ namespace Runtime.GameControllers
 
         #endregion
 
+        #region Accessors
+
+        public bool allInitialized { get; private set; }
+
+        #endregion
+
         #region Unity Events
 
         private void Awake()
@@ -37,14 +44,16 @@ namespace Runtime.GameControllers
         public override void Initialize()
         {
             Instance = this;
-            SetupControllers();
+            StartCoroutine(C_SetupControllers());
+            game_controllers.ForEach(gc => gc.Initialize());
             base.Initialize();
             DontDestroyOnLoad(this.gameObject);
         }
 
-        public void SetupControllers()
+        public IEnumerator C_SetupControllers()
         {
-            game_controllers.ForEach(gc => gc.Initialize());
+            yield return new WaitUntil(() => game_controllers.TrueForAll(gc => gc.is_Initialized));
+            allInitialized = true;
         }
 
         public void CleanupControllers()

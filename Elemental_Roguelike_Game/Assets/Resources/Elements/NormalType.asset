@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15d0416d0e9a4f4a837a866f5c0a82cf, type: 3}
   m_Name: NormalType
   m_EditorClassIdentifier: 
-  elementName: normal
+  elementName: Normal
   elementGUID: 0b300645-847e-45c0-80d1-f01aeda57ba5
   insanityAmount: 0
   weaknesses: []
@@ -27,6 +27,7 @@ MonoBehaviour:
   meepleColors:
   - {r: 0.74509805, g: 0.74509805, b: 0.74509805, a: 1}
   - {r: 0.6313726, g: 0.6313726, b: 0.6313726, a: 1}
+  elementSprite: {fileID: 452521653, guid: 6a6f25e903f18fd4db55f0dfe52e535c, type: 3}
   defaultMeepleElementHat:
     m_AssetGUID: 
     m_SubObjectName: 

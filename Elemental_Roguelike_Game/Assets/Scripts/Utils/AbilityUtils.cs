@@ -1,4 +1,5 @@
-﻿using Data.Elements;
+﻿using Data;
+using Data.Elements;
 using Runtime.Abilities;
 using Runtime.GameControllers;
 
@@ -26,24 +27,34 @@ namespace Utils
             return abilityController.GetRandomAbility();
         }
         
-        public static Ability GetRandomAbilityByType(ElementTyping _type)
+        public static Ability GetRandomAbilityByType(ElementTyping _type, CharacterClassData _class)
         {
             if (_type == null)
             {
                 return default;
             }
             
-            return abilityController.GetRandomAbilityByType(_type);
+            return abilityController.GetRandomAbilityByTypeAndClass(_type, _class);
         }
 
-        public static Ability GetRandomAbilityByType(string guid)
+        public static Ability GetRandomAbilityByType(string guid, CharacterClassData _class)
         {
             if (guid == string.Empty)
             {
                 return default;
             }
 
-            return abilityController.GetRandomAbilityByType(guid);
+            return abilityController.GetRandomAbilityByTypeAndClass(guid, _class);
+        }
+        
+        public static Ability GetRandomAbilityByType(string guid, string classGUID)
+        {
+            if (guid == string.Empty)
+            {
+                return default;
+            }
+
+            return abilityController.GetRandomAbilityByTypeAndClass(guid, classGUID);
         }
 
         public static Ability GetAbilityByGUID(string _guid)
@@ -56,14 +67,14 @@ namespace Utils
             return abilityController.GetAbilityByGUID(_guid);
         }
         
-        public static Ability GetRandomAbilityByType(ElementTyping _type, Ability _excludingAbility)
+        public static Ability GetRandomAbilityByType(ElementTyping _type, CharacterClassData _class ,Ability _excludingAbility)
         {
             if (_type == null || _excludingAbility == null)
             {
                 return default;
             }
             
-            return abilityController.GetRandomAbilityByType(_type, _excludingAbility);
+            return abilityController.GetRandomAbilityByTypeAndClass(_type, _class, _excludingAbility);
         }
 
         #endregion

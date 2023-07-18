@@ -1,6 +1,7 @@
 ﻿using System;
 using Data.Elements;
 using Runtime.Character;
+using Runtime.VFX;
 using UnityEngine;
 
 namespace Runtime.Abilities
@@ -16,6 +17,9 @@ namespace Runtime.Abilities
 
         public string abilityName;
 
+        [TextArea(1,4)]
+        public string abilityDescription;
+
         public string abilityGUID;
 
         //cooldowns are determined by rounds
@@ -26,6 +30,12 @@ namespace Runtime.Abilities
         public float range = 1;
 
         public bool isDamagingAbility;
+
+        public AnimationClip abilityAnimationOverride;
+
+        public bool playVFXAtTransform;
+        
+        public VFXPlayer abilityVFX;
 
         #endregion
 

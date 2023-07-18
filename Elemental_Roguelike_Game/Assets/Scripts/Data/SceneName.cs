@@ -3,7 +3,7 @@
     public enum SceneName
     {
         MainMenu,
-        Game,
+        ArenaArea,
         LevelGeneration,
         RealWorldScene,
     }

@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   elementName: shadow
   elementGUID: 41ddf6de-6e30-46cc-83b4-32b540bb69d3
+  insanityAmount: 0
   weaknesses:
   - {fileID: 11400000, guid: b5ba9f007020f914f9c8d519cccd8f04, type: 2}
   weaponColors:
@@ -27,6 +28,7 @@ MonoBehaviour:
   meepleColors:
   - {r: 0.44313726, g: 0.36078432, b: 0.48235294, a: 1}
   - {r: 0.20784314, g: 0.16470589, b: 0.24705882, a: 1}
+  elementSprite: {fileID: 976157362, guid: 6a6f25e903f18fd4db55f0dfe52e535c, type: 3}
   defaultMeepleElementHat:
     m_AssetGUID: 
     m_SubObjectName: 

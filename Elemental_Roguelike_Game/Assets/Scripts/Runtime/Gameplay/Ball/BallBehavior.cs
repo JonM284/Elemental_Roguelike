@@ -77,7 +77,7 @@ namespace Runtime.Gameplay
 
         public bool isThrown { get; private set; }
 
-        public int thrownBallStat { get; private set; }
+        public float thrownBallStat { get; private set; }
 
         public CharacterSide lastThrownCharacterSide { get; private set; }
 
@@ -158,21 +158,21 @@ namespace Runtime.Gameplay
                 }
                 
                 m_currentBallForce -= m_dragSpeed * Time.deltaTime;
+                thrownBallStat -= m_dragSpeed * Time.deltaTime;
                 var ballVelocity = m_ballThrownDirection.normalized * (m_currentBallForce * Time.deltaTime);
                 rb.MovePosition(rb.position + ballVelocity);
+            }else if (m_currentBallForce <= 0)
+            {
+                if (isThrown)
+                {
+                    isThrown = false;
+                    thrownBallStat = 0;
+                }   
             }
             
             if (m_currentThrowTime > m_afterThrowThreshold)
             {
                 CheckForPlayer();
-                if (rb.velocity == Vector3.zero)
-                {
-                    if (isThrown)
-                    {
-                        isThrown = false;
-                        thrownBallStat = 0;
-                    }    
-                }
             }
             else
             {
@@ -245,11 +245,14 @@ namespace Runtime.Gameplay
         public void SetBallPause(bool _isPaused)
         {
             m_isBallPaused = _isPaused;
+            rb.velocity = Vector3.zero;
         }
 
         public void ForceStopBall()
         {
             m_currentBallForce = 0;
+            rb.velocity = Vector3.zero;
+
         }
 
 

@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;  
+﻿using System.Collections.Generic;
+using Project.Scripts.Runtime.LevelGeneration;
+using UnityEngine;
 
 namespace Data.DataSaving
 {
@@ -8,8 +10,6 @@ namespace Data.DataSaving
     {
         
         public List<CharacterStatsData> savedTeamMembers;
-
-        public int savedFloorNumber;
 
         public SavedGameData()
         {

@@ -3,16 +3,19 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Data;
+using Data.DataSaving;
 using Project.Scripts.Runtime.LevelGeneration;
 using Project.Scripts.Utils;
 using Runtime.GameplayEvents;
+using Runtime.Selection;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
 
 namespace Runtime.Managers
 {
-    public class MapController: MonoBehaviour
+    public class MapController: MonoBehaviour, ISaveableData, ISelectable
     {
 
         #region Nested Classes
@@ -62,8 +65,8 @@ namespace Runtime.Managers
         [SerializeField] private int maxAmountOfRows = 2;
 
         [SerializeField] private float columnBoundsHorizontal;
-
-        [SerializeField] private float offsetMultiplier = 0.1f;
+        
+        [SerializeField] private float pointOffset = 1;
         
         [FormerlySerializedAs("matchEventType")]
         [Space(20)]
@@ -74,6 +77,12 @@ namespace Runtime.Managers
 
         #endregion
 
+        #region Events
+
+        public UnityEvent onDisplayMap;
+
+        #endregion
+        
         #region Private Fields
 
         private int m_selectionLevel = 0;
@@ -81,6 +90,8 @@ namespace Runtime.Managers
         private bool isGeneratingMap = false;
 
         private bool isGeneratingLines = false;
+
+        private bool isGeneratedMap = false;
 
         private int currentIterator = 0;
 
@@ -100,15 +111,6 @@ namespace Runtime.Managers
 
         #region Unity Events
 
-        private void Update()
-        {
-            if (Input.GetKeyDown(KeyCode.Space))
-            {
-                CreateOverviewMap();
-            }
-            
-        }
-
         private void OnEnable()
         {
             PoiLocation.POILocationSelected += OnPOILocationSelected;
@@ -122,6 +124,16 @@ namespace Runtime.Managers
         #endregion
 
         #region Class Implementation
+
+        public void DisplayMap()
+        {
+            onDisplayMap?.Invoke();
+        }
+
+        public void DrawMap()
+        {
+            CreateOverviewMap();
+        }
 
         [ContextMenu("Generate Map")]
         private void CreateOverviewMap()
@@ -258,6 +270,7 @@ namespace Runtime.Managers
                             lastPointData.actualPoiLocation.transform.localPosition);
                     }
                     isGeneratingMap = false;
+                    isGeneratedMap = true;
                     Debug.Log("Finished Points");
                     OnMapGenerated?.Invoke();
 
@@ -273,6 +286,8 @@ namespace Runtime.Managers
 
                 var previousRow = allRowsByLevel[currentIterator - 1];
                 var currentRow = allRowsByLevel[currentIterator];
+
+                var totalHeight = (finalPoint.transform.localPosition.y - starterPoint.transform.localPosition.y );
                 
                 var randomAmountOfColumns = previousRow.rowPoints.Count > 1 ? Random.Range(previousRow.rowPoints.Count - 1, maxColumns) : Random.Range(2,maxColumns);
                 
@@ -283,11 +298,10 @@ namespace Runtime.Managers
 
                 for (int i = 0; i < randomAmountOfColumns; i++)
                 {
-                    float horizontalPosByColumn = randomAmountOfColumns > 1 ? (float)i / randomAmountOfColumns + (columnBoundsHorizontal/randomAmountOfColumns)
-                        : columnBoundsHorizontal;
-                    
-                    float _Xposition = -columnBoundsHorizontal + horizontalPosByColumn;
-                    float _Yposition = (starterPoint.transform.localPosition.y + percentage);
+                    float horizontalPosByColumn = (float)i / randomAmountOfColumns + (columnBoundsHorizontal/randomAmountOfColumns);
+
+                    float _Xposition = randomAmountOfColumns > 1 ? ((-columnBoundsHorizontal/1.5f) + horizontalPosByColumn) * pointOffset : 0;
+                    float _Yposition = ((totalHeight * percentage) - (totalHeight/1.5f));
                     
                     Vector3 _pointPosition = new Vector3(_Xposition, _Yposition, 0);
                     
@@ -519,8 +533,46 @@ namespace Runtime.Managers
         }
 
         #endregion
-        
-        
-        
+
+
+        #region ISaveable Inherited Methods
+
+        public void LoadData(SavedGameData _savedGameData)
+        {
+            
+        }
+
+        public void SaveData(ref SavedGameData _savedGameData)
+        {
+            
+        }
+
+        #endregion
+
+        #region ISelectable Inherited Methods
+
+        public void OnSelect()
+        {
+            if (isGeneratedMap || isGeneratingMap)
+            {
+                return;
+            }
+            
+            DrawMap();
+        }
+
+        public void OnUnselected()
+        {
+        }
+
+        public void OnHover()
+        {
+        }
+
+        public void OnUnHover()
+        {
+        }
+
+        #endregion
     }
 }

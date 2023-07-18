@@ -1,6 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using Project.Scripts.Utils;
+using Runtime.Abilities;
+using Runtime.GameControllers;
+using UnityEditor.Animations;
 using UnityEngine;
+using Utils;
 
 namespace Runtime.Character
 {
@@ -17,7 +22,13 @@ namespace Runtime.Character
         
         private readonly string deathParam = "OnDeath";
         
-        private readonly string useAbilityParam = "OnAbilityOneUse";
+        private readonly string useFirstAbilityParam = "OnAbilityOneUse";
+        
+        private readonly string useSecondAbilityParam = "OnAbilityTwoUse";
+        
+        private readonly string abilityOneClipName = "DefaultAbility1";
+        
+        private readonly string abilityTwoClipName = "DefaultAbility2";
 
         #endregion
 
@@ -43,7 +54,7 @@ namespace Runtime.Character
             return a;
         });
 
-        private bool isWalking => characterMovement != null && characterMovement.isMoving;
+        private bool isWalking => characterMovement != null && characterMovement.isMoving && !characterMovement.isPaused;
 
         #endregion
 
@@ -58,9 +69,84 @@ namespace Runtime.Character
 
         #region Class Implementation
 
-        public void AbilityAnim(bool _usingAbility)
+        public void InitializeAnimations(List<string> _abilities, string _classType, string _elementType)
         {
-            animator.SetBool(useAbilityParam, _usingAbility);
+            if (_abilities.Count == 0)
+            {
+                return;
+            }
+
+            List<Ability> abilities = new List<Ability>();
+            
+            _abilities.ForEach(a =>
+            {
+                var locatedAbility = AbilityController.Instance.GetAbility(_elementType, _classType, a);
+                
+                abilities.Add(locatedAbility);
+                
+            });
+
+            if (abilities.Count == 0)
+            {
+                Debug.LogError("This has no abilities", this);
+                return;
+            }
+            
+            //Create new overrides for abilities
+            
+            var newAnimator = new AnimatorOverrideController(animator.runtimeAnimatorController);
+
+            var overrides = new List<KeyValuePair<AnimationClip, AnimationClip>>(newAnimator.overridesCount);
+            
+            newAnimator.GetOverrides(overrides);
+
+            for(int i = 0; i < overrides.Count; i++)
+            {
+
+                if (overrides[i].Key.name == abilityOneClipName)
+                {
+                    if (abilities[0].abilityAnimationOverride.IsNull())
+                    {
+                        return;
+                    }
+                    var newValuePair = new KeyValuePair<AnimationClip, AnimationClip>(overrides[i].Key, abilities[0].abilityAnimationOverride);
+                    overrides[i] = newValuePair;
+
+                }else if (overrides[i].Key.name == abilityTwoClipName)
+                {
+                    if (abilities[1].abilityAnimationOverride.IsNull())
+                    {
+                        return;
+                    }
+                    var newValuePair = new KeyValuePair<AnimationClip, AnimationClip>(overrides[i].Key, abilities[1].abilityAnimationOverride);
+                    overrides[i] = newValuePair;
+                }
+                else
+                {
+                    var newValuePair = new KeyValuePair<AnimationClip, AnimationClip>(overrides[i].Key,
+                        animator.runtimeAnimatorController.animationClips[i]);
+                    overrides[i] = newValuePair;
+                }
+            }
+            
+            newAnimator.ApplyOverrides(overrides);
+            newAnimator.name = "NewOverride";
+            
+            animator.runtimeAnimatorController = newAnimator;
+            
+            animator.Play("Idle");
+
+        }
+
+        /// <summary>
+        /// Set Correct ability to play animation.
+        /// </summary>
+        /// <param name="_abilityIndex">Index of ability, 0 or 1</param>
+        /// <param name="_usingAbility">Start / Stop animation</param>
+        public void AbilityAnim(int _abilityIndex, bool _usingAbility)
+        {
+            var abilityUsedParam = _abilityIndex == 0 ? useFirstAbilityParam : useSecondAbilityParam;
+            animator.SetBool(abilityUsedParam, _usingAbility);
         }
 
         public void AttackAnim(bool _isAttacking)

@@ -3,6 +3,7 @@ using Data.Elements;
 using Data.Sides;
 using Project.Scripts.Data;
 using Project.Scripts.Utils;
+using Runtime.Abilities;
 using Runtime.Damage;
 using Runtime.GameControllers;
 using Runtime.Gameplay;
@@ -165,9 +166,7 @@ namespace Runtime.Character
         public bool isInBattle => characterMovement.isInBattle;
 
         public int characterActionPoints => m_characterActionPoints;
-
-        public int initiativeNum => GetInitiativeNumber();
-
+        
         public float baseSpeed => GetBaseSpeed();
 
         public CharacterSide side => characterSide;
@@ -228,9 +227,7 @@ namespace Runtime.Character
         #region Class Implementation
 
         public abstract void InitializeCharacter();
-
-        public abstract int GetInitiativeNumber();
-
+        
         public abstract float GetBaseSpeed();
         
         protected abstract void CharacterDeath();
@@ -313,7 +310,6 @@ namespace Runtime.Character
                 characterAbilityManager.MarkAbility(_selectedPosition);
             }else if (isSetupThrowBall)
             {
-                Debug.Log("Throwing ball");
                 MarkThrowBall(_selectedPosition);
             }
             
@@ -411,7 +407,7 @@ namespace Runtime.Character
 
         private void OnAbilityUsed()
         {
-            characterAnimations.AbilityAnim(true);
+            characterAnimations.AbilityAnim(characterAbilityManager.GetActiveAbilityIndex(), true);
             UseActionPoint();
         }
 
@@ -580,8 +576,7 @@ namespace Runtime.Character
                 return;
             }
             
-            Debug.Log("Ball throw Ind not null");
-            var dir = _position - transform.localPosition;
+            var dir = transform.InverseTransformDirection(_position - transform.position);
             var furthestPoint = (dir.normalized * 2);
             ballThrowIndicator.SetPosition(1, new Vector3(furthestPoint.x, furthestPoint.z, 0));
         }
@@ -725,7 +720,7 @@ namespace Runtime.Character
             /*var stat = Random.Range(characterClassManager.assignedClass.ShootingStatMin,
                 characterClassManager.assignedClass.ShootingStatMax);*/
             
-            heldBall.ThrowBall(direction, shootSpeed, true, side, 20);
+            heldBall.ThrowBall(direction, shootSpeed, true, side, characterClassManager.GetRandomShootStat());
             heldBall = null;
             isSetupThrowBall = false;
             ballOwnerIndicator.SetActive(false);

@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Data;
 using Data.Elements;
 using Project.Scripts.Data;
+using Project.Scripts.Utils;
 using Runtime.Abilities;
 using UnityEngine;
+using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
 
 namespace Runtime.GameControllers
@@ -13,13 +16,26 @@ namespace Runtime.GameControllers
     {
 
         #region Nested Classes
+
+        [Serializable]
+        public class AbilitiesByClass
+        {
+            public CharacterClassData assignedClass;
+            public List<Ability> abilitiesOfElementClass = new List<Ability>(1);
+        }
         
         [Serializable]
-        public class AbilitiesByType
+        public class AbilitiesByElement
         {
             public ElementTyping type;
-            public List<Ability> abilitiesOfType = new List<Ability>();
+            [FormerlySerializedAs("abilitiesOfType")] public List<AbilitiesByClass> abilitiesOfClassType = new List<AbilitiesByClass>(3);
         }
+
+        #endregion
+        
+        #region Static
+
+        public static AbilityController Instance { get; private set; }
 
         #endregion
 
@@ -27,7 +43,7 @@ namespace Runtime.GameControllers
 
         [SerializeField] private List<Ability> allAbilities = new List<Ability>();
 
-        [SerializeField] private List<AbilitiesByType> abilitiesByType = new List<AbilitiesByType>();
+        [FormerlySerializedAs("abilitiesByType")] [SerializeField] private List<AbilitiesByElement> abilitiesByElement = new List<AbilitiesByElement>();
 
         #endregion
 
@@ -39,6 +55,16 @@ namespace Runtime.GameControllers
 
 
         #region Controller Inherited Methods
+
+        public override void Initialize()
+        {
+            Instance = this;
+            base.Initialize();
+        }
+
+        #endregion
+
+        #region Class Implementation
 
         public Ability GetAbilityByName(string _searchName)
         {
@@ -61,10 +87,43 @@ namespace Runtime.GameControllers
             return foundAbility;
         }
 
-        public List<Ability> GetAbilitiesByType(ElementTyping _type)
+        public Ability GetAbility(string _ElementSearchGUID, string _classSearchGUID, string _abilitySearchGUID)
         {
-            var foundAbilities = abilitiesByType.FirstOrDefault(abt => abt.type == _type);
-            return foundAbilities.abilitiesOfType.ToList();
+            var foundElement = abilitiesByElement.FirstOrDefault(abe => abe.type.elementGUID == _ElementSearchGUID);
+           
+            if (CommonUtils.IsNull(foundElement))
+            {
+                Debug.Log("Element Doesn't Exist in LIST", this);
+                return default;
+            }
+            
+            var foundType =
+                foundElement.abilitiesOfClassType.FirstOrDefault(abc =>
+                    abc.assignedClass.classGUID == _classSearchGUID);
+            
+            if (CommonUtils.IsNull(foundType))
+            {
+                Debug.Log("Class Type Doesn't Exist in LIST", this);
+                return default;
+            }
+            
+            var foundAbility =
+                foundType.abilitiesOfElementClass.FirstOrDefault(a => a.abilityGUID == _abilitySearchGUID);
+            
+            if (CommonUtils.IsNull(foundAbility))
+            {
+                Debug.Log("Ability Doesn't Exist in LIST", this);
+                return default;
+            }
+            
+            return foundAbility;
+        }
+
+        public List<Ability> GetAbilitiesByTypeAndClass(ElementTyping _type, CharacterClassData _class)
+        {
+            var foundType = abilitiesByElement.FirstOrDefault(abt => abt.type == _type);
+            var foundClass = foundType.abilitiesOfClassType.FirstOrDefault(abc => abc.assignedClass == _class);
+            return Enumerable.ToList(foundClass.abilitiesOfElementClass);
         }
 
         public Ability GetRandomAbility()
@@ -73,24 +132,36 @@ namespace Runtime.GameControllers
             return allAbilities[randomInt];
         }
 
-        public Ability GetRandomAbilityByType(ElementTyping _type)
+        public Ability GetRandomAbilityByTypeAndClass(ElementTyping _type, CharacterClassData _class)
         {
-            var foundAbilities = abilitiesByType.FirstOrDefault(abt => abt.type == _type);
-            var randomAbilityIndex = Random.Range(0, foundAbilities.abilitiesOfType.Count);
-            return foundAbilities.abilitiesOfType[randomAbilityIndex];
+            var foundType = abilitiesByElement.FirstOrDefault(abt => abt.type == _type);
+            var foundClass = foundType.abilitiesOfClassType.FirstOrDefault(abc => abc.assignedClass == _class);
+            var foundAbilities = foundClass.abilitiesOfElementClass;
+            var randomAbilityIndex = Random.Range(0, foundAbilities.Count);
+            return foundAbilities[randomAbilityIndex];
         }
         
-        public Ability GetRandomAbilityByType(string guid)
+        public Ability GetRandomAbilityByTypeAndClass(string guid, CharacterClassData _class)
         {
-            var foundAbilities = abilitiesByType.FirstOrDefault(abt => abt.type.elementGUID == guid);
-            var randomAbilityIndex = Random.Range(0, foundAbilities.abilitiesOfType.Count);
-            return foundAbilities.abilitiesOfType[randomAbilityIndex];
+            var foundElement = abilitiesByElement.FirstOrDefault(abt => abt.type.elementGUID == guid);
+            var foundClass = foundElement.abilitiesOfClassType.FirstOrDefault(abc => abc.assignedClass == _class);
+            var randomAbilityIndex = Random.Range(0, foundClass.abilitiesOfElementClass.Count);
+            return foundClass.abilitiesOfElementClass[randomAbilityIndex];
         }
         
-        public Ability GetRandomAbilityByType(ElementTyping _type, Ability _excludingAbility)
+        public Ability GetRandomAbilityByTypeAndClass(string _elementGUID, string _classGUID)
         {
-            var foundAbilities = abilitiesByType.FirstOrDefault(abt => abt.type == _type);
-            var abilitiesExclusive = foundAbilities.abilitiesOfType.ToList();
+            var foundElement = abilitiesByElement.FirstOrDefault(abt => abt.type.elementGUID == _elementGUID);
+            var foundClass = foundElement.abilitiesOfClassType.FirstOrDefault(abc => abc.assignedClass.classGUID == _classGUID);
+            var randomAbilityIndex = Random.Range(0, foundClass.abilitiesOfElementClass.Count);
+            return foundClass.abilitiesOfElementClass[randomAbilityIndex];
+        }
+        
+        public Ability GetRandomAbilityByTypeAndClass(ElementTyping _type, CharacterClassData _class ,Ability _excludingAbility)
+        {
+            var foundElement = abilitiesByElement.FirstOrDefault(abt => abt.type == _type);
+            var foundClass = foundElement.abilitiesOfClassType.FirstOrDefault(abc => abc.assignedClass == _class);
+            var abilitiesExclusive = Enumerable.ToList(foundClass.abilitiesOfElementClass);
             abilitiesExclusive.Remove(_excludingAbility);
             var randomAbilityIndex = Random.Range(0, abilitiesExclusive.Count);
             return abilitiesExclusive[randomAbilityIndex];

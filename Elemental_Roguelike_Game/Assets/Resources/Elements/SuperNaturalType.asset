@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15d0416d0e9a4f4a837a866f5c0a82cf, type: 3}
   m_Name: SuperNaturalType
   m_EditorClassIdentifier: 
-  elementName: supernatural
+  elementName: SuperNatural
   elementGUID: f72684fc-4fa0-4774-9241-7d32ccb9431c
   insanityAmount: 0
   weaknesses:
@@ -29,6 +29,7 @@ MonoBehaviour:
   meepleColors:
   - {r: 1, g: 1, b: 1, a: 0}
   - {r: 0.8509804, g: 0.8509804, b: 0.8509804, a: 0}
+  elementSprite: {fileID: -2100447570, guid: 6a6f25e903f18fd4db55f0dfe52e535c, type: 3}
   defaultMeepleElementHat:
     m_AssetGUID: 
     m_SubObjectName: 

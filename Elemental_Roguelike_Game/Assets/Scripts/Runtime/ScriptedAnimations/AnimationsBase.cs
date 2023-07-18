@@ -25,7 +25,11 @@ namespace Runtime.ScriptedAnimations
 
         private float m_startTime;
 
+        private float m_progress;
+        
         private bool m_isPlaying;
+
+        private bool m_isPlayingReverse;
         
         #endregion
 
@@ -42,11 +46,11 @@ namespace Runtime.ScriptedAnimations
         {
             while (m_isPlaying)
             {
-                var progress = (Time.time - m_startTime) / m_maxTime;
+                m_progress = (Time.time - m_startTime) / m_maxTime;
+                                    
+                SetProgress(m_progress);
                 
-                SetProgress(progress);
-                
-                if (m_isPlaying && progress >= 1)
+                if (m_isPlaying && m_progress >= 1)
                 {
                     OnAnimationFinished?.Invoke();
                     SetProgress(1);

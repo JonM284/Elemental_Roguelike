@@ -33,25 +33,18 @@ namespace Runtime.Character
             if (m_characterStatsData.abilityReferences.Count > 0)
             {
                 characterAbilityManager.InitializeCharacterAbilityList(m_characterStatsData.abilityReferences);
+
+                characterAnimations.InitializeAnimations(m_characterStatsData.abilityReferences, m_characterStatsData.classReferenceType ,m_characterStatsData.meepleElementTypeRef);
             }
             
-            characterClassManager.InitializedCharacterPassive(classType);
+            characterClassManager.InitializedCharacterPassive(classType, m_characterStatsData.agilityScore, 
+                m_characterStatsData.shootingScore, m_characterStatsData.damageScore);
             
             /*
             var weaponData = WeaponUtils.GetDataByRef(m_characterStatsData.weaponReference);
             var weaponElementType = ElementUtils.GetElementTypeByGUID(m_characterStatsData.weaponElementTypeRef);
             characterWeaponManager.InitializeCharacterWeapon(weaponData, weaponElementType);
             */       
-        }
-
-        public override int GetInitiativeNumber()
-        {
-            if (m_characterStatsData == null)
-            {
-                return 0;
-            }
-
-            return m_characterStatsData.initiativeNumber;
         }
 
         public override float GetBaseSpeed()

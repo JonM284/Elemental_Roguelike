@@ -63,102 +63,7 @@ namespace Runtime.UI.DataReceivers
 
         #endregion
 
-
-        #region Unity Events
-
-        private void OnEnable()
-        {
-            RandomTeamSelectionManager.GeneratedTeamData += OnGeneratedTeamData;
-            RandomTeamSelectionManager.SelectedMeepleConfirmed += OnSelectedMeepleConfirmed;
-        }
-
-        private void OnDisable()
-        {
-            RandomTeamSelectionManager.GeneratedTeamData -= OnGeneratedTeamData;
-            RandomTeamSelectionManager.SelectedMeepleConfirmed -= OnSelectedMeepleConfirmed;
-        }
-
-        #endregion
-
         #region Class Implementation
-
-        private void OnGeneratedTeamData(List<CharacterStatsData> _randomTeamMembers)
-        {
-            if (_randomTeamMembers.Count == 0)
-            {
-                Debug.LogError("No Team Members");
-                return;
-            }
-
-            m_usableMeepleItems.Clear();
-            
-            allMeepleItems.ForEach(mmi =>
-            {
-                if (!mmi.isSelected)
-                {
-                    m_usableMeepleItems.Add(mmi);
-                }
-            });
-
-
-            for (int i = 0; i < generatedTeamSize; i++)
-            {
-                m_usableMeepleItems[i].gameObject.SetActive(true);
-                m_usableMeepleItems[i].TryGetComponent(out RectTransform meepleItemRect);
-                if (meepleItemRect)
-                {
-                    meepleItemRect.parent = randomMeepleUIPositions[i];
-                    meepleItemRect.localPosition = Vector3.zero;
-                }
-                m_usableMeepleItems[i].InitializeSelectionItem(_randomTeamMembers[i]);
-            }
-            
-            
-        }
-        
-        private void OnSelectedMeepleConfirmed(CharacterStatsData _selectedMeeple)
-        {
-            if (_selectedMeeple.IsNull())
-            {
-                Debug.LogError("Selected Meeple NULL");
-                return;
-            }
-
-            var alreadySelectedMeeple = m_selectedMeeples.FirstOrDefault(mmi => mmi.assignedData.id == _selectedMeeple.id);
-            if (alreadySelectedMeeple != null)
-            {
-                m_selectedMeeples.Remove(alreadySelectedMeeple);
-                alreadySelectedMeeple.TryGetComponent(out RectTransform removedMeepleRect);
-                if (removedMeepleRect)
-                {
-                    removedMeepleRect.parent = unusedDisplayPool;
-                    removedMeepleRect.localPosition = Vector3.zero;
-                }
-                UpdateSelectedList();
-                Debug.Log("Meeple was already selected");
-                return;
-            }
-
-            var selectedMeepleItem = m_usableMeepleItems.FirstOrDefault(mi => mi.assignedData.id == _selectedMeeple.id);
-            
-            m_selectedMeeples.Add(selectedMeepleItem);
-
-            UpdateSelectedList();
-
-        }
-
-        private void UpdateSelectedList()
-        {
-            for (int i = 0; i < m_selectedMeeples.Count; i++)
-            {
-                m_selectedMeeples[i].TryGetComponent(out RectTransform meepleItemRect);
-                if (meepleItemRect)
-                {
-                    meepleItemRect.parent = selectedMeepleUIPositions[i];
-                    meepleItemRect.localPosition = Vector3.zero;
-                }
-            }
-        }
 
         public void OnRerollSelected()
         {
@@ -194,10 +99,14 @@ namespace Runtime.UI.DataReceivers
 
         #endregion
 
+        #region UIBase Inherited Methods
 
         public override void AssignArguments(params object[] _arguments)
         {
             throw new NotImplementedException();
         }
+
+        #endregion
+        
     }
 }

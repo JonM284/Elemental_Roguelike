@@ -193,6 +193,11 @@ namespace Runtime.GameControllers
             if (ballRef.IsNull())
             {
                 //spawn ball
+                Debug.LogError("Ball Null");
+            }
+            else
+            {
+                Debug.Log("Ball Found");
             }
 
             ball = ballRef;

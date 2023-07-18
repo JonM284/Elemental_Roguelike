@@ -4,6 +4,7 @@ using Data;
 using Data.DataSaving;
 using Project.Scripts.Utils;
 using Runtime.Character;
+using Runtime.Submodules;
 using Runtime.UI.DataReceivers;
 using UnityEngine;
 using Utils;
@@ -53,12 +54,12 @@ namespace Runtime.GameControllers
 
         private void OnEnable()
         {
-            MeepleTeamSelectionDataModel.TeamMembersConfirmed += OnTeamMembersConfirmed;   
+            RandomTeamSelectionManager.TeamMembersConfirmed += OnTeamMembersConfirmed;   
         }
 
         private void OnDisable()
         {
-            MeepleTeamSelectionDataModel.TeamMembersConfirmed -= OnTeamMembersConfirmed;
+            RandomTeamSelectionManager.TeamMembersConfirmed -= OnTeamMembersConfirmed;
         }
 
         #endregion
@@ -89,12 +90,6 @@ namespace Runtime.GameControllers
             }
             
             _confirmedTeamMembers.ForEach(csd => m_savedTeamMembers.Add(csd));
-            
-            Debug.Log("<color=#00FF00>Meeples Confirmed</color>");
-            foreach (var teamMember in m_savedTeamMembers)
-            {
-                Debug.Log($"{teamMember.id} //////// {teamMember.meepleElementTypeRef}");
-            }
         }
 
         public void AddTeamMember(CharacterBase _teamMember, CharacterStatsData _meepleData)

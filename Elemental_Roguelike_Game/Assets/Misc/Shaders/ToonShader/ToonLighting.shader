@@ -8,8 +8,6 @@ Shader "Custom/ToonLighting"
         _LightInt ("Light Instensity", Range(0,1)) = 1
         _OutlineColor ("Outline Color", Color) = (1,1,1,1)
         _OutlineThickness ("Outline Thickness", Range(0.001, 0.05)) = 0.1
-        [Header(Rendering Over Environment)]
-        _ROEColor ("Color to render over obj", Color) = (1,1,1,1)
     }
     SubShader
     {
@@ -34,42 +32,6 @@ Shader "Custom/ToonLighting"
             };
 
         ENDCG
-        
-        Pass
-        {
-            Name "Render Over Environment"    
-            Tags { "RenderType"="Opaque" "Queue"="Geometry+5"}
-            
-            zwrite off
-            ztest greater
-            
-            Stencil{
-                Ref 10
-                Comp lequal 
-                pass replace
-            }
-            
-            CGPROGRAM
-            #pragma vertex vert
-            #pragma fragment frag
-
-            #include "UnityCG.cginc"
-            
-            half4 _ROEColor;
-
-            v2f vert (appdata v)
-            {
-                v2f o;
-                o.vertex = UnityObjectToClipPos(v.vertex);
-                return o;
-            }
-
-            fixed4 frag (v2f i) : SV_Target
-            {
-                return _ROEColor;
-            }
-            ENDCG
-        }
         
         Pass
         {

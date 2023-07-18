@@ -80,7 +80,6 @@ Shader "Custom/MeepleToonLighting"
                 fixed4 col = tex2D(_MainTex, i.uv);
                 fixed4 modelColor = lerp(_DarkColor, _LightColor, i.uv.y);
                 float3 normal = i.normal_world;
-                float3 viewDir = normalize(_WorldSpaceCameraPos - i.vertex_world);
 				//Direction of Directional environmental lighting
 				float3 lightDir = normalize(_WorldSpaceLightPos0.xyz);
 				//Take only the rgb values of the light color (directional environmental lighting)

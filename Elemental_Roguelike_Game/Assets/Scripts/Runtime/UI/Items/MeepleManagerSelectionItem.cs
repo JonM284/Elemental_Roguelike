@@ -4,6 +4,7 @@ using Project.Scripts.Utils;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using Utils;
 
 namespace Runtime.UI
 {
@@ -23,6 +24,8 @@ namespace Runtime.UI
         [SerializeField] private TMP_Text shieldText;
 
         [SerializeField] private TMP_Text healthText;
+
+        [SerializeField] private TMP_Text abilityDescriptionText;
 
         [SerializeField] private Image elementIcon;
 
@@ -59,20 +62,39 @@ namespace Runtime.UI
             shieldText.text = $"{meeple.baseShields}";
             
             healthText.text = $"{meeple.baseHealth}";
+
+            if (meeple.abilityReferences.Count > 0)
+            {
+                string allAbilitiesString = String.Empty;
+            
+                meeple.abilityReferences.ForEach(s =>
+                {
+                    var ability = AbilityUtils.GetAbilityByGUID(s);
+                    string formatString = string.Format($"{ability.abilityName}: {ability.abilityDescription} \n", ability.range, ability.roundCooldownTimer);
+                    allAbilitiesString += formatString;
+                });
+
+                abilityDescriptionText.text = allAbilitiesString;    
+            }
+            
+            var _icon = ElementUtils.GetElementTypeByGUID(meeple.meepleElementTypeRef).elementSprite;
+            if (_icon.IsNull())
+            {
+                return;
+            }
+
+            elementIcon.sprite = _icon;
         }
 
 
         public void OnSelectItem()
         {
-            Debug.Log("Selected");
-            
             isSelected = !isSelected;
 
             highlightImage.SetActive(isSelected);
             
             //Change to selected row
             MeepleItemSelected?.Invoke(assignedData);
-            
         }
 
         #endregion

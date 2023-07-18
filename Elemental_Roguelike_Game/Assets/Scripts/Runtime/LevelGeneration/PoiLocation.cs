@@ -2,6 +2,7 @@
 using Project.Scripts.Utils;
 using Runtime.GameplayEvents;
 using Runtime.Selection;
+using Unity.VisualScripting;
 using UnityEngine;
 
 namespace Project.Scripts.Runtime.LevelGeneration
@@ -27,6 +28,18 @@ namespace Project.Scripts.Runtime.LevelGeneration
 
         private Material m_clonedMaterial;
 
+        private bool m_isActive;
+        
+        private Color m_activeColor = Color.white;
+
+        private Color m_highlightColor = Color.yellow;
+
+        private Color m_selectedColor = Color.green;
+
+        private Color m_normalColor = Color.grey;
+
+        private Color m_inactiveColor = Color.black;
+
         #endregion
 
         #region Accessors
@@ -49,6 +62,8 @@ namespace Project.Scripts.Runtime.LevelGeneration
 
             this.GetComponent<MeshRenderer>().material = m_clonedMaterial;
 
+            m_clonedMaterial.SetColor(mainColor, m_normalColor);
+
             AssignedEventType = _event;
         }
 
@@ -58,8 +73,9 @@ namespace Project.Scripts.Runtime.LevelGeneration
             {
                 return;
             }
-            
-            m_clonedMaterial.SetColor(mainColor, Color.white);
+
+            m_isActive = true;
+            m_clonedMaterial.SetColor(mainColor, m_activeColor);
         }
 
         private void SetPointSelected()
@@ -68,8 +84,9 @@ namespace Project.Scripts.Runtime.LevelGeneration
             {
                 return;
             }
-            
-            m_clonedMaterial.SetColor(mainColor, Color.green);
+
+            m_isActive = false;
+            m_clonedMaterial.SetColor(mainColor, m_selectedColor);
         }
 
         private void SetPointHighlight(bool _highlight)
@@ -79,7 +96,7 @@ namespace Project.Scripts.Runtime.LevelGeneration
                 return;
             }
 
-            var applyColor = _highlight ? Color.yellow : Color.gray;
+            var applyColor = _highlight ? m_highlightColor : m_activeColor;
                m_clonedMaterial.SetColor(mainColor, applyColor);
         }
 
@@ -89,8 +106,9 @@ namespace Project.Scripts.Runtime.LevelGeneration
             {
                 return;
             }
-            
-            m_clonedMaterial.SetColor(mainColor, Color.grey);
+
+            m_isActive = false;
+            m_clonedMaterial.SetColor(mainColor, m_inactiveColor);
         }
 
         #endregion
@@ -99,6 +117,10 @@ namespace Project.Scripts.Runtime.LevelGeneration
 
         public void OnSelect()
         {
+            if (!m_isActive)
+            {
+                return;
+            }
             SetPointSelected();
             POILocationSelected?.Invoke(this, AssignedEventType);
         }
@@ -110,11 +132,19 @@ namespace Project.Scripts.Runtime.LevelGeneration
 
         public void OnHover()
         {
+            if (!m_isActive)
+            {
+                return;
+            }
             SetPointHighlight(true);
         }
 
         public void OnUnHover()
         {
+            if (!m_isActive)
+            {
+                return;
+            }
             SetPointHighlight(false);
         }
 

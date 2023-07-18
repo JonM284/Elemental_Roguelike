@@ -13,12 +13,12 @@ namespace Runtime.Abilities
 
         public override void SelectTarget(Transform _inputTransform)
         {
-            throw new System.NotImplementedException();
+            m_targetTransform = _inputTransform;
         }
 
         public override void UseAbility(Vector3 _ownerUsePos)
         {
-            currentOwner.TryGetComponent(out CharacterMovement characterMovement);
+            m_targetTransform.TryGetComponent(out CharacterMovement characterMovement);
             if (characterMovement)
             {
                 characterMovement.ChangeMovementRange(characterMovement.battleMoveDistance + range);

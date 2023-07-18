@@ -124,6 +124,16 @@ namespace Runtime.Character
         {
             return m_assignedAbilities;
         }
+
+        public Ability GetActiveAbility()
+        {
+            return m_assignedAbilities[m_activeAbilityIndex].ability;
+        }
+
+        public int GetActiveAbilityIndex()
+        {
+            return m_activeAbilityIndex;
+        }
         
         public void InitializeCharacterAbilityList(List<string> _abilities)
         {
@@ -184,11 +194,12 @@ namespace Runtime.Character
             {
                 OnAbilityUsed = abilityUseCallback;
             }
-            
-            if (m_assignedAbilities[_abilityIndex].ability.targetType == AbilityTargetType.SELF)
+
+            if (m_assignedAbilities[m_activeAbilityIndex].ability.targetType == AbilityTargetType.SELF)
             {
-                UseActiveAbility();   
+                SelectAbilityTarget(this.transform);
             }
+            
         }
 
         public void MarkAbility(Vector3 _position)
@@ -220,7 +231,7 @@ namespace Runtime.Character
                     abilityPositionIndicator.transform.position = new Vector3(_position.x, m_floorOffset, _position.z);
                     break;
                 case AbilityTargetType.DIRECTIONAL:
-                    var localDirection = _position - transform.localPosition;
+                    var localDirection = transform.InverseTransformDirection(_position - transform.position);
                     var finalPoint = (localDirection.normalized * m_assignedAbilities[m_activeAbilityIndex].ability.range);
                     
                     abilityDirectionIndicator.SetPosition(1, new Vector3(finalPoint.x, finalPoint.z, 0));
@@ -272,7 +283,10 @@ namespace Runtime.Character
             }
             
             m_assignedAbilities[m_activeAbilityIndex].ability.SelectTarget(_targetTransform);
-            characterRotation.SetRotationTarget(_targetTransform.position);
+            if (_targetTransform != this.transform)
+            {
+                characterRotation.SetRotationTarget(_targetTransform.position);
+            }
             SetIndicators(false, false);
             OnAbilityUsed?.Invoke();
         }

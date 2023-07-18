@@ -17,7 +17,9 @@ MonoBehaviour:
   baseHealth: 100
   baseShields: 100
   movementDistance: 4
-  baseDamage: 10
+  tackleScore: 85
+  agilityScore: 70
+  shootingScore: 70
   characterColor: {r: 0.9607843, g: 0.30588236, b: 0.30588236, a: 1}
   typing: {fileID: 11400000, guid: e835342fdbc753849a4b2cb4161a5a57, type: 2}
   abilities: []
