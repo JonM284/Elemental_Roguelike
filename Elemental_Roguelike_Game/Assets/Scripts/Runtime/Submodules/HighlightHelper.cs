@@ -43,18 +43,16 @@ namespace Runtime.Submodules
 
         private void Update()
         {
-            if (!isPlayerTurn)
-            {
-                return;
-            }
-            
             if (activeCharacter.IsNull())
             {
                 CheckHover();
                 return;
             }
 
-            CheckPlayerAction();
+            if (!activeCharacter.IsNull() && isPlayerTurn)
+            {
+                CheckPlayerAction();
+            }
         }
 
         #endregion

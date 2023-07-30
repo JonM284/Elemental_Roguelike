@@ -31,7 +31,6 @@ namespace Runtime.Abilities
         //ToDo: change this to include animations and vfx
         public override void UseAbility(Vector3 _ownerUsePos)
         {
-            abilityVFX.PlayAt(m_targetPosition, Quaternion.identity);
             currentOwner.TryGetComponent(out CharacterMovement characterMovement);
             if (characterMovement)
             {

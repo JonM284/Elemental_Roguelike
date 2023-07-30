@@ -21,7 +21,7 @@ namespace Runtime.VFX
 
         #region Accessors
 
-        public bool is_playing => particleSystems.All(ps => ps.isPlaying);
+        public bool is_playing => particleSystems.TrueForAll(ps => ps.isPlaying);
 
         public string vfxplayerIdentifier => m_vfx_player_identifier;
 

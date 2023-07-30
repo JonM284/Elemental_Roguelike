@@ -50,7 +50,7 @@ namespace Runtime.Weapons
 
         private ElementTyping type => m_projectileRef.projectileType;
 
-        private bool armorPiercing => m_projectileRef.isArmorPiercing;
+        private bool armorAffecting => m_projectileRef.isAffectArmor;
         
         private bool hasStatusEffect => m_projectileRef.statusEffect != null;
 
@@ -67,34 +67,27 @@ namespace Runtime.Weapons
                 return;
             }
             var progress = (Time.time - m_startTime) / m_endTime;
-            if (progress <= 1) {
+            if (progress <= 0.99) {
                 m_velocity = Vector3.Lerp(m_startPos, m_endPos, progress);
                 m_velocity.y = m_projectileRef.projectileArcCurve.Evaluate(progress) + m_startPos.y;
             } else {
-                m_velocity = m_endPos;
-                onProjectileEnd?.Invoke();
-                if (isDamageDealing)
-                {
-                    DealDamage();    
-                }
-                
+                OnEndMovement();
             }
             
             transform.position = m_velocity;
-        }
-
-        private void OnTriggerEnter(Collider other)
-        {
-            if (other.CompareTag("Wall"))
-            {
-                DeleteObject();
-            }
         }
 
         #endregion
 
 
         #region Class Implementation
+
+        protected virtual void OnEndMovement()
+        {
+            m_velocity = m_endPos;
+            onProjectileEnd?.Invoke();
+            DoEffect();
+        }
 
         public void Initialize(ProjectileInfo _info, Vector3 _startPos, Vector3 _endPos)
         {
@@ -111,7 +104,7 @@ namespace Runtime.Weapons
             onProjectileStart?.Invoke();
         }
 
-        private void DealDamage()
+        private void DoEffect()
         {
             Collider[] colliders = Physics.OverlapSphere(transform.position, m_projectileRef.projectileDamageRadius, m_projectileRef.projectileCollisionLayers);
 
@@ -120,7 +113,14 @@ namespace Runtime.Weapons
                 foreach (var collider in colliders)
                 {
                     var damageable = collider.GetComponent<IDamageable>();
-                    damageable?.OnDealDamage(transform, damage, armorPiercing, type, false);
+                    if (isDamageDealing)
+                    {
+                        damageable?.OnDealDamage(transform, damage, !armorAffecting, type, m_projectileRef.isKnockBack);
+                    }
+                    else if(damage < 0)
+                    {
+                        damageable?.OnHeal(damage, armorAffecting);
+                    }
                     
                     if (hasStatusEffect)
                     {

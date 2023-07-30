@@ -17,38 +17,6 @@ MonoBehaviour:
     m_SerializedData: []
   m_GUID: 053f1fc220b49414585fe699abe6bb45
   m_SerializeEntries:
-  - m_GUID: c5fbe2599fb00904682158f359ac9f96
-    m_Address: BulletMeshSmallNormal
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 4d86d32dee101b448b75648b91d389c0
-    m_Address: BulletMeshSmallSuperNatural
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: a78b083b760e4b54381e2007ef9f7b52
-    m_Address: BulletMeshSmallWater
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 6c32dc5158a73704ba54607a58d63f81
-    m_Address: BulletMeshSmallLight
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 6f382c081af36df439375758f6a9a004
-    m_Address: BulletMeshSmallShadow
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 1b196e94e4ee2d54bab99f895344321c
-    m_Address: BulletMeshSmallNature
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 921de4dee3b2c8e4baa30cdc52b9e187
-    m_Address: BulletMeshSmallFire
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 6868c25d0a6d9404b977824aaf45a021
-    m_Address: BulletMeshSmallEarth
-    m_ReadOnly: 0
-    m_SerializedLabels: []
   - m_GUID: 30e2018a2d60d924082e6a3cf540faae
     m_Address: Fireball@ProjectileAbility
     m_ReadOnly: 0
@@ -63,6 +31,14 @@ MonoBehaviour:
     m_SerializedLabels: []
   - m_GUID: dd86dc2ae820a134e92080212a401265
     m_Address: WaterBall@ProjectileAbility
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 6d62ad2ed5ed3cb43b510e32f527b5c0
+    m_Address: NatureBall@ProjectileZoneAbility
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: e03c721a6c6e93a4a90228986c686d53
+    m_Address: Rock@ProjectileAbility
     m_ReadOnly: 0
     m_SerializedLabels: []
   m_ReadOnly: 0

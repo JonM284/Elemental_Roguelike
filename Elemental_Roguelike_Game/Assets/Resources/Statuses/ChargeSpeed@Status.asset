@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 531a5c5e1c384dc3ab5714faf5db0ed6, type: 3}
+  m_Name: ChargeSpeed@Status
+  m_EditorClassIdentifier: 
+  statusName: Charge Speed
+  roundCooldownTimer: 3
+  abilityElement: {fileID: 11400000, guid: b5ba9f007020f914f9c8d519cccd8f04, type: 2}
+  statusStayVFX: {fileID: 5795792492588116457, guid: 794c8b2bfc7fd4d43ad8cbc5c7b2a209,
+    type: 3}
+  statusOneTimeVFX: {fileID: 1472207216188466634, guid: fecaf9e18fc1354469dd606d2a66ea2e,
+    type: 3}
+  isImpactOnlyStatus: 0
+  amountToAdd: 0.75

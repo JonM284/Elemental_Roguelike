@@ -55,11 +55,10 @@ namespace GameControllers
         }
 
         #endregion
-        
-        
-        #region Class Implementation
-        
-        void Update()
+
+        #region Unity Events
+
+        void LateUpdate()
         {
             if (m_active_VFX.Count == 0)
             {
@@ -72,6 +71,10 @@ namespace GameControllers
                 currentActive.ForEach(vfx => vfx.CheckVFX());
             }
         }
+
+        #endregion
+        
+        #region Class Implementation
 
         /// <summary>
         /// Return incoming vfx to a pool to avoid constant instantiation
@@ -96,8 +99,9 @@ namespace GameControllers
 
         public void PlayAt(VFXPlayer vfxPlayer, Vector3 position, Quaternion rotation, Transform activeParent = null)
         {
-            if (vfxPlayer == null)
+            if (vfxPlayer.IsNull())
             {
+                Debug.Log("No VFX Player Attached");
                 return;
             }
 
@@ -113,12 +117,13 @@ namespace GameControllers
                 m_cached_VFX.Remove(foundVFX);
             }
 
-            foundVFX.transform.parent = activeParent != null ? activeParent : null;
+            foundVFX.transform.parent = !activeParent.IsNull() ? activeParent : null;
             foundVFX.transform.position = position;
             foundVFX.transform.rotation = rotation;
+
+            foundVFX.Play();
             
             m_active_VFX.Add(foundVFX);
-            foundVFX.Play();
         }
 
         #endregion

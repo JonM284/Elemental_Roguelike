@@ -44,6 +44,11 @@ namespace Runtime.Environment
             //Nothing for now
         }
 
+        public void OnHeal(int _healAmount, bool _isHealArmor)
+        {
+            m_currentAmountOfHits++;
+        }
+
         public void OnDealDamage(Transform _attacker, int _damageAmount, bool _armorPiercing, ElementTyping _damageElementType, bool _hasKnockback)
         {
             m_currentAmountOfHits--;

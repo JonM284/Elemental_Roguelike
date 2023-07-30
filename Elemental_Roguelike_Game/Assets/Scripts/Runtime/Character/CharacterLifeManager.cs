@@ -1,7 +1,5 @@
 ﻿using System;
-using Data;
 using Data.Elements;
-using Project.Scripts.Data;
 using Project.Scripts.Utils;
 using UnityEngine;
 
@@ -14,8 +12,14 @@ namespace Runtime.Character
 
         public static event Action<CharacterBase> OnCharacterDied;
 
-        public static event Action OnCharacterHealed;
+        public static event Action OnCharacterHealthChange;
         
+
+        #endregion
+
+        #region Serialized Fields
+
+        [SerializeField] private Transform healthBarPos;
 
         #endregion
 
@@ -47,6 +51,8 @@ namespace Runtime.Character
             return cb;
         });
 
+        public Transform healthBarFollowPos => healthBarPos;
+        
         #endregion
 
         #region Class Implementation
@@ -83,8 +89,8 @@ namespace Runtime.Character
             {
                 if (_incomingDamage >= currentShieldPoints)
                 {
-                    currentShieldPoints = 0;
                     currentHealthPoints -= (_fixedIncomingDamage - currentShieldPoints);
+                    currentShieldPoints = 0;
                 }
                 else
                 {
@@ -92,7 +98,10 @@ namespace Runtime.Character
                 }
             }
             
-            Debug.Log($"<color=orange> {this.gameObject.name} took damage /// hp now: {currentHealthPoints} shields: {currentShieldPoints} </color>");
+            OnCharacterHealthChange?.Invoke();
+
+
+            Debug.Log($"<color=orange> {this.gameObject.name} took damage Amount:{_incomingDamage} /// hp now: {currentHealthPoints} shields: {currentShieldPoints} </color>");
 
             if (currentHealthPoints <= 0)
             {
@@ -104,13 +113,54 @@ namespace Runtime.Character
         {
             currentHealthPoints = maxHealthPoints;
             currentShieldPoints = maxSheildPoints;
-            OnCharacterHealed?.Invoke();
+            OnCharacterHealthChange?.Invoke();
         }
 
         public void PartialReviveCharacter(float _percentHeal)
         {
             currentHealthPoints += Mathf.RoundToInt(maxHealthPoints * _percentHeal);
-            OnCharacterHealed?.Invoke();
+            OnCharacterHealthChange?.Invoke();
+        }
+
+        public void HealCharacter(int _healAmount, bool _isHealArmor = false)
+        {
+            if (_isHealArmor)
+            {
+                if (currentShieldPoints >= maxSheildPoints)
+                {
+                    return;
+                }
+
+                if (currentShieldPoints + _healAmount > maxSheildPoints)
+                {
+                    currentShieldPoints = maxSheildPoints;
+                    return;
+                }
+                
+                Debug.Log($"<color=green> {this.gameObject.name} Health{!_isHealArmor}:Shield{_isHealArmor} // " +
+                          $"Healed for Amount:{_healAmount} /// hp now: {currentHealthPoints} shields: {currentShieldPoints} </color>");
+                currentShieldPoints += _healAmount;
+                return;
+            }
+
+            if (currentHealthPoints >= maxHealthPoints)
+            {
+                return;
+            }
+            
+            if (currentHealthPoints + _healAmount > maxHealthPoints)
+            {
+                currentHealthPoints = maxHealthPoints;
+                return;
+            }
+            
+            currentHealthPoints += _healAmount;
+            
+            OnCharacterHealthChange?.Invoke();
+            
+            Debug.Log($"<color=green> {this.gameObject.name} Health{!_isHealArmor}:Shield{_isHealArmor} // " +
+                      $"Healed for Amount:{_healAmount} /// hp now: {currentHealthPoints} shields: {currentShieldPoints} </color>");
+
         }
 
         #endregion

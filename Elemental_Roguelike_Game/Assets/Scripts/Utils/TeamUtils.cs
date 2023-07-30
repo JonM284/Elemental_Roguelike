@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Data;
+using Data.CharacterData;
 using Project.Scripts.Utils;
 using Runtime.Character;
 using Runtime.GameControllers;

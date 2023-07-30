@@ -1,4 +1,5 @@
 ﻿using Data;
+using Data.CharacterData;
 using Runtime.GameControllers;
 using Runtime.Selection;
 using UnityEngine;
@@ -59,7 +60,6 @@ namespace Runtime.Character
 
         protected override void CharacterDeath()
         {
-            CharacterUtils.DeletePlayerMeeple(m_characterStatsData.id);
             CharacterUtils.CachePlayerMeeple(this);
         }
 

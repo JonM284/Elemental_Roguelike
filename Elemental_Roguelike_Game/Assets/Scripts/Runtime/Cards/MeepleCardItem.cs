@@ -1,9 +1,14 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Data;
+using Data.CharacterData;
 using Project.Scripts.Utils;
 using Runtime.GameControllers;
 using Runtime.Selection;
+using Runtime.UI.Items;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine.UI;
 using UnityEngine;
 using Utils;
@@ -50,6 +55,10 @@ namespace Runtime.Cards
 
         [SerializeField] private Transform meepleStandingLocation;
 
+        [SerializeField] private Transform abilityDescriptionParent;
+
+        [SerializeField] private GameObject abilityDescriptionPrefab;
+
         #endregion
 
         #region Private Fields
@@ -59,6 +68,10 @@ namespace Runtime.Cards
         private Vector3 m_inHandPosition;
 
         private bool m_isMoving;
+
+        private List<CardAbilityDescriptionItem> m_cachedDescriptionItems = new List<CardAbilityDescriptionItem>();
+        
+        private List<CardAbilityDescriptionItem> m_activeDescriptionItems = new List<CardAbilityDescriptionItem>();
 
         #endregion
 
@@ -89,6 +102,8 @@ namespace Runtime.Cards
             assignedData = meeple;
 
             InitializeVisualColors(meeple);
+
+            //InitializeAbilityDescription(meeple);
             
             InitializeTexts(meeple);
 
@@ -115,19 +130,16 @@ namespace Runtime.Cards
             shootingScoreText.text = $"{_data.shootingScore}";
             tacklingScoreText.text = $"{_data.damageScore}";
 
-            if (_data.abilityReferences.Count > 0)
-            {
-                string allAbilitiesString = String.Empty;
-            
-                _data.abilityReferences.ForEach(s =>
-                {
-                    var ability = AbilityUtils.GetAbilityByGUID(s);
-                    string formatString = string.Format($"{ability.abilityName}: {ability.abilityDescription} \n", ability.range, ability.roundCooldownTimer);
-                    allAbilitiesString += formatString;
-                });
+            string combinedstring = "";
 
-                abilityDescriptionText.text = allAbilitiesString;    
-            }
+            _data.abilityReferences.ForEach(s =>
+            {
+                var ability = AbilityUtils.GetAbilityByGUID(s);
+                var temp = $"{ability.abilityName}: {ability.abilityDescription}\r\n";
+                combinedstring += temp;
+            });
+
+            abilityDescriptionText.text = combinedstring;
 
         }
 
@@ -177,6 +189,41 @@ namespace Runtime.Cards
             //meshRenderer.materials[0] = m_clonedMaterial;
         }
 
+        private void InitializeAbilityDescription(CharacterStatsData _data)
+        {
+            if (_data.abilityReferences.Count == 0)
+            {
+                return;
+            }
+
+            _data.abilityReferences.ForEach(s =>
+            {
+                var ability = AbilityUtils.GetAbilityByGUID(s);
+                if (!ability.IsNull())
+                {
+                    GameObject descriptionGO = null;
+                    if (m_cachedDescriptionItems.Count > 0)
+                    {
+                        descriptionGO = m_cachedDescriptionItems.FirstOrDefault().gameObject;
+                        m_cachedDescriptionItems.RemoveAt(0);
+                    }
+
+                    if (descriptionGO.IsNull())
+                    {
+                        descriptionGO = abilityDescriptionPrefab.Clone(abilityDescriptionParent);
+                    }
+                    
+                    descriptionGO.TryGetComponent(out CardAbilityDescriptionItem item);
+                    if (item)
+                    {
+                        item.InitializeItem(ability.abilityIcon, ability.abilityParameters);
+                        m_activeDescriptionItems.Add(item);
+                    }
+                }
+            });
+
+        }
+
         public void AssignDisplayMeeple(GameObject _meepleObj)
         {
             if (_meepleObj.IsNull())
@@ -187,7 +234,30 @@ namespace Runtime.Cards
             assignedMeepleObj = _meepleObj;
         }
 
-        public void UnAssignDisplayMeeple()
+        public void CleanUp()
+        {
+            UnAssignDisplayMeeple();
+            CleanDescriptions();
+        }
+
+        private void CleanDescriptions()
+        {
+            if (m_activeDescriptionItems.Count == 0)
+            {
+                return;
+            }
+            
+            m_activeDescriptionItems.ForEach(item =>
+            {
+                item.Release();
+                m_cachedDescriptionItems.Add(item);
+            });
+            
+            m_activeDescriptionItems.Clear();
+            
+        }
+        
+        private void UnAssignDisplayMeeple()
         {
             assignedMeepleObj = null;
         }

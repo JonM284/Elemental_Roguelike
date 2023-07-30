@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Data.CharacterData;
 using Project.Scripts.Runtime.LevelGeneration;
 using UnityEngine;
 

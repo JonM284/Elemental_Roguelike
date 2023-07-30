@@ -16,7 +16,7 @@ namespace Runtime.VFX
 
         public void CreateVFX()
         {
-            vfxToCreate.PlayAt(transform.position, transform.rotation);
+            vfxToCreate.PlayAt(transform.position, Quaternion.identity);
         }
         
 

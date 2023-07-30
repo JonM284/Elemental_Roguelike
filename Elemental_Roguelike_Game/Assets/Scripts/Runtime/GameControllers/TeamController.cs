@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Data;
+using Data.CharacterData;
 using Data.DataSaving;
 using Project.Scripts.Utils;
 using Runtime.Character;

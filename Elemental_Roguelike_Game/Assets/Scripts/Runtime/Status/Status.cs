@@ -2,7 +2,6 @@
 using Runtime.Character;
 using Runtime.VFX;
 using UnityEngine;
-using Utils;
 
 namespace Runtime.Status
 {
@@ -15,12 +14,15 @@ namespace Runtime.Status
         
         public ElementTyping abilityElement;
 
-        public VFXPlayer statusVFX;
+        public VFXPlayer statusStayVFX;
+        
+        public VFXPlayer statusOneTimeVFX;
 
-        //does the ability only trigger on impact?
-        public bool isImpactOnlyStatus;
+        public bool playVFXOnTrigger;
 
         public abstract void TriggerStatusEffect(CharacterBase _character);
+
+        public abstract void ResetStatusEffect(CharacterBase _character);
 
     }
 }

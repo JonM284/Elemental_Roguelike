@@ -42,11 +42,13 @@ namespace Utils
 
         public static void ReturnToPool(this VFXPlayer vfxPlayer)
         {
+            Debug.Log($"Returning {vfxPlayer.vfxplayerIdentifier} to pool: {Time.time}");
             vfxController.ReturnToPool(vfxPlayer);
         }
 
         public static void PlayAt(this VFXPlayer vfxPlayer, Vector3 position, Quaternion rotation, Transform activeParent = null)
         {
+            Debug.Log($"playing {vfxPlayer.vfxplayerIdentifier}: {Time.time}");
             vfxController.PlayAt(vfxPlayer, position, rotation, activeParent);
         }
 

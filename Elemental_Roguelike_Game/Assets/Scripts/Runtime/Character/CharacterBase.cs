@@ -1,4 +1,5 @@
 ﻿using System;
+using Data.CharacterData;
 using Data.Elements;
 using Data.Sides;
 using Project.Scripts.Data;
@@ -44,8 +45,12 @@ namespace Runtime.Character
         public static event Action<CharacterBase> CharacterEndedTurn;
 
         public static event Action<CharacterBase> CharacterSelected;
-
+        
+        public static event Action<bool, CharacterBase> CharacterHovered;
+        
         public static event Action<CharacterBase> BallPickedUp;
+
+        public static event Action<CharacterBase> StatusAdded;
 
         #endregion
 
@@ -58,6 +63,8 @@ namespace Runtime.Character
         [SerializeField] private VFXPlayer deathVFX;
 
         [SerializeField] private VFXPlayer damageVFX;
+
+        [SerializeField] private VFXPlayer healVFX;
 
         [SerializeField] protected GameObject ballOwnerIndicator;
 
@@ -92,6 +99,8 @@ namespace Runtime.Character
         private float shootSpeed = 8f;
 
         private bool m_canPickupBall = true;
+
+        private bool m_canUseAbilities = true;
         
         //Temp
         private Vector3 arcPosition;
@@ -131,6 +140,7 @@ namespace Runtime.Character
         public Transform statusEffectTransform => CommonUtils.GetRequiredComponent(ref m_statusEffectTransform, () =>
         {
             var t = TransformUtils.CreatePool(transform, true);
+            t.RenameTransform("VFX_POOL");
             return t;
         });
         
@@ -373,6 +383,16 @@ namespace Runtime.Character
 
             damageVFX.PlayAt(transform.position, Quaternion.identity);
         }
+
+        private void PlayHealEffect()
+        {
+            if (healVFX == null)
+            {
+                return;
+            }
+
+            healVFX.PlayAt(transform.position, Quaternion.identity);
+        }
         
         public void PlayDeathEffect()
         {
@@ -393,6 +413,13 @@ namespace Runtime.Character
         {
             if (m_characterActionPoints <= 0)
             {
+                return;
+            }
+
+            if (!m_canUseAbilities)
+            {
+                //ToDo: visual queue
+                Debug.Log("Character Can't use abilities");
                 return;
             }
 
@@ -531,6 +558,16 @@ namespace Runtime.Character
             CheckStatus();
         }
 
+        public void SetCharacterUsable(bool _isUseable)
+        {
+            m_characterActionPoints = _isUseable ? 2 : 0;
+        }
+
+        public void SetCharacterCanUseAbilities(bool _canUse)
+        {
+            m_canUseAbilities = _canUse;
+        }
+
         private void CheckStatus()
         {
             if (appliedStatus == null)
@@ -542,6 +579,11 @@ namespace Runtime.Character
             {
                 RemoveEffect();
                 return;
+            }
+
+            if (appliedStatus.status.playVFXOnTrigger)
+            {
+                appliedStatus.status.statusOneTimeVFX.PlayAt(transform.position, Quaternion.identity, statusEffectTransform);
             }
             
             appliedStatus.status.TriggerStatusEffect(this);
@@ -561,12 +603,6 @@ namespace Runtime.Character
             m_finishedTurn = true;
             m_characterActionPoints = 0;
             CharacterEndedTurn?.Invoke(this);
-        }
-
-        [ContextMenu("Damage Trial")]
-        public void TakeDamage()
-        {
-            characterAnimations.DamageAnim(true);
         }
 
         private void MarkThrowBall(Vector3 _position)
@@ -597,11 +633,13 @@ namespace Runtime.Character
 
         public void OnHover()
         {
+            CharacterHovered?.Invoke(true,this);
             characterVisuals.SetHighlight();
         }
 
         public void OnUnHover()
         {
+            CharacterHovered?.Invoke(false, this);
             characterVisuals.SetUnHighlight();
         }
 
@@ -614,10 +652,19 @@ namespace Runtime.Character
             characterLifeManager.FullReviveCharacter();
         }
 
+        public void OnHeal(int _healAmount, bool _isHealArmor)
+        {
+            characterLifeManager.HealCharacter(_healAmount, _isHealArmor);
+            PlayHealEffect();
+        }
+
         public void OnDealDamage(Transform _attacker, int _damageAmount, bool _armorPiercing ,ElementTyping _damageElementType, bool _hasKnockback)
         {
             characterLifeManager.DealDamage(_damageAmount, _armorPiercing, _damageElementType);
-            PlayDamageVFX();
+            if (_damageAmount > 0)
+            {
+                PlayDamageVFX();
+            }
 
             if (_hasKnockback)
             {
@@ -632,7 +679,10 @@ namespace Runtime.Character
             
             if (characterAnimations != null)
             {
-                characterAnimations.DamageAnim(true);
+                if (_damageAmount > 0)
+                {
+                    characterAnimations.DamageAnim(true);
+                }
             }
         }
 
@@ -642,12 +692,10 @@ namespace Runtime.Character
 
         public void ApplyEffect(Status.Status _newStatus)
         {
-            //if the status only does something when applied, 
-            //do the effect to this player but don't save it
-            if (_newStatus.isImpactOnlyStatus)
+            Debug.Log($"<color=cyan>Applied {_newStatus.statusName} to {this.transform.name}</color>");
+            if (!appliedStatus.IsNull())
             {
-                _newStatus.TriggerStatusEffect(this);
-                return;
+                RemoveEffect();
             }
             
             appliedStatus = new AppliedStatus
@@ -656,21 +704,40 @@ namespace Runtime.Character
                 roundTimer = _newStatus.roundCooldownTimer
             };
 
-            if (_newStatus.statusVFX != null)
+            if (!_newStatus.statusOneTimeVFX.IsNull())
             {
-                _newStatus.statusVFX.PlayAt(transform.position, Quaternion.identity, statusEffectTransform);    
+                _newStatus.statusOneTimeVFX.PlayAt(transform.position, Quaternion.identity, statusEffectTransform);    
+            }
+
+            if (!_newStatus.statusStayVFX.IsNull())
+            {
+                _newStatus.statusStayVFX.PlayAt(transform.position, Quaternion.identity, statusEffectTransform);
             }
             
         }
 
         public void RemoveEffect()
         {
-            var vfx = statusEffectTransform.GetComponentInChildren<VFXPlayer>();
-            if (vfx != null)
+            if (appliedStatus.IsNull())
             {
-                vfx.Stop();
+                return;
             }
             
+            Debug.Log($"<color=red>Removed {appliedStatus.status.statusName} to {this.transform.name}</color>");
+            
+            appliedStatus.status.ResetStatusEffect(this);
+            
+
+            for (int i = 0; i < statusEffectTransform.childCount; i++)
+            {
+                Debug.Log("Getting Child Transform");
+                statusEffectTransform.GetChild(i).TryGetComponent(out VFXPlayer vfx);
+                if (!vfx.IsNull())
+                {
+                    vfx.Stop();
+                }
+            }
+
             appliedStatus = null;
         }
 
@@ -724,7 +791,10 @@ namespace Runtime.Character
             heldBall = null;
             isSetupThrowBall = false;
             ballOwnerIndicator.SetActive(false);
-            ballThrowIndicator.gameObject.SetActive(false);
+            if (!ballThrowIndicator.IsNull())
+            {
+                ballThrowIndicator.gameObject.SetActive(false);
+            }
             UseActionPoint();
         }
 

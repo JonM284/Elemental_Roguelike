@@ -1,4 +1,5 @@
 ﻿using Data;
+using Data.CharacterData;
 using Project.Scripts.Data;
 using Utils;
 

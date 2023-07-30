@@ -282,7 +282,10 @@ namespace Runtime.Character
                     
             OnFinishMovementCallback = null;
             OnBeforeMovementCallback = null;
-            
+
+            m_currentMovePointIndex = 0;
+            m_navMeshPath.ClearCorners();
+
             if (m_isPaused)
             {
                 PauseMovement(false);
@@ -318,11 +321,9 @@ namespace Runtime.Character
 
             if (m_knockbackTimer > 0)
             {
-                Debug.Log("Knockback countdown");
                 m_knockbackTimer -= Time.deltaTime;
             }else if (m_knockbackTimer <= 0)
             {
-                Debug.Log("Finish KnockBack");
                 m_isKnockedBack = false;
                 m_canMove = false;
             }
@@ -376,6 +377,11 @@ namespace Runtime.Character
         public void ChangeMovementRange(float _newRange)
         {
             battleMoveDistance = _newRange;
+        }
+
+        public void ResetOriginalMoveDistance()
+        {
+            battleMoveDistance = m_originalMoveDistance;
         }
 
         private void SetIndicators(bool _isActive)

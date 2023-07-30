@@ -17,7 +17,9 @@ namespace Data
 
         public float projectileSpeed = 5f;
         
-        public bool isArmorPiercing;
+        public bool isAffectArmor;
+
+        public bool isKnockBack;
 
         public ElementTyping projectileType;
 

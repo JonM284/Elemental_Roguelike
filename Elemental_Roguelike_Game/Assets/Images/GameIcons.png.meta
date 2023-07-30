@@ -250,7 +250,7 @@ TextureImporter:
         width: 297
         height: 290
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -266,12 +266,12 @@ TextureImporter:
       name: Redo_Icon
       rect:
         serializedVersion: 2
-        x: 12
-        y: 16
+        x: 16
+        y: 14
         width: 288
-        height: 286
+        height: 288
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -279,6 +279,69 @@ TextureImporter:
       bones: []
       spriteID: 5019e883dd57f794faf01f1e74875d4b
       internalID: 284324128
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: AbilityBackground_Icon
+      rect:
+        serializedVersion: 2
+        x: 14
+        y: 675
+        width: 288
+        height: 288
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 47a92c09d8800214dbab7daec0012080
+      internalID: 1538477636
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: AbilityIcon_Mask
+      rect:
+        serializedVersion: 2
+        x: 326
+        y: 675
+        width: 288
+        height: 288
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ca04e7e0efe85e3448661121e1ca87d7
+      internalID: 604031064
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Lock_Icon
+      rect:
+        serializedVersion: 2
+        x: 656
+        y: 675
+        width: 288
+        height: 288
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 56b1423eae271ba45a6d973096681aeb
+      internalID: 525343627
       vertices: []
       indices: 
       edges: []
@@ -295,10 +358,13 @@ TextureImporter:
     secondaryTextures: []
     nameFileIdTable:
       Damage_Icon: 612259024
+      AbilityBackground_Icon: 1538477636
       Agility_Icon: 1765282327
       Shield_Icon: -449356139
+      Lock_Icon: 525343627
       Heart_Icon: 1385656127
       Passing_Icon: 1741245608
+      AbilityIcon_Mask: 604031064
       Redo_Icon: 284324128
       Shooting_Icon: 582794893
       Confirm_Icon: -2014241027

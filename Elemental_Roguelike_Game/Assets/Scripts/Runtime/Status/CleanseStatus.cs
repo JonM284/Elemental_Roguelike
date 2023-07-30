@@ -9,12 +9,12 @@ namespace Runtime.Status
     {
         public override void TriggerStatusEffect(CharacterBase _character)
         {
-            if (_character.IsNull())
-            {
-                return;
-            }
+            //Doesn't do anything. Just applies itself and removes itself
+        }
+
+        public override void ResetStatusEffect(CharacterBase _character)
+        {
             
-            _character.RemoveEffect();
         }
     }
 }

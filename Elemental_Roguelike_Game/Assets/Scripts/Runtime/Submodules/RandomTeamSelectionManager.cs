@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Data;
+using Data.CharacterData;
 using Project.Scripts.Utils;
 using Runtime.Cards;
 using Runtime.Character;
@@ -308,7 +309,7 @@ namespace Runtime.Submodules
                         if (!cardObj.assignedMeepleObj.IsNull())
                         {
                             CacheMeepleGameObject(cardObj.assignedMeepleObj);
-                            cardObj.UnAssignDisplayMeeple();
+                            cardObj.CleanUp();
                             CacheCard(cardObj);
                         }
                     }

@@ -10,6 +10,7 @@ TagManager:
   - Room
   - ARMOR_ZONE
   - BALL
+  - Missile
   layers:
   - Default
   - TransparentFX
@@ -24,8 +25,8 @@ TagManager:
   - SELECTABLE
   - IGNORE_NAV_MESH
   - BALL_COLLIDER
-  - 
-  - 
+  - ZONE
+  - GoalArea
   - 
   - 
   - 

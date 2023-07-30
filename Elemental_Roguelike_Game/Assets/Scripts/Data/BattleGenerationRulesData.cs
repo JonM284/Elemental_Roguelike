@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Data.CharacterData;
 using Project.Scripts.Data;
 using Runtime.Battle;
 using UnityEngine;

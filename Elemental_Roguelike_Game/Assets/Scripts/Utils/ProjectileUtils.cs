@@ -1,5 +1,6 @@
 ﻿using System;
 using Data;
+using Runtime.Character;
 using Runtime.GameControllers;
 using Runtime.Weapons;
 using UnityEngine;
@@ -28,12 +29,22 @@ namespace Utils
             projectileController.ReturnToPool(projectile);
         }
 
+        public static void ReturnToPool(this ZoneBase zone)
+        {
+            projectileController.ReturnToPool(zone);
+        }
+
         public static void PlayAt(this ProjectileInfo projectile, Vector3 position, Vector3 rotation, Vector3 endPos)
         {
             projectileController.GetProjectileAt(projectile, position, rotation, endPos);
         }
 
+        public static void PlayAt(this ZoneInfo zoneInfo, Vector3 _position, Transform _user = null)
+        {
+            projectileController.GetZoneAt(zoneInfo, _position, _user);
+        }
+
         #endregion
-        
+
     }
 }

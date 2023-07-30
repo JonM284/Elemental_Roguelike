@@ -26,15 +26,19 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 2c3035f9458f2d1459941f4c7abd5d2c
-    m_Address: ExplosionFireballFire@VFX
+    m_Address: ExplosionFireball@VFX
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: f0c82631a5e58194c9956af50e459e12
-    m_Address: BurnEffect
+    m_Address: BurnEffect@StatusVFX
     m_ReadOnly: 0
     m_SerializedLabels: []
-  - m_GUID: bf1afa4991ef8fd42b3876f4083dc667
-    m_Address: BubbleExplosion@VFX
+  - m_GUID: 242f18f8520a60b498b4d1ef92a88177
+    m_Address: ExplosionWaterball@VFX
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: c6d8dc45400b72c4982446b5e0741216
+    m_Address: BurnStatusStay@StatusVFX
     m_ReadOnly: 0
     m_SerializedLabels: []
   m_ReadOnly: 0

@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using Data.CharacterData;
 using Project.Scripts.Data;
 using Runtime.Character;
 using UnityEngine;

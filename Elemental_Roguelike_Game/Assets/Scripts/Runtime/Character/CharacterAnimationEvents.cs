@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Project.Scripts.Utils;
+using Runtime.VFX;
 using UnityEngine;
 using Utils;
 
@@ -15,6 +16,8 @@ namespace Runtime.Character
         private CharacterAbilityManager m_characterAbilityManager;
 
         private CharacterWeaponManager m_characterWeaponManager;
+
+        private VFXPlayer m_savedPlayer;
 
         #endregion
 
@@ -58,7 +61,11 @@ namespace Runtime.Character
 
         public void OnAbilityEnded()
         {
-            characterAnimations.AbilityAnim(characterAbilityManager.GetActiveAbilityIndex(),false);
+            if (!m_savedPlayer.IsNull())
+            {
+                m_savedPlayer = null;
+            }
+            characterAnimations.AbilityAnim(characterAbilityManager.GetPreviousActiveAbilityIndex(),false);
         }
 
         public void OnDeathAnimationEnded()
@@ -92,18 +99,40 @@ namespace Runtime.Character
             abilityVFX.PlayAt(transform.position, Quaternion.identity);
         }
 
-        public void PlayVFX(int _locIndex)
+        public void PlayVFXAtTransform(int _locIndex)
         {
             var ability = characterAbilityManager.GetActiveAbility();
-            if (!ability.playVFXAtTransform)
+
+            if (ability.IsNull() && m_savedPlayer.IsNull())
             {
                 return;
             }
-            var abilityVFX = ability.abilityVFX;
+
+            if (!ability.IsNull())
+            {
+                if (!ability.playVFXAtTransform)
+                {
+                    return;
+                }    
+            }
+            
+
+            VFXPlayer abilityVFX = null;
+            if (!m_savedPlayer.IsNull())
+            {
+                abilityVFX = m_savedPlayer;
+            }
+            else
+            {
+                abilityVFX = ability.abilityVFX;
+                m_savedPlayer = abilityVFX;
+            }
+            
             if (abilityVFX.IsNull() || vfxPositions[_locIndex].IsNull())
             {
                 return;
             }
+            
             abilityVFX.PlayAt(vfxPositions[_locIndex].position, Quaternion.identity);
         }
 

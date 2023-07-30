@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Data;
+using Data.CharacterData;
 using Data.Elements;
 using Project.Scripts.Data;
 using Project.Scripts.Utils;

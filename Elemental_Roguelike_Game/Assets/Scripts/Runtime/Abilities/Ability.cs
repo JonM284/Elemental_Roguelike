@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using Data;
 using Data.Elements;
 using Runtime.Character;
 using Runtime.VFX;
@@ -28,14 +30,16 @@ namespace Runtime.Abilities
         public AbilityTargetType targetType;
 
         public float range = 1;
-
-        public bool isDamagingAbility;
-
+        
         public AnimationClip abilityAnimationOverride;
 
         public bool playVFXAtTransform;
+
+        public Sprite abilityIcon;
         
         public VFXPlayer abilityVFX;
+
+        public List<AbilityParametersData> abilityParameters = new List<AbilityParametersData>();
 
         #endregion
 

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Data;
+using Data.CharacterData;
 using Data.DataSaving;
 using Project.Scripts.Data;
 using Project.Scripts.Runtime.LevelGeneration;
@@ -123,7 +124,9 @@ namespace Runtime.GameControllers
             _character.meepleElementTypeRef = ElementUtils.GetRandomElement().elementGUID;
             _character.classReferenceType = GetRandomClassType().classGUID;
             _character.baseHealth = Random.Range(100, 150);
+            _character.currentHealth = _character.baseHealth;
             _character.baseShields = Random.Range(100, 200);
+            _character.currentShield = _character.baseShields;
             _character.baseSpeed = 10f;
             //ToDo: Change movement distance
             _character.movementDistance = 5;

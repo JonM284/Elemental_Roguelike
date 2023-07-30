@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Data;
+using Data.CharacterData;
 using UnityEngine;
 
 namespace Runtime.GameplayEvents

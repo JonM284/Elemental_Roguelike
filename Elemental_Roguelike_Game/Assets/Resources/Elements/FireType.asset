@@ -18,16 +18,16 @@ MonoBehaviour:
   weaknesses:
   - {fileID: 11400000, guid: 3007beed4b27d8b458961ac106f278d9, type: 2}
   weaponColors:
-  - {r: 0.83137256, g: 0.25490198, b: 0.28235295, a: 1}
-  - {r: 0.7176471, g: 0.23529412, b: 0.25882354, a: 1}
+  - {r: 0.9811321, g: 0.34709862, b: 0.3774351, a: 1}
+  - {r: 0.8301887, g: 0.21537916, b: 0.24536984, a: 1}
   weaponMuzzleParticles:
     m_AssetGUID: f38466e7ea6acbc47a227a12cf720dbb
     m_SubObjectName: 
     m_SubObjectType: 
     m_EditorAssetChanged: 0
   meepleColors:
-  - {r: 0.972549, g: 0.4117647, b: 0.3882353, a: 1}
-  - {r: 0.7254902, g: 0.12941177, b: 0.08627451, a: 1}
+  - {r: 0.9622642, g: 0.24506655, b: 0.21333215, a: 1}
+  - {r: 0.8207547, g: 0.28958705, b: 0.2516465, a: 1}
   elementSprite: {fileID: 1859385759, guid: 6a6f25e903f18fd4db55f0dfe52e535c, type: 3}
   defaultMeepleElementHat:
     m_AssetGUID: 

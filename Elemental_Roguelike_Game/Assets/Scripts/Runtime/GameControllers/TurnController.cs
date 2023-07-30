@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Data;
+using Data.CharacterData;
+using Data.EnemyData;
 using Data.Sides;
 using Project.Scripts.Data;
 using Project.Scripts.Utils;
@@ -176,6 +178,8 @@ namespace Runtime.GameControllers
         //flip coin to decided starting team
         private IEnumerator C_MatchSetup()
         {
+            UIUtils.OpenUI(battleUIData);
+
             m_allBattlers.Clear();
 
             //Find both team arena managers
@@ -316,9 +320,7 @@ namespace Runtime.GameControllers
         private IEnumerator C_StartBattle()
         {
             isInBattle = true;
-
-            UIUtils.OpenUI(battleUIData);
-
+            
             OnBattlePreStart?.Invoke();
 
             yield return new WaitForSeconds(1f);
@@ -514,6 +516,7 @@ namespace Runtime.GameControllers
                 for (int i = 0; i < playerTeam.teamMembers.Count; i++)
                 {
                     var currentMember = playerTeam.teamMembers[i];
+                    
                     if (!currentMember.isAlive)
                     {
                         currentMember.OnRevive();

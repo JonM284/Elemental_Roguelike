@@ -9,6 +9,8 @@ namespace Runtime.Status
 
         #region Public Fields
 
+        public bool isHealArmor;
+
         public int healOverTime;
         
         #endregion
@@ -20,7 +22,12 @@ namespace Runtime.Status
                 return;
             }
             
-            _character.OnDealDamage(_character.transform, healOverTime, false, abilityElement, false);
+            _character.OnHeal(healOverTime, isHealArmor);
+        }
+
+        public override void ResetStatusEffect(CharacterBase _character)
+        {
+            
         }
     }
 }

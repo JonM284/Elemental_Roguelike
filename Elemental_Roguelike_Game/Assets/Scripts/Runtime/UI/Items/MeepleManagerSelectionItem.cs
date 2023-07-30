@@ -1,5 +1,6 @@
 ﻿using System;
 using Data;
+using Data.CharacterData;
 using Project.Scripts.Utils;
 using TMPro;
 using UnityEngine;

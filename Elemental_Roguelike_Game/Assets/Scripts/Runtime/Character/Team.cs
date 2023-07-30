@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Data;
+using Data.CharacterData;
 
 namespace Runtime.Character
 {

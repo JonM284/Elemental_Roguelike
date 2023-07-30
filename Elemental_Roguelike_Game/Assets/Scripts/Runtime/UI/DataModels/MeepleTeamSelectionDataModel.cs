@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Data;
+using Data.CharacterData;
 using Project.Scripts.Utils;
 using Runtime.GameControllers;
 using Runtime.Submodules;

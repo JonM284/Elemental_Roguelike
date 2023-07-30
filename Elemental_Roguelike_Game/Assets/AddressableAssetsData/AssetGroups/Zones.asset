@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: Zones
+  m_EditorClassIdentifier: 
+  m_GroupName: Zones
+  m_Data:
+    m_SerializedData: []
+  m_GUID: 6298fb5804b1b0e42894c677280bc87e
+  m_SerializeEntries:
+  - m_GUID: 81436b59b3beaa94695b6b3a9883bfbe
+    m_Address: NatureZoneHeal@Zone
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 9d34314e65cb47847bebedd15b73b7f6
+    m_Address: EarthSlamGround@Zone
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: c51bc8bdb2bb6e5479c05b7cf9bc0f75, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: c9d4c3a5033ced94ca4f3b84edf63dca, type: 2}
+    - {fileID: 11400000, guid: 89bb819f46fbd1249a0eb9f39c28dcae, type: 2}

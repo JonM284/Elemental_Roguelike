@@ -1,9 +1,16 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using Data;
+using Data.CharacterData;
 using Data.Sides;
 using Project.Scripts.Utils;
 using Runtime.Character;
 using Runtime.GameControllers;
+using Runtime.UI.Items;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
+using UnityEngine.ResourceManagement.AsyncOperations;
 using Utils;
 
 namespace Runtime.UI.DataReceivers
@@ -21,8 +28,10 @@ namespace Runtime.UI.DataReceivers
 
         [SerializeField] private UIPopupCreator uiPopupCreator;
 
-        [SerializeField] private GameObject playerOrderToken;
+        [SerializeField] private AssetReference healthbarUI;
 
+        [SerializeField] private Transform healthBarParent;
+        
         [SerializeField] private CharacterSide playerSide;
 
         #endregion
@@ -30,6 +39,10 @@ namespace Runtime.UI.DataReceivers
         #region Private Fields
 
         private bool isPlayerTurn;
+
+        private bool m_isLoadingHealthBar;
+
+        private GameObject loadedHealthBarGO;
         
         #endregion
 
@@ -44,8 +57,15 @@ namespace Runtime.UI.DataReceivers
 
         #region Unity Events
 
+        private void Start()
+        {
+            StartCoroutine(C_LoadHealthBar());
+        }
+
         private void OnEnable()
         {
+            MeepleController.PlayerMeepleCreated += MeepleControllerOnPlayerMeepleCreated;
+            EnemyController.EnemyCreated += EnemyControllerOnEnemyCreated;
             TurnController.OnBattleEnded += OnBattleEnded;
             TurnController.OnChangeActiveCharacter += OnChangeCharacterTurn;
             TurnController.OnChangeActiveTeam += OnChangeActiveTeam;
@@ -54,6 +74,8 @@ namespace Runtime.UI.DataReceivers
 
         private void OnDisable()
         {
+            MeepleController.PlayerMeepleCreated -= MeepleControllerOnPlayerMeepleCreated;
+            EnemyController.EnemyCreated -= EnemyControllerOnEnemyCreated;
             TurnController.OnBattleEnded -= OnBattleEnded;   
             TurnController.OnChangeActiveCharacter -= OnChangeCharacterTurn;
             TurnController.OnChangeActiveTeam -= OnChangeActiveTeam;
@@ -63,6 +85,74 @@ namespace Runtime.UI.DataReceivers
         #endregion
 
         #region Class Implementation
+        
+        private void EnemyControllerOnEnemyCreated(CharacterBase _enemy)
+        {
+            if (_enemy.IsNull())
+            {
+                return;
+            }
+            
+            AddHealthBar(_enemy);
+        }
+
+        private void MeepleControllerOnPlayerMeepleCreated(CharacterBase _meeple, CharacterStatsData _stats)
+        {
+            if (_meeple.IsNull())
+            {
+                return;
+            }
+            
+            AddHealthBar(_meeple);
+        }
+
+        private void AddHealthBar(CharacterBase _character)
+        {
+            StartCoroutine(C_AddHealthBar(_character));
+        }
+
+        private IEnumerator C_AddHealthBar(CharacterBase _character)
+        {
+            if (loadedHealthBarGO.IsNull())
+            {
+                if (!m_isLoadingHealthBar)
+                {
+                    yield return StartCoroutine(C_LoadHealthBar());
+                }
+                else
+                {
+                    yield return new WaitUntil(() => m_isLoadingHealthBar = false);
+                }
+            }
+            
+            var newHealthBar = loadedHealthBarGO.Clone(healthBarParent);
+            newHealthBar.TryGetComponent(out HealthBarItem item);
+            if (item)
+            {
+                item.Initialize(_character);
+            }
+
+        }
+
+        private IEnumerator C_LoadHealthBar()
+        {
+            var handle = Addressables.LoadAssetAsync<GameObject>(healthbarUI);
+            
+            Debug.Log("<color=#00FF00>Loading GameObject</color>");
+
+            if (!handle.IsDone)
+            {
+                yield return handle;
+            }
+            
+            if (handle.Status == AsyncOperationStatus.Succeeded)
+            {
+                loadedHealthBarGO = handle.Result;
+            }else{
+                Debug.LogError($"Could not load addressable, {healthbarUI.Asset.name}", healthbarUI.Asset);
+                Addressables.Release(handle);
+            }
+        }
 
         private void OnBattleEnded()
         {

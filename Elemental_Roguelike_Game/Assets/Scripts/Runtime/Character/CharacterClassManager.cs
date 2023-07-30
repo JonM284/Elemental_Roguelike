@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using Data;
+using Data.CharacterData;
 using Data.Sides;
 using Project.Scripts.Utils;
 using Runtime.GameControllers;
@@ -49,12 +50,6 @@ namespace Runtime.Character
 
         private bool m_canPerformReaction = true;
 
-        private int m_agilityScore;
-        
-        private int m_shootingScore;
-        
-        private int m_tacklingScore;
-        
         #endregion
 
 
@@ -73,6 +68,18 @@ namespace Runtime.Character
             var bb = TurnController.Instance.ball;
             return bb;
         });
+
+        public int agilityScore { get; private set; }
+
+        public int shootingScore { get; private set; }
+        
+        public int tacklingScore { get; private set; }
+        
+        public int currentMaxAgilityScore { get; private set; }
+        
+        public int currentMaxShootingScore { get; private set; }
+        
+        public int currentMaxTacklingScore { get; private set; }
 
         #endregion
 
@@ -119,9 +126,13 @@ namespace Runtime.Character
             m_assignedClass = _data;
             passiveRadius = _data.radius;
             
-            m_agilityScore = agilityScore;
-            m_shootingScore = shootingScore;
-            m_tacklingScore = tacklingScore;
+            this.agilityScore = agilityScore;
+            this.shootingScore = shootingScore;
+            this.tacklingScore = tacklingScore;
+
+            currentMaxAgilityScore = this.agilityScore;
+            currentMaxShootingScore = this.shootingScore;
+            currentMaxTacklingScore = this.tacklingScore;
             
             if (m_passiveIndicator.IsNull())
             {
@@ -180,7 +191,6 @@ namespace Runtime.Character
                 case CharacterClass.DEFENDER:
                     if (IsBallThrownInRange())
                     {
-                        Debug.Log("Ball In Range");
                         m_isPerformingReaction = true;
                         StartCoroutine(C_AttemptGrabBall());
                     }
@@ -252,7 +262,7 @@ namespace Runtime.Character
             //ToDo: Attack moving character
             Debug.Log("<color=orange>HAS HIT ATTACK REACTION</color>", this);
 
-            m_inRangeCharacter.characterMovement.ForceStopMovement();
+            m_inRangeCharacter.characterMovement.PauseMovement(true);
 
             yield return new WaitUntil(() => !m_inRangeCharacter.characterMovement.isMoving);
 
@@ -263,6 +273,7 @@ namespace Runtime.Character
                 if (enemyAgilityRoll >= rollToAttack)
                 {
                     Debug.Log("<color=orange>Striker Rerolled and WON!</color>", this);
+                    m_inRangeCharacter.characterMovement.PauseMovement(false);
                     OnMissedReaction();
                     HasPerformedReaction();
                     yield break;
@@ -270,6 +281,8 @@ namespace Runtime.Character
             }
 
             yield return new WaitForSeconds(0.5f);
+            
+            m_inRangeCharacter.characterMovement.ForceStopMovement();
             
             characterBase.characterMovement.SetCharacterMovable(true, null, HasPerformedReaction);
             characterBase.CheckAllAction(m_inRangeCharacter.transform.position, true);
@@ -347,17 +360,17 @@ namespace Runtime.Character
 
         public int GetRandomAgilityStat()
         {
-            return Random.Range(1, m_agilityScore);
+            return Random.Range(1, currentMaxAgilityScore);
         }
         
         public int GetRandomShootStat()
         {
-            return Random.Range(1, m_shootingScore);
+            return Random.Range(1, currentMaxShootingScore);
         }
         
         public int GetRandomDamageStat()
         {
-            return Random.Range(1, m_tacklingScore);
+            return Random.Range(1, currentMaxTacklingScore);
         }
 
         public int GetReroll()
@@ -370,6 +383,30 @@ namespace Runtime.Character
             HasPerformedReaction();
 
             return GetRandomAgilityStat();
+        }
+
+        public void ChangeMaxScore(CharacterStatsEnum _desiredStat, int newAmount)
+        {
+            Mathf.Clamp(newAmount,0, 100);
+            switch (_desiredStat)
+            {
+                case CharacterStatsEnum.AGILITY:
+                    currentMaxAgilityScore = newAmount;
+                    break;
+                case CharacterStatsEnum.SHOOTING:
+                    currentMaxShootingScore = newAmount;
+                    break;
+                case CharacterStatsEnum.TACKLE:
+                    currentMaxTacklingScore = newAmount;
+                    break;
+            }
+        }
+
+        public void ResetMaxScores()
+        {
+            currentMaxAgilityScore = agilityScore;
+            currentMaxShootingScore = shootingScore;
+            currentMaxTacklingScore = tacklingScore;
         }
         #endregion
 

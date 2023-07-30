@@ -15,6 +15,8 @@ MonoBehaviour:
   statusName: Heal
   roundCooldownTimer: 3
   abilityElement: {fileID: 0}
-  statusVFX: {fileID: 0}
-  isImpactOnlyStatus: 0
-  healOverTime: 10
+  statusStayVFX: {fileID: 0}
+  statusOneTimeVFX: {fileID: 5573551082283995732, guid: dc450fa3801b4df4483e2a5447ff8fbc,
+    type: 3}
+  playVFXOnTrigger: 1
+  healOverTime: 25

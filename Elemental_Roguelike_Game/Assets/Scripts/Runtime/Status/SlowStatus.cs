@@ -26,5 +26,10 @@ namespace Runtime.Status
             _character.characterMovement.ChangeMovementRange(amountToChange);
             
         }
+
+        public override void ResetStatusEffect(CharacterBase _character)
+        {
+            _character.characterMovement.ResetOriginalMoveDistance();
+        }
     }
 }

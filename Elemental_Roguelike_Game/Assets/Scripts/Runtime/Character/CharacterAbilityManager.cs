@@ -51,6 +51,8 @@ namespace Runtime.Character
         
         private int m_activeAbilityIndex = -1;
 
+        private int m_previousActiveAbilityIndex;
+
         private int m_defaultInactiveAbilityIndex = -1;
 
         private CharacterMovement m_characterMovement;
@@ -127,12 +129,21 @@ namespace Runtime.Character
 
         public Ability GetActiveAbility()
         {
+            if (m_activeAbilityIndex == m_defaultInactiveAbilityIndex)
+            {
+                return default;
+            }
             return m_assignedAbilities[m_activeAbilityIndex].ability;
         }
 
         public int GetActiveAbilityIndex()
         {
             return m_activeAbilityIndex;
+        }
+
+        public int GetPreviousActiveAbilityIndex()
+        {
+            return m_previousActiveAbilityIndex;
         }
         
         public void InitializeCharacterAbilityList(List<string> _abilities)
@@ -213,7 +224,7 @@ namespace Runtime.Character
             {
                 return;
             }
-            
+
             switch (m_assignedAbilities[m_activeAbilityIndex].ability.targetType)
             {
                 case AbilityTargetType.CHARACTER_TRANSFORM:
@@ -295,6 +306,7 @@ namespace Runtime.Character
         {
             m_assignedAbilities[m_activeAbilityIndex].ability.UseAbility(abilityPos);
             m_assignedAbilities[m_activeAbilityIndex].canUse = false;
+            m_previousActiveAbilityIndex = m_activeAbilityIndex;
             m_activeAbilityIndex = m_defaultInactiveAbilityIndex;
         }
 
