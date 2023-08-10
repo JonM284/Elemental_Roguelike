@@ -14,23 +14,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   elementName: Earth
   elementGUID: 232adf57-fe0f-4bd9-8739-f1019f253840
-  insanityAmount: 0
   weaknesses:
   - {fileID: 11400000, guid: 3007beed4b27d8b458961ac106f278d9, type: 2}
-  weaponColors:
-  - {r: 0.83137256, g: 0.50440073, b: 0.25490192, a: 1}
-  - {r: 0.7176471, g: 0.4786869, b: 0.2352941, a: 1}
-  weaponMuzzleParticles:
-    m_AssetGUID: 062520e6f9f123845948c688dee44f80
-    m_SubObjectName: 
-    m_SubObjectType: 
-    m_EditorAssetChanged: 0
+  - {fileID: 11400000, guid: 3c9c561ec5c01714b84d55420dbb7e71, type: 2}
+  resistances:
+  - {fileID: 11400000, guid: dff32d43cdb15e64d9f95e5f1c9a2574, type: 2}
+  - {fileID: 11400000, guid: 00359a9ca5c002a408bc8ff33dcd8bee, type: 2}
+  - {fileID: 11400000, guid: b6a3358631c8026478f44a1bcf5d24f7, type: 2}
+  immunities:
+  - {fileID: 11400000, guid: b5ba9f007020f914f9c8d519cccd8f04, type: 2}
+  statusImmunities:
+  - {fileID: 0}
   meepleColors:
   - {r: 0.972549, g: 0.7254902, b: 0.3882353, a: 1}
   - {r: 0.7254902, g: 0.42745098, b: 0.08627451, a: 1}
-  elementSprite: {fileID: -784997020, guid: 6a6f25e903f18fd4db55f0dfe52e535c, type: 3}
-  defaultMeepleElementHat:
-    m_AssetGUID: 
-    m_SubObjectName: 
-    m_SubObjectType: 
-    m_EditorAssetChanged: 0
+  elementSprite: {fileID: 1093948756, guid: 6a6f25e903f18fd4db55f0dfe52e535c, type: 3}

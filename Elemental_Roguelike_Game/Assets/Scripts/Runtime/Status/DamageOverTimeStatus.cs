@@ -8,6 +8,8 @@ namespace Runtime.Status
     {
 
         #region Public Fields
+        [Space(20)]
+        [Header("Damage Stats")]
 
         public int damageOverTime;
 

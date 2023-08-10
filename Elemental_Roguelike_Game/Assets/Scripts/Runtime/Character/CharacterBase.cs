@@ -2,16 +2,13 @@
 using Data.CharacterData;
 using Data.Elements;
 using Data.Sides;
-using Project.Scripts.Data;
 using Project.Scripts.Utils;
-using Runtime.Abilities;
 using Runtime.Damage;
 using Runtime.GameControllers;
 using Runtime.Gameplay;
 using Runtime.Selection;
 using Runtime.Status;
 using Runtime.VFX;
-using UnityEditor;
 using UnityEngine;
 using Utils;
 using Random = UnityEngine.Random;
@@ -51,6 +48,8 @@ namespace Runtime.Character
         public static event Action<CharacterBase> BallPickedUp;
 
         public static event Action<CharacterBase> StatusAdded;
+
+        public static event Action<CharacterBase> StatusRemoved;
 
         #endregion
 
@@ -101,9 +100,7 @@ namespace Runtime.Character
         private bool m_canPickupBall = true;
 
         private bool m_canUseAbilities = true;
-        
-        //Temp
-        private Vector3 arcPosition;
+        private bool canPickUp1;
 
         #endregion
 
@@ -195,23 +192,13 @@ namespace Runtime.Character
 
         public bool isSetupThrowBall { get; private set; }
 
-        public bool canPickupBall => m_canPickupBall;
+        public bool canPickupBall => m_canPickupBall && !characterMovement.isKnockedBack;
 
         public float shotStrength => shootSpeed;
-
-        public CharacterClass assignedClass { get; protected set; }
-
+        
         #endregion
 
         #region Unity Events
-
-        private void OnDrawGizmos()
-        {
-            var radius = 0.13f;
-            Gizmos.color = Color.blue;
-            Gizmos.DrawWireSphere(transform.position, radius);
-            Gizmos.DrawWireSphere(arcPosition, radius);
-        }
 
         private void OnEnable()
         {
@@ -299,10 +286,22 @@ namespace Runtime.Character
                 return;
             }
 
+            CheckActiveAfterDeath();
             PlayDeathEffect();
             RemoveEffect();
             CharacterDeath();
             Debug.Log($"<color=red>{this} has died</color>");
+        }
+
+        private void CheckActiveAfterDeath()
+        {
+            if (!isActiveCharacter)
+            {
+                return;
+            }
+
+            m_characterActionPoints = 0;
+            EndTurn();
         }
 
         public void MarkHighlightArea(Vector3 _selectedPosition)
@@ -558,6 +557,12 @@ namespace Runtime.Character
             CheckStatus();
         }
 
+        public void ResetCharacter()
+        {
+            characterLifeManager.FullReviveCharacter();
+            RemoveEffect();
+        }
+
         public void SetCharacterUsable(bool _isUseable)
         {
             m_characterActionPoints = _isUseable ? 2 : 0;
@@ -574,6 +579,17 @@ namespace Runtime.Character
             {
                 return;
             }
+
+            if (appliedStatus.status.chanceToRemove > 0)
+            {
+                var randomKnockoffChance = Random.Range(0 , 100);
+                if (randomKnockoffChance <= appliedStatus.status.chanceToRemove)
+                {
+                    RemoveEffect();
+                    return;
+                }    
+            }
+            
 
             if (appliedStatus.roundTimer <= 0)
             {
@@ -714,6 +730,8 @@ namespace Runtime.Character
                 _newStatus.statusStayVFX.PlayAt(transform.position, Quaternion.identity, statusEffectTransform);
             }
             
+            StatusAdded?.Invoke(this);
+            
         }
 
         public void RemoveEffect()
@@ -726,7 +744,6 @@ namespace Runtime.Character
             Debug.Log($"<color=red>Removed {appliedStatus.status.statusName} to {this.transform.name}</color>");
             
             appliedStatus.status.ResetStatusEffect(this);
-            
 
             for (int i = 0; i < statusEffectTransform.childCount; i++)
             {
@@ -739,6 +756,8 @@ namespace Runtime.Character
             }
 
             appliedStatus = null;
+            
+            StatusRemoved?.Invoke(this);
         }
 
         #endregion

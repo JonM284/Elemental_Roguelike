@@ -53,6 +53,8 @@ namespace Runtime.Gameplay
 
         private bool m_isBallPaused;
 
+        private Vector3 m_ballStartPosition;
+
         #endregion
 
         #region Accessors
@@ -87,14 +89,10 @@ namespace Runtime.Gameplay
 
         #region Unity Events
 
-        private void OnDrawGizmos()
-        {
-            Gizmos.DrawWireSphere(transform.position, playerCheckRadius);
-        }
-
         private void Awake()
         {
             m_initialY = transform.position.y;
+            m_ballStartPosition = transform.position;
         }
 
         private void Update()
@@ -214,22 +212,23 @@ namespace Runtime.Gameplay
                 {
                     var interactable = collider.GetComponent<IBallInteractable>();
                     if (!interactable.IsNull())
-                    { 
-                        isControlled = true;
-                        if (isThrown)
-                        {
-                            m_currentBallForce = 0;
-                        }
+                    {
                         if (interactable is CharacterBase characterBase)
                         {
                             if (!characterBase.canPickupBall)
                             {
                                 return;
                             }
+                            isControlled = true;
+                            if (isThrown)
+                            {
+                                m_currentBallForce = 0;
+                                isThrown = false;
+                            }
                             controlledCharacterSide = characterBase.side;
+                            interactable?.PickUpBall(this);
+                            groundIndicator.SetActive(!isControlled);
                         }
-                        interactable?.PickUpBall(this);
-                        groundIndicator.SetActive(!isControlled);
                     }
                 }
             }
@@ -252,7 +251,14 @@ namespace Runtime.Gameplay
         {
             m_currentBallForce = 0;
             rb.velocity = Vector3.zero;
+        }
 
+        public void ResetBall()
+        {
+            ForceStopBall();
+            isControlled = false;
+            followerTransform = null;
+            transform.position = m_ballStartPosition;
         }
 
 

@@ -108,6 +108,8 @@ namespace Runtime.Character
 
         public bool isUsingMoveAction => m_canMove;
 
+        public bool isKnockedBack => m_isKnockedBack;
+
         #endregion
 
         #region Unity Events
@@ -314,7 +316,7 @@ namespace Runtime.Character
 
         private void CheckKnockback()
         {
-            if (!m_isKnockedBack)
+            if (!m_isKnockedBack || isPaused)
             {
                 return;
             }

@@ -1,9 +1,9 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Data;
 using Project.Scripts.Utils;
-using Runtime.ScriptedAnimations;
 using Runtime.UI;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
@@ -14,6 +14,13 @@ namespace Runtime.GameControllers
 {
     public class UIController: GameControllerBase
     {
+
+        #region Static
+
+        public static UIController Instance { get; private set; }
+
+        #endregion
+
         #region Nested Classes
 
         [Serializable]
@@ -45,9 +52,7 @@ namespace Runtime.GameControllers
         [SerializeField] private ModalsByLayer popupAssetReference;
 
         [SerializeField] private List<CanvasByLayer> canvasByLayers = new List<CanvasByLayer>();
-
-        [SerializeField] private GameObject blackScreen;
-
+        
         #endregion
 
         #region Private Fields
@@ -70,6 +75,16 @@ namespace Runtime.GameControllers
                 var poolTransform = TransformUtils.CreatePool(this.transform, false);
                 return poolTransform;
             });
+
+        #endregion
+
+        #region GameControllerBase Inherited Methods
+
+        public override void Initialize()
+        {
+            Instance = this;
+            base.Initialize();
+        }
 
         #endregion
 
@@ -115,6 +130,33 @@ namespace Runtime.GameControllers
             }
             
             _uiWindowData.uiWindowAssetReference.CloneAddressable(_foundCanvasByLayer.associatedCanvas.transform);
+        }
+
+        public void AddUICallback(UIWindowData _uiWindowData, Action<GameObject> _callback)
+        {
+            StartCoroutine(C_AddUICallback(_uiWindowData, _callback));
+        }
+
+        private IEnumerator C_AddUICallback(UIWindowData _uiWindowData, Action<GameObject> _callback)
+        {
+            var _cachedWindow = m_cachedUIWindows.FirstOrDefault(ui => ui.uiWindowData == _uiWindowData);
+            var _foundCanvasByLayer = canvasByLayers.FirstOrDefault(cbl => cbl.layer == _uiWindowData.layerData);
+            
+            if (_cachedWindow != null)
+            {
+                m_cachedUIWindows.Remove(_cachedWindow);
+                _cachedWindow.uiRectTransform.ResetTransform(_foundCanvasByLayer.associatedCanvas.transform);
+                m_activeUIWindows.Add(_cachedWindow);
+                Debug.Log("Found Window");
+                if (!_callback.IsNull())
+                {
+                    _callback?.Invoke(_cachedWindow.gameObject);
+                }
+                yield return null;
+            }
+            
+            yield return StartCoroutine(
+                AddressableController.Instance.C_LoadGameObject(_uiWindowData.uiWindowAssetReference, _callback, _foundCanvasByLayer.associatedCanvas.transform));
         }
 
         public void ReturnUIToCachedPool(UIBase _uiWindow)

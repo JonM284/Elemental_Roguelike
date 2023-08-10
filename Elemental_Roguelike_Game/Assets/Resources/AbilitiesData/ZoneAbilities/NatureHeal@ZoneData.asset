@@ -23,6 +23,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 768
   elementType: {fileID: 11400000, guid: 3c9c561ec5c01714b84d55420dbb7e71, type: 2}
+  chanceToApplyStatus: 100
   statusEffect: {fileID: 11400000, guid: ca8356df2ee97c249b56f0b03a7070a0, type: 2}
   zonePrefab:
     m_AssetGUID: 81436b59b3beaa94695b6b3a9883bfbe

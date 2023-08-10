@@ -116,337 +116,421 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Fire_TypeIcon
+      name: Fire@ElementIcon
       rect:
         serializedVersion: 2
-        x: 18
-        y: 983
-        width: 283
-        height: 284
+        x: 0
+        y: 920
+        width: 191
+        height: 191
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: c34e64e878271b045b616467d68d00f9
-      internalID: 1859385759
+      spriteID: 46a3807b0cec4634683d78366e53d406
+      internalID: 1272580028
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Water_TypeIcon
+      name: Water@ElementIcon
       rect:
         serializedVersion: 2
-        x: 319
-        y: 983
-        width: 283
-        height: 284
+        x: 250
+        y: 920
+        width: 191
+        height: 191
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: a5fadaf335449254a9befe4cca542dc1
-      internalID: 604798663
+      spriteID: 92bf7377a96f78f4f88420ac07c5d774
+      internalID: 321739564
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Nature_TypeIcon
+      name: Nature@ElementIcon
       rect:
         serializedVersion: 2
-        x: 623
-        y: 983
-        width: 284
-        height: 284
+        x: 500
+        y: 920
+        width: 191
+        height: 191
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 045c9e4a11d407f4ab5ee7f202f2572e
-      internalID: 1780475995
+      spriteID: 62a1190950aa64b46ab8801d37b8010e
+      internalID: 1927602118
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Earth_TypeIcon
+      name: Earth@ElementIcon
       rect:
         serializedVersion: 2
-        x: 928
-        y: 983
-        width: 284
-        height: 284
+        x: 750
+        y: 920
+        width: 191
+        height: 191
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: f10923cbca368a14596e55f9a03524b5
-      internalID: -784997020
+      spriteID: 3a114c059536c4d438b2b3e151f7b50c
+      internalID: 1093948756
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Wind_TypeIcon
+      name: Air@ElementIcon
       rect:
         serializedVersion: 2
-        x: 18
-        y: 673
-        width: 283
-        height: 284
+        x: 0
+        y: 690
+        width: 191
+        height: 191
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 715a7b2a4ac8d034ca7eb3daa07d0f92
-      internalID: 20282793
+      spriteID: 55e686ccd53e4154d91a44bcbe24929c
+      internalID: -1599493914
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Shock_TypeIcon
+      name: Shock@ElementIcon
       rect:
         serializedVersion: 2
-        x: 319
-        y: 673
-        width: 283
-        height: 284
+        x: 250
+        y: 690
+        width: 191
+        height: 191
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 07a1469648a9af940a79c89389d57eb0
-      internalID: -479499860
+      spriteID: 29b1c5707998ba44a8f3bb611bb70a26
+      internalID: -1938427514
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: SuperNatural_TypeIcon
+      name: Ghost@ElementIcon
       rect:
         serializedVersion: 2
-        x: 623
-        y: 676
-        width: 284
-        height: 282
+        x: 500
+        y: 690
+        width: 191
+        height: 191
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 8a03d7ce54b3f6244827c4887a50f2a7
-      internalID: -2100447570
+      spriteID: abd227ad6c1b20544bf02cca921ae04a
+      internalID: 88800889
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Shadow__TypeIcon
+      name: Shadow@ElementIcon
       rect:
         serializedVersion: 2
-        x: 928
-        y: 676
-        width: 284
-        height: 282
+        x: 750
+        y: 690
+        width: 191
+        height: 191
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 55110cada4d701c43a8bad46e795f662
-      internalID: 976157362
+      spriteID: e7f0e04edefe62144a2cb52d9dab6615
+      internalID: -98508170
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Blood_TypeIcon
+      name: Blood@ElementIcon
       rect:
         serializedVersion: 2
-        x: 18
-        y: 363
-        width: 283
-        height: 284
+        x: 0
+        y: 460
+        width: 191
+        height: 191
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 747d1a7dfa06ab0498939722f3a70119
-      internalID: -432998538
+      spriteID: ab18ef223109cf542a1d362912853228
+      internalID: -1764425950
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Beast_TypeIcon
+      name: Beast@ElementIcon
       rect:
         serializedVersion: 2
-        x: 319
-        y: 363
-        width: 283
-        height: 284
+        x: 250
+        y: 460
+        width: 191
+        height: 191
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 6cec3780fa5b0694d9fe4d60b5d6a1d2
-      internalID: -288939733
+      spriteID: 894fb6593199c4846be4ed174ab958b1
+      internalID: 1075747297
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Cyber_TypeIcon
+      name: Tech@Elementicon
       rect:
         serializedVersion: 2
-        x: 623
-        y: 366
-        width: 284
-        height: 282
+        x: 500
+        y: 460
+        width: 191
+        height: 191
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 9556b377813dcab4384986bf76858ae4
-      internalID: 404526421
+      spriteID: eeeccc69d6bbaff4d833493c332db385
+      internalID: 1965326521
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Empty1_TypeIcon
+      name: ElementIcons_11
       rect:
         serializedVersion: 2
-        x: 928
-        y: 366
-        width: 284
-        height: 282
+        x: 750
+        y: 460
+        width: 191
+        height: 191
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: e9e458e2866742f428dea314b3ee47f1
-      internalID: 344685375
+      spriteID: 361aaec7a8bc7d9419ebf5e0d132e351
+      internalID: 712894277
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Normal_TypeIcon
+      name: ElementIcons_12
       rect:
         serializedVersion: 2
-        x: 18
-        y: 53
-        width: 283
-        height: 284
+        x: 0
+        y: 230
+        width: 191
+        height: 191
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: b914a2d4c5effaf40b632e47e1237009
-      internalID: 452521653
+      spriteID: ad0755f006130694a8471c07c1c55683
+      internalID: -1597069732
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Mind_TypeIcon
+      name: Illusion@ElementIcon
       rect:
         serializedVersion: 2
-        x: 319
-        y: 53
-        width: 283
-        height: 284
+        x: 250
+        y: 230
+        width: 191
+        height: 191
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: f6a0bb9e6b960a141841ea2070f2a976
-      internalID: -1527459241
+      spriteID: c321c0f7f28c13d4084a9d28a7db8a71
+      internalID: 1552470241
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Acid_TypeIcon
+      name: Poison@ElementIcon
       rect:
         serializedVersion: 2
-        x: 623
-        y: 56
-        width: 284
-        height: 282
+        x: 500
+        y: 230
+        width: 191
+        height: 191
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 86227e94d1f5b1747b693c2c9e586158
-      internalID: 1340559047
+      spriteID: 799ab225438bc3640b62a1427424d184
+      internalID: 902973312
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Shadow2_TypeIcon
+      name: Ice@ElementIcon
       rect:
         serializedVersion: 2
-        x: 928
-        y: 56
-        width: 284
-        height: 282
+        x: 750
+        y: 230
+        width: 191
+        height: 191
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: dfa3daa3013fb1b4b8a1f65a1cb6faeb
-      internalID: 727751015
+      spriteID: 543e42940201eea4fbf9187f174fceef
+      internalID: -1641080805
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ElementIcons_16
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 191
+        height: 191
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d82fd5014ba72d5458f3cb436c829ec3
+      internalID: -1384414838
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ElementIcons_17
+      rect:
+        serializedVersion: 2
+        x: 250
+        y: 0
+        width: 191
+        height: 191
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b335d51829d185d408e7444681ec2236
+      internalID: 741910509
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ElementIcons_18
+      rect:
+        serializedVersion: 2
+        x: 500
+        y: 0
+        width: 191
+        height: 191
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: dab20252de1ee30409c3f3cf76157796
+      internalID: 2118826643
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ElementIcons_19
+      rect:
+        serializedVersion: 2
+        x: 750
+        y: 0
+        width: 191
+        height: 191
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 274ec9ef3c6f7824a9e99d36cd57e050
+      internalID: 2024494335
       vertices: []
       indices: 
       edges: []
@@ -462,22 +546,26 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      Acid_TypeIcon: 1340559047
-      Water_TypeIcon: 604798663
-      Empty1_TypeIcon: 344685375
-      Shadow2_TypeIcon: 727751015
-      Fire_TypeIcon: 1859385759
-      Shock_TypeIcon: -623110563
-      Blood_TypeIcon: -432998538
-      Beast_TypeIcon: -288939733
-      Cyber_TypeIcon: 404526421
-      Mind_TypeIcon: -1527459241
-      SuperNatural_TypeIcon: -2100447570
-      Normal_TypeIcon: 452521653
-      Earth_TypeIcon: -1685649861
-      Nature_TypeIcon: 1780475995
-      Shadow__TypeIcon: 976157362
-      Wind_TypeIcon: 20282793
+      Illusion@ElementIcon: 1552470241
+      Beast@ElementIcon: 1075747297
+      Shock@ElementIcon: -1938427514
+      Ice@ElementIcon: -1641080805
+      Poison@ElementIcon: 902973312
+      Nature@ElementIcon: 1927602118
+      Water@ElementIcon: 321739564
+      ElementIcons_17: 741910509
+      ElementIcons_11: 712894277
+      Fire@ElementIcon: 1272580028
+      Blood@ElementIcon: -1764425950
+      ElementIcons_19: 2024494335
+      ElementIcons_12: -1597069732
+      Air@ElementIcon: -1599493914
+      ElementIcons_16: -1384414838
+      ElementIcons_18: 2118826643
+      Shadow@ElementIcon: -98508170
+      Earth@ElementIcon: 1093948756
+      Ghost@ElementIcon: 88800889
+      Tech@Elementicon: 1965326521
   spritePackingTag: 
   pSDRemoveMatte: 0
   pSDShowRemoveMatteOption: 0

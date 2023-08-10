@@ -14,23 +14,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   elementName: Nature
   elementGUID: c97a785e-80da-4ebc-9883-bc2e6596313e
-  insanityAmount: 0
   weaknesses:
   - {fileID: 11400000, guid: dff32d43cdb15e64d9f95e5f1c9a2574, type: 2}
-  weaponColors:
-  - {r: 0.41948798, g: 0.8396226, b: 0.3920879, a: 1}
-  - {r: 0.3270737, g: 0.6603774, b: 0.3270737, a: 1}
-  weaponMuzzleParticles:
-    m_AssetGUID: 4fcfd94170950ea4ca5e0f873e51b4fe
-    m_SubObjectName: 
-    m_SubObjectType: 
-    m_EditorAssetChanged: 0
+  - {fileID: 11400000, guid: 95a8ef5f5dc6d1041b926a50980d0665, type: 2}
+  - {fileID: 11400000, guid: 41dad73ada432f448ace800642921dae, type: 2}
+  resistances:
+  - {fileID: 11400000, guid: 3007beed4b27d8b458961ac106f278d9, type: 2}
+  - {fileID: 11400000, guid: e835342fdbc753849a4b2cb4161a5a57, type: 2}
+  immunities: []
+  statusImmunities: []
   meepleColors:
   - {r: 0.64791316, g: 0.8867924, b: 0.6065326, a: 1}
   - {r: 0.23638305, g: 0.6037736, b: 0.23863699, a: 1}
-  elementSprite: {fileID: 1780475995, guid: 6a6f25e903f18fd4db55f0dfe52e535c, type: 3}
-  defaultMeepleElementHat:
-    m_AssetGUID: 
-    m_SubObjectName: 
-    m_SubObjectType: 
-    m_EditorAssetChanged: 0
+  elementSprite: {fileID: 1927602118, guid: 6a6f25e903f18fd4db55f0dfe52e535c, type: 3}

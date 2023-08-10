@@ -2,14 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using Utils;
 using Random = UnityEngine.Random;
 
 namespace Runtime.Misc
 {
+    
     public class TempComponent: MonoBehaviour
     {
-
         #region Nested Classes
 
         [Serializable]
@@ -32,7 +31,6 @@ namespace Runtime.Misc
         private void Start()
         {
             var returnedValue = GetValueByWeight(itemsByWeight);
-            Debug.Log(returnedValue.displayString);
         }
 
         #endregion

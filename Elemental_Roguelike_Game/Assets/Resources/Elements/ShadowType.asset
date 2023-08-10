@@ -14,23 +14,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   elementName: shadow
   elementGUID: 41ddf6de-6e30-46cc-83b4-32b540bb69d3
-  insanityAmount: 0
   weaknesses:
-  - {fileID: 11400000, guid: b5ba9f007020f914f9c8d519cccd8f04, type: 2}
-  weaponColors:
-  - {r: 0.44267425, g: 0.36084908, b: 0.4811321, a: 1}
-  - {r: 0.20698929, g: 0.16545033, b: 0.24528301, a: 1}
-  weaponMuzzleParticles:
-    m_AssetGUID: 762b7888743a8b94f8926eabe52a268b
-    m_SubObjectName: 
-    m_SubObjectType: 
-    m_EditorAssetChanged: 0
+  - {fileID: 11400000, guid: 4c531383c027c614d9454ba78f04a81c, type: 2}
+  resistances:
+  - {fileID: 11400000, guid: be4873efeaac2f84981ab35dae81a76b, type: 2}
+  immunities: []
+  statusImmunities: []
   meepleColors:
   - {r: 0.44313726, g: 0.36078432, b: 0.48235294, a: 1}
   - {r: 0.20784314, g: 0.16470589, b: 0.24705882, a: 1}
-  elementSprite: {fileID: 976157362, guid: 6a6f25e903f18fd4db55f0dfe52e535c, type: 3}
-  defaultMeepleElementHat:
-    m_AssetGUID: 
-    m_SubObjectName: 
-    m_SubObjectType: 
-    m_EditorAssetChanged: 0
+  elementSprite: {fileID: -98508170, guid: 6a6f25e903f18fd4db55f0dfe52e535c, type: 3}

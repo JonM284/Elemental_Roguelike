@@ -146,6 +146,8 @@ namespace Runtime.Character
 
             m_weaponClonedMat = new Material(weaponMeshRend.material);
             weaponMeshRend.material = m_weaponClonedMat;
+            
+            /*
             m_weaponClonedMat.SetColor(WeaponColorG, weaponElementType.weaponColors[0]);
             m_weaponClonedMat.SetColor(WeaponColorB, weaponElementType.weaponColors[1]);
 
@@ -175,7 +177,7 @@ namespace Runtime.Character
             
                 yield return new WaitUntil(() => vfxHandle.IsDone);
             }
-            
+            */
             currentOwnedWeapon.AssignWeaponMuzzleFX(weaponMuzzleVFX);
             
         }

@@ -14,7 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   statusName: Slow
   roundCooldownTimer: 1
+  chanceToRemove: 16
   abilityElement: {fileID: 0}
-  statusVFX: {fileID: 0}
-  isImpactOnlyStatus: 0
+  statusStayVFX: {fileID: 0}
+  statusOneTimeVFX: {fileID: 0}
+  playVFXOnTrigger: 0
+  statusIcon: {fileID: -1203882808, guid: cbb7c9f40afd9f4428d7625db200f40d, type: 3}
+  statusIconLow: {fileID: -1340026606, guid: cbb7c9f40afd9f4428d7625db200f40d, type: 3}
   slowPercentage: 0.5

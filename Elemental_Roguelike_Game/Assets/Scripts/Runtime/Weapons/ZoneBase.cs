@@ -3,15 +3,13 @@ using System.Collections;
 using Data;
 using Data.Sides;
 using Project.Scripts.Utils;
-using Runtime.Abilities;
-using Runtime.Character;
 using Runtime.Damage;
 using Runtime.GameControllers;
 using Runtime.Status;
-using Runtime.VFX;
 using UnityEngine;
 using UnityEngine.Events;
 using Utils;
+using Random = UnityEngine.Random;
 
 namespace Runtime.Weapons
 {
@@ -55,6 +53,26 @@ namespace Runtime.Weapons
         private void OnDisable()
         {
             TurnController.OnChangeActiveTeam -= OnChangeActiveTeam;
+        }
+
+        private void OnTriggerEnter(Collider other)
+        {
+            if (!hasStatusEffect)
+            {
+                return;
+            }
+            
+            if (IsUser(other))
+            {
+                return;
+            }
+
+            var randomChanceToHit = Random.Range(0, 100);
+            if (randomChanceToHit <= m_zoneRef.chanceToApplyStatus)
+            {
+                other.TryGetComponent(out IEffectable effectable);
+                effectable?.ApplyEffect(m_zoneRef.statusEffect);   
+            }
         }
 
         #endregion
@@ -151,8 +169,12 @@ namespace Runtime.Weapons
                     
                     if (hasStatusEffect)
                     {
-                        var effectable = collider.GetComponent<IEffectable>();
-                        effectable?.ApplyEffect(m_zoneRef.statusEffect);    
+                        var randomChanceToHit = Random.Range(0, 100);
+                        if (randomChanceToHit <= m_zoneRef.chanceToApplyStatus)
+                        {
+                            collider.TryGetComponent(out IEffectable effectable);
+                            effectable?.ApplyEffect(m_zoneRef.statusEffect);   
+                        }
                     }
                     
                 }

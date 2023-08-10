@@ -14,6 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   statusName: Cleanse
   roundCooldownTimer: 0
+  chanceToRemove: 0
   abilityElement: {fileID: 11400000, guid: 3007beed4b27d8b458961ac106f278d9, type: 2}
-  statusVFX: {fileID: 0}
-  isImpactOnlyStatus: 1
+  statusStayVFX: {fileID: 0}
+  statusOneTimeVFX: {fileID: 0}
+  playVFXOnTrigger: 0
+  statusIcon: {fileID: -1111128707, guid: cbb7c9f40afd9f4428d7625db200f40d, type: 3}
+  statusIconLow: {fileID: -1228332656, guid: cbb7c9f40afd9f4428d7625db200f40d, type: 3}

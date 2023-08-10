@@ -7,6 +7,7 @@ using Project.Scripts.Utils;
 using Runtime.GameControllers;
 using Runtime.Gameplay;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -23,7 +24,7 @@ namespace Runtime.Character
         private static readonly int m_colorVarName = Shader.PropertyToID("_EmisColor");
 
         #endregion
-        
+
         #region Serialized Fields
 
         [SerializeField] private GameObject m_passiveIndicator;
@@ -51,8 +52,7 @@ namespace Runtime.Character
         private bool m_canPerformReaction = true;
 
         #endregion
-
-
+        
         #region Accessors
 
         public CharacterBase characterBase => CommonUtils.GetRequiredComponent(ref m_characterBase, () =>
@@ -186,6 +186,11 @@ namespace Runtime.Character
 
         private void Check()
         {
+            if (m_isPerformingReaction || m_hasPerformedReaction)
+            {
+                return;
+            }
+            
             switch (m_assignedClass.classType)
             {
                 case CharacterClass.DEFENDER:
@@ -212,7 +217,13 @@ namespace Runtime.Character
             
             var rollToGrab = GetRandomAgilityStat();
 
-            yield return new WaitForSeconds(1f);
+            bool isPlayer = characterBase.side == TurnController.Instance.playersSide;
+
+            int _LValue = isPlayer ? rollToGrab : (int)ball.thrownBallStat;
+
+            int _RValue = isPlayer ? (int)ball.thrownBallStat : rollToGrab;
+
+            yield return StartCoroutine(JuiceController.Instance.DoReactionAnimation(_LValue, _RValue));
 
             if (ball.thrownBallStat >= rollToGrab)
             {
@@ -238,17 +249,21 @@ namespace Runtime.Character
         {
             var rollToAttack = GetRandomDamageStat();
 
-            while (m_inRangeCharacter.IsNull())
-            {
-                GetClosestTarget();
-            }
-
-            yield return new WaitUntil(() => !m_inRangeCharacter.IsNull());
+            Debug.Log($"{m_inRangeCharacter.name} /// Class:{m_inRangeCharacter.characterClassManager.assignedClass.classType.ToString()}", m_inRangeCharacter);
             
             m_inRangeCharacter.characterMovement.PauseMovement(true);
             
             var enemyAttackRoll = m_inRangeCharacter.characterClassManager.GetRandomDamageStat();
             
+            bool isPlayer = characterBase.side == TurnController.Instance.playersSide;
+            
+            int _LValue = isPlayer ? rollToAttack : enemyAttackRoll;
+
+            int _RValue = isPlayer ? enemyAttackRoll : rollToAttack;
+
+            yield return StartCoroutine(JuiceController.Instance.DoReactionAnimation(_LValue, _RValue));
+            
+            //Missed Attack
             if (enemyAttackRoll >= rollToAttack)
             {
                 //ToDo: Miss attack on moving character, trip don't fall?
@@ -263,21 +278,38 @@ namespace Runtime.Character
             Debug.Log("<color=orange>HAS HIT ATTACK REACTION</color>", this);
 
             m_inRangeCharacter.characterMovement.PauseMovement(true);
-
+            
             yield return new WaitUntil(() => !m_inRangeCharacter.characterMovement.isMoving);
 
-            if (m_inRangeCharacter.assignedClass == CharacterClass.STRIKER)
+            //Reroll if striker
+            if (m_inRangeCharacter.characterClassManager.assignedClass.classType == CharacterClass.STRIKER)
             {
                 //re-roll
+                
+                Debug.Log("<color=cyan>DOING REROLL</color>");
+                
                 var enemyAgilityRoll = m_inRangeCharacter.characterClassManager.GetReroll();
-                if (enemyAgilityRoll >= rollToAttack)
+
+                //Character has not yet used reroll
+                if (enemyAgilityRoll != 0)
                 {
-                    Debug.Log("<color=orange>Striker Rerolled and WON!</color>", this);
-                    m_inRangeCharacter.characterMovement.PauseMovement(false);
-                    OnMissedReaction();
-                    HasPerformedReaction();
-                    yield break;
+                    _LValue = isPlayer ? rollToAttack : enemyAgilityRoll;
+
+                    _RValue = isPlayer ? enemyAgilityRoll : rollToAttack;
+                
+                    yield return StartCoroutine(JuiceController.Instance.DoReactionAnimation(_LValue, _RValue));
+
+                    //Missed On Reroll
+                    if (enemyAgilityRoll >= rollToAttack)
+                    {
+                        Debug.Log("<color=orange>Striker Rerolled and WON!</color>", this);
+                        m_inRangeCharacter.characterMovement.PauseMovement(false);
+                        OnMissedReaction();
+                        HasPerformedReaction();
+                        yield break;
+                    }
                 }
+                
             }
 
             yield return new WaitForSeconds(0.5f);
@@ -316,10 +348,25 @@ namespace Runtime.Character
             {
                 foreach (var col in colliders)
                 {
-                    var character = col.GetComponent<CharacterBase>();
-                    if (!character.IsNull() && character.characterMovement.isMoving && character.side != this.characterBase.side && 
-                        character != this.characterBase)
+                    col.TryGetComponent(out CharacterBase character);
+                    if (!character)
                     {
+                        continue;
+                    }
+
+                    if (!character.characterMovement.isMoving)
+                    {
+                        continue;
+                    }
+
+                    if (character.side == this.characterBase.side)
+                    {
+                        continue;
+                    }
+                    
+                    if (character != this.characterBase)
+                    {
+                        m_inRangeCharacter = character;
                         return true;
                     }
                 }
@@ -348,7 +395,7 @@ namespace Runtime.Character
 
         private void OnMissedReaction()
         {
-            
+            m_inRangeCharacter = null;
         }
 
         private void HasPerformedReaction()
@@ -375,8 +422,9 @@ namespace Runtime.Character
 
         public int GetReroll()
         {
-            if (m_hasPerformedReaction)
+            if (m_hasPerformedReaction || this.assignedClass.classType != CharacterClass.STRIKER)
             {
+                Debug.LogError($"Something Wrong with class,{assignedClass.classType}");
                 return 0;
             }
             

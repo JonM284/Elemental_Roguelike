@@ -9,6 +9,7 @@ using Runtime.Cards;
 using Runtime.Character;
 using Runtime.GameControllers;
 using Runtime.UI;
+using Runtime.UI.DataModels;
 using Runtime.UI.DataReceivers;
 using UnityEngine;
 using UnityEngine.AddressableAssets;

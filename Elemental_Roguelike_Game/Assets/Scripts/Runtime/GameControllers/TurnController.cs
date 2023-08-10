@@ -96,6 +96,8 @@ namespace Runtime.GameControllers
 
         #region Accessors
 
+        public CharacterSide playersSide => playerSide;
+        
         public bool isInBattle { get; private set; }
 
         public BallBehavior ball { get; private set; }
@@ -447,7 +449,16 @@ namespace Runtime.GameControllers
             }
             
             CameraUtils.SetCameraZoom(1f);
-            CameraUtils.SetCameraTrackPos(Vector3.zero, false);
+            List<Transform> _characterTransforms = new List<Transform>();
+            battlersBySides[activeTeamID].teamMembers.ForEach(c =>
+            {
+                if (c.isAlive)
+                {
+                    _characterTransforms.Add(c.transform);
+                }
+            });
+            
+            CameraUtils.SetCameraTrackPosCentral(_characterTransforms, true);
             
             OnChangeActiveTeam?.Invoke(battlersBySides[activeTeamID].teamSide);
         }
@@ -504,7 +515,7 @@ namespace Runtime.GameControllers
             
             if (!ball.IsNull())
             {
-                ball.transform.position = ballInitialPosition;
+                ball.ResetBall();
                 ball.gameObject.SetActive(true);
             }
 
@@ -521,7 +532,11 @@ namespace Runtime.GameControllers
                     {
                         currentMember.OnRevive();
                     }
-                    currentMember.transform.position = playerManager.startPositions[i].transform.position;
+                    
+                    currentMember.ResetCharacter();
+                    
+                    currentMember.transform.position = playerManager.startPositions[i].position;
+                    currentMember.transform.forward = playerManager.startPositions[i].forward;
                 }
             }
             
@@ -534,11 +549,16 @@ namespace Runtime.GameControllers
                 for (int i = 0; i < enemyTeam.teamMembers.Count; i++)
                 { 
                     var currentMember = enemyTeam.teamMembers[i];
+                    
                     if (!currentMember.isAlive)
                     {
                         currentMember.OnRevive();
                     }
+                    
+                    currentMember.ResetCharacter();
+                    
                     currentMember.transform.position = enemyManager.startPositions[i].transform.position;
+                    currentMember.transform.forward = enemyManager.startPositions[i].forward;
                 }
             }
             
@@ -546,7 +566,7 @@ namespace Runtime.GameControllers
 
             if (neutralTeam.teamMembers.Count > 0)
             {
-                //ToDo: Reset them somehow
+                //ToDo: Reset them somehow, probably just have them do their own reset
             }
 
             //Set other team active

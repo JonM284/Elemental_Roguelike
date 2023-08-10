@@ -1,16 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using Data;
 using Data.CharacterData;
-using Project.Scripts.Utils;
 using Runtime.GameControllers;
-using Runtime.Submodules;
 using UnityEngine;
 using UnityEngine.Events;
 using Utils;
 
-namespace Runtime.UI.DataReceivers
+namespace Runtime.UI.DataModels
 {
     public class MeepleTeamSelectionDataModel: UIBase
     {

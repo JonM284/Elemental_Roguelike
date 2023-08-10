@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Project.Scripts.Utils;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
@@ -40,7 +41,7 @@ namespace Runtime.GameControllers
         /// </summary>
         /// <param name="_assetReference">Addressable to Load</param>
         /// <returns>Addressable result as GameObject.</returns>
-        public IEnumerator C_LoadGameObject(AssetReference _assetReference, Action<GameObject> callback)
+        public IEnumerator C_LoadGameObject(AssetReference _assetReference, Action<GameObject> callback, Transform parent)
         {
             var handle = Addressables.LoadAssetAsync<GameObject>(_assetReference);
             
@@ -55,7 +56,8 @@ namespace Runtime.GameControllers
             {
                 if (!callback.IsNull())
                 {
-                    callback?.Invoke(handle.Result);
+                    var instantiatedGO = handle.Result.Clone(parent);
+                    callback?.Invoke(instantiatedGO);
                 }
             }else{
                 Debug.LogError($"Could not load addressable, {_assetReference.Asset.name}", _assetReference.Asset);

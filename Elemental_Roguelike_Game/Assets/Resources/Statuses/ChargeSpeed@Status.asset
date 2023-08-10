@@ -14,10 +14,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   statusName: Charge Speed
   roundCooldownTimer: 3
+  chanceToRemove: 0
   abilityElement: {fileID: 11400000, guid: b5ba9f007020f914f9c8d519cccd8f04, type: 2}
   statusStayVFX: {fileID: 5795792492588116457, guid: 794c8b2bfc7fd4d43ad8cbc5c7b2a209,
     type: 3}
   statusOneTimeVFX: {fileID: 1472207216188466634, guid: fecaf9e18fc1354469dd606d2a66ea2e,
     type: 3}
-  isImpactOnlyStatus: 0
+  playVFXOnTrigger: 0
+  statusIcon: {fileID: 2032578040, guid: cbb7c9f40afd9f4428d7625db200f40d, type: 3}
+  statusIconLow: {fileID: -1228332656, guid: cbb7c9f40afd9f4428d7625db200f40d, type: 3}
   amountToAdd: 0.75

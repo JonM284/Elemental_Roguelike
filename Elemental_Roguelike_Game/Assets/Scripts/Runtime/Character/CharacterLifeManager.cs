@@ -26,7 +26,9 @@ namespace Runtime.Character
         #region Private Fields
 
         private CharacterBase m_ownCharacter;
-        
+
+        private float m_damageMod;
+
         #endregion
 
         #region Accessors
@@ -64,6 +66,11 @@ namespace Runtime.Character
             currentHealthPoints = _currentHealth;
             currentShieldPoints = _currentShield;
             characterElementType = _typing;
+        }
+
+        public void SetDamageIntakeModifier(float _newModifierAmount)
+        {
+            m_damageMod = _newModifierAmount;
         }
 
         public void DealDamage(int _incomingDamage, bool _armorPiercing, ElementTyping _type)

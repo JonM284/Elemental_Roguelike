@@ -28,6 +28,10 @@ namespace Data
 
         public ElementTyping elementType;
 
+        [Tooltip("Chance to apply status when ability hits")]
+        [Range(0,100)]
+        public int chanceToApplyStatus;
+        
         public Status statusEffect;
         
         public AssetReference zonePrefab;

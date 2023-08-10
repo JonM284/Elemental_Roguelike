@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using Data;
+﻿using System.Collections;
 using Data.CharacterData;
 using Data.Sides;
 using Project.Scripts.Utils;
@@ -13,7 +10,7 @@ using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
 using Utils;
 
-namespace Runtime.UI.DataReceivers
+namespace Runtime.UI.DataModels
 {
     public class BattleUIDataModel: MonoBehaviour
     {

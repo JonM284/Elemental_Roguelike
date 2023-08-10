@@ -7,6 +7,7 @@ using Runtime.Status;
 using UnityEngine;
 using UnityEngine.Events;
 using Utils;
+using Random = UnityEngine.Random;
 
 namespace Runtime.Weapons
 {
@@ -124,8 +125,12 @@ namespace Runtime.Weapons
                     
                     if (hasStatusEffect)
                     {
-                        var effectable = collider.GetComponent<IEffectable>();
-                        effectable?.ApplyEffect(statusEffect);    
+                        var randomChanceToHit = Random.Range(0, 100);
+                        if (randomChanceToHit <= m_projectileRef.chanceToApplyStatus)
+                        {
+                            var effectable = collider.GetComponent<IEffectable>();
+                            effectable?.ApplyEffect(statusEffect);       
+                        }
                     }
                     
                 }

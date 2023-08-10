@@ -14,10 +14,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   statusName: Burn
   roundCooldownTimer: 3
+  chanceToRemove: 15
   abilityElement: {fileID: 11400000, guid: dff32d43cdb15e64d9f95e5f1c9a2574, type: 2}
   statusStayVFX: {fileID: 0}
   statusOneTimeVFX: {fileID: 1702000455836682580, guid: f0c82631a5e58194c9956af50e459e12,
     type: 3}
   playVFXOnTrigger: 1
+  statusIcon: {fileID: -1595181397, guid: cbb7c9f40afd9f4428d7625db200f40d, type: 3}
+  statusIconLow: {fileID: -1340026606, guid: cbb7c9f40afd9f4428d7625db200f40d, type: 3}
   damageOverTime: 10
   isArmorPiercing: 0

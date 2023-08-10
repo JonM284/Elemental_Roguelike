@@ -1,9 +1,7 @@
-using System.Collections;
-using System.Collections.Generic;
+using System;
 using UnityEngine;
 
-[CreateAssetMenu(menuName = "Temp Custom/Temp Item")]
-public class TempItem : ScriptableObject
+public class TempItem : MonoBehaviour
 {
-    public string displayString;
+    
 }

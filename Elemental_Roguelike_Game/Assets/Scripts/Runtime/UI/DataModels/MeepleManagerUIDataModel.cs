@@ -1,15 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Data;
+﻿using System.Collections.Generic;
 using Data.CharacterData;
 using Project.Scripts.Utils;
 using Runtime.UI.Items;
 using UnityEngine;
-using UnityEngine.UI;
 using Utils;
 
-namespace Runtime.UI.DataReceivers
+namespace Runtime.UI.DataModels
 {
     public class MeepleManagerUIDataModel: MonoBehaviour
     {

@@ -14,9 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   statusName: Stun
   roundCooldownTimer: 2
-  abilityElement: {fileID: 11400000, guid: e835342fdbc753849a4b2cb4161a5a57, type: 2}
+  chanceToRemove: 20
+  abilityElement: {fileID: 0}
   statusStayVFX: {fileID: 8734192179742222016, guid: 96687615fbae43c408b5b589a6c69c21,
     type: 3}
   statusOneTimeVFX: {fileID: 9034318327960476629, guid: 3b24a118a9c45fe46a0f60bc0a995b44,
     type: 3}
   playVFXOnTrigger: 0
+  statusIcon: {fileID: 127839659, guid: cbb7c9f40afd9f4428d7625db200f40d, type: 3}
+  statusIconLow: {fileID: -1340026606, guid: cbb7c9f40afd9f4428d7625db200f40d, type: 3}

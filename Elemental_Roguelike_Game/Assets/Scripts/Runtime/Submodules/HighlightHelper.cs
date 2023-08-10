@@ -43,15 +43,14 @@ namespace Runtime.Submodules
 
         private void Update()
         {
-            if (activeCharacter.IsNull())
-            {
-                CheckHover();
-                return;
-            }
 
-            if (!activeCharacter.IsNull() && isPlayerTurn)
+            if (!activeCharacter.IsNull() && activeCharacter.isDoingAction && isPlayerTurn)
             {
                 CheckPlayerAction();
+            }
+            else
+            {
+                CheckHover();
             }
         }
 

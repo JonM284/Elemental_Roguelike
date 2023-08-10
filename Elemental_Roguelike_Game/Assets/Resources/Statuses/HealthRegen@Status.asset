@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 754d833406744aafb11cad012b50de64, type: 3}
+  m_Name: HealthRegen@Status
+  m_EditorClassIdentifier: 
+  statusName: Health Regen
+  roundCooldownTimer: 3
+  chanceToRemove: 0
+  abilityElement: {fileID: 0}
+  statusStayVFX: {fileID: 0}
+  statusOneTimeVFX: {fileID: 5573551082283995732, guid: dc450fa3801b4df4483e2a5447ff8fbc,
+    type: 3}
+  playVFXOnTrigger: 1
+  statusIcon: {fileID: -364036777, guid: cbb7c9f40afd9f4428d7625db200f40d, type: 3}
+  statusIconLow: {fileID: -1228332656, guid: cbb7c9f40afd9f4428d7625db200f40d, type: 3}
+  isHealArmor: 0
+  healOverTime: 25

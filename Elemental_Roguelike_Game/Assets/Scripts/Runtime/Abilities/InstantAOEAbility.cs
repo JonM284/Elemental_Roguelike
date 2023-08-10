@@ -17,7 +17,13 @@ namespace Runtime.Abilities
         
         public override void SelectPosition(Vector3 _inputPosition)
         {
-            
+            if (_inputPosition.IsNan())
+            {
+                return;
+            }
+
+            m_targetPosition = _inputPosition;
+
         }
 
         public override void SelectTarget(Transform _inputTransform)
@@ -32,7 +38,8 @@ namespace Runtime.Abilities
 
         public override void UseAbility(Vector3 _ownerUsePos)
         {
-            m_zoneInfo.PlayAt(m_targetTransform.position, currentOwner.transform);
+            var m_endPos = m_targetTransform != null ? m_targetTransform.position : m_targetPosition;
+            m_zoneInfo.PlayAt(m_endPos, currentOwner.transform);
             base.UseAbility(_ownerUsePos);
         }
     }

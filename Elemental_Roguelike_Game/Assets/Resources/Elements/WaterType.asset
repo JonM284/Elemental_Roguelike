@@ -14,23 +14,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   elementName: Water
   elementGUID: 3cae181b-adde-478d-b84d-73ea7fbfcff7
-  insanityAmount: 0
   weaknesses:
   - {fileID: 11400000, guid: 3c9c561ec5c01714b84d55420dbb7e71, type: 2}
-  weaponColors:
-  - {r: 0.2352941, g: 0.6945202, b: 0.7176471, a: 1}
-  - {r: 0.2352941, g: 0.6458861, b: 0.7176471, a: 1}
-  weaponMuzzleParticles:
-    m_AssetGUID: 
-    m_SubObjectName: 
-    m_SubObjectType: 
-    m_EditorAssetChanged: 0
+  - {fileID: 11400000, guid: b5ba9f007020f914f9c8d519cccd8f04, type: 2}
+  - {fileID: 11400000, guid: b6a3358631c8026478f44a1bcf5d24f7, type: 2}
+  resistances:
+  - {fileID: 11400000, guid: dff32d43cdb15e64d9f95e5f1c9a2574, type: 2}
+  - {fileID: 11400000, guid: e835342fdbc753849a4b2cb4161a5a57, type: 2}
+  - {fileID: 11400000, guid: 459cc8e0701be4d449844779020391f8, type: 2}
+  immunities: []
+  statusImmunities: []
   meepleColors:
   - {r: 0.3882353, g: 0.73333335, b: 0.972549, a: 1}
   - {r: 0.08627451, g: 0.40392157, b: 0.7254902, a: 1}
-  elementSprite: {fileID: 604798663, guid: 6a6f25e903f18fd4db55f0dfe52e535c, type: 3}
-  defaultMeepleElementHat:
-    m_AssetGUID: 
-    m_SubObjectName: 
-    m_SubObjectType: 
-    m_EditorAssetChanged: 0
+  elementSprite: {fileID: 321739564, guid: 6a6f25e903f18fd4db55f0dfe52e535c, type: 3}

@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 15d0416d0e9a4f4a837a866f5c0a82cf, type: 3}
+  m_Name: BloodType
+  m_EditorClassIdentifier: 
+  elementName: Blood
+  elementGUID: 56a4d78d-323e-46cb-961d-0cd9a4869265
+  weaknesses:
+  - {fileID: 11400000, guid: 3007beed4b27d8b458961ac106f278d9, type: 2}
+  - {fileID: 11400000, guid: 95a8ef5f5dc6d1041b926a50980d0665, type: 2}
+  resistances:
+  - {fileID: 11400000, guid: 4c531383c027c614d9454ba78f04a81c, type: 2}
+  - {fileID: 11400000, guid: 41dad73ada432f448ace800642921dae, type: 2}
+  - {fileID: 11400000, guid: b6a3358631c8026478f44a1bcf5d24f7, type: 2}
+  immunities:
+  - {fileID: 11400000, guid: 459cc8e0701be4d449844779020391f8, type: 2}
+  statusImmunities: []
+  meepleColors:
+  - {r: 0.8117648, g: 0.21176472, b: 0.17254902, a: 0}
+  - {r: 0.54901963, g: 0.16862746, b: 0.14509805, a: 0}
+  elementSprite: {fileID: -1764425950, guid: 6a6f25e903f18fd4db55f0dfe52e535c, type: 3}

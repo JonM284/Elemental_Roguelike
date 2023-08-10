@@ -23,19 +23,19 @@ namespace Runtime.UI.Items
         [SerializeField] private TMP_Text healthText;
         
         [SerializeField] private TMP_Text shieldText;
-        
-        //[SerializeField] private Image highDetailStatus;
-        
+
+        [SerializeField] private Image highStatusIcon;
+
         [Header("Low Detail Bar")]
 
         [SerializeField] private GameObject lowDetail;
 
         [SerializeField] private Slider healthBarLow;
+
+        [SerializeField] private Image lowStatusIcon;
         
-        //[SerializeField] private Image lowDetailStatus;
-
-        [Header("Both")]
-
+        [Header("Both")] 
+        
         [SerializeField] private List<GameObject> shieldIcons = new List<GameObject>();
         
         #endregion
@@ -105,6 +105,7 @@ namespace Runtime.UI.Items
             CharacterBase.CharacterHovered += CharacterBaseOnCharacterHovered;
             CharacterLifeManager.OnCharacterHealthChange += CharacterLifeManagerOnOnCharacterHealthChange;
             CharacterBase.StatusAdded += CharacterBaseOnStatusAdded;
+            CharacterBase.StatusRemoved += CharacterBaseOnStatusRemoved;
         }
 
         private void OnDisable()
@@ -112,6 +113,7 @@ namespace Runtime.UI.Items
             CharacterBase.CharacterHovered -= CharacterBaseOnCharacterHovered;
             CharacterLifeManager.OnCharacterHealthChange -= CharacterLifeManagerOnOnCharacterHealthChange;
             CharacterBase.StatusAdded -= CharacterBaseOnStatusAdded;
+            CharacterBase.StatusRemoved -= CharacterBaseOnStatusRemoved;
         }
 
         #endregion
@@ -168,8 +170,43 @@ namespace Runtime.UI.Items
             {
                 return;
             }
+
+            if (_character.appliedStatus.IsNull())
+            {
+                return;
+            }
+
+            if (_character.appliedStatus.status.statusIcon.IsNull())
+            {
+                return;
+            }
+
+            if (_character.appliedStatus.status.statusIconLow.IsNull())
+            {
+                return;
+            }
+
+            highStatusIcon.sprite = _character.appliedStatus.status.statusIcon;
+
+            lowStatusIcon.sprite = _character.appliedStatus.status.statusIconLow;
+
+        }
+        
+        private void CharacterBaseOnStatusRemoved(CharacterBase _character)
+        {
+            if (_character.IsNull())
+            {
+                return;
+            }
             
-            //ToDo: Display status
+            if (_character != m_associatedCharacter)
+            {
+                return;
+            }
+
+            highStatusIcon.sprite = null;
+
+            lowStatusIcon.sprite = null;
         }
 
         private void ChangeHealthBarDisplay(bool _isHighlighted)

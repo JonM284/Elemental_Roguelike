@@ -1,4 +1,5 @@
-﻿using Project.Scripts.Utils;
+﻿using System.Collections.Generic;
+using Project.Scripts.Utils;
 using Runtime.Camera;
 using UnityEngine;
 
@@ -58,6 +59,11 @@ namespace Utils
         public static void SetCameraTrackPos(Transform _trackPos, bool _isLocked)
         {
             cameraPositionTracker.SetTrackCamera(_trackPos, _isLocked);
+        }
+
+        public static void SetCameraTrackPosCentral(List<Transform> _transforms, bool _isLocked)
+        {
+            cameraPositionTracker.SetCentralPosition(_transforms, _isLocked);
         }
 
         public static void SetCameraZoom(float _zoomPercentage)

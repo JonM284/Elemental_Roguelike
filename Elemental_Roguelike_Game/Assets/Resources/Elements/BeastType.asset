@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 15d0416d0e9a4f4a837a866f5c0a82cf, type: 3}
+  m_Name: BeastType
+  m_EditorClassIdentifier: 
+  elementName: Beast
+  elementGUID: 7c76b2a7-8a09-481a-aa02-6533f355c927
+  weaknesses:
+  - {fileID: 11400000, guid: dff32d43cdb15e64d9f95e5f1c9a2574, type: 2}
+  - {fileID: 11400000, guid: be4873efeaac2f84981ab35dae81a76b, type: 2}
+  - {fileID: 11400000, guid: 95a8ef5f5dc6d1041b926a50980d0665, type: 2}
+  - {fileID: 11400000, guid: b8dae5a0cdc62604f96986aa9b39cd25, type: 2}
+  resistances:
+  - {fileID: 11400000, guid: 3c9c561ec5c01714b84d55420dbb7e71, type: 2}
+  - {fileID: 11400000, guid: 459cc8e0701be4d449844779020391f8, type: 2}
+  immunities: []
+  statusImmunities: []
+  meepleColors:
+  - {r: 0.83921576, g: 0.94117653, b: 0.3019608, a: 0}
+  - {r: 0.43529415, g: 0.59607846, b: 0.21568629, a: 0}
+  elementSprite: {fileID: 1075747297, guid: 6a6f25e903f18fd4db55f0dfe52e535c, type: 3}

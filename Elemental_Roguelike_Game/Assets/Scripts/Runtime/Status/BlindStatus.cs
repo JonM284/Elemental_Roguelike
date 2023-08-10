@@ -1,4 +1,5 @@
 ﻿using Project.Scripts.Utils;
+using Runtime.Abilities;
 using Runtime.Character;
 using UnityEngine;
 
@@ -14,7 +15,7 @@ namespace Runtime.Status
                 return;
             }
 
-            _character.SetCharacterCanUseAbilities(false);
+            _character.characterAbilityManager.SetAbilityTypeAllowed(AbilityTargetType.SELF);
         }
 
         public override void ResetStatusEffect(CharacterBase _character)
@@ -24,7 +25,7 @@ namespace Runtime.Status
                 return;
             }
 
-            _character.SetCharacterCanUseAbilities(true);
+            _character.characterAbilityManager.AllowAllAbilityActive();
         }
     }
 }

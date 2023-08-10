@@ -18,6 +18,7 @@ MonoBehaviour:
   isAffectArmor: 0
   isKnockBack: 0
   projectileType: {fileID: 11400000, guid: dff32d43cdb15e64d9f95e5f1c9a2574, type: 2}
+  chanceToApplyStatus: 25
   statusEffect: {fileID: 11400000, guid: 105104d71c6a3354f95ca160d3294c22, type: 2}
   projectileCollisionLayers:
     serializedVersion: 2

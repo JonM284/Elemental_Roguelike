@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 15d0416d0e9a4f4a837a866f5c0a82cf, type: 3}
+  m_Name: IceType
+  m_EditorClassIdentifier: 
+  elementName: Ice
+  elementGUID: 5d532e4e-1916-4877-bd4b-e99716267065
+  weaknesses:
+  - {fileID: 11400000, guid: dff32d43cdb15e64d9f95e5f1c9a2574, type: 2}
+  - {fileID: 11400000, guid: e835342fdbc753849a4b2cb4161a5a57, type: 2}
+  - {fileID: 11400000, guid: 459cc8e0701be4d449844779020391f8, type: 2}
+  resistances:
+  - {fileID: 11400000, guid: 95a8ef5f5dc6d1041b926a50980d0665, type: 2}
+  - {fileID: 11400000, guid: b8dae5a0cdc62604f96986aa9b39cd25, type: 2}
+  immunities: []
+  statusImmunities: []
+  meepleColors:
+  - {r: 1, g: 1, b: 1, a: 0}
+  - {r: 0.65881985, g: 0.9777083, b: 0.990566, a: 0}
+  elementSprite: {fileID: -1641080805, guid: 6a6f25e903f18fd4db55f0dfe52e535c, type: 3}

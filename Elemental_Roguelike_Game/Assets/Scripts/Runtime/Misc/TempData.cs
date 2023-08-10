@@ -5,5 +5,7 @@ using UnityEngine;
 [CreateAssetMenu(menuName = "Temp Custom/Temp Data")]
 public class TempData : ScriptableObject
 {
-    public int weight;
+    public string name;
+    public float baseMoveSpeed;
+    public float baseDamage;
 }

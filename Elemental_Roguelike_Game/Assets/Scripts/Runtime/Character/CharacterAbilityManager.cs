@@ -62,6 +62,10 @@ namespace Runtime.Character
         private CharacterBase m_characterBase;
 
         private float m_floorOffset = 0.1f;
+
+        private bool m_isAbilityDisallowed;
+
+        private AbilityTargetType m_allowedType;
         
         #endregion
 
@@ -177,6 +181,17 @@ namespace Runtime.Character
             });
         }
 
+        public void SetAbilityTypeAllowed(AbilityTargetType _targetType)
+        {
+            m_isAbilityDisallowed = true;
+            m_allowedType = _targetType;
+        }
+
+        public void AllowAllAbilityActive()
+        {
+            m_isAbilityDisallowed = false;
+        }
+
         /// <summary>
         /// Use abilities usable by this character. [ONLY TWO]
         /// </summary>
@@ -186,6 +201,12 @@ namespace Runtime.Character
             if (m_assignedAbilities[_abilityIndex] == null)
             {
                 Debug.Log($"Ability doesn't exist {this.gameObject.name} /// Ability:{_abilityIndex}", this.gameObject);
+                return;
+            }
+
+            if (m_isAbilityDisallowed && m_assignedAbilities[_abilityIndex].ability.targetType != m_allowedType)
+            {
+                Debug.Log("This ability type isn't allowed");
                 return;
             }
 
