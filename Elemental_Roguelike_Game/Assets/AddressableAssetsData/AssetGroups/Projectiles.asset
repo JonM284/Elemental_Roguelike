@@ -45,6 +45,18 @@ MonoBehaviour:
     m_Address: ShadowBall@ProjecitleAbility
     m_ReadOnly: 0
     m_SerializedLabels: []
+  - m_GUID: bd899187583566d4eaf2d7fe2e6e970c
+    m_Address: Shade@ProjectileZoneAbility
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: aaf5a009c0fcd0e4db366a8bba069a57
+    m_Address: AcidBall@ProjectileZoneAbility
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: d33533fd343de504bbc4521d55c963fb
+    m_Address: AcidBall@ProjectileAbility
+    m_ReadOnly: 0
+    m_SerializedLabels: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: c51bc8bdb2bb6e5479c05b7cf9bc0f75, type: 2}
   m_SchemaSet:

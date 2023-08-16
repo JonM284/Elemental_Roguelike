@@ -14,6 +14,8 @@ namespace Runtime.Character
 
         public static event Action OnCharacterHealthChange;
         
+        public static event Action<CharacterBase,int> CharacterTookDamage;
+        
 
         #endregion
 
@@ -73,7 +75,7 @@ namespace Runtime.Character
             m_damageMod = _newModifierAmount;
         }
 
-        public void DealDamage(int _incomingDamage, bool _armorPiercing, ElementTyping _type)
+        public void DealDamage(Transform _attacker, int _incomingDamage, bool _armorPiercing, ElementTyping _type)
         {
             if (characterElementType == null)
             {
@@ -106,6 +108,12 @@ namespace Runtime.Character
             }
             
             OnCharacterHealthChange?.Invoke();
+
+            _attacker.TryGetComponent(out CharacterBase _character);
+            if (_character)
+            {
+                CharacterTookDamage?.Invoke(_character, _fixedIncomingDamage);
+            }
 
 
             Debug.Log($"<color=orange> {this.gameObject.name} took damage Amount:{_incomingDamage} /// hp now: {currentHealthPoints} shields: {currentShieldPoints} </color>");

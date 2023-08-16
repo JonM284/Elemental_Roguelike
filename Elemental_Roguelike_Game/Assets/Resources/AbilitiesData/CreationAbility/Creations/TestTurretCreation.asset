@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6ea04b9109a845f9869800c43d1df56f, type: 3}
+  m_Name: TestTurretCreation
+  m_EditorClassIdentifier: 
+  health: 5
+  isDestroyable: 1
+  roundStayAmount: 4
+  isInfiniteTime: 0
+  checkLayers:
+    serializedVersion: 2
+    m_Bits: 257
+  creationRef:
+    m_AssetGUID: 776b05d911b084742bf77a295c438282
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_EditorAssetChanged: 0
+  numberOfShots: 3
+  detonationDetectionRadius: 3
+  isHidden: 0
+  projectileInfo: {fileID: 11400000, guid: d6d985400f7629447aabcdab8a4fc414, type: 2}
+  hiddenLayer:
+    serializedVersion: 2
+    m_Bits: 65536

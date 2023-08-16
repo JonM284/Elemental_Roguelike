@@ -23,4 +23,4 @@ MonoBehaviour:
   statusIcon: {fileID: -364036777, guid: cbb7c9f40afd9f4428d7625db200f40d, type: 3}
   statusIconLow: {fileID: -1228332656, guid: cbb7c9f40afd9f4428d7625db200f40d, type: 3}
   isHealArmor: 0
-  healOverTime: 25
+  healOverTime: 30

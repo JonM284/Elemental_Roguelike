@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using Data.CharacterData;
+using Data.Elements;
 using Project.Scripts.Utils;
 using Runtime.Abilities;
 using Runtime.Environment;
+using Runtime.GameControllers;
 using Runtime.Selection;
 using UnityEngine;
 using Utils;
@@ -122,6 +125,11 @@ namespace Runtime.Character
             {
                 return;
             }
+
+            if (!_selectedCharacter.isTargetable)
+            {
+                return;
+            }
             
             SelectAbilityTarget(_selectedCharacter.transform);
         }
@@ -150,11 +158,11 @@ namespace Runtime.Character
             return m_previousActiveAbilityIndex;
         }
         
-        public void InitializeCharacterAbilityList(List<string> _abilities)
+        public void InitializeCharacterAbilityList(List<string> _abilities, ElementTyping _elementTyping, CharacterClassData _characterClass)
         {
             _abilities.ForEach(a =>
             {
-                var locatedAbility = AbilityUtils.GetAbilityByGUID(a);
+                var locatedAbility = AbilityController.Instance.GetAbility(_elementTyping, _characterClass, a);
                 var _newAssign = new AssignedAbilities
                 {
                     ability = locatedAbility,

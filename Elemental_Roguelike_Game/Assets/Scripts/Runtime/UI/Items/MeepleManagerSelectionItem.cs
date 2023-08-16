@@ -70,9 +70,9 @@ namespace Runtime.UI
             
                 meeple.abilityReferences.ForEach(s =>
                 {
-                    var ability = AbilityUtils.GetAbilityByGUID(s);
-                    string formatString = string.Format($"{ability.abilityName}: {ability.abilityDescription} \n", ability.range, ability.roundCooldownTimer);
-                    allAbilitiesString += formatString;
+                    //var ability = AbilityUtils.GetAbilityByGUID(s);
+                    //string formatString = string.Format($"{ability.abilityName}: {ability.abilityDescription} \n", ability.range, ability.roundCooldownTimer);
+                    //allAbilitiesString += formatString;
                 });
 
                 abilityDescriptionText.text = allAbilitiesString;    

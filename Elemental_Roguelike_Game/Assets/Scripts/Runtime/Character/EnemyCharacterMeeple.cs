@@ -1,6 +1,7 @@
 ﻿using Data;
 using Data.CharacterData;
 using Project.Scripts.Data;
+using Runtime.GameControllers;
 using Utils;
 
 namespace Runtime.Character
@@ -19,13 +20,15 @@ namespace Runtime.Character
         public override void InitializeCharacter()
         {
             var elementType = ElementUtils.GetElementTypeByGUID(m_enemyMeepleStats.meepleElementTypeRef);
+            var classType = MeepleController.Instance.GetClassByGUID(m_enemyMeepleStats.classReferenceType);
+            
             characterVisuals.InitializeMeepleCharacterVisuals(elementType);
             characterMovement.InitializeCharacterMovement(m_enemyMeepleStats.baseSpeed, m_enemyMeepleStats.movementDistance, m_enemyMeepleStats.damageScore, elementType);
             characterLifeManager.InitializeCharacterHealth(m_enemyMeepleStats.baseHealth, m_enemyMeepleStats.baseShields,
                 m_enemyMeepleStats.currentHealth, m_enemyMeepleStats.currentShield, elementType);
             if (m_enemyMeepleStats.abilityReferences.Count > 0)
             {
-                characterAbilityManager.InitializeCharacterAbilityList(m_enemyMeepleStats.abilityReferences);
+                characterAbilityManager.InitializeCharacterAbilityList(m_enemyMeepleStats.abilityReferences, elementType, classType);
             }
             
             var weaponData = WeaponUtils.GetDataByRef(m_enemyMeepleStats.weaponReference);

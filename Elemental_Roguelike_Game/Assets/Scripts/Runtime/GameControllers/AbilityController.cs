@@ -41,9 +41,7 @@ namespace Runtime.GameControllers
         #endregion
 
         #region Serialized Fields
-
-        [SerializeField] private List<Ability> allAbilities = new List<Ability>();
-
+        
         [FormerlySerializedAs("abilitiesByType")] [SerializeField] private List<AbilitiesByElement> abilitiesByElement = new List<AbilitiesByElement>();
 
         #endregion
@@ -67,25 +65,37 @@ namespace Runtime.GameControllers
 
         #region Class Implementation
 
-        public Ability GetAbilityByName(string _searchName)
+        public Ability GetAbility(ElementTyping _element, CharacterClassData classData, string _abilitySearchGUID)
         {
-            var foundAbility = allAbilities.FirstOrDefault(a => a.abilityName == _searchName);
-            if (foundAbility == null)
+            var foundElement = abilitiesByElement.FirstOrDefault(abe => abe.type == _element);
+           
+            if (CommonUtils.IsNull(foundElement))
             {
+                Debug.Log("Element Doesn't Exist in LIST", this);
                 return default;
             }
-            return foundAbility;
-        }
-
-        public Ability GetAbilityByGUID(string _searchGUID)
-        {
-            var foundAbility = allAbilities.FirstOrDefault(a => a.abilityGUID == _searchGUID);
-            if (foundAbility == null)
+            
+            var foundType =
+                foundElement.abilitiesOfClassType.FirstOrDefault(abc =>
+                    abc.assignedClass == classData);
+            
+            if (CommonUtils.IsNull(foundType))
             {
+                Debug.Log("Class Type Doesn't Exist in LIST", this);
                 return default;
             }
-
+            
+            var foundAbility =
+                foundType.abilitiesOfElementClass.FirstOrDefault(a => a.abilityGUID == _abilitySearchGUID);
+            
+            if (CommonUtils.IsNull(foundAbility))
+            {
+                Debug.Log("Ability Doesn't Exist in LIST", this);
+                return default;
+            }
+            
             return foundAbility;
+            
         }
 
         public Ability GetAbility(string _ElementSearchGUID, string _classSearchGUID, string _abilitySearchGUID)
@@ -126,13 +136,7 @@ namespace Runtime.GameControllers
             var foundClass = foundType.abilitiesOfClassType.FirstOrDefault(abc => abc.assignedClass == _class);
             return Enumerable.ToList(foundClass.abilitiesOfElementClass);
         }
-
-        public Ability GetRandomAbility()
-        {
-            var randomInt = Random.Range(0, allAbilities.Count);
-            return allAbilities[randomInt];
-        }
-
+        
         public Ability GetRandomAbilityByTypeAndClass(ElementTyping _type, CharacterClassData _class)
         {
             var foundType = abilitiesByElement.FirstOrDefault(abt => abt.type == _type);

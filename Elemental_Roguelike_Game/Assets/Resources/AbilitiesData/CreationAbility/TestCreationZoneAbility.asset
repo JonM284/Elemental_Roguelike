@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ad22221f257d4cf2895c946d27321398, type: 3}
+  m_Name: TestCreationZoneAbility
+  m_EditorClassIdentifier: 
+  abilityName: 
+  abilityDescription: 
+  abilityGUID: dd4f8509-8ec0-4cba-b002-7f74caaad1d5
+  roundCooldownTimer: 0
+  targetType: 1
+  range: 3
+  abilityAnimationOverride: {fileID: 1573493517487431554, guid: 0482992e3f9407b4586dac22cbbd90f7,
+    type: 3}
+  playVFXAtTransform: 0
+  abilityIcon: {fileID: 0}
+  abilityVFX: {fileID: 0}
+  abilityParameters: []
+  m_creationData: {fileID: 11400000, guid: 2d2d04034f067da4f917d1506ed10ddc, type: 2}

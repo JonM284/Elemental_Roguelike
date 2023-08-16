@@ -46,7 +46,7 @@ namespace Runtime.Abilities
             }
 
             var m_endPos = m_targetTransform != null ? m_targetTransform.position : m_targetPosition;
-            projectileInfo.PlayAt(_ownerUsePos, currentOwner.transform.forward, m_endPos);
+            projectileInfo.PlayAt(currentOwner.transform ,_ownerUsePos, currentOwner.transform.forward, m_endPos);
             base.UseAbility(_ownerUsePos);
         }
 

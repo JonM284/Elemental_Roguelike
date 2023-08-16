@@ -26,7 +26,7 @@ namespace Runtime.Status
                 return;
             }
             
-            affectedCharacter.OnDealDamage(affectedCharacter.transform, damageOverTime, isArmorPiercing, abilityElement, false);
+            affectedCharacter.OnDealDamage(affectedCharacter.transform, damageOverTime, isArmorPiercing, abilityElement, affectedCharacter.transform ,false);
         }
 
         public override void ResetStatusEffect(CharacterBase _character)

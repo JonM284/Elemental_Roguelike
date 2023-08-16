@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 175fd43e1197478fbc5e285c06e588e5, type: 3}
+  m_Name: ShadowStep@Ability
+  m_EditorClassIdentifier: 
+  abilityName: Shadow Step
+  abilityDescription: "Teleport to another location in {0} distance from original
+    location. \nCooldown: (1) Turn(s)"
+  abilityGUID: e68b99eb-c218-4774-ae98-9f3fc4ea2050
+  roundCooldownTimer: 3
+  targetType: 1
+  range: 6
+  abilityAnimationOverride: {fileID: 7742111609445540382, guid: 0482992e3f9407b4586dac22cbbd90f7,
+    type: 3}
+  playVFXAtTransform: 1
+  abilityIcon: {fileID: 0}
+  abilityVFX: {fileID: 5635699352211905788, guid: b428c814c974c5b47b62203eae475887,
+    type: 3}
+  abilityParameters:
+  - {fileID: 11400000, guid: 077d090457af414438419e32bb5e5ffc, type: 2}

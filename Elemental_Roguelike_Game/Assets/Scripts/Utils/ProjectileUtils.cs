@@ -34,9 +34,9 @@ namespace Utils
             projectileController.ReturnToPool(zone);
         }
 
-        public static void PlayAt(this ProjectileInfo projectile, Vector3 position, Vector3 rotation, Vector3 endPos)
+        public static void PlayAt(this ProjectileInfo projectile, Transform user ,Vector3 position, Vector3 rotation, Vector3 endPos)
         {
-            projectileController.GetProjectileAt(projectile, position, rotation, endPos);
+            projectileController.GetProjectileAt(projectile, user ,position, rotation, endPos);
         }
 
         public static void PlayAt(this ZoneInfo zoneInfo, Vector3 _position, Transform _user = null)

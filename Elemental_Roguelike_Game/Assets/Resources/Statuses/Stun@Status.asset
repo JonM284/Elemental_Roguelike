@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Stun@Status
   m_EditorClassIdentifier: 
   statusName: Stun
-  roundCooldownTimer: 2
+  roundCooldownTimer: 1
   chanceToRemove: 20
   abilityElement: {fileID: 0}
   statusStayVFX: {fileID: 8734192179742222016, guid: 96687615fbae43c408b5b589a6c69c21,

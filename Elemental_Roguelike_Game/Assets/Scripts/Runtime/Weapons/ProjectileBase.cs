@@ -37,6 +37,8 @@ namespace Runtime.Weapons
 
         private bool isShot;
 
+        private Transform m_user;
+
         #endregion
 
         #region Accessors
@@ -67,15 +69,33 @@ namespace Runtime.Weapons
             {
                 return;
             }
+
+            if (m_projectileRef.isAffectWhileMoving)
+            {
+                if (hasStatusEffect)
+                {
+                    AffectAllInRange();
+                }
+            }
+
             var progress = (Time.time - m_startTime) / m_endTime;
             if (progress <= 0.99) {
                 m_velocity = Vector3.Lerp(m_startPos, m_endPos, progress);
                 m_velocity.y = m_projectileRef.projectileArcCurve.Evaluate(progress) + m_startPos.y;
             } else {
+                m_velocity = m_endPos;
                 OnEndMovement();
             }
             
             transform.position = m_velocity;
+        }
+
+        private void OnCollisionEnter(Collision collision)
+        {
+            if (collision.collider.CompareTag("Wall"))
+            {
+                OnEndMovement();
+            }
         }
 
         #endregion
@@ -85,12 +105,11 @@ namespace Runtime.Weapons
 
         protected virtual void OnEndMovement()
         {
-            m_velocity = m_endPos;
             onProjectileEnd?.Invoke();
             DoEffect();
         }
 
-        public void Initialize(ProjectileInfo _info, Vector3 _startPos, Vector3 _endPos)
+        public void Initialize(ProjectileInfo _info, Transform user ,Vector3 _startPos, Vector3 _endPos)
         {
             if (m_projectileRef == null)
             {
@@ -102,6 +121,7 @@ namespace Runtime.Weapons
             transform.position = m_startPos;
             m_endPos = _endPos;
             isShot = true;
+            m_user = user;
             onProjectileStart?.Invoke();
         }
 
@@ -116,7 +136,7 @@ namespace Runtime.Weapons
                     var damageable = collider.GetComponent<IDamageable>();
                     if (isDamageDealing)
                     {
-                        damageable?.OnDealDamage(transform, damage, !armorAffecting, type, m_projectileRef.isKnockBack);
+                        damageable?.OnDealDamage(m_user, damage, !armorAffecting, type, transform ,m_projectileRef.isKnockBack);
                     }
                     else if(damage < 0)
                     {
@@ -137,6 +157,38 @@ namespace Runtime.Weapons
             }
             
             DeleteObject();
+        }
+
+        private void AffectAllInRange()
+        {
+            Collider[] colliders = Physics.OverlapSphere(transform.position, m_projectileRef.projectileDamageRadius, m_projectileRef.projectileCollisionLayers);
+
+            if (colliders.Length == 0)
+            {
+                return;
+            }
+
+            foreach (var collider in colliders)
+            {
+                collider.TryGetComponent(out IEffectable effectable);
+
+                if (effectable.IsNull())
+                {
+                    continue;
+                }
+
+                if (effectable.currentStatus != statusEffect)
+                {
+                    effectable.ApplyEffect(statusEffect);
+                }
+                
+            }
+            
+        }
+
+        public void ForceStopProjectile()
+        {
+            OnEndMovement();
         }
 
         private void DeleteObject()

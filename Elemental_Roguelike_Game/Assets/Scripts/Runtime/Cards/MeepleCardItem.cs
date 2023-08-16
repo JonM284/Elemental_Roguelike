@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Data;
 using Data.CharacterData;
+using Data.Elements;
 using Project.Scripts.Utils;
 using Runtime.GameControllers;
 using Runtime.Selection;
@@ -101,20 +102,22 @@ namespace Runtime.Cards
 
             assignedData = meeple;
 
+            var elementType = ElementUtils.GetElementTypeByGUID(meeple.meepleElementTypeRef);
+
             InitializeVisualColors(meeple);
 
             //InitializeAbilityDescription(meeple);
             
-            InitializeTexts(meeple);
+            InitializeTexts(meeple, elementType);
 
             InitializeSliders(meeple);
 
-            InitializeElementIcon(meeple);
+            InitializeElementIcon(elementType);
 
             m_isMoving = true;
         }
 
-        private void InitializeTexts(CharacterStatsData _data)
+        private void InitializeTexts(CharacterStatsData _data, ElementTyping _elementTyping)
         {
             if (_data.IsNull())
             {
@@ -132,9 +135,9 @@ namespace Runtime.Cards
 
             string combinedstring = "";
 
-            _data.abilityReferences.ForEach(s =>
+            _data.abilityReferences.ForEach(abilityGUID =>
             {
-                var ability = AbilityUtils.GetAbilityByGUID(s);
+                var ability = AbilityController.Instance.GetAbility(_elementTyping.elementGUID, _data.classReferenceType, abilityGUID) ;
                 var temp = $"{ability.abilityName}: {ability.abilityDescription}\r\n";
                 combinedstring += temp;
             });
@@ -162,9 +165,9 @@ namespace Runtime.Cards
             tacklingSliderImage.fillAmount = _data.damageScore / 100f;
         }
 
-        private void InitializeElementIcon(CharacterStatsData _data)
+        private void InitializeElementIcon(ElementTyping _elementTyping)
         {
-            var _icon = ElementUtils.GetElementTypeByGUID(_data.meepleElementTypeRef).elementSprite;
+            var _icon = _elementTyping.elementSprite;
             if (_icon.IsNull())
             {
                 return;
@@ -187,41 +190,6 @@ namespace Runtime.Cards
             meshRenderer.materials[0].SetColor(DarkColor, _type.meepleColors[1]);
             
             //meshRenderer.materials[0] = m_clonedMaterial;
-        }
-
-        private void InitializeAbilityDescription(CharacterStatsData _data)
-        {
-            if (_data.abilityReferences.Count == 0)
-            {
-                return;
-            }
-
-            _data.abilityReferences.ForEach(s =>
-            {
-                var ability = AbilityUtils.GetAbilityByGUID(s);
-                if (!ability.IsNull())
-                {
-                    GameObject descriptionGO = null;
-                    if (m_cachedDescriptionItems.Count > 0)
-                    {
-                        descriptionGO = m_cachedDescriptionItems.FirstOrDefault().gameObject;
-                        m_cachedDescriptionItems.RemoveAt(0);
-                    }
-
-                    if (descriptionGO.IsNull())
-                    {
-                        descriptionGO = abilityDescriptionPrefab.Clone(abilityDescriptionParent);
-                    }
-                    
-                    descriptionGO.TryGetComponent(out CardAbilityDescriptionItem item);
-                    if (item)
-                    {
-                        item.InitializeItem(ability.abilityIcon, ability.abilityParameters);
-                        m_activeDescriptionItems.Add(item);
-                    }
-                }
-            });
-
         }
 
         public void AssignDisplayMeeple(GameObject _meepleObj)

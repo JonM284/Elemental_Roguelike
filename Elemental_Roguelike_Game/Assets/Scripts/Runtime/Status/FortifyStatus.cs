@@ -29,6 +29,7 @@ namespace Runtime.Status
                 return;
             }
             
+            _character.characterMovement.SetKnockbackable(false);
             _character.characterLifeManager.SetDamageIntakeModifier(fortifyDamageAmount);
         }
 
@@ -39,6 +40,7 @@ namespace Runtime.Status
                 return;
             }
             
+            _character.characterMovement.SetKnockbackable(true);
             _character.characterLifeManager.SetDamageIntakeModifier(m_normalAmount);
         }
         

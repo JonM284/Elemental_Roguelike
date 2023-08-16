@@ -279,16 +279,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 84a3a0d2e3db488f9e7fd094aa66f527, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  allAbilities:
-  - {fileID: 11400000, guid: 52047ebd3020b114cb162a4a6540ef69, type: 2}
-  - {fileID: 11400000, guid: 7a5a716447f59704085359a9966f8e34, type: 2}
-  - {fileID: 11400000, guid: 70ca74885c596064c8307efc7c8f13ba, type: 2}
-  - {fileID: 11400000, guid: 7526ce1770d98fc4393baaf33315a4dc, type: 2}
-  - {fileID: 11400000, guid: d9993ef56166a964eaac910560bacc93, type: 2}
-  - {fileID: 11400000, guid: 529dfdf48e8e1b34ba5ba64a38bfa1ac, type: 2}
-  - {fileID: 11400000, guid: b0fe0a8bb1df9c3429c95bc235541af7, type: 2}
-  - {fileID: 11400000, guid: 0c099645600808b418ad5ce7b2cf8f17, type: 2}
-  - {fileID: 11400000, guid: 0ff704b1770cc5c428abefee050071e9, type: 2}
   abilitiesByElement:
   - type: {fileID: 11400000, guid: c9878cd57e22d2f4294bb226cbe069b6, type: 2}
     abilitiesOfClassType:
@@ -307,23 +297,28 @@ MonoBehaviour:
       abilitiesOfElementClass:
       - {fileID: 11400000, guid: 0c099645600808b418ad5ce7b2cf8f17, type: 2}
       - {fileID: 11400000, guid: 0ff704b1770cc5c428abefee050071e9, type: 2}
+      - {fileID: 11400000, guid: 4262189551cd168409f13f194e5d0042, type: 2}
     - assignedClass: {fileID: 11400000, guid: c187bfa56bf1fa8458a541f355280f7f, type: 2}
       abilitiesOfElementClass:
-      - {fileID: 11400000, guid: 7526ce1770d98fc4393baaf33315a4dc, type: 2}
+      - {fileID: 11400000, guid: 4cf14b6fc5e9aa04188faf719beb5a20, type: 2}
+      - {fileID: 11400000, guid: edd988c57e5c7c7419168f0a1e67e1df, type: 2}
     - assignedClass: {fileID: 11400000, guid: b4466eb0195bc9f4596847e268136c87, type: 2}
       abilitiesOfElementClass:
-      - {fileID: 11400000, guid: 7526ce1770d98fc4393baaf33315a4dc, type: 2}
+      - {fileID: 11400000, guid: 8eb6d8574d0b5bc408f0555c82e04651, type: 2}
   - type: {fileID: 11400000, guid: dff32d43cdb15e64d9f95e5f1c9a2574, type: 2}
     abilitiesOfClassType:
     - assignedClass: {fileID: 11400000, guid: 2c9f419d2dfa1b84489eb60e15d61b2e, type: 2}
       abilitiesOfElementClass:
       - {fileID: 11400000, guid: 52047ebd3020b114cb162a4a6540ef69, type: 2}
+      - {fileID: 11400000, guid: db4445f4de46175468fde6d3f9b06d7a, type: 2}
     - assignedClass: {fileID: 11400000, guid: c187bfa56bf1fa8458a541f355280f7f, type: 2}
       abilitiesOfElementClass:
-      - {fileID: 11400000, guid: 7526ce1770d98fc4393baaf33315a4dc, type: 2}
+      - {fileID: 11400000, guid: 1938334232adec34ba1425d88e6f3aa4, type: 2}
+      - {fileID: 11400000, guid: d22bd8e7062e618429e3e0e566ad4250, type: 2}
+      - {fileID: 11400000, guid: 299a02ebe42eee3458bb82c0fbef1acc, type: 2}
     - assignedClass: {fileID: 11400000, guid: b4466eb0195bc9f4596847e268136c87, type: 2}
       abilitiesOfElementClass:
-      - {fileID: 11400000, guid: 7526ce1770d98fc4393baaf33315a4dc, type: 2}
+      - {fileID: 11400000, guid: 640bc4cf90b9abb42ac4b22c82a48b42, type: 2}
   - type: {fileID: 11400000, guid: b5ba9f007020f914f9c8d519cccd8f04, type: 2}
     abilitiesOfClassType:
     - assignedClass: {fileID: 11400000, guid: 2c9f419d2dfa1b84489eb60e15d61b2e, type: 2}
@@ -351,10 +346,11 @@ MonoBehaviour:
     abilitiesOfClassType:
     - assignedClass: {fileID: 11400000, guid: 2c9f419d2dfa1b84489eb60e15d61b2e, type: 2}
       abilitiesOfElementClass:
-      - {fileID: 11400000, guid: 7526ce1770d98fc4393baaf33315a4dc, type: 2}
+      - {fileID: 11400000, guid: fb4d57f79e3b3f34eac6b8bdbceb5a09, type: 2}
+      - {fileID: 11400000, guid: 2b7f44457c1005c4fb51b431c7b3358c, type: 2}
     - assignedClass: {fileID: 11400000, guid: c187bfa56bf1fa8458a541f355280f7f, type: 2}
       abilitiesOfElementClass:
-      - {fileID: 11400000, guid: 7526ce1770d98fc4393baaf33315a4dc, type: 2}
+      - {fileID: 11400000, guid: 406ae078be401a346ae5a5407f522b14, type: 2}
     - assignedClass: {fileID: 11400000, guid: b4466eb0195bc9f4596847e268136c87, type: 2}
       abilitiesOfElementClass:
       - {fileID: 11400000, guid: 7526ce1770d98fc4393baaf33315a4dc, type: 2}
@@ -362,10 +358,11 @@ MonoBehaviour:
     abilitiesOfClassType:
     - assignedClass: {fileID: 11400000, guid: 2c9f419d2dfa1b84489eb60e15d61b2e, type: 2}
       abilitiesOfElementClass:
-      - {fileID: 11400000, guid: 70ca74885c596064c8307efc7c8f13ba, type: 2}
+      - {fileID: 11400000, guid: 14541ebf22a678b438b2e190f8303bcb, type: 2}
     - assignedClass: {fileID: 11400000, guid: c187bfa56bf1fa8458a541f355280f7f, type: 2}
       abilitiesOfElementClass:
-      - {fileID: 11400000, guid: 70ca74885c596064c8307efc7c8f13ba, type: 2}
+      - {fileID: 11400000, guid: e54cea3dba5edb74d9d1488de8d4229a, type: 2}
+      - {fileID: 11400000, guid: b6433cfdac941da4e85f1d30e5ec9405, type: 2}
     - assignedClass: {fileID: 11400000, guid: b4466eb0195bc9f4596847e268136c87, type: 2}
       abilitiesOfElementClass:
       - {fileID: 11400000, guid: 70ca74885c596064c8307efc7c8f13ba, type: 2}
@@ -379,8 +376,75 @@ MonoBehaviour:
       - {fileID: 11400000, guid: 7526ce1770d98fc4393baaf33315a4dc, type: 2}
     - assignedClass: {fileID: 11400000, guid: b4466eb0195bc9f4596847e268136c87, type: 2}
       abilitiesOfElementClass:
-      - {fileID: 11400000, guid: 7526ce1770d98fc4393baaf33315a4dc, type: 2}
+      - {fileID: 11400000, guid: 78f909bd5d753014990f9d2dac2c5af5, type: 2}
   - type: {fileID: 11400000, guid: 3007beed4b27d8b458961ac106f278d9, type: 2}
+    abilitiesOfClassType:
+    - assignedClass: {fileID: 11400000, guid: 2c9f419d2dfa1b84489eb60e15d61b2e, type: 2}
+      abilitiesOfElementClass:
+      - {fileID: 11400000, guid: 7526ce1770d98fc4393baaf33315a4dc, type: 2}
+    - assignedClass: {fileID: 11400000, guid: c187bfa56bf1fa8458a541f355280f7f, type: 2}
+      abilitiesOfElementClass:
+      - {fileID: 11400000, guid: d9993ef56166a964eaac910560bacc93, type: 2}
+    - assignedClass: {fileID: 11400000, guid: b4466eb0195bc9f4596847e268136c87, type: 2}
+      abilitiesOfElementClass:
+      - {fileID: 11400000, guid: e67ec44203482d44b8edac933df6b091, type: 2}
+      - {fileID: 11400000, guid: fd905f81ccb892f45a9767740f90d56a, type: 2}
+  - type: {fileID: 11400000, guid: 00359a9ca5c002a408bc8ff33dcd8bee, type: 2}
+    abilitiesOfClassType:
+    - assignedClass: {fileID: 11400000, guid: 2c9f419d2dfa1b84489eb60e15d61b2e, type: 2}
+      abilitiesOfElementClass:
+      - {fileID: 11400000, guid: 7526ce1770d98fc4393baaf33315a4dc, type: 2}
+    - assignedClass: {fileID: 11400000, guid: c187bfa56bf1fa8458a541f355280f7f, type: 2}
+      abilitiesOfElementClass:
+      - {fileID: 11400000, guid: d9993ef56166a964eaac910560bacc93, type: 2}
+    - assignedClass: {fileID: 11400000, guid: b4466eb0195bc9f4596847e268136c87, type: 2}
+      abilitiesOfElementClass:
+      - {fileID: 11400000, guid: 7526ce1770d98fc4393baaf33315a4dc, type: 2}
+  - type: {fileID: 11400000, guid: 41dad73ada432f448ace800642921dae, type: 2}
+    abilitiesOfClassType:
+    - assignedClass: {fileID: 11400000, guid: 2c9f419d2dfa1b84489eb60e15d61b2e, type: 2}
+      abilitiesOfElementClass:
+      - {fileID: 11400000, guid: 7526ce1770d98fc4393baaf33315a4dc, type: 2}
+    - assignedClass: {fileID: 11400000, guid: c187bfa56bf1fa8458a541f355280f7f, type: 2}
+      abilitiesOfElementClass:
+      - {fileID: 11400000, guid: d9993ef56166a964eaac910560bacc93, type: 2}
+    - assignedClass: {fileID: 11400000, guid: b4466eb0195bc9f4596847e268136c87, type: 2}
+      abilitiesOfElementClass:
+      - {fileID: 11400000, guid: 7526ce1770d98fc4393baaf33315a4dc, type: 2}
+  - type: {fileID: 11400000, guid: b8dae5a0cdc62604f96986aa9b39cd25, type: 2}
+    abilitiesOfClassType:
+    - assignedClass: {fileID: 11400000, guid: 2c9f419d2dfa1b84489eb60e15d61b2e, type: 2}
+      abilitiesOfElementClass:
+      - {fileID: 11400000, guid: 7526ce1770d98fc4393baaf33315a4dc, type: 2}
+    - assignedClass: {fileID: 11400000, guid: c187bfa56bf1fa8458a541f355280f7f, type: 2}
+      abilitiesOfElementClass:
+      - {fileID: 11400000, guid: d9993ef56166a964eaac910560bacc93, type: 2}
+    - assignedClass: {fileID: 11400000, guid: b4466eb0195bc9f4596847e268136c87, type: 2}
+      abilitiesOfElementClass:
+      - {fileID: 11400000, guid: 7526ce1770d98fc4393baaf33315a4dc, type: 2}
+  - type: {fileID: 11400000, guid: b6a3358631c8026478f44a1bcf5d24f7, type: 2}
+    abilitiesOfClassType:
+    - assignedClass: {fileID: 11400000, guid: 2c9f419d2dfa1b84489eb60e15d61b2e, type: 2}
+      abilitiesOfElementClass:
+      - {fileID: 11400000, guid: 7526ce1770d98fc4393baaf33315a4dc, type: 2}
+    - assignedClass: {fileID: 11400000, guid: c187bfa56bf1fa8458a541f355280f7f, type: 2}
+      abilitiesOfElementClass:
+      - {fileID: 11400000, guid: d9993ef56166a964eaac910560bacc93, type: 2}
+    - assignedClass: {fileID: 11400000, guid: b4466eb0195bc9f4596847e268136c87, type: 2}
+      abilitiesOfElementClass:
+      - {fileID: 11400000, guid: 7526ce1770d98fc4393baaf33315a4dc, type: 2}
+  - type: {fileID: 11400000, guid: be4873efeaac2f84981ab35dae81a76b, type: 2}
+    abilitiesOfClassType:
+    - assignedClass: {fileID: 11400000, guid: 2c9f419d2dfa1b84489eb60e15d61b2e, type: 2}
+      abilitiesOfElementClass:
+      - {fileID: 11400000, guid: 7526ce1770d98fc4393baaf33315a4dc, type: 2}
+    - assignedClass: {fileID: 11400000, guid: c187bfa56bf1fa8458a541f355280f7f, type: 2}
+      abilitiesOfElementClass:
+      - {fileID: 11400000, guid: d9993ef56166a964eaac910560bacc93, type: 2}
+    - assignedClass: {fileID: 11400000, guid: b4466eb0195bc9f4596847e268136c87, type: 2}
+      abilitiesOfElementClass:
+      - {fileID: 11400000, guid: 7526ce1770d98fc4393baaf33315a4dc, type: 2}
+  - type: {fileID: 11400000, guid: 459cc8e0701be4d449844779020391f8, type: 2}
     abilitiesOfClassType:
     - assignedClass: {fileID: 11400000, guid: 2c9f419d2dfa1b84489eb60e15d61b2e, type: 2}
       abilitiesOfElementClass:
@@ -401,7 +465,6 @@ GameObject:
   m_Component:
   - component: {fileID: 615721581}
   - component: {fileID: 615721580}
-  - component: {fileID: 1596352548874271778}
   - component: {fileID: 2925302154685251839}
   m_Layer: 0
   m_Name: SelectionController
@@ -435,21 +498,6 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5a3cfdc28bd147338c6005bad1905dd8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  selectableLayers:
-    serializedVersion: 2
-    m_Bits: 1793
---- !u!114 &1596352548874271778
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 615721579}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7d78aa3c0db24780b5001ac28da8bbf0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   selectableLayers:
@@ -1510,6 +1558,50 @@ MonoBehaviour:
   _target: {fileID: 1062745214}
   m_from: {r: 0, g: 0, b: 0, a: 1}
   m_to: {r: 0, g: 0, b: 0, a: 0}
+--- !u!1 &2125420214555947581
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7131109522137505478}
+  - component: {fileID: 7232869948823543054}
+  m_Layer: 0
+  m_Name: CreationController
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7131109522137505478
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2125420214555947581}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7876103537793370367}
+  m_RootOrder: 18
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7232869948823543054
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2125420214555947581}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 713c5e4fc91943c18234cf8ff4b57732, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &5911347676179293832
 GameObject:
   m_ObjectHideFlags: 0
@@ -1708,6 +1800,7 @@ Transform:
   - {fileID: 1570983832}
   - {fileID: 582511699}
   - {fileID: 312350114}
+  - {fileID: 7131109522137505478}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1742,6 +1835,7 @@ MonoBehaviour:
   - {fileID: 7876103537303073226}
   - {fileID: 582511698}
   - {fileID: 312350115}
+  - {fileID: 7232869948823543054}
 --- !u!1 &7876103538364230318
 GameObject:
   m_ObjectHideFlags: 0

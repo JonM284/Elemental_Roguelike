@@ -130,7 +130,7 @@ namespace Runtime.Weapons
                 PlayWeaponAudio();
                 PlayVFX();
                 //shoot one directly at target
-                projectileInfoByElement.PlayAt(m_originTransform.transform.position, dir, m_endPos);
+                projectileInfoByElement.PlayAt(currentOwner.transform ,m_originTransform.transform.position, dir, m_endPos);
                 
                 for (int i = 0; i < projectileWeaponData.amountOfShots; i++)
                 {
@@ -138,7 +138,7 @@ namespace Runtime.Weapons
                     float spreadY = Random.Range(-1, 1);
                     Vector3 shotSpread = new Vector3(spreadX, spreadY, 0).normalized * projectileWeaponData.coneSize;
                     Vector3 newEndPos = m_endPos + shotSpread;
-                    projectileInfoByElement.PlayAt(m_originTransform.transform.position, dir, newEndPos);
+                    projectileInfoByElement.PlayAt(currentOwner.transform ,m_originTransform.transform.position, dir, newEndPos);
                 }
                 yield break;
             }
@@ -150,7 +150,7 @@ namespace Runtime.Weapons
                 {
                     PlayVFX();
                     PlayWeaponAudio();
-                    projectileInfoByElement.PlayAt(m_originTransform.transform.position, dir, m_endPos);
+                    projectileInfoByElement.PlayAt(currentOwner.transform ,m_originTransform.transform.position, dir, m_endPos);
                     yield return new WaitForSeconds(projectileWeaponData.fireRate);
                 }
                 
@@ -161,7 +161,7 @@ namespace Runtime.Weapons
             {
                 PlayVFX();
                 PlayWeaponAudio();
-                projectileInfoByElement.PlayAt(m_originTransform.transform.position, dir, m_endPos);
+                projectileInfoByElement.PlayAt(currentOwner.transform ,m_originTransform.transform.position, dir, m_endPos);
             }
 
         }

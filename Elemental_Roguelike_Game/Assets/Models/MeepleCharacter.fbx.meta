@@ -593,7 +593,7 @@ ModelImporter:
       curves: []
       events:
       - time: 0.6156584
-        functionName: OnUseAbility
+        functionName: UseAbility
         data: 
         objectReferenceParameter: {instanceID: 0}
         floatParameter: 0

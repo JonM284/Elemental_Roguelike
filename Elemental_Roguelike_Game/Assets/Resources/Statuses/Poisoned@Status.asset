@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   statusName: Poisoned
   roundCooldownTimer: 5
-  chanceToRemove: 10
+  chanceToRemove: 5
   abilityElement: {fileID: 11400000, guid: 95a8ef5f5dc6d1041b926a50980d0665, type: 2}
   statusStayVFX: {fileID: 0}
   statusOneTimeVFX: {fileID: 0}

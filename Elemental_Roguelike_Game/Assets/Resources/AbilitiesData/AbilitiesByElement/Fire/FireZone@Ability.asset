@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 46b8ca1afff04821aa66543c0a198e94, type: 3}
+  m_Name: FireZone@Ability
+  m_EditorClassIdentifier: 
+  abilityName: Fire Zone
+  abilityDescription: Create Fire Circle
+  abilityGUID: fb7358bb-15fd-4b1a-b68b-1dc5d3f31e13
+  roundCooldownTimer: 6
+  targetType: 1
+  range: 4
+  abilityAnimationOverride: {fileID: 6557745755801676397, guid: 0482992e3f9407b4586dac22cbbd90f7,
+    type: 3}
+  playVFXAtTransform: 0
+  abilityIcon: {fileID: 0}
+  abilityVFX: {fileID: 0}
+  abilityParameters:
+  - {fileID: 11400000, guid: 93a632a6a96b32b428b04d561e44a367, type: 2}
+  - {fileID: 11400000, guid: 2eb259194d5e9ea4d8e45c3b81473bb1, type: 2}
+  - {fileID: 11400000, guid: 8b1ddddfd61066143b71ba5f6e943b81, type: 2}
+  projectileInfo: {fileID: 11400000, guid: be7f4c1473d1f48468c4ea2ef3c9a28b, type: 2}

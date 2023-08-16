@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 119061d6194e44d3bba73e8224da309e, type: 3}
+  m_Name: SlipperySkin@Ability
+  m_EditorClassIdentifier: 
+  abilityName: Slippery Skin
+  abilityDescription: Gain 20 to Agility Stat for 1 rounds
+  abilityGUID: 3bc152d2-6f08-4298-902a-8b83b19e2082
+  roundCooldownTimer: 4
+  targetType: 4
+  range: 1
+  abilityAnimationOverride: {fileID: 6330554796396086999, guid: 0482992e3f9407b4586dac22cbbd90f7,
+    type: 3}
+  playVFXAtTransform: 0
+  abilityIcon: {fileID: 0}
+  abilityVFX: {fileID: 0}
+  abilityParameters: []
+  statusEffect: {fileID: 11400000, guid: d3b2df6c4cee3cc42b6f257ed516f14b, type: 2}

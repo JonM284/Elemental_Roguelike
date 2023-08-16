@@ -3042,7 +3042,7 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: 2ac0a13a6ba965e4c9bd57dae6f82939,
         type: 3}
       propertyPath: m_RootOrder
-      value: 51
+      value: 48
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 2ac0a13a6ba965e4c9bd57dae6f82939,
         type: 3}
@@ -6761,7 +6761,7 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: 2ac0a13a6ba965e4c9bd57dae6f82939,
         type: 3}
       propertyPath: m_RootOrder
-      value: 50
+      value: 47
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 2ac0a13a6ba965e4c9bd57dae6f82939,
         type: 3}
@@ -8961,7 +8961,7 @@ Camera:
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 65527
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
@@ -8983,7 +8983,7 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: c10ca68bcd162e343a71285232999e96,
         type: 3}
       propertyPath: m_RootOrder
-      value: 47
+      value: 45
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: c10ca68bcd162e343a71285232999e96,
         type: 3}
@@ -9685,7 +9685,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2051413396}
-  m_RootOrder: 45
+  m_RootOrder: 44
   m_LocalEulerAnglesHint: {x: 30, y: 0, z: -45}
 --- !u!212 &1948570307
 SpriteRenderer:
@@ -10238,8 +10238,8 @@ Transform:
   - {fileID: 902138683}
   - {fileID: 693962258}
   - {fileID: 563005925}
-  - {fileID: 1734340337}
   - {fileID: 1948570306}
+  - {fileID: 1734340337}
   - {fileID: 2101901580}
   - {fileID: 1278312365}
   - {fileID: 673628851}
@@ -10736,7 +10736,7 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: 688b539f0eac07849836a24dd98244c4,
         type: 3}
       propertyPath: m_RootOrder
-      value: 49
+      value: 46
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 688b539f0eac07849836a24dd98244c4,
         type: 3}

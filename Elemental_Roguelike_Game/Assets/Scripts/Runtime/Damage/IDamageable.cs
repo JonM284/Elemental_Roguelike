@@ -9,6 +9,6 @@ namespace Runtime.Damage
 
         public void OnHeal(int _healAmount, bool _isHealArmor);
         
-        public void OnDealDamage(Transform attacker, int _damageAmount, bool _armorPiercing ,ElementTyping _damageElementType, bool _hasKnockback);
+        public void OnDealDamage(Transform attacker, int _damageAmount, bool _armorPiercing ,ElementTyping _damageElementType, Transform knockBackAttacker ,bool _hasKnockback);
     }
 }

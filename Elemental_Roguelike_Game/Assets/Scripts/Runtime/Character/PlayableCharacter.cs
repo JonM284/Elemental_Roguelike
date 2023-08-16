@@ -33,7 +33,7 @@ namespace Runtime.Character
             
             if (m_characterStatsData.abilityReferences.Count > 0)
             {
-                characterAbilityManager.InitializeCharacterAbilityList(m_characterStatsData.abilityReferences);
+                characterAbilityManager.InitializeCharacterAbilityList(m_characterStatsData.abilityReferences, elementType, classType);
 
                 characterAnimations.InitializeAnimations(m_characterStatsData.abilityReferences, m_characterStatsData.classReferenceType ,m_characterStatsData.meepleElementTypeRef);
             }

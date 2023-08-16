@@ -21,6 +21,8 @@ namespace Data
 
         public bool isKnockBack;
 
+        public bool isAffectWhileMoving;
+
         public ElementTyping projectileType;
 
         [Tooltip("Chance to apply status when ability hits")]

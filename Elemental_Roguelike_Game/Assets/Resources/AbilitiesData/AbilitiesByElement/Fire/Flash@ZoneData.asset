@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aff27f30eff04290ba53c3478e2e4229, type: 3}
+  m_Name: Flash@ZoneData
+  m_EditorClassIdentifier: 
+  roundStayAmount: 0
+  zoneStaySeconds: 4
+  zoneDamage: 0
+  zoneRadius: 0.3
+  isArmorAffecting: 0
+  hasKnockback: 0
+  isIgnoreUser: 1
+  zoneCheckLayer:
+    serializedVersion: 2
+    m_Bits: 768
+  elementType: {fileID: 11400000, guid: dff32d43cdb15e64d9f95e5f1c9a2574, type: 2}
+  chanceToApplyStatus: 100
+  statusEffect: {fileID: 11400000, guid: a6ddaedcfcefbfd4e9fdf6ba2bf79bcd, type: 2}
+  zonePrefab:
+    m_AssetGUID: 135824b697c2b5e46bc57899e42561cc
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_EditorAssetChanged: 0

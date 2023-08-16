@@ -100,8 +100,7 @@ namespace Runtime.Character
         private bool m_canPickupBall = true;
 
         private bool m_canUseAbilities = true;
-        private bool canPickUp1;
-
+        
         #endregion
 
         #region Accessors
@@ -191,6 +190,8 @@ namespace Runtime.Character
         public BallBehavior heldBall { get; private set; }
 
         public bool isSetupThrowBall { get; private set; }
+
+        public bool isTargetable { get; private set; } = true;
 
         public bool canPickupBall => m_canPickupBall && !characterMovement.isKnockedBack;
 
@@ -347,7 +348,12 @@ namespace Runtime.Character
                     
                     //if they are running into an enemy character, make them stop at that character and perform melee
                     if (hit.collider.TryGetComponent(out CharacterBase otherCharacter))
-                    { 
+                    {
+                        if (!otherCharacter.isTargetable)
+                        {
+                            continue;
+                        }
+                        
                         if (otherCharacter.side != side && otherCharacter != this)
                         {
                             _adjustedFinalPosition = otherCharacter.transform.position;
@@ -568,11 +574,31 @@ namespace Runtime.Character
             m_characterActionPoints = _isUseable ? 2 : 0;
         }
 
+        public void SetTargetable(bool _isTargetable)
+        {
+            isTargetable = _isTargetable;
+
+            if (!isTargetable)
+            {
+                SetCanPickupBall(isTargetable);
+                
+                if (!heldBall.IsNull())
+                {
+                    ThrowBall(Vector3.zero);
+                }
+            }
+        }
+
+        private void SetCanPickupBall(bool _canPickupBall)
+        {
+            m_canPickupBall = _canPickupBall;
+        }
+
         public void SetCharacterCanUseAbilities(bool _canUse)
         {
             m_canUseAbilities = _canUse;
         }
-
+        
         private void CheckStatus()
         {
             if (appliedStatus == null)
@@ -674,9 +700,9 @@ namespace Runtime.Character
             PlayHealEffect();
         }
 
-        public void OnDealDamage(Transform _attacker, int _damageAmount, bool _armorPiercing ,ElementTyping _damageElementType, bool _hasKnockback)
+        public void OnDealDamage(Transform _attacker, int _damageAmount, bool _armorPiercing ,ElementTyping _damageElementType, Transform _knockbackAttacker ,bool _hasKnockback)
         {
-            characterLifeManager.DealDamage(_damageAmount, _armorPiercing, _damageElementType);
+            characterLifeManager.DealDamage(_attacker, _damageAmount, _armorPiercing, _damageElementType);
             if (_damageAmount > 0)
             {
                 PlayDamageVFX();
@@ -685,7 +711,7 @@ namespace Runtime.Character
             if (_hasKnockback)
             {
                 Debug.Log("Has Knockback");
-                var _direction = transform.position - _attacker.position;
+                var _direction = transform.position - _knockbackAttacker.position;
                 characterMovement.ApplyKnockback(10, _direction.FlattenVector3Y(), 0.5f);
                 if (!heldBall.IsNull())
                 {
@@ -705,6 +731,12 @@ namespace Runtime.Character
         #endregion
 
         #region IEffectable Inherited Methods
+
+        Status.Status IEffectable.currentStatus
+        {
+            get => appliedStatus.status;
+            set => appliedStatus.status = value;
+        }
 
         public void ApplyEffect(Status.Status _newStatus)
         {

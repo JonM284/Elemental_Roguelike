@@ -14,6 +14,12 @@ namespace Runtime.GameControllers
     public class ProjectileController : GameControllerBase
     {
 
+        #region Static
+
+        public static ProjectileController Instance { get; private set; }
+
+        #endregion
+
         #region Private Fields
 
         private Transform m_disabledProjectilePool;
@@ -46,6 +52,12 @@ namespace Runtime.GameControllers
         #endregion
 
         #region Inherited Classes
+
+        public override void Initialize()
+        {
+            Instance = this;
+            base.Initialize();
+        }
 
         public override void Cleanup()
         {
@@ -94,7 +106,7 @@ namespace Runtime.GameControllers
             zone.transform.ResetTransform(disabledZonePool);
         }
         
-        public void GetProjectileAt(ProjectileInfo projectileInfo ,Vector3 startPos, Vector3 startRotation, Vector3 endPos)
+        public void GetProjectileAt(ProjectileInfo projectileInfo, Transform user ,Vector3 startPos, Vector3 startRotation, Vector3 endPos)
         {
             if (projectileInfo == null)
             {
@@ -120,7 +132,7 @@ namespace Runtime.GameControllers
                         if (newProjectile != null)
                         {
                             foundProjectile = newProjectile;
-                            newProjectile.Initialize(projectileInfo, startPos , endPos);
+                            newProjectile.Initialize(projectileInfo, user ,startPos , endPos);
                         }
                     }
                 };
@@ -136,7 +148,7 @@ namespace Runtime.GameControllers
             foundProjectile.transform.position = startPos;
             foundProjectile.transform.forward = startRotation;
             
-            foundProjectile.Initialize(projectileInfo, startPos, endPos);
+            foundProjectile.Initialize(projectileInfo, user ,startPos, endPos);
         }
 
 

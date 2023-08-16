@@ -1,13 +1,8 @@
 using System;
-using System.Linq;
-using Data;
 using Data.Elements;
 using Project.Scripts.Utils;
 using Runtime.Damage;
-using Runtime.Environment;
-using Runtime.GameControllers;
-using Runtime.Gameplay;
-using Runtime.Selection;
+using Runtime.VFX;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -33,6 +28,8 @@ namespace Runtime.Character
         [SerializeField] private GameObject movementRangeIndicator;
 
         [SerializeField] private GameObject movementPositionIndicator;
+
+        [SerializeField] private VFXPlayer knockbackParticles;
         
         #endregion
 
@@ -63,6 +60,8 @@ namespace Runtime.Character
         private bool m_hasPerformedMelee;
 
         private bool m_isKnockedBack;
+
+        private bool m_canKnockback = true;
 
         private float m_knockbackTimer;
 
@@ -305,13 +304,27 @@ namespace Runtime.Character
             }
         }
 
+        public void SetKnockbackable(bool _canKnockback)
+        {
+            m_canKnockback = _canKnockback;
+        }
+
         public void ApplyKnockback(float _knockbackForce, Vector3 _direction, float _duration)
         {
+            if (!m_canKnockback)
+            {
+                return;
+            }
             m_knockbackTimer = _duration;
             m_knockbackDir = _direction;
             m_knockbackForce = _knockbackForce;
             m_isKnockedBack = true;
             m_canMove = true;
+            if (!knockbackParticles.IsNull())
+            {
+                knockbackParticles.transform.forward = -_direction;
+                knockbackParticles.Play();
+            }
         }
 
         private void CheckKnockback()
@@ -328,6 +341,10 @@ namespace Runtime.Character
             {
                 m_isKnockedBack = false;
                 m_canMove = false;
+                if (!knockbackParticles.IsNull())
+                {
+                    knockbackParticles.Stop();
+                }
             }
             
             Vector3 knockbackVelocity = m_knockbackDir.normalized * m_knockbackForce;
@@ -413,7 +430,7 @@ namespace Runtime.Character
                     collider.TryGetComponent(out IDamageable damageable);
                     if (!damageable.IsNull())
                     {
-                        damageable?.OnDealDamage(this.transform, tackleDamage, false, tackleDamageType, true);
+                        damageable?.OnDealDamage(this.transform, tackleDamage, false, tackleDamageType, this.transform ,true);
                     }
                 }
             }

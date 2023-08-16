@@ -159,8 +159,8 @@ namespace Runtime.Weapons
                     var damageable = collider.GetComponent<IDamageable>();
                     if (m_zoneRef.zoneDamage > 0)
                     {
-                        damageable?.OnDealDamage(this.transform, m_zoneRef.zoneDamage, !m_zoneRef.isArmorAffecting,
-                            m_zoneRef.elementType, m_zoneRef.hasKnockback);
+                        damageable?.OnDealDamage(m_user, m_zoneRef.zoneDamage, !m_zoneRef.isArmorAffecting,
+                            m_zoneRef.elementType, transform, m_zoneRef.hasKnockback);
                     }
                     else if(m_zoneRef.zoneDamage < 0)
                     {

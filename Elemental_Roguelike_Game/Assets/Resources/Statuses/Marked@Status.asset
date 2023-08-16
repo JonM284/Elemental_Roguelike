@@ -14,10 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   statusName: Marked
   roundCooldownTimer: 2
-  chanceToRemove: 25
+  chanceToRemove: 15
   abilityElement: {fileID: 0}
   statusStayVFX: {fileID: 0}
-  statusOneTimeVFX: {fileID: 0}
+  statusOneTimeVFX: {fileID: 7789828053725322567, guid: 17f77db024bee824fa960678b789c961,
+    type: 3}
   playVFXOnTrigger: 0
   statusIcon: {fileID: 112749619, guid: cbb7c9f40afd9f4428d7625db200f40d, type: 3}
   statusIconLow: {fileID: -1340026606, guid: cbb7c9f40afd9f4428d7625db200f40d, type: 3}
+  damageModAmount: 1.5

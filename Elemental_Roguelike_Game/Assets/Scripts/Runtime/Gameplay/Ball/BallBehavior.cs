@@ -253,6 +253,11 @@ namespace Runtime.Gameplay
             rb.velocity = Vector3.zero;
         }
 
+        public void ReduceForce(int _reductionAmount)
+        {
+            m_currentBallForce -= _reductionAmount;
+        }
+
         public void ResetBall()
         {
             ForceStopBall();

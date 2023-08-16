@@ -29,6 +29,18 @@ MonoBehaviour:
     m_Address: Tremor@Zone
     m_ReadOnly: 0
     m_SerializedLabels: []
+  - m_GUID: 5081d4e8c0fdacd4689feb84024bf496
+    m_Address: FireZone@Zone
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 135824b697c2b5e46bc57899e42561cc
+    m_Address: Flash@Zone
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 11b82e026e656f34bbf4f20f7315c71e
+    m_Address: AcidPool@Zone
+    m_ReadOnly: 0
+    m_SerializedLabels: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: c51bc8bdb2bb6e5479c05b7cf9bc0f75, type: 2}
   m_SchemaSet:

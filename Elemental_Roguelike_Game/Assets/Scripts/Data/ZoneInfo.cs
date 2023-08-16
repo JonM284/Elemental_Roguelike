@@ -27,7 +27,7 @@ namespace Data
         public LayerMask zoneCheckLayer;
 
         public ElementTyping elementType;
-
+        
         [Tooltip("Chance to apply status when ability hits")]
         [Range(0,100)]
         public int chanceToApplyStatus;

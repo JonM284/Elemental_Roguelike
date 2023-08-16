@@ -22,12 +22,7 @@ namespace Utils
         #endregion
 
         #region Class Implementation
-        
-        public static Ability GetRandomAbility()
-        {
-            return abilityController.GetRandomAbility();
-        }
-        
+
         public static Ability GetRandomAbilityByType(ElementTyping _type, CharacterClassData _class)
         {
             if (_type == null)
@@ -58,16 +53,6 @@ namespace Utils
             return abilityController.GetRandomAbilityByTypeAndClass(guid, classGUID);
         }
 
-        public static Ability GetAbilityByGUID(string _guid)
-        {
-            if (_guid == string.Empty)
-            {
-                return default;
-            }
-
-            return abilityController.GetAbilityByGUID(_guid);
-        }
-        
         public static Ability GetRandomAbilityByType(ElementTyping _type, CharacterClassData _class ,Ability _excludingAbility)
         {
             if (_type == null || _excludingAbility == null)

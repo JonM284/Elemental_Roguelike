@@ -51,7 +51,7 @@ namespace Runtime.Weapons
                 foreach (var collider in colliders)
                 {
                     var damageable = collider.GetComponent<IDamageable>();
-                    damageable?.OnDealDamage(this.transform, meleeWeaponData.meleeDamage, meleeWeaponData.armorPiercing, weaponElementType, meleeWeaponData.hasKnockback);
+                    damageable?.OnDealDamage(this.transform, meleeWeaponData.meleeDamage, meleeWeaponData.armorPiercing, weaponElementType, this.transform, meleeWeaponData.hasKnockback);
                 }
             }
 

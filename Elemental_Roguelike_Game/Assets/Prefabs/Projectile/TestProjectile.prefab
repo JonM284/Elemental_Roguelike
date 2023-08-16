@@ -28,7 +28,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3928134225442665920}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -16.716202, y: 0, z: 4.279264}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0.25, y: 0.25, z: 0.25}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -116,4 +116,3 @@ MonoBehaviour:
   onProjectileEnd:
     m_PersistentCalls:
       m_Calls: []
-  m_info: {fileID: 11400000, guid: 36b789e983e06834db3782e1a25599ec, type: 2}
