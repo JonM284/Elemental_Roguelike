@@ -33,6 +33,14 @@ MonoBehaviour:
     m_Address: FireWall@Creation
     m_ReadOnly: 0
     m_SerializedLabels: []
+  - m_GUID: 975752e410a72684faa8ee2bf7c0649c
+    m_Address: RootTrap@Prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: efba4f92dbd60be45a4a13ac6fc74622
+    m_Address: MeleeTurretCreation@Prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: c51bc8bdb2bb6e5479c05b7cf9bc0f75, type: 2}
   m_SchemaSet:

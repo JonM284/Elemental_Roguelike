@@ -37,7 +37,7 @@ namespace Runtime.Weapons
 
         private bool isShot;
 
-        private Transform m_user;
+        protected Transform m_user;
 
         #endregion
 

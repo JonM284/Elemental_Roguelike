@@ -249,8 +249,8 @@ ParticleSystem:
     startSize:
       serializedVersion: 2
       minMaxState: 3
-      scalar: 1.3
-      minScalar: 1
+      scalar: 0.8
+      minScalar: 0.5
       maxCurve:
         serializedVersion: 2
         m_Curve:
@@ -676,7 +676,7 @@ ParticleSystem:
     sphericalDirectionAmount: 0
     randomPositionAmount: 0
     radius:
-      value: 2
+      value: 1
       mode: 0
       spread: 0
       speed:
@@ -4983,7 +4983,7 @@ ParticleSystem:
     startSize:
       serializedVersion: 2
       minMaxState: 3
-      scalar: 1.6
+      scalar: 1
       minScalar: 0.5
       maxCurve:
         serializedVersion: 2
@@ -5410,7 +5410,7 @@ ParticleSystem:
     sphericalDirectionAmount: 0
     randomPositionAmount: 0
     radius:
-      value: 1.5
+      value: 1
       mode: 0
       spread: 0
       speed:
@@ -9677,10 +9677,10 @@ SphereCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8358084241812798985}
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.5
+  m_Radius: 1
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &8358084241812798991
 MonoBehaviour:
@@ -9993,7 +9993,7 @@ ParticleSystem:
     startSize:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 4
+      scalar: 2.1
       minScalar: 1
       maxCurve:
         serializedVersion: 2
@@ -14525,6 +14525,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 8358084241812798989}
     m_Modifications:
+    - target: {fileID: 108990, guid: e370423ba226169489d92631df31f5af, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 112986, guid: e370423ba226169489d92631df31f5af, type: 3}
       propertyPath: m_Name
       value: AcidBoiling
@@ -14572,6 +14576,14 @@ PrefabInstance:
     - target: {fileID: 454368, guid: e370423ba226169489d92631df31f5af, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 19821276, guid: e370423ba226169489d92631df31f5af, type: 3}
+      propertyPath: ShapeModule.radius.value
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 19876518, guid: e370423ba226169489d92631df31f5af, type: 3}
+      propertyPath: ShapeModule.radius.value
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 19964442, guid: e370423ba226169489d92631df31f5af, type: 3}
       propertyPath: m_RenderMode

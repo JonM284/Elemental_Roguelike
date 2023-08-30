@@ -1,6 +1,7 @@
 ﻿using System;
 using Data.Elements;
 using Project.Scripts.Utils;
+using Runtime.GameControllers;
 using UnityEngine;
 
 namespace Runtime.Character
@@ -108,12 +109,18 @@ namespace Runtime.Character
             }
             
             OnCharacterHealthChange?.Invoke();
+            
+            JuiceController.Instance.CreateDamageText(_fixedIncomingDamage, healthBarPos.position);
 
-            _attacker.TryGetComponent(out CharacterBase _character);
-            if (_character)
+            if (!_attacker.IsNull())
             {
-                CharacterTookDamage?.Invoke(_character, _fixedIncomingDamage);
+                _attacker.TryGetComponent(out CharacterBase _character);
+                if (_character)
+                {
+                    CharacterTookDamage?.Invoke(_character, _fixedIncomingDamage);
+                }    
             }
+            
 
 
             Debug.Log($"<color=orange> {this.gameObject.name} took damage Amount:{_incomingDamage} /// hp now: {currentHealthPoints} shields: {currentShieldPoints} </color>");
@@ -178,6 +185,12 @@ namespace Runtime.Character
 
         }
 
+
+        [ContextMenu("InstaKill")]
+        public void InstaKill()
+        {
+            DealDamage(null, 1000, false,null);
+        }
         #endregion
 
 

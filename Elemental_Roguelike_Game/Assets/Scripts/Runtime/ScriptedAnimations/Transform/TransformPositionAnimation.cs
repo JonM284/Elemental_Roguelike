@@ -12,10 +12,30 @@ namespace Runtime.ScriptedAnimations.Transform
         [SerializeField] private Vector3 m_to;
         
         #endregion
+
+        #region Private Fields
+
+        private Vector3 m_currentFrom;
+
+        private Vector3 m_currentTo;
+
+        #endregion
         
         public override void SetAnimationValue(float progress)
         {
-            target.localPosition = Vector3.LerpUnclamped(m_from, m_to, progress);
+            target.localPosition = Vector3.LerpUnclamped(m_currentFrom, m_currentTo, progress);
+        }
+        
+        public override void SetInitialValues()
+        {
+            m_currentFrom = m_from;
+            m_currentTo = m_to;
+        }
+
+        protected override void ChangePingPongVariables()
+        {
+            m_currentTo = m_from;
+            m_currentFrom = m_to;
         }
     }
 }

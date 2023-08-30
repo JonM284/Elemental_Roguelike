@@ -39,7 +39,7 @@ namespace Utils
             projectileController.GetProjectileAt(projectile, user ,position, rotation, endPos);
         }
 
-        public static void PlayAt(this ZoneInfo zoneInfo, Vector3 _position, Transform _user = null)
+        public static void PlayAt(this ZoneInfo zoneInfo, Vector3 _position, Transform _user)
         {
             projectileController.GetZoneAt(zoneInfo, _position, _user);
         }

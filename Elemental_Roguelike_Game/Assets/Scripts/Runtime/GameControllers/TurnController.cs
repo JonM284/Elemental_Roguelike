@@ -6,10 +6,8 @@ using Data;
 using Data.CharacterData;
 using Data.EnemyData;
 using Data.Sides;
-using Project.Scripts.Data;
 using Project.Scripts.Utils;
 using Runtime.Character;
-using Runtime.Character.AI;
 using Runtime.Gameplay;
 using Runtime.Managers;
 using UnityEngine;
@@ -45,7 +43,10 @@ namespace Runtime.GameControllers
 
         public static event Action OnBattleStarted;
 
+        public static event Action OnResetField;
+        
         public static event Action<CharacterSide> OnChangeActiveTeam;
+        
         public static event Action<CharacterBase> OnChangeActiveCharacter;
 
         public static event Action OnBattleEnded;
@@ -92,6 +93,10 @@ namespace Runtime.GameControllers
 
         private Vector3 ballInitialPosition;
 
+        private List<CharacterBase> m_cachedHiddenCharacters = new List<CharacterBase>();
+
+        private bool m_hasScoredPoint;
+
         #endregion
 
         #region Accessors
@@ -109,7 +114,7 @@ namespace Runtime.GameControllers
         public Transform knockedOutPlayerPool =>
             CommonUtils.GetRequiredComponent(ref m_knockedPlayerPool, ()=>
             {
-                var poolTransform = TransformUtils.CreatePool(this.transform, false);
+                var poolTransform = TransformUtils.CreatePool(null , false);
                 return poolTransform;
             });
         
@@ -122,7 +127,6 @@ namespace Runtime.GameControllers
             MeepleController.PlayerMeepleCreated += MeepleControllerOnPlayerMeepleCreated;
             CharacterBase.CharacterSelected += OnCharacterSelected;
             CharacterBase.CharacterEndedTurn += OnCharacterEndedTurn;
-            CharacterLifeManager.OnCharacterDied += OnCharacterDied;
             EnemyController.EnemyCreated += OnEnemyCreated;
         }
 
@@ -131,7 +135,6 @@ namespace Runtime.GameControllers
             MeepleController.PlayerMeepleCreated -= MeepleControllerOnPlayerMeepleCreated;
             CharacterBase.CharacterSelected -= OnCharacterSelected;
             CharacterBase.CharacterEndedTurn -= OnCharacterEndedTurn;
-            CharacterLifeManager.OnCharacterDied -= OnCharacterDied;
             EnemyController.EnemyCreated -= OnEnemyCreated;
         }
 
@@ -458,7 +461,9 @@ namespace Runtime.GameControllers
                 }
             });
             
-            CameraUtils.SetCameraTrackPosCentral(_characterTransforms, true);
+            CameraUtils.SetCameraTrackPosCentral(_characterTransforms, false);
+            
+            JuiceController.Instance.ChangeSide(isPlayerSide);
             
             OnChangeActiveTeam?.Invoke(battlersBySides[activeTeamID].teamSide);
         }
@@ -482,10 +487,14 @@ namespace Runtime.GameControllers
                 {
                     continue;
                 }
+
+                if (m_hasScoredPoint)
+                {
+                    yield break;
+                }
                 
                 activeCharacter = currentMember;
                 
-                Debug.Log("Invoking");
                 OnChangeActiveCharacter?.Invoke(currentMember);
 
                 CameraUtils.SetCameraTrackPos(activeCharacter.transform, true);
@@ -509,9 +518,22 @@ namespace Runtime.GameControllers
         public IEnumerator C_ResetField(CharacterSide _characterSide)
         {
             
+            OnResetField?.Invoke();
+            
             UIUtils.FadeBlack(true);
             
             yield return new WaitForSeconds(1f);
+
+            //Release all hidden characters
+            if (m_cachedHiddenCharacters.Count > 0)
+            {
+                m_cachedHiddenCharacters.ForEach(cb =>
+                {
+                    cb.transform.parent = null;
+                    cb.characterLifeManager.FullReviveCharacter();
+                });
+                m_cachedHiddenCharacters.Clear();
+            }
             
             if (!ball.IsNull())
             {
@@ -527,19 +549,14 @@ namespace Runtime.GameControllers
                 for (int i = 0; i < playerTeam.teamMembers.Count; i++)
                 {
                     var currentMember = playerTeam.teamMembers[i];
+
+                    currentMember.ResetCharacter(playerManager.startPositions[i].position);
                     
-                    if (!currentMember.isAlive)
-                    {
-                        currentMember.OnRevive();
-                    }
-                    
-                    currentMember.ResetCharacter();
-                    
-                    currentMember.transform.position = playerManager.startPositions[i].position;
-                    currentMember.transform.forward = playerManager.startPositions[i].forward;
+                    Vector3 _rotateTarget =
+                        new Vector3(ball.transform.position.x, 0, currentMember.transform.position.z);
+                    currentMember.characterRotation.SetRotationTarget(_rotateTarget);
                 }
             }
-            
             
             var enemyTeam = battlersBySides.FirstOrDefault(bbs => bbs.teamSide == enemySide);
             var enemyManager = GetTeamManager(enemySide);
@@ -549,16 +566,12 @@ namespace Runtime.GameControllers
                 for (int i = 0; i < enemyTeam.teamMembers.Count; i++)
                 { 
                     var currentMember = enemyTeam.teamMembers[i];
-                    
-                    if (!currentMember.isAlive)
-                    {
-                        currentMember.OnRevive();
-                    }
-                    
-                    currentMember.ResetCharacter();
-                    
-                    currentMember.transform.position = enemyManager.startPositions[i].transform.position;
-                    currentMember.transform.forward = enemyManager.startPositions[i].forward;
+
+                    currentMember.ResetCharacter(enemyManager.startPositions[i].transform.position);
+
+                    Vector3 _rotateTarget =
+                        new Vector3(ball.transform.position.x, 0, currentMember.transform.position.z);
+                    currentMember.characterRotation.SetRotationTarget(_rotateTarget);
                 }
             }
             
@@ -569,15 +582,15 @@ namespace Runtime.GameControllers
                 //ToDo: Reset them somehow, probably just have them do their own reset
             }
 
-            //Set other team active
-            for (int i = 0; i < battlersBySides[m_currentTeamTurnIndex].teamMembers.Count; i++)
-            {
-                var activeTeamBattler = battlersBySides[m_currentTeamTurnIndex].teamMembers[i];
-                activeTeamBattler.EndTurn();
-            }
+            CameraUtils.SetCameraTrackPos(Vector3.zero, false);
+            CameraUtils.SetCameraZoom(0.7f);
+
+            m_hasScoredPoint = false;
 
             yield return new WaitForSeconds(0.5f);
             
+            battlersBySides[activeTeamID].teamMembers.FindAll(cb => cb.isAlive).ForEach(cb => cb.EndTurn());
+
             UIUtils.FadeBlack(false);
 
         }
@@ -587,22 +600,27 @@ namespace Runtime.GameControllers
             StartCoroutine(C_ResetField(_characterSide));
         }
 
-        private void OnCharacterDied(CharacterBase _character)
+        public void HideCharacter(CharacterBase _character)
         {
-           
-        }
+            if (_character.IsNull())
+            {
+                return;
+            }
 
-        private IEnumerator C_CharacterDeath(CharacterBase _deadCharacter)
-        {
-            
-            yield return new WaitForSeconds(1f);
-            
+            m_cachedHiddenCharacters.Add(_character);
+            _character.transform.parent = knockedOutPlayerPool;
         }
 
         private void RemoveAllCharacters()
         {
             m_allBattlers.Clear();
             battlersBySides.ForEach(bbs => bbs.teamMembers.Clear());
+        }
+
+        public void HaltAllPlayers()
+        {
+            battlersBySides.ForEach(bbs => bbs.teamMembers.ForEach(cb => cb.SetCharacterUsable(false)));
+            m_hasScoredPoint = true;
         }
 
         private void RunEnded()

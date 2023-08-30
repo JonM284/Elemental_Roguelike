@@ -910,8 +910,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 151705577}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.014, z: 0}
-  m_LocalScale: {x: 0.25, y: 0.1, z: 0.25}
+  m_LocalPosition: {x: 0, y: 0.032, z: 0}
+  m_LocalScale: {x: 0.25, y: 0.043458, z: 0.25}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1113709589}
@@ -6279,7 +6279,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   moveSpeed: 5
-  radius: 8
+  radius: 6
   padding: 1.07
 --- !u!4 &1179918960
 Transform:
@@ -8958,10 +8958,10 @@ Camera:
   field of view: 60
   orthographic: 0
   orthographic size: 5
-  m_Depth: -1
+  m_Depth: 10
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 65527
+    m_Bits: 458743
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
@@ -10913,21 +10913,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 3117269724983072585, guid: 4e98a61ba661e6d4b815d23faff16b5d,
-        type: 3}
-      propertyPath: m_CastShadows
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3117269724983072585, guid: 4e98a61ba661e6d4b815d23faff16b5d,
-        type: 3}
-      propertyPath: m_ReceiveShadows
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7324821644116867041, guid: 4e98a61ba661e6d4b815d23faff16b5d,
-        type: 3}
-      propertyPath: m_Radius
-      value: 0.11
-      objectReference: {fileID: 0}
     - target: {fileID: 7324821644116867042, guid: 4e98a61ba661e6d4b815d23faff16b5d,
         type: 3}
       propertyPath: m_Name

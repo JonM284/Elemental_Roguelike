@@ -36,10 +36,6 @@ namespace Runtime.Character
             return m_characterStatsBase.baseSpeed;
         }
 
-        protected override void CharacterDeath()
-        {
-            this.CacheEnemy();
-        }
 
         protected override void OnBattleEnded()
         {

@@ -1,9 +1,10 @@
-﻿using System.Collections;
-using Microsoft.Unity.VisualStudio.Editor;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using Runtime.ScriptedAnimations;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Events;
+using UnityEngine.UI;
 
 namespace Runtime.UI.DataReceivers
 {
@@ -11,29 +12,62 @@ namespace Runtime.UI.DataReceivers
     {
         
         #region Serialized Field
-
-        [SerializeField] private float textMaxTime = 1.5f;
-
-
+        
         [Space(20)]
         [Header("Reaction Related UI")]
         [SerializeField] private GameObject reactionUI;
 
+        [SerializeField] private float textMaxTime = 1.5f;
+        
         [SerializeField] private TMP_Text leftCharacterText;
 
         [SerializeField] private TMP_Text rightCharacterText;
 
-        [SerializeField] private UnityEngine.Camera leftCharCam;
+        [SerializeField] private List<RectTransform> sideParents = new List<RectTransform>();
 
-        [SerializeField] private UnityEngine.Camera rightCharCam;
-        
+        [SerializeField] private Color resetColor;
+
+        [SerializeField] private List<Image> fades = new List<Image>();
+
         [SerializeField] private AnimationListPlayer reactionStartedAnimation;
+
+        [SerializeField] private AnimationListPlayer leftWinAnimation;
+
+        [SerializeField] private AnimationListPlayer rightWinAnimation;
 
         [SerializeField] private AnimationListPlayer reactionEndedAnimation;
 
         [Space]
-        [Header("Goal Related UI")]
-        [SerializeField] private AnimationListPlayer goalScoredAnimation;
+        [Header("Goal Related UI")] 
+        [SerializeField] private GameObject goalScoreUI;
+        
+        [SerializeField] private AnimationListPlayer goalScoredPlayerAnimation;
+        
+        [SerializeField] private AnimationListPlayer goalScoredEnemyAnimation;
+
+        [Space]
+        [Header("Change Sides UI")] 
+        
+        [SerializeField] private GameObject turnUI;
+        
+        [SerializeField] private AnimationListPlayer playerSideInAnimation;
+        
+        [SerializeField] private AnimationListPlayer enemySideInAnimation;
+        
+        [Space] 
+        [Header("Death Related UI")] 
+        
+        [SerializeField] private GameObject deathUI;
+        
+        [SerializeField] private Image deathImage;
+
+        [SerializeField] private Color deathResetColor;
+        
+        [SerializeField] private AnimationListPlayer deathStartedAnimation;
+        
+        [SerializeField] private AnimationListPlayer deathEndedAnimation;
+        
+        [SerializeField] private AnimationListPlayer deathMiddleAnimation;
 
         #endregion
 
@@ -55,20 +89,20 @@ namespace Runtime.UI.DataReceivers
 
         #region Class Implementation
         
-        public IEnumerator C_ReactionEvent(int _endValueL, int _endValueR)
+        public IEnumerator C_ReactionEvent(int _endValueL, int _endValueR, Action callback)
         {
             //ToDo: setup characters, numbers, and stats used
             reactionUI.SetActive(true);
-            
-            //ToDo: Move this to look at the characters that are performing the action
-            //rightCharCam.gameObject.SetActive(true);
-            //leftCharCam.gameObject.SetActive(true);
 
             m_currentValueL = 0;
             m_currentValueR = 0;
             
             leftCharacterText.text = "0";
             rightCharacterText.text = "0";
+
+            sideParents.ForEach(rt => rt.localScale = Vector3.one);
+            
+            ResetFades();
 
             m_endValueL = _endValueL;
             m_endValueR = _endValueR;
@@ -88,7 +122,9 @@ namespace Runtime.UI.DataReceivers
             yield return new WaitUntil(() => !reactionEndedAnimation.isPlaying);
             
             reactionUI.SetActive(false);
-
+            
+            callback?.Invoke();
+            
             m_valuesChanged = false;
             
             Debug.Log("Reaction animation ended");
@@ -98,6 +134,7 @@ namespace Runtime.UI.DataReceivers
         public IEnumerator C_CountUpToValue()
         {
             var percentage = 0f;
+            Debug.Log($"<color=orange>Started Count Up</color>");
             while (percentage < 0.98f)
             {
                 percentage = (Time.time - m_startTime) / textMaxTime;
@@ -114,8 +151,85 @@ namespace Runtime.UI.DataReceivers
                 }
 
                 yield return null;
-
             }
+            
+            if (m_currentValueL > m_currentValueR)
+            {
+                leftWinAnimation.Play();
+            }else if (m_currentValueR > m_currentValueL)
+            {
+                rightWinAnimation.Play();
+            }
+            Debug.Log($"<color=orange>Started Loss Win Animation</color>");
+            yield return new WaitUntil(() => !leftWinAnimation.isPlaying && !rightWinAnimation.isPlaying);
+
+        }
+
+        public IEnumerator C_DeathUIEvent()
+        {
+            deathUI.SetActive(true);
+            
+            deathImage.color = deathResetColor;
+            
+            ResetFades();
+            
+            deathStartedAnimation.Play();
+
+            yield return new WaitUntil(() => !deathStartedAnimation.isPlaying);
+            
+            deathMiddleAnimation.Play();
+
+            yield return new WaitUntil(() => !deathMiddleAnimation.isPlaying);
+            
+            deathEndedAnimation.Play();
+
+            yield return new WaitUntil(() => !deathEndedAnimation.isPlaying);
+            
+            deathUI.SetActive(false);
+        }
+
+        public IEnumerator C_ChangeSide(bool _isPlayerTurn)
+        {
+            turnUI.SetActive(true);
+
+            if (_isPlayerTurn)
+            {
+                playerSideInAnimation.Play();
+            }
+            else
+            {
+                enemySideInAnimation.Play();
+            }
+
+            yield return new WaitUntil(() => !playerSideInAnimation.isPlaying && !enemySideInAnimation.isPlaying);
+
+
+            turnUI.SetActive(false);
+        }
+
+        public IEnumerator C_ScoreGoal(bool _isPlayerGoal)
+        {
+            
+            goalScoreUI.SetActive(true);
+            
+            if (_isPlayerGoal)
+            {
+                goalScoredEnemyAnimation.Play();
+            }
+            else
+            {
+                goalScoredPlayerAnimation.Play();   
+            }
+            
+            yield return new WaitUntil(() => !goalScoredPlayerAnimation.isPlaying && !goalScoredEnemyAnimation.isPlaying);
+            
+            goalScoreUI.SetActive(false);
+            
+        }
+
+        private void ResetFades()
+        {
+            fades.ForEach(im => im.color = resetColor);
         }
 
         #endregion

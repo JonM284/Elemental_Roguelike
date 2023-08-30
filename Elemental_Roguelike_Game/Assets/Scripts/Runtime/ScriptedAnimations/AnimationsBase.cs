@@ -17,6 +17,8 @@ namespace Runtime.ScriptedAnimations
 
         [SerializeField] protected float m_maxTime = 1;
 
+        [SerializeField] protected bool m_isContinuous;
+        
         [SerializeField] protected AnimationCurve m_curve = AnimationCurve.Linear(0,0,1,1);
 
         #endregion
@@ -28,8 +30,12 @@ namespace Runtime.ScriptedAnimations
         private float m_progress;
         
         private bool m_isPlaying;
+        
+        private bool m_isPingPong;
 
-        private bool m_isPlayingReverse;
+        private bool m_isLoop;
+
+        private int amountOfTimesPerformed;
         
         #endregion
 
@@ -38,7 +44,6 @@ namespace Runtime.ScriptedAnimations
         public bool isPlaying => m_isPlaying;
 
         #endregion
-
 
         #region Class Implementation
 
@@ -50,12 +55,33 @@ namespace Runtime.ScriptedAnimations
                                     
                 SetProgress(m_progress);
                 
-                if (m_isPlaying && m_progress >= 1)
+                if (m_isPlaying && m_progress >= 0.98)
                 {
-                    OnAnimationFinished?.Invoke();
-                    SetProgress(1);
-                    m_isPlaying = false;
-                    yield break;
+                    if (!m_isPingPong && !m_isLoop)
+                    {
+                        OnAnimationFinished?.Invoke();
+                        SetProgress(1);
+                        m_isPlaying = false;
+                        yield break;
+                    } 
+                    
+                    if (m_isPingPong)
+                    {
+                        m_startTime = Time.time;
+                        ChangePingPongVariables();
+                        if (!m_isContinuous)
+                        {
+                            m_isPingPong = false;
+                        }
+                    }else if (m_isLoop)
+                    {
+                        m_startTime = Time.time;
+                        if (!m_isContinuous)
+                        {
+                            m_isLoop = false;
+                        }
+                    }
+
                 }
                 yield return null;
             }
@@ -65,7 +91,34 @@ namespace Runtime.ScriptedAnimations
         {
             m_startTime = Time.time;
             m_isPlaying = true;
+            SetInitialValues();
             StartCoroutine(ApplyAnimation());
+        }
+
+        public void PlayPingPong()
+        {
+            m_startTime = Time.time;
+            m_isPlaying = true;
+            m_isPingPong = true;
+            SetInitialValues();
+            StartCoroutine(ApplyAnimation());
+        }
+
+        public void PlayLoop()
+        {
+            m_startTime = Time.time;
+            m_isPlaying = true;
+            m_isLoop = true;
+            SetInitialValues();
+            StartCoroutine(ApplyAnimation());
+        }
+
+        public void Stop()
+        {
+            m_isPlaying = false;
+            m_isLoop = false;
+            m_isPingPong = false;
+            StopCoroutine(ApplyAnimation());
         }
 
         public virtual void SetProgress(float progress)
@@ -73,7 +126,11 @@ namespace Runtime.ScriptedAnimations
             SetAnimationValue(m_curve.Evaluate(progress));
         }
 
+        public abstract void SetInitialValues();
+        
         public abstract void SetAnimationValue(float progress);
+
+        protected abstract void ChangePingPongVariables();
 
         #endregion
 

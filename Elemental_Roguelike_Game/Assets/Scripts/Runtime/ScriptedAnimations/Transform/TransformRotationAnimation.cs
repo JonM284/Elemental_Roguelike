@@ -6,20 +6,36 @@ namespace Runtime.ScriptedAnimations.Transform
     {
 
         #region Serialized Fields
-
-        #region Serialized Fields
-
+        
         [SerializeField] private Vector3 m_from;
         
         [SerializeField] private Vector3 m_to;
         
         #endregion
-        
+
+        #region Private Fields
+
+        private Vector3 m_currentFrom;
+
+        private Vector3 m_currentTo;
+
         #endregion
         
         public override void SetAnimationValue(float progress)
         {
-            target.localRotation = Quaternion.Euler(Vector3.LerpUnclamped(m_from, m_to, progress));
+            target.localRotation = Quaternion.Euler(Vector3.LerpUnclamped(m_currentFrom, m_currentTo, progress));
+        }
+        
+        public override void SetInitialValues()
+        {
+            m_currentFrom = m_from;
+            m_currentTo = m_to;
+        }
+
+        protected override void ChangePingPongVariables()
+        {
+            m_currentTo = m_from;
+            m_currentFrom = m_to;
         }
     }
 }

@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using Data.Sides;
 using Project.Scripts.Utils;
 using Runtime.Character;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace Runtime.Gameplay
 {
@@ -33,9 +35,16 @@ namespace Runtime.Gameplay
 
         [SerializeField] private float groundIndOffset;
 
+        [SerializeField] private Transform m_ballCamPoint;
+
+        [Space(15)] [Header("Visuals")] [SerializeField]
+        private List<GameObject> visualGOs = new List<GameObject>();
+
         #endregion
 
         #region Private Fields
+
+        private List<CharacterBase> m_lastContactedCharacters = new List<CharacterBase>();
 
         private Collider m_ballCollider;
 
@@ -77,9 +86,13 @@ namespace Runtime.Gameplay
 
         public CharacterBase currentOwner { get; private set; }
 
+        public Transform ballCamPoint => m_ballCamPoint;
+
         public bool isThrown { get; private set; }
 
         public float thrownBallStat { get; private set; }
+
+        public List<CharacterBase> lastContactedCharacters => m_lastContactedCharacters;
 
         public CharacterSide lastThrownCharacterSide { get; private set; }
 
@@ -128,6 +141,7 @@ namespace Runtime.Gameplay
             isControlled = false;
             controlledCharacterSide = null;
             followerTransform = null;
+
             currentOwner = null;
             m_ballThrownDirection = direction;
             m_currentBallForce = throwForce;
@@ -238,6 +252,12 @@ namespace Runtime.Gameplay
         {
             followerTransform = _follower.transform;
             currentOwner = _ownerCharacter;
+            
+            if (m_lastContactedCharacters.Count >= 5)
+            {
+                m_lastContactedCharacters.RemoveAt(0);
+            }
+            m_lastContactedCharacters.Add(currentOwner);
         }
 
 
@@ -261,9 +281,20 @@ namespace Runtime.Gameplay
         public void ResetBall()
         {
             ForceStopBall();
+            if (isControlled)
+            {
+                currentOwner.DetachBall();
+                m_lastContactedCharacters.Clear();
+                currentOwner = null;
+            }
             isControlled = false;
             followerTransform = null;
             transform.position = m_ballStartPosition;
+        }
+
+        public void SetVisualsToLayer(LayerMask _layer)
+        {
+            visualGOs.ForEach(g => g.layer = _layer);
         }
 
 

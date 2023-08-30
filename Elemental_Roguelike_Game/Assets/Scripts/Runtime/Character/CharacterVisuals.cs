@@ -26,6 +26,8 @@ namespace Runtime.Character
 
         [SerializeField] private Color highlightColor;
 
+        [SerializeField] private bool m_isMeeple;
+
         [SerializeField] private List<SkinnedMeshRenderer> meepleSkinnedMeshRenderers = new List<SkinnedMeshRenderer>();
 
         [SerializeField] private List<MeshRenderer> meepleMeshRenderers = new List<MeshRenderer>();
@@ -119,16 +121,28 @@ namespace Runtime.Character
             m_highlightMaterial.SetColor(OutlineColor, m_originalHighlightColor);
         }
 
-        
+        public void SetNewLayer(LayerMask _preferredLayer)
+        {
+            if (m_isMeeple)
+            {
+                meepleSkinnedMeshRenderers.ForEach(smr => smr.gameObject.layer = _preferredLayer);
+                meepleMeshRenderers.ForEach(mr => mr.gameObject.layer = _preferredLayer);     
+            }
+            else
+            {
+                characterVisual.layer = _preferredLayer;
+            }
+            
+            Debug.Log($"Changed to {_preferredLayer.value}");
+        }
+
+
         //ToDo: Implement Feature
         /// <summary>
         /// This will randomize facial colors, images, clothing, etc
         /// </summary>
         public void RandomizeMeepleDecorations()
         {
-            
-            
-            
             
         }
 

@@ -43,7 +43,7 @@ namespace Runtime.Character.AI
 
         public bool isMeepleEnemy => characterBase is EnemyCharacterMeeple;
 
-        public float enemyMovementRange => characterBase.characterMovement.battleMoveDistance;
+        public float enemyMovementRange => characterBase.characterMovement.battleMoveDistance - 0.03f;
         
         protected Transform playerTeamGoal => TurnController.Instance.GetPlayerManager().goalPosition;
 
@@ -89,7 +89,7 @@ namespace Runtime.Character.AI
 
             StartCoroutine(C_Turn());
         }
-
+        
         private IEnumerator C_Turn()
         {
             
@@ -106,40 +106,48 @@ namespace Runtime.Character.AI
             
             while (characterBase.characterActionPoints > 0)
             {
-
+                //ToDo: Create actions depending on whether or not the character can act
+                if (characterBase.characterMovement.isRooted)
+                {
+                    characterBase.EndTurn();
+                }
+                
                 if (!TurnController.Instance.ball.isControlled)
                 {
+
                     if (IsBallInMovementRange())
                     {
-                        yield return C_GoForBall();
+                        yield return StartCoroutine(C_GoForBall());
                     }
                     else
                     {
                         //ToDo: Change with Different Action
-                        yield return C_GoForBall();
+                        yield return StartCoroutine(C_GoForBall());
                     }
                 }
                 else
                 {
+                    
                     //This character has the ball
                     if (!characterBase.heldBall.IsNull())
                     {
+
                         if (IsInShootRange())
                         {
-                            yield return C_ShootBall();
+                            yield return StartCoroutine(C_ShootBall());
                         }
                         else
                         {
-                            yield return C_PositionToScore();
+                            yield return StartCoroutine(C_PositionToScore());
                         }
                     }
                     else
                     {
-                        yield return C_PerformEnemyAction();
+                        yield return StartCoroutine(C_PerformEnemyAction());
                     }
                 }
 
-                yield return null;
+                yield return new WaitForSeconds(0.5f);
             }
             
             characterBase.EndTurn();
@@ -164,7 +172,12 @@ namespace Runtime.Character.AI
             
             characterBase.CheckAllAction(adjustedPos, false);
 
-            yield return new WaitUntil(() => characterBase.characterMovement.isUsingMoveAction == false);
+            yield return new WaitUntil(() => !characterBase.characterMovement.isUsingMoveAction);
+
+            if (characterBase.characterMovement.isInReaction)
+            {
+                yield return new WaitUntil(() => !characterBase.characterMovement.isInReaction);
+            }
 
         }
 
@@ -188,6 +201,12 @@ namespace Runtime.Character.AI
             
             
             yield return new WaitUntil(() => characterBase.characterMovement.isUsingMoveAction == false);
+            
+            if (characterBase.characterMovement.isInReaction)
+            {
+                yield return new WaitUntil(() => characterBase.characterMovement.isInReaction == false);
+            }
+
         }
         
 
@@ -199,11 +218,12 @@ namespace Runtime.Character.AI
 
             yield return new WaitUntil(() => characterBase.isSetupThrowBall == false);
 
+            yield return new WaitForSeconds(0.2f);
+
         }
 
         protected IEnumerator C_PositionToScore()
         {
-            
             characterBase.characterMovement.SetCharacterMovable(true, null, characterBase.UseActionPoint);
 
             var direction = playerTeamGoal.position - transform.position;
@@ -221,6 +241,12 @@ namespace Runtime.Character.AI
             characterBase.CheckAllAction(adjustedPos, false); 
             
             yield return new WaitUntil(() => characterBase.characterMovement.isUsingMoveAction == false);
+
+            if (characterBase.characterMovement.isInReaction)
+            {
+                yield return new WaitUntil(() => characterBase.characterMovement.isInReaction == false);
+            }
+
         }
         
         

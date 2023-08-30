@@ -45,14 +45,26 @@ namespace Runtime.Weapons
         
         #region UnityEvents
 
+        private void OnDrawGizmos()
+        {
+            Gizmos.color = Color.green;
+            Gizmos.DrawWireSphere(transform.position, m_zoneRef.zoneRadius);
+            Gizmos.color = Color.red;
+            Gizmos.DrawWireSphere(transform.position, m_zoneRef.zoneRadius * 9);
+        }
+
         private void OnEnable()
         {
             TurnController.OnChangeActiveTeam += OnChangeActiveTeam;
+            TurnController.OnRunEnded += EndZone;
+            TurnController.OnResetField += EndZone;
         }
 
         private void OnDisable()
         {
             TurnController.OnChangeActiveTeam -= OnChangeActiveTeam;
+            TurnController.OnRunEnded -= EndZone;
+            TurnController.OnResetField -= EndZone;
         }
 
         private void OnTriggerEnter(Collider other)
@@ -93,8 +105,6 @@ namespace Runtime.Weapons
             {
                 m_user = _user;
             }
-
-            transform.localScale = Vector3.one * (m_zoneRef.zoneRadius * 2);
             
             m_side = TurnController.Instance.GetActiveTeamSide();
 
@@ -141,7 +151,7 @@ namespace Runtime.Weapons
 
         private void DoEffect()
         {
-            Collider[] colliders = Physics.OverlapSphere(transform.position, m_zoneRef.zoneRadius * 9, m_zoneRef.zoneCheckLayer);
+            Collider[] colliders = Physics.OverlapSphere(transform.position, m_zoneRef.zoneRadius, m_zoneRef.zoneCheckLayer);
             
             if (colliders.Length > 0)
             {

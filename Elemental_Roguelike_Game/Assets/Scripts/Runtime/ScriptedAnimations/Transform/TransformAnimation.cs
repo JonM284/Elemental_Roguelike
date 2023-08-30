@@ -15,5 +15,11 @@ namespace Runtime.ScriptedAnimations.Transform
         protected UnityEngine.Transform target => _target;
 
         #endregion
+
+        #region AnimationBase Inherited Methods
+
+        
+
+        #endregion
     }
 }

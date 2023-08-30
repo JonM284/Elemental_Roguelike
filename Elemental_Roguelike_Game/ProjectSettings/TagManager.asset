@@ -29,8 +29,8 @@ TagManager:
   - GoalArea
   - CHARACTER_FX
   - HIDDEN
-  - 
-  - 
+  - DISPLAY
+  - DISPLAY_ENEMY
   - 
   - 
   - 

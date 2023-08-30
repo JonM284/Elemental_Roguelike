@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using Data.CharacterData;
 using Data.Elements;
 using Data.Sides;
@@ -10,6 +11,7 @@ using Runtime.Selection;
 using Runtime.Status;
 using Runtime.VFX;
 using UnityEngine;
+using UnityEngine.Events;
 using Utils;
 using Random = UnityEngine.Random;
 using TransformUtils = Project.Scripts.Utils.TransformUtils;
@@ -51,6 +53,8 @@ namespace Runtime.Character
 
         public static event Action<CharacterBase> StatusRemoved;
 
+        public static event Action<CharacterBase> CharacterReset; 
+
         #endregion
 
         #region Serialized Fields
@@ -73,6 +77,12 @@ namespace Runtime.Character
  
         #endregion
 
+        #region Unity Public Events
+
+        public UnityEvent onHighlight;
+
+        #endregion
+        
         #region Protected Fields
 
         protected int m_characterActionPoints = 2;
@@ -92,6 +102,8 @@ namespace Runtime.Character
         protected CharacterWeaponManager m_characterWeaponManager;
         
         protected CharacterClassManager m_characterClassManager;
+
+        protected CharacterRotation m_characterRotation;
         
         private Transform m_statusEffectTransform;
         
@@ -100,7 +112,13 @@ namespace Runtime.Character
         private bool m_canPickupBall = true;
 
         private bool m_canUseAbilities = true;
+
+        private CharacterSide damageableSide1;
         
+        private LayerMask displayLayerVal => LayerMask.NameToLayer("DISPLAY");
+
+        private LayerMask charLayerVal => LayerMask.NameToLayer("CHARACTER");
+
         #endregion
 
         #region Accessors
@@ -162,6 +180,14 @@ namespace Runtime.Character
                 var ccm = GetComponent<CharacterClassManager>();
                 return ccm;
             });
+        
+            public CharacterRotation characterRotation => CommonUtils.GetRequiredComponent(
+            ref m_characterRotation,
+            () =>
+            {
+                var cr = GetComponent<CharacterRotation>();
+                return cr;
+            });
 
         public bool isAlive => characterLifeManager.isAlive;
 
@@ -204,7 +230,6 @@ namespace Runtime.Character
         private void OnEnable()
         {
             TurnController.OnBattleEnded += OnBattleEnded;
-            CharacterLifeManager.OnCharacterDied += OnCharacterDied;
             NavigationSelectable.SelectPosition += CheckAllAction;
             TurnController.OnChangeActiveCharacter += OnChangeActiveCharacter;
             TurnController.OnChangeActiveTeam += OnChangeTeam;
@@ -214,10 +239,10 @@ namespace Runtime.Character
         private void OnDisable()
         {
             TurnController.OnBattleEnded -= OnBattleEnded;
-            CharacterLifeManager.OnCharacterDied -= OnCharacterDied;
             NavigationSelectable.SelectPosition -= CheckAllAction;
             TurnController.OnChangeActiveCharacter -= OnChangeActiveCharacter;
             TurnController.OnChangeActiveTeam -= OnChangeTeam;
+            CharacterSelected -= OnOtherCharacterSelected;
         }
 
         #endregion
@@ -227,8 +252,7 @@ namespace Runtime.Character
         public abstract void InitializeCharacter();
         
         public abstract float GetBaseSpeed();
-        
-        protected abstract void CharacterDeath();
+
 
         protected abstract void OnBattleEnded();
         
@@ -237,6 +261,11 @@ namespace Runtime.Character
             
         }
 
+        protected void CharacterDeath()
+        {
+            TurnController.Instance.HideCharacter(this);
+        }
+        
         private void OnOtherCharacterSelected(CharacterBase _character)
         {
             if (_character == null)
@@ -253,6 +282,13 @@ namespace Runtime.Character
             {
                 if (characterMovement.isUsingMoveAction)
                 {
+                    var _dir = _character.transform.position.FlattenVector3Y() - transform.position.FlattenVector3Y();
+                    
+                    if (_dir.magnitude > characterMovement.battleMoveDistance)
+                    {
+                        return;
+                    }
+                    
                     characterMovement.MoveCharacter(_character.transform.position, true);
                     return;
                 }   
@@ -261,7 +297,6 @@ namespace Runtime.Character
             if (_character.side == this.side && isSetupThrowBall)
             {
                 ThrowBall(_character.transform.position - transform.position);
-                return;
             }
             
 
@@ -269,28 +304,42 @@ namespace Runtime.Character
 
         protected virtual void OnBeginWalkAction()
         {
-            UseActionPoint();
+            
         }
 
         protected virtual void OnWalkActionEnded()
         {
+            UseActionPoint();
             if (characterActionPoints == 0)
             {
                 EndTurn();
             }
+            else
+            {
+                SetCharacterWalkAction();
+            }
         }
 
-        protected void OnCharacterDied(CharacterBase _character)
+        public void CheckDeath()
         {
-            if (_character != this)
+            if (isAlive)
             {
                 return;
             }
+            
+            StartCoroutine(DoDeathAction());
+        }
 
+        private IEnumerator DoDeathAction()
+        {
+            characterVisuals.SetNewLayer(displayLayerVal);
+            yield return StartCoroutine(JuiceController.Instance.C_DoDeathAnimation(this.characterClassManager.reactionCameraPoint));
+            
             CheckActiveAfterDeath();
             PlayDeathEffect();
             RemoveEffect();
             CharacterDeath();
+            characterVisuals.SetNewLayer(charLayerVal);
             Debug.Log($"<color=red>{this} has died</color>");
         }
 
@@ -337,6 +386,12 @@ namespace Runtime.Character
             {
                 //check if this will be a tackle
                 var dirToTarget = _selectedPosition - transform.position;
+
+                if (dirToTarget.magnitude > characterMovement.battleMoveDistance)
+                {
+                    Debug.Log($"<color=orange>12</color>");
+                    return;
+                }
                 
                 RaycastHit[] hits = Physics.CapsuleCastAll(transform.position, _selectedPosition, 0.2f, dirToTarget, dirToTarget.magnitude);
 
@@ -433,6 +488,16 @@ namespace Runtime.Character
                 characterAbilityManager.CancelAbilityUse();
                 return;
             }
+            
+            if (isSetupThrowBall)
+            {
+                isSetupThrowBall = false;
+            }
+
+            if (characterMovement.isUsingMoveAction)
+            {
+                characterMovement.SetCharacterMovable(false);
+            }
 
             characterAbilityManager.UseAssignedAbility(_abilityIndex, OnAbilityUsed);
         }
@@ -475,6 +540,16 @@ namespace Runtime.Character
                 return;
             }
 
+            if (isSetupThrowBall)
+            {
+                isSetupThrowBall = false;
+            }
+
+            if (characterAbilityManager.isUsingAbilityAction)
+            {
+                characterAbilityManager.CancelAbilityUse();
+            }
+
             OnWalkActionPressed();
             characterMovement.SetCharacterMovable(true, OnBeginWalkAction, OnWalkActionEnded);
         }
@@ -492,6 +567,20 @@ namespace Runtime.Character
             }
 
             isSetupThrowBall = !isSetupThrowBall;
+
+            if (isSetupThrowBall)
+            {
+                if (characterMovement.isUsingMoveAction)
+                {
+                    characterMovement.SetCharacterMovable(false);
+                }
+
+                if (characterAbilityManager.isUsingAbilityAction)
+                {
+                    characterAbilityManager.CancelAbilityUse();
+                }
+            }
+            
             if (!ballThrowIndicator.IsNull())
             {
                 ballThrowIndicator.gameObject.SetActive(isSetupThrowBall);
@@ -503,6 +592,7 @@ namespace Runtime.Character
             m_characterActionPoints--;
             Debug.Log($"<color=yellow>Used action point // Action Points:{characterActionPoints} left</color>");
         }
+        
         
         protected void OnChangeActiveCharacter(CharacterBase _characterBase)
         {
@@ -530,12 +620,13 @@ namespace Runtime.Character
         {
             if (!isAlive)
             {
-                OnCharacterDied(this);
+                //ToDo: do death things
                 return;
             }
 
             isActiveCharacter = true;
             activePlayerIndicator.SetActive(isActiveCharacter);
+            SetCharacterWalkAction();
         }
 
         private void OnChangeTeam(CharacterSide _side)
@@ -553,7 +644,7 @@ namespace Runtime.Character
         {
             if (!isAlive)
             {
-                OnCharacterDied(this);
+                //ToDo: do death things
                 return;
             }
             
@@ -563,10 +654,12 @@ namespace Runtime.Character
             CheckStatus();
         }
 
-        public void ResetCharacter()
+        public void ResetCharacter(Vector3 _position)
         {
             characterLifeManager.FullReviveCharacter();
             RemoveEffect();
+            characterMovement.ResetCharacter(_position);
+            CharacterReset?.Invoke(this);
         }
 
         public void SetCharacterUsable(bool _isUseable)
@@ -676,6 +769,7 @@ namespace Runtime.Character
         public void OnHover()
         {
             CharacterHovered?.Invoke(true,this);
+            onHighlight?.Invoke();
             characterVisuals.SetHighlight();
         }
 
@@ -807,6 +901,12 @@ namespace Runtime.Character
             heldBall.SetFollowTransform(characterWeaponManager.handPos, this);
             ballOwnerIndicator.SetActive(true);
             BallPickedUp?.Invoke(this);
+        }
+
+        public void DetachBall()
+        {
+            heldBall = null;
+            ballOwnerIndicator.SetActive(false);
         }
 
         public void KnockBallAway(Transform attacker)

@@ -32,7 +32,7 @@ namespace Runtime.Status
                 return;
             }
 
-            if (_Attacker.appliedStatus.status != this)
+            if (_Attacker.appliedStatus.IsNull() || _Attacker.appliedStatus.status.IsNull() ||  _Attacker.appliedStatus.status != this)
             {
                 return;
             }

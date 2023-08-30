@@ -17,7 +17,7 @@ namespace Runtime.Weapons
 
         public void CreateZone()
         {
-            zoneToCreate.PlayAt(transform.position);
+            zoneToCreate.PlayAt(transform.position, transform);
         }
         
 

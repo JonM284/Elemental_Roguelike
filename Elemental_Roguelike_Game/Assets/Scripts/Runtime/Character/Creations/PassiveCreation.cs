@@ -19,13 +19,6 @@ namespace Runtime.Character.Creations
             //nothing
         }
 
-        public override void DestroyCreation()
-        {
-            localDestroyVFX.PlayAt(transform.position, Quaternion.identity);
-            //Cache Creation
-            CreationController.Instance.ReturnToPool(this);
-        }
-
         #endregion
         
     }

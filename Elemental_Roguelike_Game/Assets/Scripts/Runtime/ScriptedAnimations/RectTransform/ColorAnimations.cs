@@ -19,6 +19,10 @@ namespace Runtime.ScriptedAnimations.RectTransform
 
         private Graphic m_targetImage;
 
+        private Color m_currentFrom;
+
+        private Color m_currentTo;
+
         #endregion
 
         #region Accessors
@@ -33,9 +37,19 @@ namespace Runtime.ScriptedAnimations.RectTransform
         
         public override void SetAnimationValue(float progress)
         {
-            targetImage.color = Color.LerpUnclamped(m_from, m_to, progress);
+            targetImage.color = Color.LerpUnclamped(m_currentFrom, m_currentTo, progress);
         }
-        
-        
+
+        public override void SetInitialValues()
+        {
+            m_currentFrom = m_from;
+            m_currentTo = m_to;
+        }
+
+        protected override void ChangePingPongVariables()
+        {
+            m_currentTo = m_from;
+            m_currentFrom = m_to;
+        }
     }
 }

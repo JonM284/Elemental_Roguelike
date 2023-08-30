@@ -17,6 +17,8 @@ namespace Runtime.Character
 
         private CharacterWeaponManager m_characterWeaponManager;
 
+        private CharacterBase m_characterBase;
+ 
         private VFXPlayer m_savedPlayer;
 
         #endregion
@@ -49,6 +51,12 @@ namespace Runtime.Character
                 return cwm;
             });
 
+        private CharacterBase characterBase => CommonUtils.GetRequiredComponent(ref m_characterBase, () =>
+        {
+            var cb = GetComponentInParent<CharacterBase>();
+            return cb;
+        });
+
         #endregion
 
 
@@ -68,14 +76,10 @@ namespace Runtime.Character
             characterAnimations.AbilityAnim(characterAbilityManager.GetPreviousActiveAbilityIndex(),false);
         }
 
-        public void OnDeathAnimationEnded()
-        {
-            
-        }
-
         public void OnDamageEnded()
         {
             characterAnimations.DamageAnim(false);
+            characterBase.CheckDeath();
         }
 
         public void OnAttackEnded()

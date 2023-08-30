@@ -18,7 +18,7 @@ namespace Runtime.Weapons
 
         protected override void OnEndMovement()
         {
-            zoneInfo.PlayAt(transform.position.FlattenVector3Y());
+            zoneInfo.PlayAt(transform.position.FlattenVector3Y(), m_user);
             base.OnEndMovement();
         }
 

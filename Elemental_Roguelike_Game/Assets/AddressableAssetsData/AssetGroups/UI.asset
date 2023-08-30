@@ -37,6 +37,10 @@ MonoBehaviour:
     m_Address: JuiceUI
     m_ReadOnly: 0
     m_SerializedLabels: []
+  - m_GUID: a85cf4fc18bb15445a91d0057cd6f8cd
+    m_Address: DamageTextUIItem@Prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: c51bc8bdb2bb6e5479c05b7cf9bc0f75, type: 2}
   m_SchemaSet:

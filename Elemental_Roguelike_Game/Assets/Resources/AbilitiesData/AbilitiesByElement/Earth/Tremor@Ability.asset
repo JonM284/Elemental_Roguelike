@@ -24,4 +24,4 @@ MonoBehaviour:
   abilityIcon: {fileID: 0}
   abilityVFX: {fileID: 0}
   abilityParameters: []
-  m_zoneInfo: {fileID: 11400000, guid: 73dca8e771d377743baf3e23826bb22f, type: 2}
+  m_zoneInfo: {fileID: 11400000, guid: a94edc96d2c212744b17cf2c144d0b41, type: 2}

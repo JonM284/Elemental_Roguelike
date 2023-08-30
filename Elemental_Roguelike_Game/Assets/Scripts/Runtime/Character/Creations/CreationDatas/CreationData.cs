@@ -15,16 +15,19 @@ namespace Runtime.Character.Creations.CreationDatas
         [Tooltip("Can this creation be destroyed?")]
         [SerializeField] private bool isIndestructible;
 
+        [Tooltip("Range of detection and usage of creation")]
+        [SerializeField] private float radius;
+        
+        [Header("Hidden Proximity")]
+        [Tooltip("Is this creation hidden from the other team until walking into discovery range?")]
+        [SerializeField] private bool isHidden;
+
         [Header("Round Timer")]
         [Tooltip("How many rounds does this stay after being created?")]
         [SerializeField] private int roundStayAmount;
         [Tooltip("Does it just stay infinitely?")]
         [SerializeField] private bool isInfiniteTime;
 
-        [Header("Layers")]
-        [Tooltip("This will determine what to perform the action to")]
-        [SerializeField] private LayerMask checkLayers;
-        
         #endregion
 
         #region Public Fields
@@ -38,6 +41,16 @@ namespace Runtime.Character.Creations.CreationDatas
         public int GetHealth()
         {
             return health;
+        }
+
+        public bool GetIsHidden()
+        {
+            return isHidden;
+        }
+
+        public float GetRadius()
+        {
+            return radius;
         }
 
         public int GetRoundStayAmountMax()
@@ -55,9 +68,9 @@ namespace Runtime.Character.Creations.CreationDatas
             return isIndestructible;
         }
 
-        public LayerMask GetLayers()
+        public LayerMask GetHiddenLayer()
         {
-            return checkLayers;
+            return LayerMask.NameToLayer("HIDDEN");
         }
 
         #endregion

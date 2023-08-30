@@ -15,7 +15,7 @@ MonoBehaviour:
   roundStayAmount: 0
   zoneStaySeconds: 4
   zoneDamage: -10
-  zoneRadius: 0.25
+  zoneRadius: 1
   isArmorAffecting: 0
   hasKnockback: 0
   isIgnoreUser: 0

@@ -17,6 +17,7 @@ MonoBehaviour:
   projectileSpeed: 14
   isAffectArmor: 0
   isKnockBack: 0
+  isAffectWhileMoving: 0
   projectileType: {fileID: 11400000, guid: dff32d43cdb15e64d9f95e5f1c9a2574, type: 2}
   chanceToApplyStatus: 0
   statusEffect: {fileID: 0}
@@ -24,7 +25,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 768
   projectilePrefab:
-    m_AssetGUID: 30e2018a2d60d924082e6a3cf540faae
+    m_AssetGUID: 555f583686659f84fa5621734d15059b
     m_SubObjectName: 
     m_SubObjectType: 
     m_EditorAssetChanged: 0

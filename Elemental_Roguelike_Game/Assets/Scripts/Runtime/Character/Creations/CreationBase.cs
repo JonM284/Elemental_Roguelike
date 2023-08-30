@@ -60,11 +60,15 @@ namespace Runtime.Character.Creations
         private void OnEnable()
         {
             TurnController.OnChangeActiveTeam += CheckTurnPass;
+            TurnController.OnRunEnded += DestroyCreation;
+            TurnController.OnResetField += DestroyCreation;
         }
 
         private void OnDisable()
         {
             TurnController.OnChangeActiveTeam -= CheckTurnPass;
+            TurnController.OnRunEnded -= DestroyCreation;
+            TurnController.OnResetField -= DestroyCreation;
         }
 
         #endregion
@@ -84,6 +88,9 @@ namespace Runtime.Character.Creations
             {
                 localSpawnVFX.Play();
             }
+
+            var spawnDirection = -(_user.position.FlattenVector3Y() - transform.position.FlattenVector3Y());
+            transform.forward = spawnDirection;
 
             creationData = _data;
 

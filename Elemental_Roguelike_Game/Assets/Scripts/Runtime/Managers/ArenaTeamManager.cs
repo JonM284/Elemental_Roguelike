@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Data.Sides;
+using Runtime.Character;
 using Runtime.GameControllers;
 using Runtime.Gameplay;
 using Runtime.VFX;
@@ -55,7 +58,7 @@ namespace Runtime.Managers
                 other.TryGetComponent(out BallBehavior ballBehavior);
                 ballBehavior.ForceStopBall();
                 ballBehavior.gameObject.SetActive(false);
-                ScoreGoal();
+                StartCoroutine(C_ScoreGoal(ballBehavior));
             }
         }
 
@@ -64,8 +67,26 @@ namespace Runtime.Managers
 
         #region Class Implementation
 
-        private void ScoreGoal()
+    
+
+        private IEnumerator C_ScoreGoal(BallBehavior _ball)
         {
+            var isPlayersGoal = characterSide == TurnController.Instance.playersSide;
+
+            var lastContactedPlayer = _ball.lastContactedCharacters.LastOrDefault(cb => cb.side != characterSide);
+            lastContactedPlayer.characterClassManager.ChangeToDisplayLayer();
+            
+            CameraUtils.SetCameraZoom(0.3f);
+            CameraUtils.SetCameraTrackPos(lastContactedPlayer.transform, false);
+
+            TurnController.Instance.HaltAllPlayers();
+            
+            var cameraPosition = lastContactedPlayer.characterClassManager.reactionCameraPoint;
+
+            yield return StartCoroutine(JuiceController.Instance.C_ScorePoint(isPlayersGoal, cameraPosition));
+            
+            lastContactedPlayer.characterClassManager.ChangeToNormalLayer();
+
             //goalVFXPlayer.PlayAt(goalPosition.position, Quaternion.identity);
             WinConditionController.Instance.GoalScored(m_characterSide);
             TurnController.Instance.ResetField(m_characterSide);

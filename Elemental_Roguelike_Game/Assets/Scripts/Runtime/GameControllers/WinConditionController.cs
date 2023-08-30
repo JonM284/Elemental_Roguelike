@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections;
-using Data.Sides;
+﻿using Data.Sides;
 using Project.Scripts.Utils;
 using UnityEngine;
 
@@ -70,10 +68,10 @@ namespace Runtime.GameControllers
                 return;
             }
 
-            if (redTeamPoints >= 5)
+            if (redTeamPoints >= pointsToWin)
             {
                 //red win
-            }else if (blueTeamPoints >= 5)
+            }else if (blueTeamPoints >= pointsToWin)
             {
                 //blue win
             }
@@ -96,9 +94,10 @@ namespace Runtime.GameControllers
             if (_side == playerSide)
             {
                 redTeamPoints++;
+                CheckPointThreshold();
                 return;
             }
-
+            CheckPointThreshold();
             blueTeamPoints++;
 
         }

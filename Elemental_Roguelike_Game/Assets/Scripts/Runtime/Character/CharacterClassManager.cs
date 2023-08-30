@@ -29,6 +29,8 @@ namespace Runtime.Character
 
         [SerializeField] private GameObject m_passiveIndicator;
 
+        [SerializeField] private Transform m_reactionCameraPoint;
+
         #endregion
 
         #region Private Fields
@@ -80,6 +82,14 @@ namespace Runtime.Character
         public int currentMaxShootingScore { get; private set; }
         
         public int currentMaxTacklingScore { get; private set; }
+
+        public Transform reactionCameraPoint => m_reactionCameraPoint;
+
+        private LayerMask displayLayerVal => LayerMask.NameToLayer("DISPLAY");
+        
+        private LayerMask displayEnemyLayerVal => LayerMask.NameToLayer("DISPLAY_ENEMY");
+
+        private LayerMask charLayerVal => LayerMask.NameToLayer("CHARACTER");
 
         #endregion
 
@@ -218,23 +228,40 @@ namespace Runtime.Character
             var rollToGrab = GetRandomAgilityStat();
 
             bool isPlayer = characterBase.side == TurnController.Instance.playersSide;
+            
+            var _layer = isPlayer ? displayLayerVal : displayEnemyLayerVal;
+            var oppositeLayer = isPlayer ? displayEnemyLayerVal : displayLayerVal;
+           
+            ChangeToVisualLayer(_layer);
+            ball.SetVisualsToLayer(oppositeLayer);
+
+            var _LCam = isPlayer ? reactionCameraPoint : ball.ballCamPoint;
+            
+            var _RCam = isPlayer ? ball.ballCamPoint : reactionCameraPoint;
 
             int _LValue = isPlayer ? rollToGrab : (int)ball.thrownBallStat;
 
             int _RValue = isPlayer ? (int)ball.thrownBallStat : rollToGrab;
 
-            yield return StartCoroutine(JuiceController.Instance.DoReactionAnimation(_LValue, _RValue));
+            yield return StartCoroutine(JuiceController.Instance.DoReactionAnimation(_LCam, _RCam ,_LValue, _RValue));
 
-            if (ball.thrownBallStat >= rollToGrab)
+            if (ball.thrownBallStat > rollToGrab)
             {
                 //Didn't intercept ball
                 //ToDo: Miss Animation, restart ball regular movement
                 Debug.Log($"<color=orange>BIG MISS ON PASS INTERCEPT /// Ball: {ball.thrownBallStat} // Self: {rollToGrab}</color>", this);
+                
+                ChangeToVisualLayer(charLayerVal);
+                ball.SetVisualsToLayer(charLayerVal);
+                
                 ball.SetBallPause(false);
                 HasPerformedReaction();
                 yield break;
             }
 
+            ChangeToVisualLayer(charLayerVal);
+            ball.SetVisualsToLayer(charLayerVal);
+            
             //Grab ball
             Debug.Log($"<color=orange>HAS HIT PASS INTERCEPT REACTION /// Ball: {ball.thrownBallStat} // Self: {rollToGrab}</color>", this);
             characterBase.characterMovement.SetCharacterMovable(true, null, HasPerformedReaction);
@@ -256,19 +283,33 @@ namespace Runtime.Character
             var enemyAttackRoll = m_inRangeCharacter.characterClassManager.GetRandomDamageStat();
             
             bool isPlayer = characterBase.side == TurnController.Instance.playersSide;
+
+            var _layer = isPlayer ? displayLayerVal : displayEnemyLayerVal;
+            var oppositeLayer = isPlayer ? displayEnemyLayerVal : displayLayerVal;
+            
+            ChangeToVisualLayer(_layer);
+            m_inRangeCharacter.characterClassManager.ChangeToVisualLayer(oppositeLayer);
+
+            var _LCam = isPlayer ? reactionCameraPoint : m_inRangeCharacter.characterClassManager.reactionCameraPoint;
+            
+            var _RCam = isPlayer ? m_inRangeCharacter.characterClassManager.reactionCameraPoint : reactionCameraPoint;
             
             int _LValue = isPlayer ? rollToAttack : enemyAttackRoll;
 
             int _RValue = isPlayer ? enemyAttackRoll : rollToAttack;
 
-            yield return StartCoroutine(JuiceController.Instance.DoReactionAnimation(_LValue, _RValue));
+            yield return StartCoroutine(JuiceController.Instance.DoReactionAnimation(_LCam, _RCam, _LValue, _RValue));
             
             //Missed Attack
-            if (enemyAttackRoll >= rollToAttack)
+            if (enemyAttackRoll > rollToAttack)
             {
                 //ToDo: Miss attack on moving character, trip don't fall?
                 Debug.Log($"<color=orange>BIG MISS ON ATTACK /// Other: {enemyAttackRoll} // Self: {rollToAttack}</color>", this);
                 m_inRangeCharacter.characterMovement.PauseMovement(false);
+
+                ChangeToVisualLayer(charLayerVal);
+                m_inRangeCharacter.characterClassManager.ChangeToVisualLayer(charLayerVal);
+
                 OnMissedReaction();
                 HasPerformedReaction();
                 yield break;
@@ -276,9 +317,10 @@ namespace Runtime.Character
             
             //ToDo: Attack moving character
             Debug.Log("<color=orange>HAS HIT ATTACK REACTION</color>", this);
-
-            m_inRangeCharacter.characterMovement.PauseMovement(true);
             
+            ChangeToVisualLayer(charLayerVal);
+            m_inRangeCharacter.characterClassManager.ChangeToVisualLayer(charLayerVal);
+
             yield return new WaitUntil(() => !m_inRangeCharacter.characterMovement.isMoving);
 
             //Reroll if striker
@@ -296,14 +338,21 @@ namespace Runtime.Character
                     _LValue = isPlayer ? rollToAttack : enemyAgilityRoll;
 
                     _RValue = isPlayer ? enemyAgilityRoll : rollToAttack;
-                
-                    yield return StartCoroutine(JuiceController.Instance.DoReactionAnimation(_LValue, _RValue));
+                    
+                    ChangeToVisualLayer(_layer);
+                    m_inRangeCharacter.characterClassManager.ChangeToVisualLayer(oppositeLayer);
+
+                    yield return StartCoroutine(JuiceController.Instance.DoReactionAnimation(_LCam, _RCam,_LValue, _RValue));
 
                     //Missed On Reroll
-                    if (enemyAgilityRoll >= rollToAttack)
+                    if (enemyAgilityRoll > rollToAttack)
                     {
                         Debug.Log("<color=orange>Striker Rerolled and WON!</color>", this);
                         m_inRangeCharacter.characterMovement.PauseMovement(false);
+                        
+                        ChangeToVisualLayer(charLayerVal);
+                        m_inRangeCharacter.characterClassManager.ChangeToVisualLayer(charLayerVal);
+
                         OnMissedReaction();
                         HasPerformedReaction();
                         yield break;
@@ -311,17 +360,21 @@ namespace Runtime.Character
                 }
                 
             }
+            
+            ChangeToVisualLayer(charLayerVal);
+            m_inRangeCharacter.characterClassManager.ChangeToVisualLayer(charLayerVal);
 
             yield return new WaitForSeconds(0.5f);
             
-            m_inRangeCharacter.characterMovement.ForceStopMovement();
+            m_inRangeCharacter.characterMovement.ForceStopMovement(true);
             
             characterBase.characterMovement.SetCharacterMovable(true, null, HasPerformedReaction);
             characterBase.CheckAllAction(m_inRangeCharacter.transform.position, true);
             
+            m_inRangeCharacter = null;
+            
             yield return new WaitUntil(() => characterBase.characterMovement.isUsingMoveAction == false);
 
-            m_inRangeCharacter = null;
         }
 
         private bool IsBallThrownInRange()
@@ -448,6 +501,23 @@ namespace Runtime.Character
                     currentMaxTacklingScore = newAmount;
                     break;
             }
+        }
+
+        public void ChangeToVisualLayer(LayerMask _mask)
+        {
+            characterBase.characterVisuals.SetNewLayer(_mask);
+        }
+
+        public void ChangeToDisplayLayer()
+        {
+            bool isPlayer = characterBase.side == TurnController.Instance.playersSide;
+            var _layer = isPlayer ? displayLayerVal : displayEnemyLayerVal;
+            characterBase.characterVisuals.SetNewLayer(_layer);
+        }
+
+        public void ChangeToNormalLayer()
+        {
+            characterBase.characterVisuals.SetNewLayer(charLayerVal);
         }
 
         public void ResetMaxScores()

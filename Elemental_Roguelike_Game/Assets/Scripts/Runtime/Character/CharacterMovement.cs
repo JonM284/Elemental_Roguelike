@@ -1,5 +1,6 @@
 using System;
 using Data.Elements;
+using Data.Sides;
 using Project.Scripts.Utils;
 using Runtime.Damage;
 using Runtime.VFX;
@@ -68,7 +69,7 @@ namespace Runtime.Character
         private float m_knockbackForce;
 
         private float m_originalMoveDistance;
-
+        
         private float m_floorOffset = 0.1f;
 
         private Vector3 m_knockbackDir;
@@ -76,6 +77,8 @@ namespace Runtime.Character
         private CharacterController m_characterController;
     
         private NavMeshPath m_navMeshPath;
+
+        private CharacterSide m_characterSide;
         
         #endregion
     
@@ -96,12 +99,20 @@ namespace Runtime.Character
             var cc = GetComponent<CharacterController>();
             return cc;
         });
+
+        private CharacterSide characterSide => CommonUtils.GetRequiredComponent(ref m_characterSide, () =>
+        {
+            var s = GetComponent<CharacterBase>().side;
+            return s;
+        });
         
         public Vector3 velocity => _velocity;
     
         public bool isInBattle { get; private set; }
 
-        public bool isMoving => m_isMovingOnPath && !isPaused;
+        public bool isMoving => m_isMovingOnPath && !isKnockedBack && !isPaused;
+
+        public bool isRooted { get; private set; }
 
         public bool isPaused => m_isPaused;
 
@@ -109,12 +120,27 @@ namespace Runtime.Character
 
         public bool isKnockedBack => m_isKnockedBack;
 
+        public bool isInReaction { get; private set; }
+
         #endregion
 
         #region Unity Events
 
+        private void OnDrawGizmos()
+        {
+            if (m_isPerformingMelee)
+            {
+                Gizmos.DrawWireSphere(m_finalPos, 0.5f);
+            }
+        }
+
         private void Update()
         {
+            if (!characterController.isGrounded)
+            {
+                DoGravity();
+            }
+            
             if (!m_canMove)
             {
                 if (!characterController.isGrounded)
@@ -124,11 +150,8 @@ namespace Runtime.Character
                 return;
             }
             
-            if (!characterController.isGrounded)
-            {
-                DoGravity();
-            }
-            else if(characterController.isGrounded)
+            
+            if(characterController.isGrounded)
             {
                 HandleMovement();
             }
@@ -194,7 +217,7 @@ namespace Runtime.Character
                 return;
             }
 
-            Debug.Log("Has Created Path");
+            Debug.Log("Has Created Path", gameObject);
 
             SetIndicators(false);
             m_isPerformingMelee = _isTackle;
@@ -256,7 +279,7 @@ namespace Runtime.Character
                 }
                 else
                 {
-                    ForceStopMovement();
+                    ForceStopMovement(false);
                     return;
                 }
             }
@@ -274,10 +297,19 @@ namespace Runtime.Character
             m_isPaused = _isPaused;
         }
 
-        public void ForceStopMovement()
+        public void ForceStopMovement(bool _isInReaction)
         {
+            isInReaction = _isInReaction;
+            
+            if (m_navMeshPath.corners.Length > 0)
+            {
+                m_navMeshPath.ClearCorners();
+            }
+
             m_isMovingOnPath = false;
             m_canMove = false;
+
+            _velocity = Vector3.zero;
 
             OnFinishMovementCallback?.Invoke();
                     
@@ -285,7 +317,8 @@ namespace Runtime.Character
             OnBeforeMovementCallback = null;
 
             m_currentMovePointIndex = 0;
-            m_navMeshPath.ClearCorners();
+            m_currentMovePoint = transform.position;
+            m_finalPos = transform.position;
 
             if (m_isPaused)
             {
@@ -297,11 +330,6 @@ namespace Runtime.Character
                 m_isPerformingMelee = false;
                 m_hasPerformedMelee = false;
             }
-
-            if (battleMoveDistance > m_originalMoveDistance)
-            {
-                battleMoveDistance = m_originalMoveDistance;
-            }
         }
 
         public void SetKnockbackable(bool _canKnockback)
@@ -311,7 +339,7 @@ namespace Runtime.Character
 
         public void ApplyKnockback(float _knockbackForce, Vector3 _direction, float _duration)
         {
-            if (!m_canKnockback)
+            if (!m_canKnockback || isRooted)
             {
                 return;
             }
@@ -341,6 +369,12 @@ namespace Runtime.Character
             {
                 m_isKnockedBack = false;
                 m_canMove = false;
+                
+                if (isInReaction)
+                {
+                    isInReaction = false;
+                }
+                
                 if (!knockbackParticles.IsNull())
                 {
                     knockbackParticles.Stop();
@@ -353,6 +387,11 @@ namespace Runtime.Character
         
         public void SetCharacterMovable(bool _canMove, Action _beginningAction = null ,Action _finishActionCallback = null)
         {
+            if (isRooted)
+            {
+                return;
+            }
+            
             m_canMove = _canMove;
 
             SetIndicators(_canMove);
@@ -375,6 +414,11 @@ namespace Runtime.Character
             }
         }
 
+        public void SetCharacterRooted(bool _isRooted)
+        {
+            isRooted = _isRooted;
+        }
+
         public void TeleportCharacter(Vector3 teleportPosition)
         {
             if (m_navMeshPath != null && m_navMeshPath.corners.Length > 0)
@@ -387,9 +431,16 @@ namespace Runtime.Character
                 m_isMovingOnPath = false;
             }
             
-            var _fixedTeleportPos = new Vector3(teleportPosition.x, teleportPosition.y + transform.localScale.y/1.35f, teleportPosition.z);
+            var _fixedTeleportPos = new Vector3(teleportPosition.x, teleportPosition.y + transform.localScale.y/2, teleportPosition.z);
             characterController.enabled = false;
             transform.position = _fixedTeleportPos;
+            characterController.enabled = true;
+        }
+
+        public void ResetCharacter(Vector3 _position)
+        {
+            characterController.enabled = false;
+            transform.position = _position;
             characterController.enabled = true;
         }
 
@@ -416,7 +467,7 @@ namespace Runtime.Character
         
         private void PerformMelee()
         {
-            Collider[] colliders = Physics.OverlapSphere(transform.position, 1);
+            Collider[] colliders = Physics.OverlapSphere(m_finalPos, 0.5f);
 
             if (colliders.Length > 0)
             {
@@ -427,6 +478,15 @@ namespace Runtime.Character
                         continue;
                     }
 
+                    collider.TryGetComponent(out CharacterBase _character);
+                    if (_character)
+                    {
+                        if (_character.side == this.characterSide)
+                        {
+                            continue;
+                        }
+                    }
+                    
                     collider.TryGetComponent(out IDamageable damageable);
                     if (!damageable.IsNull())
                     {

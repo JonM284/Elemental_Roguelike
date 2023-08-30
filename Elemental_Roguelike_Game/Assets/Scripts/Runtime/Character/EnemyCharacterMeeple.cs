@@ -46,11 +46,6 @@ namespace Runtime.Character
             return m_enemyMeepleStats.baseSpeed;
         }
 
-        protected override void CharacterDeath()
-        {
-            this.CacheEnemy();
-        }
-
         protected override void OnBattleEnded()
         {
             //undecided

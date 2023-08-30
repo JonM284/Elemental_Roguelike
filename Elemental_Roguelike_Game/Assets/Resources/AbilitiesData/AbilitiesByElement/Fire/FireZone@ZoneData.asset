@@ -15,7 +15,7 @@ MonoBehaviour:
   roundStayAmount: 2
   zoneStaySeconds: 0
   zoneDamage: 10
-  zoneRadius: 0.1
+  zoneRadius: 1
   isArmorAffecting: 1
   hasKnockback: 0
   isIgnoreUser: 0
@@ -26,7 +26,7 @@ MonoBehaviour:
   chanceToApplyStatus: 100
   statusEffect: {fileID: 11400000, guid: 105104d71c6a3354f95ca160d3294c22, type: 2}
   zonePrefab:
-    m_AssetGUID: 81436b59b3beaa94695b6b3a9883bfbe
+    m_AssetGUID: 5081d4e8c0fdacd4689feb84024bf496
     m_SubObjectName: 
     m_SubObjectType: 
     m_EditorAssetChanged: 0

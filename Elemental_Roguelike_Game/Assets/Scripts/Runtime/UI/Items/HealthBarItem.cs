@@ -103,7 +103,9 @@ namespace Runtime.UI.Items
         private void OnEnable()
         {
             CharacterBase.CharacterHovered += CharacterBaseOnCharacterHovered;
-            CharacterLifeManager.OnCharacterHealthChange += CharacterLifeManagerOnOnCharacterHealthChange;
+            CharacterLifeManager.OnCharacterHealthChange += OnCharacterHealthChange;
+            CharacterLifeManager.OnCharacterDied += OnCharacterDied;
+            CharacterBase.CharacterReset += OnCharacterReset;
             CharacterBase.StatusAdded += CharacterBaseOnStatusAdded;
             CharacterBase.StatusRemoved += CharacterBaseOnStatusRemoved;
         }
@@ -111,7 +113,9 @@ namespace Runtime.UI.Items
         private void OnDisable()
         {
             CharacterBase.CharacterHovered -= CharacterBaseOnCharacterHovered;
-            CharacterLifeManager.OnCharacterHealthChange -= CharacterLifeManagerOnOnCharacterHealthChange;
+            CharacterLifeManager.OnCharacterHealthChange -= OnCharacterHealthChange;
+            CharacterLifeManager.OnCharacterDied -= OnCharacterDied;
+            CharacterBase.CharacterReset -= OnCharacterReset;
             CharacterBase.StatusAdded -= CharacterBaseOnStatusAdded;
             CharacterBase.StatusRemoved -= CharacterBaseOnStatusRemoved;
         }
@@ -131,10 +135,10 @@ namespace Runtime.UI.Items
             
             Debug.Log("Connected");
             
-            CharacterLifeManagerOnOnCharacterHealthChange();
+            OnCharacterHealthChange();
         }
         
-        private void CharacterLifeManagerOnOnCharacterHealthChange()
+        private void OnCharacterHealthChange()
         {
             if (m_associatedCharacter.IsNull())
             {
@@ -152,8 +156,45 @@ namespace Runtime.UI.Items
 
         }
         
+        private void OnCharacterDied(CharacterBase _character)
+        {
+            if (m_associatedCharacter.IsNull())
+            {
+                return;
+            }
+
+            if (_character != m_associatedCharacter)
+            {
+                return;
+            }
+            
+            lowDetail.SetActive(false);
+            highDetail.SetActive(false);
+        }
+        
+        private void OnCharacterReset(CharacterBase _character)
+        {
+            if (m_associatedCharacter.IsNull())
+            {
+                return;
+            }
+
+            if (_character != m_associatedCharacter)
+            {
+                return;
+            }
+            
+            lowDetail.SetActive(true);
+            highDetail.SetActive(false);
+        }
+        
         private void CharacterBaseOnCharacterHovered(bool _isHighlighted, CharacterBase _character)
         {
+            if (!m_associatedCharacter.isAlive)
+            {
+                return;
+            }
+            
             if (_character != this.m_associatedCharacter)
             {
                 ChangeHealthBarDisplay(false);

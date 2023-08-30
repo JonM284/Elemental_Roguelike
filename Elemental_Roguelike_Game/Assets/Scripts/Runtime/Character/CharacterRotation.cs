@@ -93,7 +93,6 @@ namespace Runtime.Character
                 m_isInRotation = false;
             }
             
-            
         }
 
         public void SetRotationTarget(Vector3 _targetPos)

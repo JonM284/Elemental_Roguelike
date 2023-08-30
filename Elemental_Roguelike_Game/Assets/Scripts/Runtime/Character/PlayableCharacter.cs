@@ -40,12 +40,6 @@ namespace Runtime.Character
             
             characterClassManager.InitializedCharacterPassive(classType, m_characterStatsData.agilityScore, 
                 m_characterStatsData.shootingScore, m_characterStatsData.damageScore);
-            
-            /*
-            var weaponData = WeaponUtils.GetDataByRef(m_characterStatsData.weaponReference);
-            var weaponElementType = ElementUtils.GetElementTypeByGUID(m_characterStatsData.weaponElementTypeRef);
-            characterWeaponManager.InitializeCharacterWeapon(weaponData, weaponElementType);
-            */       
         }
 
         public override float GetBaseSpeed()
@@ -56,11 +50,6 @@ namespace Runtime.Character
             }
 
             return m_characterStatsData.baseSpeed;
-        }
-
-        protected override void CharacterDeath()
-        {
-            CharacterUtils.CachePlayerMeeple(this);
         }
 
         protected override void OnWalkActionPressed()

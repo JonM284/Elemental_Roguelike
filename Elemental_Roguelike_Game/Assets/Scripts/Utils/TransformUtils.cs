@@ -17,7 +17,10 @@ namespace Project.Scripts.Utils
         {
             if (parentObject == null)
             {
-                return null;
+                var nt = new GameObject().transform;
+                nt.position = Vector3.down * 3;
+                nt.gameObject.SetActive(isActive);
+                return nt;
             }
 
             var t = new GameObject(parentObject.name + poolTag).transform;

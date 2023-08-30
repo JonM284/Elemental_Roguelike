@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using Project.Scripts.Utils;
-using Runtime.Camera;
+using Runtime.CameraBehaviour;
 using UnityEngine;
 
 namespace Utils

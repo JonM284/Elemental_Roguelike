@@ -102,6 +102,18 @@ namespace Runtime.GameControllers
             }
         }
 
+        public Transform GetParentCanvasByLayer(UILayerData _layer)
+        {
+            if (_layer == null)
+            {
+                return default;
+            }
+
+            var _foundCanvasByLayer = canvasByLayers.FirstOrDefault(cbl => cbl.layer == _layer);
+            
+            return _foundCanvasByLayer.associatedCanvas.transform;
+        }
+
         public void AddUI(UILayerData _layer, AssetReference _uiWindow)
         {
             if (_layer == null)

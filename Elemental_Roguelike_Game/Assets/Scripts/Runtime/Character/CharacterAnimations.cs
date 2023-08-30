@@ -20,8 +20,6 @@ namespace Runtime.Character
         
         private readonly string damagedParam = "Damaged";
         
-        private readonly string deathParam = "OnDeath";
-        
         private readonly string useFirstAbilityParam = "OnAbilityOneUse";
         
         private readonly string useSecondAbilityParam = "OnAbilityTwoUse";
@@ -29,7 +27,7 @@ namespace Runtime.Character
         private readonly string abilityOneClipName = "DefaultAbility1";
         
         private readonly string abilityTwoClipName = "DefaultAbility2";
-
+        
         #endregion
 
         #region Private Fields
@@ -37,7 +35,7 @@ namespace Runtime.Character
         private CharacterMovement m_characterMovement;
 
         private Animator m_animator;
-
+        
         #endregion
 
         #region Accessor

@@ -24,4 +24,4 @@ MonoBehaviour:
   abilityIcon: {fileID: 0}
   abilityVFX: {fileID: 0}
   abilityParameters: []
-  statusEffect: {fileID: 11400000, guid: 82a05dd2cb8bb0d47995f4f04086aa30, type: 2}
+  statusEffect: {fileID: 11400000, guid: 24938d9a89e35594b9c60ab5eb61c95e, type: 2}
