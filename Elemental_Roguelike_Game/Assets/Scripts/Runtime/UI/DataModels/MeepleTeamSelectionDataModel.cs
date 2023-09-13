@@ -16,8 +16,6 @@ namespace Runtime.UI.DataModels
 
         public static event Action RerollRequested;
         
-        public static event Action<List<CharacterStatsData>> TeamMembersConfirmed;
-
         #endregion
 
         #region Events
@@ -88,8 +86,6 @@ namespace Runtime.UI.DataModels
             {
                 confirmedTeamMembers.Add(mmi.assignedData);
             });
-            
-            TeamMembersConfirmed?.Invoke(confirmedTeamMembers);
             
             UIUtils.CloseUI(this);
             

@@ -8,6 +8,12 @@ EditorBuildSettings:
   - enabled: 0
     path: 
     guid: 00000000000000000000000000000000
+  - enabled: 1
+    path: Assets/Scenes/RealWorldScene.unity
+    guid: 1350da6d6e95d2e43809d62bb4267eef
+  - enabled: 1
+    path: Assets/Scenes/CaveArena1.unity
+    guid: bd78beba8bea6bf4c9404d59cf2cbfd1
   m_configObjects:
     com.unity.addressableassets: {fileID: 11400000, guid: 40a9856b4e805c844915adb367850093,
       type: 2}

@@ -53,8 +53,6 @@ namespace Runtime.UI.DataModels
         private void UpdateScreen()
         {
             
-            //ToDo: fix this
-            
         }
 
         private void OnSelectorButtonPressed(CharacterStatsData meeple)

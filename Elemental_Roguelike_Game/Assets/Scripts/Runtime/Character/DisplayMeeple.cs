@@ -38,14 +38,10 @@ namespace Runtime.Character
                 return;
             }
             
-            //ToDo: Check if this is still necessary ? Possibly unnecessary if nothing gets saved?
-            
             var elementType = ElementUtils.GetElementTypeByGUID(_data.meepleElementTypeRef);
             characterVisuals.InitializeMeepleCharacterVisuals(elementType);
 
             assignedData = _data;
-
-
         }
 
         #endregion

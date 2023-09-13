@@ -14,13 +14,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   classType: 2
   radius: 2.5
+  HealthMin: 100
+  HealthMax: 180
+  ShieldMin: 78
+  ShieldMax: 125
   AgilityStatMin: 60
   AgilityStatMax: 75
   ShootingStatMin: 60
   ShootingStatMax: 75
-  PassingStatMin: 50
-  PassingStatMax: 65
   DamageStatMin: 75
   DamageStatMax: 90
   passiveColor: {r: 1, g: 0.18396229, b: 0.18396229, a: 1}
+  moveDistance: 4.25
   classGUID: f9c671df-37d9-4f0b-8e12-5574898f1a5a

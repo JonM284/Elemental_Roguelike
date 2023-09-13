@@ -4,6 +4,7 @@
     {
         MainMenu,
         ArenaArea,
+        CaveArena1,
         LevelGeneration,
         RealWorldScene,
     }

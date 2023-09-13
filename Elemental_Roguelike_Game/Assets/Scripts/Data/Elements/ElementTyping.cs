@@ -30,6 +30,7 @@ namespace Data.Elements
         public List<Status> statusImmunities = new List<Status>();
 
         [Header("----- Meeple -----")]
+        public Sprite meepleIcon;
         public List<Color> meepleColors = new List<Color>(2);
 
         [Header("----- Card Display -----")]

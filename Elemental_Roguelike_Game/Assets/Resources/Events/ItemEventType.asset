@@ -12,4 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ccf3a6c7895d4cb1b32c73368707176a, type: 3}
   m_Name: ItemEventType
   m_EditorClassIdentifier: 
-  giftItem: {fileID: 0}
+  m_eventTexture: {fileID: 2800000, guid: 9daf7348d7c4e7a47b9e02f504b48df9, type: 3}
+  eventGUID: e94df7f8-87f5-4b1e-af20-90b3664a8b79
+  allPossibleItems: []

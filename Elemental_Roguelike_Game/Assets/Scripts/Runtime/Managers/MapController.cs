@@ -2,20 +2,18 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Data;
-using Data.DataSaving;
 using Project.Scripts.Runtime.LevelGeneration;
 using Project.Scripts.Utils;
+using Runtime.GameControllers;
 using Runtime.GameplayEvents;
 using Runtime.Selection;
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
 
 namespace Runtime.Managers
 {
-    public class MapController: MonoBehaviour, ISaveableData, ISelectable
+    public class MapController: MonoBehaviour, ISelectable
     {
 
         #region Nested Classes
@@ -25,18 +23,27 @@ namespace Runtime.Managers
         {
             public int rowIndex;
             public List<PointData> rowPoints = new List<PointData>();
+            public List<SaveablePointData> saveablePointDatas = new List<SaveablePointData>();
         }
         
+        [Serializable]
+        public class SaveablePointData
+        {
+            public Vector3 pointLocation;
+            public string assignedEventGUID;
+            public bool isCurrentPoint;
+            public bool isCompleted;
+            public bool isPassed;
+            public List<Vector3> connectedLocationsAbove = new List<Vector3>();
+        }
+        
+        //ToDo: change this to data that can be saved 
+        //IE: instead of POILocation => VECTOR3 + Event
         [Serializable]
         public class PointData
         {
             public PoiLocation actualPoiLocation;
             public List<PoiLocation> connectedPointsAbove = new List<PoiLocation>();
-        }
-        
-        public class GameplayEventsByType
-        {
-            
         }
 
         #endregion
@@ -48,7 +55,7 @@ namespace Runtime.Managers
         #endregion
         
         #region Serialized Fields
-
+        
         [SerializeField] private bool isLobbyScene;
 
         [SerializeField] private GameObject poiPrefab;
@@ -68,11 +75,6 @@ namespace Runtime.Managers
         
         [SerializeField] private float pointOffset = 1;
         
-        [FormerlySerializedAs("matchEventType")]
-        [Space(20)]
-        [Header("POI Events")]
-        [SerializeField] private GameplayEventType matchEventType;
-        
         [SerializeField] private List<GameplayEventType> allEventTypes = new List<GameplayEventType>();
 
         #endregion
@@ -80,6 +82,8 @@ namespace Runtime.Managers
         #region Events
 
         public UnityEvent onDisplayMap;
+
+        public UnityEvent onHideMap;
 
         #endregion
         
@@ -93,14 +97,25 @@ namespace Runtime.Managers
 
         private bool isGeneratedMap = false;
 
+        private bool m_hasDoneOneTime;
+
         private int currentIterator = 0;
 
-        private int maxColumns = 5;
+        private int maxColumns = 4;
 
         private int startingIterator = 0;
 
+        private string m_lastEventIdentifier;
+
+        private Vector3 m_lastPOILocation;
+
+        private bool m_isReturnFromMatch;
+
+        private bool m_currentEventEnded;
+
         private PointData m_currentPoint;
         
+        [SerializeField]
         private List<RowData> allRowsByLevel = new List<RowData>();
 
         private List<GameObject> m_cachedDataPointObjects = new List<GameObject>();
@@ -113,12 +128,18 @@ namespace Runtime.Managers
 
         private void OnEnable()
         {
-            PoiLocation.POILocationSelected += OnPOILocationSelected;
+            LevelEventController.MatchEventEnded += OnMatchEventEnded;
+            LevelEventController.EventEnded += OnEventEnded;
+            LevelEventController.DisplayMap += DisplayMap;
+            LevelEventController.HideMap += HideMap;
         }
 
         private void OnDisable()
         {
-            PoiLocation.POILocationSelected -= OnPOILocationSelected;
+            LevelEventController.MatchEventEnded -= OnMatchEventEnded;
+            LevelEventController.EventEnded -= OnEventEnded;
+            LevelEventController.DisplayMap -= DisplayMap;
+            LevelEventController.HideMap -= HideMap;
         }
 
         #endregion
@@ -130,9 +151,44 @@ namespace Runtime.Managers
             onDisplayMap?.Invoke();
         }
 
+        public void DisplayOneTime()
+        {
+            if (m_hasDoneOneTime)
+            {
+                return;
+            }
+            
+            DisplayMap();
+            m_hasDoneOneTime = true;
+        }
+
+        public void HideMap()
+        {
+            onHideMap?.Invoke();
+        }
+
         public void DrawMap()
         {
-            CreateOverviewMap();
+            allRowsByLevel = MapDataController.Instance.GetGeneratedLevel();
+            if (allRowsByLevel.IsNull() || allRowsByLevel.Count == 0)
+            {
+                CreateOverviewMap();
+                return;
+            }
+            
+            RecreateMap();
+        }
+        
+        //When this event is finished
+        private void OnMatchEventEnded(string _lastPressedEventGUID, Vector3 _lastPressedPOILocation)
+        {
+            m_isReturnFromMatch = true;
+            m_lastEventIdentifier = _lastPressedEventGUID;
+            m_lastPOILocation = _lastPressedPOILocation;
+            m_selectionLevel = MapDataController.Instance.GetSelectionLevel();
+            allRowsByLevel = MapDataController.Instance.GetGeneratedLevel();
+            Debug.Log("CALLING FROM MATCH EVENT ENDED");
+            StartCoroutine(C_RemakeMap());
         }
 
         [ContextMenu("Generate Map")]
@@ -146,6 +202,8 @@ namespace Runtime.Managers
             isGeneratingMap = true;
 
             currentIterator = startingIterator;
+            
+            MapDataController.Instance.ResetAll();
 
             for (int i = 0; i < maxAmountOfRows + 2; i++)
             {
@@ -156,38 +214,95 @@ namespace Runtime.Managers
             StartCoroutine(PointGeneration());
 
         }
-        
-        private void OnPOILocationSelected(PoiLocation _pointLocation, GameplayEventType _event)
+
+        //Change Selected Point
+        private void OnEventEnded(PoiLocation _pointLocation, GameplayEventType _event)
         {
             if (_pointLocation.IsNull())
             {
                 return;
             }
-            
-            m_currentPoint.connectedPointsAbove.ForEach(t =>
+
+            if (m_currentPoint.IsNull())
             {
-                t.TryGetComponent(out PoiLocation poiLocation);
-                if (poiLocation)
+                Debug.Log("Current Point Null");
+            }
+
+            #region Set Previous Inactive
+
+            {
+                //Mark current point as used in saveable data
+                var _foundPoint = allRowsByLevel[m_selectionLevel].saveablePointDatas
+                    .FirstOrDefault(spd => spd.pointLocation == m_currentPoint.actualPoiLocation.savedLocation);
+                if (_foundPoint.isCurrentPoint)
                 {
-                    if (poiLocation != _pointLocation)
-                    {
-                        poiLocation.SetPointInactive();
-                    }
+                    _foundPoint.isCompleted = true;
+                    _foundPoint.isPassed = true;
+                    _foundPoint.isCurrentPoint = false;
                 }
-            });
+            }
+            
+            foreach (var _saveablePointData in allRowsByLevel[m_selectionLevel].saveablePointDatas)
+            {
+                var _index = allRowsByLevel[m_selectionLevel].saveablePointDatas.IndexOf(_saveablePointData);
+                allRowsByLevel[m_selectionLevel].rowPoints[_index].actualPoiLocation.SetPointInactive();
+            }
+            
+            #endregion
+            
 
             if (m_selectionLevel < maxAmountOfRows)
             {
-                m_selectionLevel++;    
+                m_selectionLevel++; 
+                MapDataController.Instance.NextSelectionLevel();
             }
             else
             {
                 return;
             }
-            
-            //ToDo: get this to work correctly, after selecting a point, have it highlight the next points
+
+            #region Set Next Point
 
             var checkPoint = allRowsByLevel[m_selectionLevel].rowPoints.FirstOrDefault(pd => pd.actualPoiLocation == _pointLocation);
+
+            {
+                //Mark current point as current point in saveable data
+                var _foundPoint = allRowsByLevel[m_selectionLevel].saveablePointDatas
+                    .FirstOrDefault(spd => spd.pointLocation == _pointLocation.savedLocation && spd.assignedEventGUID == _event.eventGUID);
+
+                if (_foundPoint.IsNull())
+                {
+                    Debug.LogError("FOUND POINT NULL");
+                    _foundPoint = allRowsByLevel[m_selectionLevel].saveablePointDatas
+                        .FirstOrDefault(spd => spd.isCurrentPoint);
+                }
+
+                if (_foundPoint.IsNull())
+                {
+                    Debug.LogError("FOUND POINT still null");
+                }
+                
+                var _index = allRowsByLevel[m_selectionLevel].saveablePointDatas.IndexOf(_foundPoint);
+                Debug.Log($"Selection Level:{m_selectionLevel}, Index:{_index}");
+                allRowsByLevel[m_selectionLevel].rowPoints[_index].actualPoiLocation.SetPointSelected();
+                
+                _foundPoint.isCurrentPoint = true;
+                
+            }
+            
+            foreach (var _saveablePointData in allRowsByLevel[m_selectionLevel].saveablePointDatas)
+            {
+                if (!_saveablePointData.isCurrentPoint)
+                {
+                    var _index = allRowsByLevel[m_selectionLevel].saveablePointDatas.IndexOf(_saveablePointData);
+                    _saveablePointData.isPassed = true;
+                    allRowsByLevel[m_selectionLevel].rowPoints[_index].actualPoiLocation.SetPointInactive();
+                }
+            }
+
+            #endregion
+            
+            
             if (checkPoint.IsNull())
             {
                 Debug.LogError("No Point Found");
@@ -196,13 +311,213 @@ namespace Runtime.Managers
 
             m_currentPoint = checkPoint;
 
+            MapDataController.Instance.SetLevelChanges(allRowsByLevel);
+            
             MarkConnectedActive(m_currentPoint);
-
         }
 
-        private void DoEventAction(GameplayEventType _event)
+        private void RecreateMap()
         {
+            if (!isLobbyScene)
+            {
+                return;
+            }
+            Debug.Log("CALLING FROM RECREATE MAP");
+
+            m_selectionLevel = MapDataController.Instance.GetSelectionLevel();
+            m_lastEventIdentifier = MapDataController.Instance.GetLastEventString();
+            m_lastPOILocation = MapDataController.Instance.GetLastPoint();
             
+            StartCoroutine(C_RemakeMap());
+        }
+
+        private IEnumerator C_RemakeMap()
+        {
+            yield return null;
+
+            #region Generate And Connect Points
+
+             foreach (var _row in allRowsByLevel)
+            {
+                yield return null;
+
+                foreach (var _point in _row.saveablePointDatas)
+                {
+                    yield return null;
+                    
+                    var _index = _row.saveablePointDatas.IndexOf(_point);
+                    var pointLocation = InstantiatePointAt(_point.pointLocation, _point.assignedEventGUID);
+                    
+                    _row.rowPoints[_index].actualPoiLocation = pointLocation;
+
+                    if (_point.isPassed)
+                    {
+                        pointLocation.SetPointInactive();
+                    }
+                    
+                    if (_point.connectedLocationsAbove.Count > 0)
+                    {
+                        foreach (var _connectedPointAbove in _point.connectedLocationsAbove)
+                        {
+                            yield return null;
+
+                            ConnectPoints(_point.pointLocation, _connectedPointAbove);
+                        }
+                    }
+                }
+            }
+            
+            //After all rows are finished
+
+            foreach (var rowData in allRowsByLevel)
+            {
+                var currentRowIndex = rowData.rowIndex;
+                if (currentRowIndex == 0)
+                {
+                    continue;
+                }
+                
+                var currentRow = rowData;
+                var previousRow = allRowsByLevel[currentRow.rowIndex - 1];
+
+                if (previousRow.saveablePointDatas.Count == 0)
+                {
+                    continue;
+                }
+
+                foreach (var _saveablePointData in previousRow.saveablePointDatas)
+                {
+                    var _index = previousRow.saveablePointDatas.IndexOf(_saveablePointData);
+                    if (_saveablePointData.connectedLocationsAbove.Count <= 0)
+                    {
+                        continue;
+                    }
+
+                    foreach (var _savedConnectedPoint in _saveablePointData.connectedLocationsAbove)
+                    {
+                        var _connectedPointIndex = _saveablePointData.connectedLocationsAbove.IndexOf(_savedConnectedPoint);
+                        foreach (var _point in currentRow.rowPoints)
+                        {
+                            if (_savedConnectedPoint == _point.actualPoiLocation.savedLocation)
+                            {
+                                previousRow.rowPoints[_index].connectedPointsAbove[_connectedPointIndex] =
+                                    _point.actualPoiLocation;
+                            }
+                        }
+                    }
+                }
+            }
+
+            #endregion
+            
+            //Get Current Point
+
+            {
+                int _modifier = m_isReturnFromMatch ? 1 : 0;
+                
+                
+                var currentFoundSaveablePointData = allRowsByLevel[m_selectionLevel + _modifier].saveablePointDatas
+                    .FirstOrDefault(spd => spd.pointLocation == m_lastPOILocation && spd.assignedEventGUID == m_lastEventIdentifier);
+
+                if (currentFoundSaveablePointData.IsNull())
+                {
+                    Debug.Log("Current Point NULL, retry");
+                    currentFoundSaveablePointData = allRowsByLevel[m_selectionLevel].saveablePointDatas
+                        .FirstOrDefault(spd => spd.isCurrentPoint);
+                }
+
+                if (currentFoundSaveablePointData.IsNull())
+                {
+                    Debug.Log("CURRENT point still NULL");
+                }
+                
+                var _index = allRowsByLevel[m_selectionLevel + _modifier].saveablePointDatas.IndexOf(currentFoundSaveablePointData);
+
+                Debug.Log($"Map Regen, SelectionLevel = Returning?{m_isReturnFromMatch}// {m_selectionLevel + _modifier}, Index: {_index}");
+                
+                m_currentPoint = allRowsByLevel[m_selectionLevel + _modifier].rowPoints[_index];
+                m_currentPoint.actualPoiLocation.SetPointSelected();
+            }
+
+            if (m_isReturnFromMatch)
+            {
+                #region Set All Previous Points Inactive
+
+                {
+                    //Mark current point as used in saveable data
+                    var _foundPoint = allRowsByLevel[m_selectionLevel].saveablePointDatas
+                        .FirstOrDefault(spd => spd.isCurrentPoint);
+                    
+                    if (_foundPoint.isCurrentPoint)
+                    {
+                        _foundPoint.isCompleted = true;
+                        _foundPoint.isPassed = true;
+                        _foundPoint.isCurrentPoint = false;
+                    }
+                }
+            
+                foreach (var _saveablePointData in allRowsByLevel[m_selectionLevel].saveablePointDatas)
+                {
+                    var _index = allRowsByLevel[m_selectionLevel].saveablePointDatas.IndexOf(_saveablePointData);
+                    allRowsByLevel[m_selectionLevel].rowPoints[_index].actualPoiLocation.SetPointInactive();
+                }
+
+                #endregion
+                
+                if (m_selectionLevel < maxAmountOfRows)
+                {
+                    m_selectionLevel++;  
+                    MapDataController.Instance.NextSelectionLevel();
+                }
+
+                #region Set Next Point Active
+                
+                {
+                    //Mark current point as current point in saveable data
+                    var _foundPoint = allRowsByLevel[m_selectionLevel].saveablePointDatas
+                        .FirstOrDefault(spd => spd.pointLocation == m_currentPoint.actualPoiLocation.savedLocation 
+                                               && spd.assignedEventGUID == m_currentPoint.actualPoiLocation.AssignedEventType.eventGUID);
+
+                    if (_foundPoint.IsNull())
+                    {
+                        Debug.LogError("FOUND POINT NULL");
+                        _foundPoint = allRowsByLevel[m_selectionLevel].saveablePointDatas
+                            .FirstOrDefault(spd => spd.isCurrentPoint);
+                    }
+
+                    if (_foundPoint.IsNull())
+                    {
+                        Debug.LogError("FOUND POINT still null");
+                    }
+                
+                    var _index = allRowsByLevel[m_selectionLevel].saveablePointDatas.IndexOf(_foundPoint);
+                    Debug.Log($"Selection Level:{m_selectionLevel}, Index:{_index}");
+
+                    _foundPoint.isCurrentPoint = true;
+                }
+            
+                foreach (var _saveablePointData in allRowsByLevel[m_selectionLevel].saveablePointDatas)
+                {
+                    if (!_saveablePointData.isCurrentPoint)
+                    {
+                        var _index = allRowsByLevel[m_selectionLevel].saveablePointDatas.IndexOf(_saveablePointData);
+                        _saveablePointData.isPassed = true;
+                        allRowsByLevel[m_selectionLevel].rowPoints[_index].actualPoiLocation.SetPointInactive();
+                    }
+                }
+
+                #endregion
+
+                MarkConnectedActive(m_currentPoint);
+            }
+            else
+            {
+                MarkConnectedActive(m_currentPoint);
+            }
+
+            MapDataController.Instance.SetLevelChanges(allRowsByLevel);
+
+            m_isReturnFromMatch = false;
         }
 
         /// <summary>
@@ -225,10 +540,9 @@ namespace Runtime.Managers
                 if (currentIterator == 0)
                 {
                     //first point is always starting point
-                    var firstPointTransform = InstantiatePointAt(starterPoint.localPosition);
-                    firstPointTransform.TryGetComponent(out PoiLocation poiLocation);
+                    var firstPoint = InstantiatePointAt(starterPoint.localPosition);
                     
-                    if (poiLocation.IsNull())
+                    if (firstPoint.IsNull())
                     {
                         Debug.Log("Doesn't have poiLocation Component");
                         break;
@@ -236,10 +550,19 @@ namespace Runtime.Managers
                     
                     var firstPointData = new PointData
                     {
-                        actualPoiLocation = poiLocation,
+                        actualPoiLocation = firstPoint,
                     };
+
+                    var saveableData = new SaveablePointData
+                    {
+                        assignedEventGUID = firstPoint.AssignedEventType.eventGUID,
+                        pointLocation = firstPoint.savedLocation,
+                    };
+                    
                     allRowsByLevel[currentIterator].rowIndex = currentIterator;
                     allRowsByLevel[currentIterator].rowPoints.Add(firstPointData);
+                    allRowsByLevel[currentIterator].saveablePointDatas.Add(saveableData);
+                    
                     currentIterator++;
                     continue;
                 }
@@ -247,11 +570,9 @@ namespace Runtime.Managers
                 if (currentIterator == maxAmountOfRows + 1)
                 {
                     //Create Boss Token
-                    var lastPointTransform = InstantiatePointAt(finalPoint.localPosition);
+                    var lastPoint = InstantiatePointAt(finalPoint.localPosition);
                     
-                    lastPointTransform.TryGetComponent(out PoiLocation poiLocation);
-                    
-                    if (poiLocation.IsNull())
+                    if (lastPoint.IsNull())
                     {
                         Debug.Log("Doesn't have poiLocation Component");
                         break;
@@ -259,23 +580,44 @@ namespace Runtime.Managers
                     
                     var lastPointData = new PointData
                     {
-                        actualPoiLocation = poiLocation,
+                        actualPoiLocation = lastPoint,
                     };
+                    
+                    var saveableData = new SaveablePointData
+                    {
+                        assignedEventGUID = lastPoint.AssignedEventType.eventGUID,
+                        pointLocation = lastPoint.savedLocation,
+                    };
+                    
                     allRowsByLevel[currentIterator].rowIndex = currentIterator;
                     allRowsByLevel[currentIterator].rowPoints.Add(lastPointData);
+                    allRowsByLevel[currentIterator].saveablePointDatas.Add(saveableData);
+                    
                     foreach (var point in allRowsByLevel[currentIterator - 1].rowPoints)
                     {
                         point.connectedPointsAbove.Add(lastPointData.actualPoiLocation);
                         ConnectPoints(point.actualPoiLocation.transform.localPosition,
                             lastPointData.actualPoiLocation.transform.localPosition);
                     }
+
+                    foreach (var saveablePoint in allRowsByLevel[currentIterator - 1].saveablePointDatas)
+                    {
+                        saveablePoint.connectedLocationsAbove.Add(lastPointData.actualPoiLocation.savedLocation);
+                    }
+                    
                     isGeneratingMap = false;
                     isGeneratedMap = true;
                     Debug.Log("Finished Points");
                     OnMapGenerated?.Invoke();
 
-                    m_currentPoint = allRowsByLevel[0].rowPoints.FirstOrDefault();
+                    m_currentPoint = allRowsByLevel[0].rowPoints.FirstOrDefault(); 
+                    var m_firstSaved = allRowsByLevel[0].saveablePointDatas.FirstOrDefault();
+                    m_firstSaved.isCompleted = true;
+                    m_firstSaved.isCurrentPoint = true;
+                    
                     MarkConnectedActive(m_currentPoint);
+                    
+                    MapDataController.Instance.SetLevelChanges(allRowsByLevel);
 
                     yield break;
                 }
@@ -305,11 +647,9 @@ namespace Runtime.Managers
                     
                     Vector3 _pointPosition = new Vector3(_Xposition, _Yposition, 0);
                     
-                    var rowPointTransform = InstantiatePointAt(_pointPosition);
+                    var rowPoint = InstantiatePointAt(_pointPosition);
                     
-                    rowPointTransform.TryGetComponent(out PoiLocation poiLocation);
-                    
-                    if (poiLocation.IsNull())
+                    if (rowPoint.IsNull())
                     {
                         Debug.Log("Doesn't have poiLocation Component");
                         break;
@@ -317,9 +657,17 @@ namespace Runtime.Managers
                     
                     var rowPointData = new PointData
                     {
-                        actualPoiLocation = poiLocation,
+                        actualPoiLocation = rowPoint,
                     };
+                    
+                    var saveableData = new SaveablePointData
+                    {
+                        assignedEventGUID = rowPoint.AssignedEventType.eventGUID,
+                        pointLocation = rowPoint.savedLocation,
+                    };
+                    
                     currentRow.rowPoints.Add(rowPointData);
+                    currentRow.saveablePointDatas.Add(saveableData);
                     
                     yield return null;
                 }
@@ -347,6 +695,11 @@ namespace Runtime.Managers
                             pointData.actualPoiLocation.transform.localPosition);
                     }
                     
+                    foreach (var saveablePoint in currentRow.saveablePointDatas)
+                    {
+                        previousRow.saveablePointDatas[0].connectedLocationsAbove.Add(saveablePoint.pointLocation);
+                    }
+                    
                     currentIterator++;
                     continue;
                 }
@@ -363,6 +716,11 @@ namespace Runtime.Managers
                         ConnectPoints(previousPoint.actualPoiLocation.transform.localPosition, 
                             currentRow.rowPoints[0].actualPoiLocation.transform.localPosition);
                     }
+                    
+                    foreach (var previousSaveablePoint in previousRow.saveablePointDatas)
+                    {
+                        previousSaveablePoint.connectedLocationsAbove.Add(currentRow.saveablePointDatas[0].pointLocation);
+                    }
                     currentIterator++;
                     continue;
                 }
@@ -375,6 +733,11 @@ namespace Runtime.Managers
                         ConnectPoints(previousRow.rowPoints[0].actualPoiLocation.transform.localPosition,
                             currentRow.rowPoints[i].actualPoiLocation.transform.localPosition);
                     }
+                    
+                    for(int i = 0; i < currentRow.saveablePointDatas.Count; i++)
+                    {
+                        previousRow.saveablePointDatas[0].connectedLocationsAbove.Add(currentRow.saveablePointDatas[i].pointLocation);
+                    }
                     currentIterator++;
                     continue;
                 }
@@ -382,10 +745,13 @@ namespace Runtime.Managers
                 for (int i = 0; i < previousRow.rowPoints.Count; i++)
                 {
                     var prevRowCurrentPoint = previousRow.rowPoints[i];
+                    var savedPrevRowCurrentPoint = previousRow.saveablePointDatas[i];
                     if (i == 0)
                     {
                         
                         prevRowCurrentPoint.connectedPointsAbove.Add(currentRow.rowPoints[i].actualPoiLocation);
+                        
+                        savedPrevRowCurrentPoint.connectedLocationsAbove.Add(currentRow.saveablePointDatas[i].pointLocation);
                         
                         ConnectPoints(prevRowCurrentPoint.actualPoiLocation.transform.localPosition,
                             currentRow.rowPoints[0].actualPoiLocation.transform.localPosition);
@@ -393,6 +759,7 @@ namespace Runtime.Managers
                         if (maxColumnsPreviousRow < maxColumnsCurrentRow)
                         {
                             prevRowCurrentPoint.connectedPointsAbove.Add(currentRow.rowPoints[1].actualPoiLocation);
+                            savedPrevRowCurrentPoint.connectedLocationsAbove.Add(currentRow.saveablePointDatas[1].pointLocation);
                         
                             ConnectPoints(prevRowCurrentPoint.actualPoiLocation.transform.localPosition,
                                 currentRow.rowPoints[1].actualPoiLocation.transform.localPosition);
@@ -402,8 +769,10 @@ namespace Runtime.Managers
                     }else if (i == previousRow.rowPoints.Count - 1)
                     {
                         var lastPointCurrentRow = currentRow.rowPoints.LastOrDefault();
+                        var saveableLastPointCurrentRow = currentRow.saveablePointDatas.LastOrDefault();
                        
                         prevRowCurrentPoint.connectedPointsAbove.Add(lastPointCurrentRow.actualPoiLocation);
+                        savedPrevRowCurrentPoint.connectedLocationsAbove.Add(saveableLastPointCurrentRow.pointLocation);
                         
                         ConnectPoints(prevRowCurrentPoint.actualPoiLocation.transform.localPosition,
                             lastPointCurrentRow.actualPoiLocation.transform.localPosition);
@@ -411,6 +780,7 @@ namespace Runtime.Managers
                         if (maxColumnsPreviousRow < maxColumnsCurrentRow)
                         {
                             prevRowCurrentPoint.connectedPointsAbove.Add(currentRow.rowPoints[currentRow.rowPoints.Count - 2].actualPoiLocation);
+                            savedPrevRowCurrentPoint.connectedLocationsAbove.Add(currentRow.saveablePointDatas[currentRow.saveablePointDatas.Count - 2].pointLocation);
                         
                             ConnectPoints(prevRowCurrentPoint.actualPoiLocation.transform.localPosition,
                                 currentRow.rowPoints[currentRow.rowPoints.Count - 2].actualPoiLocation.transform.localPosition);
@@ -445,8 +815,10 @@ namespace Runtime.Managers
                         if (j == 0)
                         {
                             var exactAbovePoint = currentRow.rowPoints[i];
+                            var exactSavableAbovePoint = currentRow.saveablePointDatas[i];
                             availableConnects.Remove(exactAbovePoint);
                             prevRowCurrentPoint.connectedPointsAbove.Add(exactAbovePoint.actualPoiLocation);
+                            savedPrevRowCurrentPoint.connectedLocationsAbove.Add(exactSavableAbovePoint.pointLocation);
                             ConnectPoints(prevRowCurrentPoint.actualPoiLocation.transform.localPosition,
                                 exactAbovePoint.actualPoiLocation.transform.localPosition);
                             continue;
@@ -456,6 +828,7 @@ namespace Runtime.Managers
                         var randomPoint = availableConnects[randomOtherConnect];
                         availableConnects.Remove(randomPoint);
                         prevRowCurrentPoint.connectedPointsAbove.Add(randomPoint.actualPoiLocation);
+                        savedPrevRowCurrentPoint.connectedLocationsAbove.Add(randomPoint.actualPoiLocation.savedLocation);
                         ConnectPoints(prevRowCurrentPoint.actualPoiLocation.transform.localPosition,
                             randomPoint.actualPoiLocation.transform.localPosition);
 
@@ -475,6 +848,7 @@ namespace Runtime.Managers
                 currentIterator++;
 
             }
+            
         }
 
         private void MarkConnectedActive(PointData _currentPoint)
@@ -494,19 +868,23 @@ namespace Runtime.Managers
                 }
             }
             
-            
-            
         }
 
 
         //ToDo: This is set to completely random, this should be controlled randomness
+        //Set rows, match row, item row, etc
         private GameplayEventType GetRandomEventType()
         {
             var randomInt = Random.Range(0, allEventTypes.Count);
             return allEventTypes[randomInt];
         }
 
-        private Transform InstantiatePointAt(Vector3 _instPosition)
+        private GameplayEventType GetEventByGUID(string _searchGUID)
+        {
+            return allEventTypes.FirstOrDefault(get => get.eventGUID == _searchGUID);
+        }
+
+        private PoiLocation InstantiatePointAt(Vector3 _instPosition, string _eventType = "")
         {
             var go = Instantiate(poiPrefab, mapGenParent);
             go.transform.localPosition = _instPosition;
@@ -515,10 +893,11 @@ namespace Runtime.Managers
             go.TryGetComponent(out PoiLocation pointLocation);
             if (pointLocation)
             {
-                pointLocation.Initialize(GetRandomEventType());
+                var _event = string.IsNullOrEmpty(_eventType) ? GetRandomEventType() : GetEventByGUID(_eventType);
+                pointLocation.Initialize(_event);
             }
             
-            return go.transform;
+            return pointLocation;
         }
 
         private void ConnectPoints(Vector3 _point1LocPos, Vector3 _point2LocPos)
@@ -534,26 +913,16 @@ namespace Runtime.Managers
 
         #endregion
 
-
-        #region ISaveable Inherited Methods
-
-        public void LoadData(SavedGameData _savedGameData)
-        {
-            
-        }
-
-        public void SaveData(ref SavedGameData _savedGameData)
-        {
-            
-        }
-
-        #endregion
-
         #region ISelectable Inherited Methods
 
         public void OnSelect()
         {
             if (isGeneratedMap || isGeneratingMap)
+            {
+                return;
+            }
+
+            if (m_isReturnFromMatch)
             {
                 return;
             }

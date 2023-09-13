@@ -1,20 +1,13 @@
 ﻿using Project.Scripts.Utils;
-using Runtime.Character;
 using Runtime.Selection;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using Utils;
+using Rewired;
 
 namespace Runtime.GameControllers
 {
     public class SelectionController : GameControllerBase
     {
-
-        #region Events
-
-
-
-        #endregion
 
         #region Serialized Fields
 
@@ -27,6 +20,10 @@ namespace Runtime.GameControllers
         private float m_mouseDownTime;
 
         private float m_mouseInputThreshold = 0.1f;
+
+        private int playerID = 0;
+
+        private Player m_player;
 
         private UnityEngine.Camera m_mainCamera;
 
@@ -62,12 +59,12 @@ namespace Runtime.GameControllers
 
         private void CheckUserInput()
         {
-            if (Input.GetMouseButtonDown(0))
+            if (m_player.GetButtonDown("Confirm"))
             {
                 m_mouseDownTime = Time.time;
             }
 
-            if (Input.GetMouseButtonUp(0))
+            if (m_player.GetButtonUp("Confirm"))
             {
                 var _timeFromPress = Time.time - m_mouseDownTime;
                 if (_timeFromPress <= m_mouseInputThreshold)
@@ -123,6 +120,16 @@ namespace Runtime.GameControllers
             selectable.OnSelect();
             Debug.Log("<color=#00ff00>Selected</color>");
 
+        }
+
+        #endregion
+
+        #region GameControllerBase Inherited Methods
+
+        public override void Initialize()
+        {
+            m_player = ReInput.players.GetPlayer(playerID);
+            base.Initialize();
         }
 
         #endregion

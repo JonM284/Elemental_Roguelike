@@ -1353,7 +1353,7 @@ CharacterController:
   m_Enabled: 1
   serializedVersion: 2
   m_Height: 1
-  m_Radius: 0.2
+  m_Radius: 0.25
   m_SlopeLimit: 45
   m_StepOffset: 0.3
   m_SkinWidth: 0.08
@@ -1444,6 +1444,10 @@ MonoBehaviour:
   ballOwnerIndicator: {fileID: 5221864410178889277}
   activePlayerIndicator: {fileID: 6929952212811954912}
   ballThrowIndicator: {fileID: 3344188365971079642}
+  shakeDuration: 0.5
+  shakeStrength: 1.25
+  shakeVibrationAmount: 6
+  shakeRandomness: 0
   onHighlight:
     m_PersistentCalls:
       m_Calls:

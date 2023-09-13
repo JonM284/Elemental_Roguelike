@@ -102,7 +102,7 @@ namespace Runtime.Character
 
         private void OnDisable()
         {
-            TurnController.OnChangeActiveTeam += SetCharacterPassive;
+            TurnController.OnChangeActiveTeam -= SetCharacterPassive;
         }
 
         private void Update()
@@ -248,7 +248,6 @@ namespace Runtime.Character
             if (ball.thrownBallStat > rollToGrab)
             {
                 //Didn't intercept ball
-                //ToDo: Miss Animation, restart ball regular movement
                 Debug.Log($"<color=orange>BIG MISS ON PASS INTERCEPT /// Ball: {ball.thrownBallStat} // Self: {rollToGrab}</color>", this);
                 
                 ChangeToVisualLayer(charLayerVal);
@@ -303,7 +302,6 @@ namespace Runtime.Character
             //Missed Attack
             if (enemyAttackRoll > rollToAttack)
             {
-                //ToDo: Miss attack on moving character, trip don't fall?
                 Debug.Log($"<color=orange>BIG MISS ON ATTACK /// Other: {enemyAttackRoll} // Self: {rollToAttack}</color>", this);
                 m_inRangeCharacter.characterMovement.PauseMovement(false);
 
@@ -315,7 +313,6 @@ namespace Runtime.Character
                 yield break;
             }
             
-            //ToDo: Attack moving character
             Debug.Log("<color=orange>HAS HIT ATTACK REACTION</color>", this);
             
             ChangeToVisualLayer(charLayerVal);

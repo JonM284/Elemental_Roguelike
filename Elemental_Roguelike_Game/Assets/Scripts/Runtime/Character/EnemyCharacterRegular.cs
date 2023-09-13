@@ -10,6 +10,10 @@ namespace Runtime.Character
 
         #region CharacterBase Inherited Methods
 
+        /// <summary>
+        /// Initialize all components of character
+        /// Also, check for upgrade items and such, then apply here
+        /// </summary>
         public override void InitializeCharacter()
         {
             characterVisuals.InitializeCharacterVisuals(); 

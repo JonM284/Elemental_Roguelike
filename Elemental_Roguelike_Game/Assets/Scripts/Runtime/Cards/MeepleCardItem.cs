@@ -92,7 +92,7 @@ namespace Runtime.Cards
         
         #region Class Implementation
         
-        public void InitializeSelectionItem(CharacterStatsData meeple)
+        public void InitializeSelectionItem(CharacterStatsData meeple, bool _isTeamMeeple)
         {
             if (meeple.IsNull())
             {
@@ -101,6 +101,8 @@ namespace Runtime.Cards
             }
 
             assignedData = meeple;
+
+            isSelected = _isTeamMeeple;
 
             var elementType = ElementUtils.GetElementTypeByGUID(meeple.meepleElementTypeRef);
 

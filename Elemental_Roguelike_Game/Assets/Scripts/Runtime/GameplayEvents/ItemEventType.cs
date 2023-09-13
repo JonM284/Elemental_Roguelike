@@ -1,4 +1,5 @@
-﻿using Data;
+﻿using System.Collections.Generic;
+using Data;
 using UnityEngine;
 
 namespace Runtime.GameplayEvents
@@ -8,8 +9,12 @@ namespace Runtime.GameplayEvents
     public class ItemEventType: GameplayEventType
     {
 
-        public GameplayItemData giftItem;
+        [SerializeField] private List<GameplayItemData> allPossibleItems = new List<GameplayItemData>();
 
+        public GameplayItemData GetRandomItem()
+        {
+            return allPossibleItems[Random.Range(0, allPossibleItems.Count)];
+        }
 
     }
 }

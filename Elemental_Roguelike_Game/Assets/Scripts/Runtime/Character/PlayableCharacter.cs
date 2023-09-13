@@ -15,10 +15,13 @@ namespace Runtime.Character
         private CharacterStatsData m_characterStatsData;
 
         #endregion
-
-
+        
         #region CharacterBase Inherited Methods
         
+        /// <summary>
+        /// Initialize all components of character
+        /// Also, check for upgrade items and such, then apply here
+        /// </summary>
         public override void InitializeCharacter()
         {
             var elementType = ElementUtils.GetElementTypeByGUID(m_characterStatsData.meepleElementTypeRef);
@@ -50,11 +53,6 @@ namespace Runtime.Character
             }
 
             return m_characterStatsData.baseSpeed;
-        }
-
-        protected override void OnWalkActionPressed()
-        {
-            
         }
 
         #endregion

@@ -24,31 +24,7 @@ namespace Utils
 
 
         #region Class Implementation
-
-        public static void AddTeamMember(CharacterBase _teamMember, CharacterStatsData _meepleData)
-        {
-            if (_teamMember == null)
-            {
-                return;
-            }
-            
-            teamController.AddTeamMember(_teamMember, _meepleData);
-        }
         
-        public static void RemoveTeamMember(CharacterBase _teamMember, CharacterStatsData _meepleData)
-        {
-            if (_teamMember == null)
-            {
-                return;
-            }
-            
-            teamController.RemoveTeamMember(_teamMember, _meepleData);
-        }
-
-        public static void SpawnTeamMembers()
-        {
-            
-        }
 
         #endregion
 

@@ -2,11 +2,11 @@
 using Project.Scripts.Utils;
 using Runtime.GameplayEvents;
 using Runtime.Selection;
-using Unity.VisualScripting;
 using UnityEngine;
 
 namespace Project.Scripts.Runtime.LevelGeneration
 {
+    [Serializable]
     public class PoiLocation: MonoBehaviour, ISelectable
     {
 
@@ -19,6 +19,12 @@ namespace Project.Scripts.Runtime.LevelGeneration
         #region Actions
 
         public static event Action<PoiLocation, GameplayEventType> POILocationSelected;
+
+        #endregion
+
+        #region Serialized Fields
+
+        [SerializeField] private MeshRenderer eventQuad;
 
         #endregion
 
@@ -52,6 +58,8 @@ namespace Project.Scripts.Runtime.LevelGeneration
 
         public GameplayEventType AssignedEventType { get; private set; }
 
+        public Vector3 savedLocation { get; private set; }
+
         #endregion
         
         #region Class Implementation
@@ -60,9 +68,19 @@ namespace Project.Scripts.Runtime.LevelGeneration
         {
             m_clonedMaterial = new Material(objMaterial);
 
+            savedLocation = transform.localPosition;
+
             this.GetComponent<MeshRenderer>().material = m_clonedMaterial;
 
             m_clonedMaterial.SetColor(mainColor, m_normalColor);
+
+            if (!eventQuad.IsNull())
+            {
+                if (!_event.eventTexture.IsNull())
+                {
+                    eventQuad.materials[0].mainTexture = _event.eventTexture;
+                }
+            }
 
             AssignedEventType = _event;
         }
@@ -78,7 +96,7 @@ namespace Project.Scripts.Runtime.LevelGeneration
             m_clonedMaterial.SetColor(mainColor, m_activeColor);
         }
 
-        private void SetPointSelected()
+        public void SetPointSelected()
         {
             if (m_clonedMaterial.IsNull())
             {

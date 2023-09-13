@@ -28,7 +28,6 @@ namespace Runtime.Abilities
             }
         }
 
-        //ToDo: change this to include animations and vfx
         public override void UseAbility(Vector3 _ownerUsePos)
         {
             currentOwner.TryGetComponent(out CharacterMovement characterMovement);

@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using Project.Scripts.Utils;
 using UnityEngine;
 
 namespace Runtime.GameControllers
@@ -39,6 +40,12 @@ namespace Runtime.GameControllers
         [ContextMenu("Initialize")]
         public override void Initialize()
         {
+            if (!Instance.IsNull())
+            {
+                Destroy(this.gameObject);
+                return;
+            }
+            
             Instance = this;
             StartCoroutine(C_SetupControllers());
             game_controllers.ForEach(gc => gc.Initialize());

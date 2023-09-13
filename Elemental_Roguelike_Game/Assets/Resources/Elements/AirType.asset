@@ -19,7 +19,8 @@ MonoBehaviour:
   resistances: []
   immunities: []
   statusImmunities: []
+  meepleIcon: {fileID: 21300000, guid: 7a123c95ebf231b4c9116bfc035b9976, type: 3}
   meepleColors:
-  - {r: 0.7372549, g: 0.7372549, b: 0.7372549, a: 0}
-  - {r: 0.89019614, g: 0.89019614, b: 0.89019614, a: 0}
+  - {r: 0.7372549, g: 0.7372549, b: 0.7372549, a: 1}
+  - {r: 0.89019614, g: 0.89019614, b: 0.89019614, a: 1}
   elementSprite: {fileID: -1599493914, guid: 6a6f25e903f18fd4db55f0dfe52e535c, type: 3}

@@ -28,7 +28,8 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 95a8ef5f5dc6d1041b926a50980d0665, type: 2}
   - {fileID: 11400000, guid: b8dae5a0cdc62604f96986aa9b39cd25, type: 2}
   statusImmunities: []
+  meepleIcon: {fileID: 21300000, guid: 8d1d78b157f314f4490b58c6e43014e8, type: 3}
   meepleColors:
-  - {r: 0.8235295, g: 0.8235295, b: 0.8235295, a: 0}
-  - {r: 0.21176472, g: 0.21176472, b: 0.21176472, a: 0}
+  - {r: 0.8235295, g: 0.8235295, b: 0.8235295, a: 1}
+  - {r: 0.44705883, g: 0.44705883, b: 0.44705883, a: 1}
   elementSprite: {fileID: 1965326521, guid: 6a6f25e903f18fd4db55f0dfe52e535c, type: 3}

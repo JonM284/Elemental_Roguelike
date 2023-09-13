@@ -1,16 +1,13 @@
-﻿using System.Collections.Generic;
-using Data;
-using Data.CharacterData;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Runtime.GameplayEvents
 {
     
-    [CreateAssetMenu(menuName = "Custom Data/Match Event Type")]
+    [CreateAssetMenu(menuName = "Custom Data/Member Event Type")]
     public class MemberEventType : GameplayEventType
     {
         
-        public List<CharacterStatsData> randomMemberAdditions = new List<CharacterStatsData>();
+        
 
     }
 }

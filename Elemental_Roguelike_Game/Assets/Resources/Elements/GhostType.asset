@@ -23,6 +23,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 459cc8e0701be4d449844779020391f8, type: 2}
   immunities: []
   statusImmunities: []
+  meepleIcon: {fileID: 21300000, guid: 375aabb631ec4f448a82b9dd8e1e8399, type: 3}
   meepleColors:
   - {r: 1, g: 1, b: 1, a: 1}
   - {r: 0.627451, g: 0.627451, b: 0.627451, a: 1}

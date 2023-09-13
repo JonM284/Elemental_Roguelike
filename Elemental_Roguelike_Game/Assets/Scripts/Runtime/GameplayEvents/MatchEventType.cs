@@ -1,4 +1,6 @@
-﻿using Data;
+﻿using System.Collections.Generic;
+using Data;
+using Data.EnemyData;
 using UnityEngine;
 
 namespace Runtime.GameplayEvents
@@ -8,9 +10,24 @@ namespace Runtime.GameplayEvents
     public class MatchEventType : GameplayEventType
     {
 
-        public int arenaID = 0;
+        #region Public Fields
 
         public SceneName sceneName;
+
+        public List<EnemyAITeamData> possibleEnemyTeams = new List<EnemyAITeamData>();
+
+        public bool m_isMeepleTeam;
+
+        #endregion
+
+        #region Class Implementation
+
+        public EnemyAITeamData GetRandomEnemyTeam()
+        {
+            return possibleEnemyTeams[Random.Range(0, possibleEnemyTeams.Count)];
+        }
+
+        #endregion
 
     }
 }

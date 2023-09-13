@@ -25,6 +25,8 @@ namespace Runtime.Managers
             {
                 yield return new WaitUntil(() => MainController.Instance.allInitialized);
             }
+            
+            yield return new WaitForSeconds(0.5f);
 
             CheckOptions();
 
@@ -37,13 +39,14 @@ namespace Runtime.Managers
 
         private void CheckOptions()
         {
-            if (TeamController.Instance.savedTeamMembers.Count == 0)
+            if (TeamController.Instance.GetTeam().Count == 0)
             {
                 randomTeamSelectionManager.SetupRandomTeamGenerator();
                 return;
             }
 
-            mapController.DisplayMap();
+            
+            mapController.DisplayOneTime();
 
         }
 

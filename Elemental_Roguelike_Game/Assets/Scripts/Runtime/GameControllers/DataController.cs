@@ -1,7 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Data.DataSaving;
+using Project.Scripts.Utils;
+using Runtime.Managers;
 using UnityEngine;
 
 //Data saving was made using the help of this youtube tutorial: https://www.youtube.com/watch?v=aUi9aijvpgs
@@ -18,7 +19,7 @@ namespace Runtime.GameControllers
         
         #region Singleton
 
-        public static DataController instance { get; private set; }
+        public static DataController Instance { get; private set; }
 
         #endregion
 
@@ -36,12 +37,12 @@ namespace Runtime.GameControllers
 
         private void Awake()
         {
-            if (instance != null)
+            if (!Instance.IsNull())
             {
                 return;
             }
 
-            instance = this;
+            Instance = this;
         }
 
         private void Start()

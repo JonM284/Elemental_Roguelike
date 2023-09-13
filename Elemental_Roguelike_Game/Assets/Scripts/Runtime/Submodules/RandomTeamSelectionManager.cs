@@ -8,9 +8,7 @@ using Project.Scripts.Utils;
 using Runtime.Cards;
 using Runtime.Character;
 using Runtime.GameControllers;
-using Runtime.UI;
 using Runtime.UI.DataModels;
-using Runtime.UI.DataReceivers;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.Events;
@@ -40,7 +38,7 @@ namespace Runtime.Submodules
 
         public static event Action<CharacterStatsData> SelectedMeepleConfirmed;
         
-        public static event Action<List<CharacterStatsData>> TeamMembersConfirmed;
+        public static event Action<List<CharacterStatsData>, bool> TeamMembersConfirmed;
 
         #endregion
 
@@ -69,7 +67,9 @@ namespace Runtime.Submodules
         [SerializeField] private List<Transform> selectedTeamLocations = new List<Transform>();
 
         [SerializeField] private Transform cardSpawnLocation;
-        
+
+        [SerializeField] private List<GameObject> redoButtonGOs = new List<GameObject>();
+
         #endregion
 
         #region Private Fields
@@ -99,6 +99,8 @@ namespace Runtime.Submodules
         private Transform m_cardObjPool;
 
         private bool m_isButtonOpen;
+
+        private bool m_isFirstTime;
         
         #endregion
 
@@ -150,21 +152,81 @@ namespace Runtime.Submodules
                 return;
             }
 
-            TeamMembersConfirmed?.Invoke(selectedTeamData);
+            TeamMembersConfirmed?.Invoke(selectedTeamData, m_isFirstTime);
 
             onTeamConfirmed?.Invoke();
             
-            m_selectedCards.ForEach(mci => CacheCard(mci));
+            m_selectedCards.ForEach(mci =>
+            {
+                if (!mci.assignedMeepleObj.IsNull())
+                {
+                    CacheMeepleGameObject(mci.assignedMeepleObj);
+                }
+                mci.CleanUp();
+                CacheCard(mci);
+            });
             
-            m_randomGeneratedCards.ForEach(mci => CacheCard(mci));
+            m_randomGeneratedCards.ForEach(mci =>
+            {
+                if (!mci.assignedMeepleObj.IsNull())
+                {
+                    CacheMeepleGameObject(mci.assignedMeepleObj);
+                }
+                mci.CleanUp();
+                CacheCard(mci);
+            });
             
             m_selectedCards.Clear();
             m_randomGeneratedCards.Clear();
         }
 
+        private void DisplayRedoButton(bool _display)
+        {
+            redoButtonGOs.ForEach(g => g.SetActive(_display));
+        }
+
+        public IEnumerator ReopenTeamMenu()
+        {
+            m_isFirstTime = false;
+            
+            //Get created team
+            selectedTeamData = teamController.GetTeam();
+            
+            DisplayRedoButton(false);
+
+            yield return StartCoroutine(C_SetupRandomGenerator());
+
+            for (int i = 0; i < selectedTeamData.Count; i++)
+            {
+                var teamMember = selectedTeamData[i];
+
+                var _foundClass = meepleController.GetClassByGUID(teamMember.classReferenceType);
+                
+                //Get Card
+                var card = m_cachedCards.FirstOrDefault(card => card.classData == _foundClass);
+
+                m_cachedCards.Remove(card);
+                card.transform.parent = null;
+                card.transform.position = selectedTeamLocations[i].position;
+                card.transform.forward = selectedTeamLocations[i].forward;
+                
+                m_activeCards.Add(card);
+                m_selectedCards.Add(card);
+                
+                card.InitializeSelectionItem(teamMember, true);
+                
+                InstantiateDisplayMeeple(teamMember, card);
+            }
+
+            onTeamAmountReached?.Invoke();
+            m_isButtonOpen = true;
+
+        }
+
 
         public void SetupRandomTeamGenerator()
         {
+            m_isFirstTime = true;
             StartCoroutine(C_SetupRandomGenerator());
         }
         
@@ -181,7 +243,7 @@ namespace Runtime.Submodules
             yield return C_PreInstantiateGameObjects();
             
             onFinishedLoading?.Invoke();
-
+            
             yield return new WaitForSeconds(0.3f);
             
             GenerateNewTeam();
@@ -190,6 +252,11 @@ namespace Runtime.Submodules
 
         private IEnumerator C_PreInstantiateGameObjects()
         {
+            if (m_cachedSavedMeepleObjects.Count != 0)
+            {
+                yield break;
+            }
+            
             for (int i = 0; i < 8; i++)
             {
                 var instantiatedMeeple = Instantiate(loadedDisplayMeepleObject, cachedMeepleObjectPool);
@@ -215,6 +282,11 @@ namespace Runtime.Submodules
 
         private IEnumerator C_LoadMeeple()
         {
+            if (!loadedDisplayMeepleObject.IsNull())
+            {
+                yield break;
+            }
+            
             var handle = Addressables.LoadAssetAsync<GameObject>(displayMeepleRef);
             
             if (!handle.IsDone)
@@ -230,18 +302,13 @@ namespace Runtime.Submodules
             }
         }
 
-        private GameObject GetLoadedCardObject(CardByClass cardByClass)
-        {
-            if (cardByClass.IsNull())
-            {
-                return default;
-            }
-
-            return cardByClass.loadedCardGO;
-        }
-
         private IEnumerator C_LoadCardGameObject(CardByClass cardByClass)
         {
+            if (!cardByClass.loadedCardGO.IsNull())
+            {
+                yield break;
+            }
+            
             var handle = cardByClass.cardRef.LoadAssetAsync<GameObject>();
             
             if (!handle.IsDone)
@@ -257,22 +324,6 @@ namespace Runtime.Submodules
             }
         }
 
-        public IEnumerator C_InstantiateCard(CharacterStatsData _data , CardByClass _cardByClass)
-        {
-            var loadedObj = GetLoadedCardObject(_cardByClass);
-            if (loadedObj.IsNull())
-            {
-                yield return C_LoadCardGameObject(_cardByClass);
-            }
-
-            Instantiate(loadedObj);
-            loadedObj.TryGetComponent(out MeepleCardItem cardItem);
-            if (cardItem)
-            {
-                cardItem.InitializeSelectionItem(_data);
-            }
-        }
-
         private void Release()
         {
             foreach (var cardByClass in cardsByClass)
@@ -281,11 +332,6 @@ namespace Runtime.Submodules
             }
             
             displayMeepleRef.ReleaseAsset();
-        }
-
-        private void OpenUI()
-        {
-            UIUtils.OpenUI(uiWindowData);
         }
 
 
@@ -334,19 +380,17 @@ namespace Runtime.Submodules
                 m_cachedCards.Remove(card);
                 card.transform.parent = null;
                 card.transform.position = cardSpawnLocation.position;
-                
-                card.SetMovement(generatedCardLocations[i].position, generatedCardLocations[i].forward, true);
+                card.transform.forward = cardSpawnLocation.forward;
                 
                 m_activeCards.Add(card);
                 m_randomGeneratedCards.Add(card);
                 
-                card.InitializeSelectionItem(newCharacter);
+                card.InitializeSelectionItem(newCharacter, false);
                 
                 InstantiateDisplayMeeple(newCharacter, card);
-                
-                //ToDo: Add to Movement list, to move card
-                
-                
+
+                card.SetMovement(generatedCardLocations[i].position, generatedCardLocations[i].forward, true);
+
                 yield return null;
             }
             

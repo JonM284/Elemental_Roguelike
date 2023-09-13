@@ -13,6 +13,7 @@ using Runtime.Managers;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using Utils;
+using Random = UnityEngine.Random;
 using TransformUtils = Project.Scripts.Utils.TransformUtils;
 
 namespace Runtime.GameControllers
@@ -78,9 +79,7 @@ namespace Runtime.GameControllers
         #endregion
 
         #region Private Fields
-
-        private CharacterBase m_cachedMovementMeeple;
-
+        
         private int m_currentTeamTurnIndex = 0;
 
         [SerializeField] private List<CharacterBase> m_allBattlers = new List<CharacterBase>();
@@ -91,11 +90,15 @@ namespace Runtime.GameControllers
 
         private int activeTeamID = 0;
 
+        private int m_currentSelectedCharacterID;
+
         private Vector3 ballInitialPosition;
 
         private List<CharacterBase> m_cachedHiddenCharacters = new List<CharacterBase>();
 
         private bool m_hasScoredPoint;
+
+        private bool m_isSettingUpMatch;
 
         #endregion
 
@@ -124,18 +127,22 @@ namespace Runtime.GameControllers
 
         private void OnEnable()
         {
+            SceneController.OnLevelFinishedLoading += OnLevelFinishedLoading;
             MeepleController.PlayerMeepleCreated += MeepleControllerOnPlayerMeepleCreated;
             CharacterBase.CharacterSelected += OnCharacterSelected;
             CharacterBase.CharacterEndedTurn += OnCharacterEndedTurn;
             EnemyController.EnemyCreated += OnEnemyCreated;
+            WinConditionController.PointThresholdReached += EndBattle;
         }
 
         private void OnDisable()
         {
+            SceneController.OnLevelFinishedLoading -= OnLevelFinishedLoading;
             MeepleController.PlayerMeepleCreated -= MeepleControllerOnPlayerMeepleCreated;
             CharacterBase.CharacterSelected -= OnCharacterSelected;
             CharacterBase.CharacterEndedTurn -= OnCharacterEndedTurn;
             EnemyController.EnemyCreated -= OnEnemyCreated;
+            WinConditionController.PointThresholdReached -= EndBattle;
         }
 
         #endregion
@@ -144,6 +151,10 @@ namespace Runtime.GameControllers
 
         public override void Initialize()
         {
+            if (!Instance.IsNull())
+            {
+                return;
+            }
             Instance = this;
             base.Initialize();
         }
@@ -172,9 +183,81 @@ namespace Runtime.GameControllers
             return teamManagers.FirstOrDefault(atm => atm.characterSide == playerSide);
         }
 
+        private List<CharacterBase> GetAvailableTeamMembers()
+        {
+            var activeTeam = CommonUtils.ToList(GetActiveTeam());
+            return activeTeam.FindAll(cb => cb.characterActionPoints != 0);
+        }
+
+        public void SelectAvailablePlayer(bool _isNext)
+        {
+            if (!isPlayerTurn)
+            {
+                return;
+            }
+
+            var availableTeamMembers = GetAvailableTeamMembers();
+            
+            if(availableTeamMembers.Count <= 1)
+            {
+                //Only 1 or None = turn end
+                return;
+            }
+
+            var currentCharacterIndex = !activeCharacter.IsNull() ? availableTeamMembers.IndexOf(activeCharacter) : 0;
+            var _amountChange = _isNext ? 1 : -1;
+            var nextIndex = currentCharacterIndex + _amountChange;
+            if (nextIndex < 0)
+            {
+                nextIndex = availableTeamMembers.Count - 1;
+            }else if (nextIndex >= availableTeamMembers.Count)
+            {
+                nextIndex = 0;
+            }
+
+            if (availableTeamMembers[nextIndex].IsNull())
+            {
+                Debug.Log("Next Team Member is NULL");
+                return;
+            }
+
+            if (!activeCharacter.IsNull())
+            {
+                activeCharacter.StopAllActions();
+            }
+            
+            activeCharacter = availableTeamMembers[nextIndex];
+
+            CameraUtils.SetCameraTrackPos(activeCharacter.transform.position, false);
+            CameraUtils.SetCameraZoom(0.7f);
+            
+            OnChangeActiveCharacter?.Invoke(activeCharacter);
+
+        }
+        
+        private void OnLevelFinishedLoading(SceneName _sceneName, bool _isMatchScene)
+        {
+            if (!_isMatchScene)
+            {
+                return;
+            }
+
+            if (!is_Initialized)
+            {
+                return;
+            }
+            
+            SetupMatch();
+        }
+
         [ContextMenu("Start Match")]
         public void SetupMatch()
         {
+            if(m_isSettingUpMatch)
+            {
+                return;
+            }
+            
             StartCoroutine(C_MatchSetup());
         }
         
@@ -183,6 +266,8 @@ namespace Runtime.GameControllers
         //flip coin to decided starting team
         private IEnumerator C_MatchSetup()
         {
+            m_isSettingUpMatch = true;
+            
             UIUtils.OpenUI(battleUIData);
 
             m_allBattlers.Clear();
@@ -238,11 +323,18 @@ namespace Runtime.GameControllers
                 battlersBySides.Add(_batBySide);
             }
 
-            var teamMembers = TeamController.Instance.savedTeamMembers;
+            var teamMembers = TeamController.Instance.GetTeam();
             
             Debug.Log($"Team Members = {teamMembers.Count}");
             
             var correctSide = teamManagers.FirstOrDefault(atm => atm.characterSide == playerSide);
+
+            if (correctSide.IsNull())
+            {
+                Debug.LogError("Team Side null");
+            }
+
+            Debug.Log(correctSide.startPositions.Count);
             
             for (int i = 0; i < teamMembers.Count; i++)
             {
@@ -258,6 +350,11 @@ namespace Runtime.GameControllers
         
         private void MeepleControllerOnPlayerMeepleCreated(CharacterBase characterBase, CharacterStatsData stats)
         {
+            if (!is_Initialized)
+            {
+                return;
+            }
+            
             var _playerTeam = battlersBySides.FirstOrDefault(bbs => bbs.teamSide == playerSide);
 
             if (_playerTeam.IsNull())
@@ -306,6 +403,11 @@ namespace Runtime.GameControllers
         
         private void OnEnemyCreated(CharacterBase _character)
         {
+            if (!is_Initialized)
+            {
+                return;
+            }
+            
             var _enemyTeam = battlersBySides.FirstOrDefault(bbs => bbs.teamSide == enemySide);
 
             if (_enemyTeam.IsNull())
@@ -330,8 +432,7 @@ namespace Runtime.GameControllers
 
             yield return new WaitForSeconds(1f);
             
-            //ToDo: when adding enemies, have the starting side be decided by coin-toss
-            activeTeamID = 0;
+            activeTeamID = Random.Range(0,2);
 
             yield return new WaitForSeconds(1f);
             
@@ -340,6 +441,8 @@ namespace Runtime.GameControllers
             yield return new WaitForSeconds(1f);
             
             SetTeamActive();
+
+            m_isSettingUpMatch = false;
             
             OnBattleStarted?.Invoke();
             
@@ -347,6 +450,11 @@ namespace Runtime.GameControllers
         
         private void OnCharacterSelected(CharacterBase _character)
         {
+            if (!is_Initialized)
+            {
+                return;
+            }
+            
             if (battlersBySides[activeTeamID].teamSide != playerSide)
             {
                 Debug.Log("NOT PLAYERS TURN");
@@ -392,6 +500,11 @@ namespace Runtime.GameControllers
         //Use this for AI only
         private void OnCharacterEndedTurn(CharacterBase _character)
         {
+            if (!is_Initialized)
+            {
+                return;
+            }
+            
             if (_character == activeCharacter)
             {
                 activeCharacter = null;
@@ -478,6 +591,11 @@ namespace Runtime.GameControllers
             {
                 Debug.Log("ENEMY TEAM EMPTY");
                 yield break;
+            }
+
+            if (enemySide.teamMembers.TrueForAll(cb => !cb.isAlive))
+            {
+                EndTeamTurn();
             }
 
 
@@ -614,7 +732,18 @@ namespace Runtime.GameControllers
         private void RemoveAllCharacters()
         {
             m_allBattlers.Clear();
-            battlersBySides.ForEach(bbs => bbs.teamMembers.Clear());
+            
+            battlersBySides.ForEach(bbs =>
+            {
+                bbs.teamMembers.ForEach(cb => GameObject.Destroy(cb.gameObject));
+            });
+            
+            battlersBySides.ForEach(bbs =>
+            {
+                bbs.teamMembers.Clear();
+            });
+            
+            teamManagers.Clear();
         }
 
         public void HaltAllPlayers()
@@ -633,10 +762,19 @@ namespace Runtime.GameControllers
 
         private void EndBattle()
         {
+            UIUtils.FadeBlack(false);
+            var playerTeam = battlersBySides.FirstOrDefault(bbs => bbs.teamSide == playerSide);
+            
+            foreach (var _character in playerTeam.teamMembers)
+            {
+                _character.characterLifeManager.FullReviveCharacter();
+                _character.RemoveEffect();
+                
+            }
+            
             isInBattle = false;
             RemoveAllCharacters();
             //NOTE: must set active player to the movement meeple, aka the first meeple in the team that is alive, if all meeples dead, player loses
-            activeCharacter = m_cachedMovementMeeple;
             Debug.Log("Battle Ended");
             OnBattleEnded?.Invoke();
         }

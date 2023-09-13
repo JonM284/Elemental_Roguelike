@@ -46,11 +46,9 @@ namespace Data.CharacterData
 
         public List<string> abilityReferences;
 
+        public List<string> heldItems;
+
         public string classReferenceType;
-
-        public string weaponReference;
-
-        public string weaponElementTypeRef;
 
 
         #endregion
@@ -74,11 +72,6 @@ namespace Data.CharacterData
             //Type must be added whenever creating a new meeple
             this.abilityReferences = new List<string>();
             //Abilities must also be added when creating a new meeple
-            this.weaponReference = "";
-            this.weaponElementTypeRef = "";
-            //Weapon must be added when creating new meeple
-            //Weapon type will default to normal
-            //Add default weapon, hands?
         }
 
         #endregion

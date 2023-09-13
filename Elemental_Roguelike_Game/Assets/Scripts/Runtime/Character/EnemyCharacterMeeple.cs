@@ -17,6 +17,10 @@ namespace Runtime.Character
 
         #region CharacterBase Inherited Methods
 
+        /// <summary>
+        /// Initialize all components of character
+        /// Also, check for upgrade items and such, then apply here
+        /// </summary>
         public override void InitializeCharacter()
         {
             var elementType = ElementUtils.GetElementTypeByGUID(m_enemyMeepleStats.meepleElementTypeRef);
@@ -30,10 +34,6 @@ namespace Runtime.Character
             {
                 characterAbilityManager.InitializeCharacterAbilityList(m_enemyMeepleStats.abilityReferences, elementType, classType);
             }
-            
-            var weaponData = WeaponUtils.GetDataByRef(m_enemyMeepleStats.weaponReference);
-            var weaponElementType = ElementUtils.GetElementTypeByGUID(m_enemyMeepleStats.weaponElementTypeRef);
-            characterWeaponManager.InitializeCharacterWeapon(weaponData, weaponElementType);
         }
         
         public override float GetBaseSpeed()

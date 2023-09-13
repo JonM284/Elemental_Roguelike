@@ -87,6 +87,11 @@ namespace Runtime.GameControllers
 
         public override void Initialize()
         {
+            if (!Instance.IsNull())
+            {
+                return;
+            }
+            
             Instance = this;
             base.Initialize();
         }
@@ -97,6 +102,11 @@ namespace Runtime.GameControllers
 
         private void SetupJuiceUI()
         {
+            if (!is_Initialized)
+            {
+                return;
+            }
+            
             UIController.Instance.AddUICallback(juiceUIWindowData, InitializeJuiceUI);
             if (cachedDamageText.IsNull())
             {
@@ -114,7 +124,6 @@ namespace Runtime.GameControllers
             
             juiceUIDataModel = uiDataModel;
             Debug.Log("Has Created Juice UI", juiceUIDataModel);
-            
         }
 
         private void SetupCachedDamageText(GameObject _returnedObj)
@@ -126,11 +135,9 @@ namespace Runtime.GameControllers
             }
         }
 
-        private IEnumerator C_DoCameraShake(float _duration)
+        public void DoCameraShake(float _duration, float _strength, int _amplitude, float randomness)
         {
-            cameraRef.DOShakePosition(_duration, shakeStrength, shakeAmplitude);
-
-            yield return new WaitForSeconds(_duration);
+            cameraRef.DOShakePosition(_duration, _strength, _amplitude, randomness);
         }
 
         public IEnumerator C_ScorePoint(bool _isPlayerGoal, Transform cameraPos)
@@ -149,7 +156,7 @@ namespace Runtime.GameControllers
                 leftCharCam.transform.forward = cameraPos.forward;
             }
             
-            StartCoroutine(C_DoCameraShake(3.45f));
+            DoCameraShake(3.45f, shakeStrength, shakeAmplitude, 90f);
 
             yield return StartCoroutine(juiceUIDataModel.C_ScoreGoal(_isPlayerGoal));
 

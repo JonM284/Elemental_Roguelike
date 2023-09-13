@@ -37,6 +37,8 @@ namespace Runtime.GameControllers
 
         #region Private Fields
 
+        private int m_upgradePoints;
+        
         private List<CharacterStatsData> m_savedTeamMembers = new List<CharacterStatsData>();
 
         #endregion
@@ -47,13 +49,13 @@ namespace Runtime.GameControllers
 
         public int generatedTeamSize => m_generatedTeamSize;
 
-        public List<CharacterStatsData> savedTeamMembers => m_savedTeamMembers;
-
+        public int upgradePoints => m_upgradePoints;
+        
         #endregion
 
         #region Unity Events
 
-        private void OnEnable()
+        private void OnEnable() 
         {
             RandomTeamSelectionManager.TeamMembersConfirmed += OnTeamMembersConfirmed;   
         }
@@ -69,6 +71,11 @@ namespace Runtime.GameControllers
 
         public override void Initialize()
         {
+            if (!Instance.IsNull())
+            {
+                return;
+            }
+            
             Instance = this;
             base.Initialize();
         }
@@ -77,36 +84,86 @@ namespace Runtime.GameControllers
 
         #region Class Implementation
         
-        private void OnTeamMembersConfirmed(List<CharacterStatsData> _confirmedTeamMembers)
+        private void OnTeamMembersConfirmed(List<CharacterStatsData> _confirmedTeamMembers, bool _isFirstTime)
         {
+            if (!is_Initialized)
+            {
+                return;
+            }
+            
             if (_confirmedTeamMembers.Count == 0)
             {
-                Debug.LogError("No Confirmed Members");
+                Debug.Log("No Confirmed Members");
                 return;
             }
 
             if (m_savedTeamMembers.Count > 0)
             {
+                Debug.Log("Clearing Team Members");
                 m_savedTeamMembers.Clear();
             }
-            
+
             _confirmedTeamMembers.ForEach(csd => m_savedTeamMembers.Add(csd));
-        }
-
-        public void AddTeamMember(CharacterBase _teamMember, CharacterStatsData _meepleData)
-        {
-
-        }
-
-        public void RemoveTeamMember(CharacterBase _teamMemberToRemove, CharacterStatsData _meepleData)
-        {
-
+            
+            DataController.Instance.SaveGame();
         }
 
         [ContextMenu("Clear Team Members")]
         public void RemoveAllTeamMembers()
         {
             m_savedTeamMembers.Clear();
+        }
+
+        public List<CharacterStatsData> GetTeam()
+        {
+            var duplicate = m_savedTeamMembers.ToList();
+            return duplicate;
+        }
+
+        public void UpdateTeamMemberStats(CharacterStatsData _character, CharacterStatsEnum _stat, int _amount)
+        {
+            if (_character.IsNull())
+            {
+                return;
+            }
+
+            if (_amount == 0)
+            {
+                return;
+            }
+
+            switch (_stat)
+            {
+                case CharacterStatsEnum.TACKLE:
+                    _character.damageScore += _amount;
+                    break;
+                case CharacterStatsEnum.AGILITY:
+                    _character.agilityScore += _amount;
+                    break;
+                case CharacterStatsEnum.SHOOTING:
+                    _character.shootingScore += _amount;
+                    break;
+            }
+        }
+
+        public void UpdateCharacterVitality(CharacterStatsData _character, int _amount)
+        {
+            if (_character.IsNull())
+            {
+                return;
+            }
+
+            _character.baseHealth += _amount;
+        }
+
+        public void UpdateCharacterShields(CharacterStatsData _character, int _amount)
+        {
+            if (_character.IsNull())
+            {
+                return;
+            }
+
+            _character.baseShields += _amount;
         }
 
         #endregion
@@ -117,11 +174,13 @@ namespace Runtime.GameControllers
         public void LoadData(SavedGameData _savedGameData)
         {
             m_savedTeamMembers = _savedGameData.savedTeamMembers;
+            m_upgradePoints = _savedGameData.savedUpgradePoints;
         }
 
         public void SaveData(ref SavedGameData _savedGameData)
         {
             _savedGameData.savedTeamMembers = m_savedTeamMembers;
+            _savedGameData.savedUpgradePoints = m_upgradePoints;
         }
 
         #endregion

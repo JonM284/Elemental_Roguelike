@@ -41,6 +41,14 @@ MonoBehaviour:
     m_Address: DamageTextUIItem@Prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
+  - m_GUID: 2a80fb46ff8536d48b154544ea3f6ece
+    m_Address: CharacterDisplayHealthBar
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: ba827e1d6e9614246afd89151c6b9145
+    m_Address: MatchEndUI@Prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: c51bc8bdb2bb6e5479c05b7cf9bc0f75, type: 2}
   m_SchemaSet:

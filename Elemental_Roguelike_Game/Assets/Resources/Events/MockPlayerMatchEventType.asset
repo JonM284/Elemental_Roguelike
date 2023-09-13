@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 96608ee828da4fd4828d69b92359d030, type: 3}
+  m_Name: MockPlayerMatchEventType
+  m_EditorClassIdentifier: 
+  m_eventTexture: {fileID: 2800000, guid: 926ea64f4d3c4ec4faec49ab8ef79893, type: 3}
+  eventGUID: fbf9f2cc-1e66-4519-bced-6204e6d593fc
+  sceneName: 2
+  possibleEnemyTeams: []
+  m_isMeepleTeam: 0

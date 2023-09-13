@@ -14216,7 +14216,8 @@ GameObject:
   - component: {fileID: 4166048671134451374}
   - component: {fileID: 644514144587986151}
   - component: {fileID: 2249291299931333563}
-  - component: {fileID: 2742192784527456101}
+  - component: {fileID: 948085445534036053}
+  - component: {fileID: 3630978803110397754}
   m_Layer: 0
   m_Name: Shade@ProjectileZoneAbility
   m_TagString: Untagged
@@ -19083,7 +19084,7 @@ SphereCollider:
   serializedVersion: 2
   m_Radius: 0.00001
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &2742192784527456101
+--- !u!114 &948085445534036053
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -19092,7 +19093,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 5195027632791861818}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bb358ac02950caf418b6f473f0296f46, type: 3}
+  m_Script: {fileID: 11500000, guid: 888ef336ba8547eca059e6e508a44cc0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   onProjectileStart:
@@ -19100,4 +19101,31 @@ MonoBehaviour:
       m_Calls: []
   onProjectileEnd:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 3630978803110397754}
+        m_TargetAssemblyTypeName: Runtime.VFX.VFXCreator, Assembly-CSharp
+        m_MethodName: CreateVFX
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  zoneInfo: {fileID: 11400000, guid: 995ffd86029b9d14fbbd95e26ce43b7c, type: 2}
+--- !u!114 &3630978803110397754
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5195027632791861818}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8a2936376ce74678939c5e40b1a6e930, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  vfxToCreate: {fileID: 8674202494551280010, guid: 9ec0d86db8dd89040805f9493b273634,
+    type: 3}

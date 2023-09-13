@@ -26,7 +26,7 @@ MonoBehaviour:
   chanceToApplyStatus: 100
   statusEffect: {fileID: 11400000, guid: 68f99d606331d8e468a4474086799fa1, type: 2}
   zonePrefab:
-    m_AssetGUID: 
+    m_AssetGUID: ffcffdb138568ea4bb63881c8b5d6adb
     m_SubObjectName: 
     m_SubObjectType: 
     m_EditorAssetChanged: 0

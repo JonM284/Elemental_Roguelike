@@ -86,7 +86,7 @@ namespace Runtime.Character
 
             var _fixedIncomingDamage = _incomingDamage;
             
-            if (_type != null && _incomingDamage > 0)
+            if (!_type.IsNull() && _incomingDamage > 0)
             {
                 _fixedIncomingDamage = characterElementType.CalculateDamageOnWeakness(_incomingDamage, _type);
             }
@@ -97,7 +97,7 @@ namespace Runtime.Character
             }
             else
             {
-                if (_incomingDamage >= currentShieldPoints)
+                if (_fixedIncomingDamage >= currentShieldPoints)
                 {
                     currentHealthPoints -= (_fixedIncomingDamage - currentShieldPoints);
                     currentShieldPoints = 0;

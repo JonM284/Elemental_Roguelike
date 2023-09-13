@@ -14,17 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   elementName: Normal
   elementGUID: 0b300645-847e-45c0-80d1-f01aeda57ba5
-  insanityAmount: 0
   weaknesses: []
   resistances: []
   immunities: []
   statusImmunities: []
+  meepleIcon: {fileID: 21300000, guid: 76b6ba5665ca19744bd966d5195af30f, type: 3}
   meepleColors:
   - {r: 0.74509805, g: 0.74509805, b: 0.74509805, a: 1}
   - {r: 0.6313726, g: 0.6313726, b: 0.6313726, a: 1}
   elementSprite: {fileID: -1597069732, guid: 6a6f25e903f18fd4db55f0dfe52e535c, type: 3}
-  defaultMeepleElementHat:
-    m_AssetGUID: 
-    m_SubObjectName: 
-    m_SubObjectType: 
-    m_EditorAssetChanged: 0

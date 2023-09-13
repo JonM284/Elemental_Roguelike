@@ -119,6 +119,11 @@ namespace Runtime.GameControllers
 
         public override void Initialize()
         {
+            if (!Instance.IsNull())
+            {
+                return;
+            }
+            
             Instance = this;
             base.Initialize();
         }

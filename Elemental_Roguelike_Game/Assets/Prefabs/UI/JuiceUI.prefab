@@ -832,6 +832,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e2327b696e7425d9cd9f81967f370f7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  uiWindow: {fileID: 2020984170}
   reactionUI: {fileID: 4891137668946599865}
   textMaxTime: 0.8
   leftCharacterText: {fileID: 8283197611677029757}

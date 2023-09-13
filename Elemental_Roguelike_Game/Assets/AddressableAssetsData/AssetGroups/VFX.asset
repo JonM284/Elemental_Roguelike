@@ -45,6 +45,10 @@ MonoBehaviour:
     m_Address: ExplosionAcid@VFX
     m_ReadOnly: 0
     m_SerializedLabels: []
+  - m_GUID: 9ec0d86db8dd89040805f9493b273634
+    m_Address: ShadowExplosion@VFX
+    m_ReadOnly: 0
+    m_SerializedLabels: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: c51bc8bdb2bb6e5479c05b7cf9bc0f75, type: 2}
   m_SchemaSet:

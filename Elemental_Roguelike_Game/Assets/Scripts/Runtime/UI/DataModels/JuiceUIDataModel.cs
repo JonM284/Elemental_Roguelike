@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using Runtime.GameControllers;
 using Runtime.ScriptedAnimations;
 using TMPro;
 using UnityEngine;
@@ -12,6 +13,8 @@ namespace Runtime.UI.DataReceivers
     {
         
         #region Serialized Field
+
+        [SerializeField] private UIWindowDialog uiWindow;
         
         [Space(20)]
         [Header("Reaction Related UI")]
@@ -87,11 +90,29 @@ namespace Runtime.UI.DataReceivers
 
         #endregion
 
+        #region Unity Events
+
+        private void OnEnable()
+        {
+            TurnController.OnBattleEnded += TurnControllerOnOnBattleEnded;
+        }
+
+        private void OnDisable()
+        {
+            TurnController.OnBattleEnded -= TurnControllerOnOnBattleEnded;
+        }
+
+        #endregion
+
         #region Class Implementation
+        
+        private void TurnControllerOnOnBattleEnded()
+        {
+            uiWindow.Close();
+        }
         
         public IEnumerator C_ReactionEvent(int _endValueL, int _endValueR, Action callback)
         {
-            //ToDo: setup characters, numbers, and stats used
             reactionUI.SetActive(true);
 
             m_currentValueL = 0;

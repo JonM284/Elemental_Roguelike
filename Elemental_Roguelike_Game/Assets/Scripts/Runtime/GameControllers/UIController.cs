@@ -82,6 +82,11 @@ namespace Runtime.GameControllers
 
         public override void Initialize()
         {
+            if (!Instance.IsNull())
+            {
+                return;
+            }
+            
             Instance = this;
             base.Initialize();
         }
@@ -164,7 +169,7 @@ namespace Runtime.GameControllers
                 {
                     _callback?.Invoke(_cachedWindow.gameObject);
                 }
-                yield return null;
+                yield break;
             }
             
             yield return StartCoroutine(

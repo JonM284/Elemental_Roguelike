@@ -49,6 +49,10 @@ namespace Runtime.UI.Items
         private RectTransform m_rect;
 
         private float yOffet = 0.35f;
+
+        //ToDo: Using this, make a nice animation of losing health
+        private float m_previousHealth;
+        private bool m_hasTakenDamage;
         
         #endregion
 

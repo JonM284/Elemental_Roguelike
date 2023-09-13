@@ -4,7 +4,7 @@ using UnityEngine;
 namespace Runtime.GameplayEvents
 {
     
-    [CreateAssetMenu(menuName = "Custom Data/Match Event Type")]
+    [CreateAssetMenu(menuName = "Custom Data/Upgrade Event Type")]
     public class UpgradeEventType: GameplayEventType
     {
 

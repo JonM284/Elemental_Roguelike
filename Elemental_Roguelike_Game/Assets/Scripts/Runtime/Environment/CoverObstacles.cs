@@ -54,7 +54,6 @@ namespace Runtime.Environment
             m_currentAmountOfHits--;
             if (m_currentAmountOfHits <= 0)
             {
-                //ToDo: Destroy obstacle
             }
         }
 

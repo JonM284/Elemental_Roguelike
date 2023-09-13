@@ -53,8 +53,8 @@ namespace Runtime.Character
 
         public static event Action<CharacterBase> StatusRemoved;
 
-        public static event Action<CharacterBase> CharacterReset; 
-
+        public static event Action<CharacterBase> CharacterReset;
+        
         #endregion
 
         #region Serialized Fields
@@ -74,6 +74,16 @@ namespace Runtime.Character
         [SerializeField] protected GameObject activePlayerIndicator;
 
         [SerializeField] protected LineRenderer ballThrowIndicator;
+
+        [Header("Camera Shake on Damage")]
+        [SerializeField] private float shakeDuration = 0.1f;
+
+        [SerializeField] private float shakeStrength = 0.1f;
+
+        [SerializeField] private int shakeVibrationAmount = 1;
+
+        [Range(0,90)]
+        [SerializeField] private float shakeRandomness = 90f;
  
         #endregion
 
@@ -249,6 +259,7 @@ namespace Runtime.Character
         
         #region Class Implementation
 
+        
         public abstract void InitializeCharacter();
         
         public abstract float GetBaseSpeed();
@@ -256,11 +267,6 @@ namespace Runtime.Character
 
         protected abstract void OnBattleEnded();
         
-        protected virtual void OnWalkActionPressed()
-        {
-            
-        }
-
         protected void CharacterDeath()
         {
             TurnController.Instance.HideCharacter(this);
@@ -294,11 +300,21 @@ namespace Runtime.Character
                 }   
             }
 
-            if (_character.side == this.side && isSetupThrowBall)
+            if (_character.side == this.side)
             {
-                ThrowBall(_character.transform.position - transform.position);
+                if (isSetupThrowBall)
+                {
+                    ThrowBall(_character.transform.position - transform.position);
+                    return;
+                }
+                
+                if (characterMovement.isUsingMoveAction)
+                {
+                    characterMovement.SetCharacterMovable(false);
+                    _character.OnSelect();
+                }
             }
-            
+
 
         }
 
@@ -307,7 +323,7 @@ namespace Runtime.Character
             
         }
 
-        protected virtual void OnWalkActionEnded()
+        protected void OnWalkActionEnded()
         {
             UseActionPoint();
             if (characterActionPoints == 0)
@@ -330,11 +346,29 @@ namespace Runtime.Character
             StartCoroutine(DoDeathAction());
         }
 
+        public void StopAllActions()
+        {
+            if (characterMovement.isUsingMoveAction)
+            {
+                characterMovement.SetCharacterMovable(false);
+            }
+
+            if (characterAbilityManager.isUsingAbilityAction)
+            {
+                characterAbilityManager.CancelAbilityUse();
+            }
+            
+            isSetupThrowBall = false;
+        }
+
         private IEnumerator DoDeathAction()
         {
             characterVisuals.SetNewLayer(displayLayerVal);
             yield return StartCoroutine(JuiceController.Instance.C_DoDeathAnimation(this.characterClassManager.reactionCameraPoint));
-            
+            if (!heldBall.IsNull())
+            {
+                KnockBallAway();
+            }
             CheckActiveAfterDeath();
             PlayDeathEffect();
             RemoveEffect();
@@ -389,7 +423,6 @@ namespace Runtime.Character
 
                 if (dirToTarget.magnitude > characterMovement.battleMoveDistance)
                 {
-                    Debug.Log($"<color=orange>12</color>");
                     return;
                 }
                 
@@ -550,7 +583,6 @@ namespace Runtime.Character
                 characterAbilityManager.CancelAbilityUse();
             }
 
-            OnWalkActionPressed();
             characterMovement.SetCharacterMovable(true, OnBeginWalkAction, OnWalkActionEnded);
         }
 
@@ -735,6 +767,11 @@ namespace Runtime.Character
         public void EndTurn()
         {
             Debug.Log($"{this} has ended turn", this);
+            if (isActiveCharacter)
+            {
+                isActiveCharacter = false;
+                activePlayerIndicator.SetActive(isActiveCharacter);
+            }
             m_finishedTurn = true;
             m_characterActionPoints = 0;
             CharacterEndedTurn?.Invoke(this);
@@ -797,6 +834,7 @@ namespace Runtime.Character
         public void OnDealDamage(Transform _attacker, int _damageAmount, bool _armorPiercing ,ElementTyping _damageElementType, Transform _knockbackAttacker ,bool _hasKnockback)
         {
             characterLifeManager.DealDamage(_attacker, _damageAmount, _armorPiercing, _damageElementType);
+            
             if (_damageAmount > 0)
             {
                 PlayDamageVFX();
@@ -807,9 +845,17 @@ namespace Runtime.Character
                 Debug.Log("Has Knockback");
                 var _direction = transform.position - _knockbackAttacker.position;
                 characterMovement.ApplyKnockback(10, _direction.FlattenVector3Y(), 0.5f);
+                JuiceController.Instance.DoCameraShake(shakeDuration, shakeStrength, shakeVibrationAmount, shakeRandomness);
                 if (!heldBall.IsNull())
                 {
                     KnockBallAway(_attacker);
+                }
+            }
+            else
+            {
+                if (_damageAmount > 0)
+                {
+                    JuiceController.Instance.DoCameraShake(shakeDuration, shakeStrength/2, shakeVibrationAmount, shakeRandomness);
                 }
             }
             
@@ -909,7 +955,7 @@ namespace Runtime.Character
             ballOwnerIndicator.SetActive(false);
         }
 
-        public void KnockBallAway(Transform attacker)
+        public void KnockBallAway(Transform attacker = null)
         {
             if (heldBall.IsNull())
             {
@@ -917,7 +963,8 @@ namespace Runtime.Character
             }
 
             var randomPos = Random.insideUnitCircle;
-            var direction = (transform.position + new Vector3(randomPos.x, 0 , randomPos.y) - transform.position);
+            var direction = attacker.IsNull() ? (transform.position + new Vector3(randomPos.x, 0 , randomPos.y) - transform.position) : attacker.position - transform.position;
+            
             heldBall.ThrowBall(direction, shootSpeed, false, side, 0);
             heldBall = null;
             ballOwnerIndicator.SetActive(false);

@@ -83,6 +83,11 @@ namespace Runtime.GameControllers
 
         public override void Initialize()
         {
+            if (!Instance.IsNull())
+            {
+                return;
+            }
+            
             Instance = this;
             base.Initialize();
         }
@@ -122,14 +127,14 @@ namespace Runtime.GameControllers
         private void RandomizeCharacterVariables(CharacterStatsData _character)
         {
             _character.meepleElementTypeRef = ElementUtils.GetRandomElement().elementGUID;
-            _character.classReferenceType = GetRandomClassType().classGUID;
-            _character.baseHealth = Random.Range(100, 150);
+            var randomClass = GetRandomClassType();
+            _character.classReferenceType = randomClass.classGUID;
+            _character.baseHealth = randomClass.GetRandomHealth();
             _character.currentHealth = _character.baseHealth;
-            _character.baseShields = Random.Range(100, 200);
+            _character.baseShields = randomClass.GetRandomShield();
             _character.currentShield = _character.baseShields;
             _character.baseSpeed = 10f;
-            //ToDo: Change movement distance
-            _character.movementDistance = 5;
+            _character.movementDistance = randomClass.GetMoveDistance();
             
             for (int i = 0; i < 2; i++)
             {
@@ -137,12 +142,6 @@ namespace Runtime.GameControllers
                 _character.abilityReferences.Add(randomAbility.abilityGUID);
             }
 
-            //ToDo: remove weapons
-            //All meeples start with pistol
-            _character.weaponReference = WeaponUtils.GetDefaultWeapon().weaponGUID;
-            //random element assigned to weapon
-            _character.weaponElementTypeRef = ElementUtils.GetRandomElement().elementGUID;
-            
             var foundClass = GetClassByGUID(_character.classReferenceType);
             _character.agilityScore = foundClass.GetRandomAgilityScore();
             _character.shootingScore = foundClass.GetRandomShootingScore();

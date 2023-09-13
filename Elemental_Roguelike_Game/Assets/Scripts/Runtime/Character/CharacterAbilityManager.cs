@@ -20,6 +20,7 @@ namespace Runtime.Character
         [Serializable]
         public class AssignedAbilities
         {
+            public float roundCooldownPercentage;
             public int roundCooldown;
             public bool canUse;
             public Ability ability;
@@ -31,6 +32,9 @@ namespace Runtime.Character
         #region Events
 
         private Action OnAbilityUsed;
+        
+        public static event Action<CharacterBase> ActionUsed; 
+
 
         #endregion
 
@@ -167,7 +171,8 @@ namespace Runtime.Character
                 {
                     ability = locatedAbility,
                     canUse = true,
-                    roundCooldown = locatedAbility.roundCooldownTimer
+                    roundCooldown = locatedAbility.roundCooldownTimer,
+                    roundCooldownPercentage = 1f
                 };
 
                 m_assignedAbilities.Add(_newAssign);
@@ -182,7 +187,8 @@ namespace Runtime.Character
                 {
                     ability = a,
                     canUse = true,
-                    roundCooldown = a.roundCooldownTimer
+                    roundCooldown = a.roundCooldownTimer,
+                    roundCooldownPercentage = 1f
                 };
 
                 m_assignedAbilities.Add(_newAssign);
@@ -327,6 +333,7 @@ namespace Runtime.Character
             {
                 characterRotation.SetRotationTarget(_targetTransform.position);
             }
+            
             SetIndicators(false, false);
             OnAbilityUsed?.Invoke();
         }
@@ -337,6 +344,7 @@ namespace Runtime.Character
             m_assignedAbilities[m_activeAbilityIndex].canUse = false;
             m_previousActiveAbilityIndex = m_activeAbilityIndex;
             m_activeAbilityIndex = m_defaultInactiveAbilityIndex;
+            ActionUsed?.Invoke(characterBase);
         }
 
         public void SelectAbilityTarget(Vector3 _targetPos)
@@ -395,6 +403,7 @@ namespace Runtime.Character
                 if (!aa.canUse)
                 {
                     aa.roundCooldown--;
+                    aa.roundCooldownPercentage = (float)aa.roundCooldown / aa.ability.roundCooldownTimer;
                     if (aa.roundCooldown <= 0)
                     {
                         aa.canUse = true;

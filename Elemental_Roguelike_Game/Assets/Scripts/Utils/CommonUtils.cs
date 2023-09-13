@@ -12,7 +12,7 @@ namespace Project.Scripts.Utils
 
         public static T GetRequiredComponent<T>(ref T reference, Func<T> func)
         {
-            if (reference == null && func != null)
+            if (reference.IsNull() && !func.IsNull())
             {
                 reference = func();
             }

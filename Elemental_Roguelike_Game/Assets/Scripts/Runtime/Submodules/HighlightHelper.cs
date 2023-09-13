@@ -43,7 +43,6 @@ namespace Runtime.Submodules
 
         private void Update()
         {
-
             if (!activeCharacter.IsNull() && activeCharacter.isDoingAction && isPlayerTurn)
             {
                 CheckPlayerAction();

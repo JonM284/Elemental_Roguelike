@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 7538420837412121901}
   - component: {fileID: 7538420837412121903}
   - component: {fileID: 7538420837412121902}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: Smoke (3)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4824,7 +4824,7 @@ GameObject:
   - component: {fileID: 7538420837606974601}
   - component: {fileID: 7538420837606974602}
   - component: {fileID: 7538420837606974603}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: ShadowSmoke@Zone
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5003,6 +5003,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Hemisphere
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 69b05c3f5221a1f45a5bb83b3175cac6,
+        type: 3}
+      propertyPath: m_Layer
+      value: 13
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 69b05c3f5221a1f45a5bb83b3175cac6, type: 3}

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Project.Scripts.Utils;
+using Rewired;
 using UnityEngine;
 using Utils;
 
@@ -47,6 +48,10 @@ namespace Runtime.CameraBehaviour
 
         private bool m_isLocked;
 
+        private int playerID;
+
+        private Player m_player;
+
         #endregion
 
         #region Accessor
@@ -65,11 +70,20 @@ namespace Runtime.CameraBehaviour
 
         #region Unity Events
 
+        private void Start()
+        {
+            m_player = ReInput.players.GetPlayer(playerID);
+        }
+
         private void LateUpdate()
         {
             if (!m_isResettingCamera)
             {
                 TrackPositionByDrag();
+                if (!m_isDrag)
+                {
+                    TrackPositionByInput();
+                }
             }
             else
             {
@@ -86,12 +100,28 @@ namespace Runtime.CameraBehaviour
         #endregion
 
         #region Class Implementation
-        
+
+        private void TrackPositionByInput()
+        {
+            if (m_player.GetAxis("MoveHorizontal") == 0 && m_player.GetAxis("MoveVertical") == 0)
+            {
+                return;
+            }
+            
+            
+            
+        }
+
 
         //Check dragging input of the player (mouse)
         private void TrackPositionByDrag()
         {
-            if (Input.GetMouseButtonDown(0))
+            if (m_velocity.IsNan())
+            {
+                return;
+            }
+            
+            if (m_player.GetButtonDown("Confirm"))
             {
                 m_isDrag = true;
                 if (m_isLocked)
@@ -106,7 +136,7 @@ namespace Runtime.CameraBehaviour
                 }
             }
 
-            if (Input.GetMouseButton(0))
+            if (m_player.GetButton("Confirm"))
             {
                 Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
                 float entry;
@@ -117,7 +147,7 @@ namespace Runtime.CameraBehaviour
                 }
             }
             
-            if (Input.GetMouseButtonUp(0))
+            if (m_player.GetButtonUp("Confirm"))
             {
                 m_isDrag = false;
             }

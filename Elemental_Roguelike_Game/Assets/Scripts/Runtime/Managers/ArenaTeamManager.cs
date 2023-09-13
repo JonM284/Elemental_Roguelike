@@ -21,12 +21,6 @@ namespace Runtime.Managers
 
         #endregion
 
-        #region Actions
-
-        public static Action<CharacterSide> GoalScored;
-
-        #endregion
-
         #region Serialized Fields
 
         [SerializeField] private CharacterSide m_characterSide;
@@ -36,6 +30,12 @@ namespace Runtime.Managers
         [SerializeField] private Transform m_goalPosition;
 
         [SerializeField] private VFXPlayer goalVFXPlayer;
+
+        #endregion
+
+        #region Private Fields
+
+        private bool m_isScoring;
 
         #endregion
 
@@ -58,7 +58,11 @@ namespace Runtime.Managers
                 other.TryGetComponent(out BallBehavior ballBehavior);
                 ballBehavior.ForceStopBall();
                 ballBehavior.gameObject.SetActive(false);
-                StartCoroutine(C_ScoreGoal(ballBehavior));
+                if (!m_isScoring)
+                {
+                    m_isScoring = true;
+                    StartCoroutine(C_ScoreGoal(ballBehavior));
+                }
             }
         }
 
@@ -89,7 +93,15 @@ namespace Runtime.Managers
 
             //goalVFXPlayer.PlayAt(goalPosition.position, Quaternion.identity);
             WinConditionController.Instance.GoalScored(m_characterSide);
-            TurnController.Instance.ResetField(m_characterSide);
+            
+            Debug.Log("SCORE GOAL");
+
+            m_isScoring = false;
+            
+            if (!WinConditionController.Instance.isGameOver)
+            {
+                TurnController.Instance.ResetField(m_characterSide);
+            }
         }
 
         #endregion

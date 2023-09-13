@@ -31,16 +31,6 @@ namespace Utils
         #endregion
 
         #region Class Implementation
-        
-        public static void SetActiveCharacter(CharacterBase _activeCharacter)
-        {
-            if (_activeCharacter == null)
-            {
-                return;
-            }
-            
-            //ToDo: Add a way to have meeple be able to move by default
-        }
 
         public static List<CharacterBase> SortCharacterTurnOrder(this List<CharacterBase> characters)
         {

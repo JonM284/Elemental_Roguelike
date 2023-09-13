@@ -41,6 +41,7 @@ namespace Runtime.Status
                         break;
                     case CharacterStatsEnum.TACKLE:
                         newAmount = _character.characterClassManager.currentMaxTacklingScore + amountToChangeBy;
+                        _character.characterMovement.SetElementTackle(true);
                         break;
                 }
             }
@@ -56,9 +57,12 @@ namespace Runtime.Status
                         break;
                     case CharacterStatsEnum.TACKLE:
                         newAmount = _character.characterClassManager.tacklingScore + amountToChangeBy;
+                        _character.characterMovement.SetElementTackle(true);
                         break;
                 }
             }
+            
+            
             _character.characterClassManager.ChangeMaxScore(targetStat, newAmount);
         }
 
@@ -70,6 +74,7 @@ namespace Runtime.Status
             }
             
             _character.characterClassManager.ResetMaxScores();
+            _character.characterMovement.SetElementTackle(false);
         }
         
         #endregion

@@ -69,6 +69,8 @@ namespace Runtime.Character
         private float m_knockbackForce;
 
         private float m_originalMoveDistance;
+
+        private bool m_isElementalTackle;
         
         private float m_floorOffset = 0.1f;
 
@@ -292,6 +294,11 @@ namespace Runtime.Character
             isInBattle = _isInBattle;
         }
 
+        public void SetElementTackle(bool _isElementTackle)
+        {
+            m_isElementalTackle = _isElementTackle;
+        }
+
         public void PauseMovement(bool _isPaused)
         {
             m_isPaused = _isPaused;
@@ -311,10 +318,10 @@ namespace Runtime.Character
 
             _velocity = Vector3.zero;
 
-            OnFinishMovementCallback?.Invoke();
-                    
-            OnFinishMovementCallback = null;
-            OnBeforeMovementCallback = null;
+            if (!isInReaction)
+            {
+                OnFinishMovementCallback?.Invoke();
+            }
 
             m_currentMovePointIndex = 0;
             m_currentMovePoint = transform.position;
@@ -343,11 +350,13 @@ namespace Runtime.Character
             {
                 return;
             }
+            
             m_knockbackTimer = _duration;
             m_knockbackDir = _direction;
             m_knockbackForce = _knockbackForce;
             m_isKnockedBack = true;
             m_canMove = true;
+            
             if (!knockbackParticles.IsNull())
             {
                 knockbackParticles.transform.forward = -_direction;
@@ -373,6 +382,7 @@ namespace Runtime.Character
                 if (isInReaction)
                 {
                     isInReaction = false;
+                    OnFinishMovementCallback?.Invoke();
                 }
                 
                 if (!knockbackParticles.IsNull())
@@ -490,7 +500,8 @@ namespace Runtime.Character
                     collider.TryGetComponent(out IDamageable damageable);
                     if (!damageable.IsNull())
                     {
-                        damageable?.OnDealDamage(this.transform, tackleDamage, false, tackleDamageType, this.transform ,true);
+                        var appliableElement = m_isElementalTackle ? tackleDamageType : null;
+                        damageable?.OnDealDamage(this.transform, tackleDamage, false, appliableElement, this.transform ,true);
                     }
                 }
             }

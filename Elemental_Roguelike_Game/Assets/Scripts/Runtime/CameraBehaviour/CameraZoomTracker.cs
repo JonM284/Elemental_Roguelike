@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using System;
+using Rewired;
+using UnityEngine;
 
 namespace Runtime.CameraBehaviour
 {
@@ -36,6 +38,10 @@ namespace Runtime.CameraBehaviour
         private bool m_changingValue;
 
         private bool m_isLocked;
+        
+        private int playerID;
+
+        private Player m_player;
 
         #endregion
 
@@ -55,11 +61,16 @@ namespace Runtime.CameraBehaviour
             m_localZoomZ = maxPos;
         }
 
+        private void Start()
+        {
+            m_player = ReInput.players.GetPlayer(playerID);
+        }
+
         private void Update()
         {
             if (!m_changingValue)
             {
-                m_percentage = Mathf.Min(1, Mathf.Max(0, m_percentage + Input.mouseScrollDelta.y * scrollSpeed * -1));
+                m_percentage = Mathf.Min(1, Mathf.Max(0, m_percentage + m_player.GetAxis("Zoom") * scrollSpeed * -1));
             }
             
             if (m_changingValue) {
