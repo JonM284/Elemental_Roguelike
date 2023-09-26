@@ -13,12 +13,10 @@ MonoBehaviour:
   m_Name: ChargeStep@Ability
   m_EditorClassIdentifier: 
   abilityName: Charged Step
-  abilityDescription: 'Increse character range of movement by (0).
-
-    Cooldown:
-    (1) Turn(s)'
+  abilityDescription: Increse character range of movement by {0}.
   abilityGUID: 65f8cb6d-c562-46e1-a80d-d0ce749a807f
   roundCooldownTimer: 3
+  abilityType: 17
   targetType: 4
   range: 3
   abilityAnimationOverride: {fileID: 6330554796396086999, guid: 0482992e3f9407b4586dac22cbbd90f7,

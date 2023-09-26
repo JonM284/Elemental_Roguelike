@@ -13,15 +13,12 @@ MonoBehaviour:
   m_Name: Fireball@Ability
   m_EditorClassIdentifier: 
   abilityName: Fireball
-  abilityDescription: 'Launch a fireball projectile at selected target.
-
-    Cooldown:
-    (1) Turn(s)'
+  abilityDescription: Launch a fireball projectile at selected target.
   abilityGUID: 55d869f4-e356-4e41-9a58-e077320f3bd5
   roundCooldownTimer: 3
   targetType: 0
   range: 5
-  abilityAnimationOverride: {fileID: 6557745755801676397, guid: 0482992e3f9407b4586dac22cbbd90f7,
+  abilityAnimationOverride: {fileID: 4604576603371296227, guid: bebfcdc4c42436247b79402fd9c6a234,
     type: 3}
   playVFXAtTransform: 0
   abilityIcon: {fileID: 0}

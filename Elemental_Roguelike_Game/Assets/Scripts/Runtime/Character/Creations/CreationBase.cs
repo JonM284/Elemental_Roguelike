@@ -62,6 +62,7 @@ namespace Runtime.Character.Creations
             TurnController.OnChangeActiveTeam += CheckTurnPass;
             TurnController.OnRunEnded += DestroyCreation;
             TurnController.OnResetField += DestroyCreation;
+            TurnController.OnBattleEnded += DestroyCreation;
         }
 
         private void OnDisable()
@@ -69,6 +70,7 @@ namespace Runtime.Character.Creations
             TurnController.OnChangeActiveTeam -= CheckTurnPass;
             TurnController.OnRunEnded -= DestroyCreation;
             TurnController.OnResetField -= DestroyCreation;
+            TurnController.OnBattleEnded -= DestroyCreation;
         }
 
         #endregion
@@ -141,7 +143,10 @@ namespace Runtime.Character.Creations
 
         public virtual void DestroyCreation()
         {
-            localDestroyVFX.PlayAt(transform.position, Quaternion.identity);
+            if (!localDestroyVFX.IsNull())
+            {
+                localDestroyVFX.PlayAt(transform.position, Quaternion.identity);
+            }
             //Cache Creation
             CreationController.Instance.ReturnToPool(this);
         }

@@ -57,6 +57,9 @@ MonoBehaviour:
   leftCharCam: {fileID: 7114256272945803959}
   rightCharCam: {fileID: 9216120442753327322}
   deathCam: {fileID: 1085879011}
+  characterTex1: {fileID: 8400000, guid: 9653f9b2328235f47aabe7f358df3e0a, type: 2}
+  characterTex2: {fileID: 8400000, guid: 25eee37584751d745ba47aae39c62c0d, type: 2}
+  characterTex3: {fileID: 8400000, guid: 900434b8903a66a4895c089253257419, type: 2}
 --- !u!1 &517807551
 GameObject:
   m_ObjectHideFlags: 0
@@ -363,7 +366,7 @@ MonoBehaviour:
       - {fileID: 11400000, guid: 7526ce1770d98fc4393baaf33315a4dc, type: 2}
     - assignedClass: {fileID: 11400000, guid: c187bfa56bf1fa8458a541f355280f7f, type: 2}
       abilitiesOfElementClass:
-      - {fileID: 11400000, guid: d9993ef56166a964eaac910560bacc93, type: 2}
+      - {fileID: 11400000, guid: 7526ce1770d98fc4393baaf33315a4dc, type: 2}
     - assignedClass: {fileID: 11400000, guid: b4466eb0195bc9f4596847e268136c87, type: 2}
       abilitiesOfElementClass:
       - {fileID: 11400000, guid: 7526ce1770d98fc4393baaf33315a4dc, type: 2}
@@ -729,8 +732,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3bd24804a5074ac98d696e3b86dbb4ea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  meepleAsset:
+  strikerMeepleAsset:
     m_AssetGUID: 8214c403d76305c43986943a2c13b094
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_EditorAssetChanged: 0
+  bruiserMeepleAsset:
+    m_AssetGUID: 3bd2647e0e8e39c47b9c0f4eb87446df
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_EditorAssetChanged: 0
+  defenderMeepleAsset:
+    m_AssetGUID: dda94c9ad737c084bb4fbe7d6e1f91fa
     m_SubObjectName: 
     m_SubObjectType: 
     m_EditorAssetChanged: 0
@@ -743,6 +756,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 2c9f419d2dfa1b84489eb60e15d61b2e, type: 2}
   - {fileID: 11400000, guid: c187bfa56bf1fa8458a541f355280f7f, type: 2}
   - {fileID: 11400000, guid: b4466eb0195bc9f4596847e268136c87, type: 2}
+  - {fileID: 11400000, guid: ba97e3930af5aa444b3fd0c1f9fd8381, type: 2}
 --- !u!1 &1062745213
 GameObject:
   m_ObjectHideFlags: 0
@@ -1734,6 +1748,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9292de6189e74e05af0a6c9c24c2a61a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  allRowsByLevel: []
 --- !u!1 &5911347676179293832
 GameObject:
   m_ObjectHideFlags: 0
@@ -1853,6 +1868,55 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
+--- !u!1 &7034042369597234205
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1095388328020579201}
+  - component: {fileID: 1830122648448762833}
+  m_Layer: 0
+  m_Name: ScriptableDataController
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1095388328020579201
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7034042369597234205}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7876103537793370367}
+  m_RootOrder: 19
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1830122648448762833
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7034042369597234205}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b042994df52c4dc2adfa69a912a41866, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_characterSides:
+  - {fileID: 11400000, guid: c38c044ae08c0994d8a3f8033ae06bf5, type: 2}
+  - {fileID: 11400000, guid: c5a6c385d5632e147ac1e46ecf3988d6, type: 2}
+  - {fileID: 11400000, guid: 4f4a1f8261e23184aacfe1c2d1a7e5e2, type: 2}
+  m_statuses: []
 --- !u!1 &7266917716780839065
 GameObject:
   m_ObjectHideFlags: 0
@@ -1949,7 +2013,6 @@ MonoBehaviour:
     m_SubObjectName: 
     m_SubObjectType: 
     m_EditorAssetChanged: 0
-  m_allBattlers: []
 --- !u!1 &7876103537610162765
 GameObject:
   m_ObjectHideFlags: 0
@@ -2042,6 +2105,7 @@ Transform:
   - {fileID: 312350114}
   - {fileID: 7131109522137505478}
   - {fileID: 7099738595827675237}
+  - {fileID: 1095388328020579201}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -2077,6 +2141,7 @@ MonoBehaviour:
   - {fileID: 312350115}
   - {fileID: 7232869948823543054}
   - {fileID: 7253995833557277030}
+  - {fileID: 1830122648448762833}
 --- !u!1 &7876103538364230318
 GameObject:
   m_ObjectHideFlags: 0
@@ -2121,7 +2186,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5ee4854167c446da978cfe88db6fdf43, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_teamSize: 5
+  m_teamSize: 4
   m_generatedTeamSize: 3
 --- !u!1 &7876103538769309302
 GameObject:

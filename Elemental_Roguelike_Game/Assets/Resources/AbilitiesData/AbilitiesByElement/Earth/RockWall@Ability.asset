@@ -16,9 +16,10 @@ MonoBehaviour:
   abilityDescription: Create a rock wall that stops projectiles and the ball
   abilityGUID: a3e4e2cb-5741-4018-80a1-20b27096df4d
   roundCooldownTimer: 6
+  abilityType: 10
   targetType: 1
   range: 2.6
-  abilityAnimationOverride: {fileID: 1573493517487431554, guid: 0482992e3f9407b4586dac22cbbd90f7,
+  abilityAnimationOverride: {fileID: -184410558708688335, guid: c753a0c20aeb2514295eb195d84644e1,
     type: 3}
   playVFXAtTransform: 0
   abilityIcon: {fileID: 0}

@@ -16,6 +16,7 @@ MonoBehaviour:
   abilityDescription: Increase Throw Stat by 20 for 1 round
   abilityGUID: 92c9c3c6-10a1-4d78-816d-2372b67be79f
   roundCooldownTimer: 5
+  abilityType: 15
   targetType: 4
   range: 1
   abilityAnimationOverride: {fileID: 6330554796396086999, guid: 0482992e3f9407b4586dac22cbbd90f7,

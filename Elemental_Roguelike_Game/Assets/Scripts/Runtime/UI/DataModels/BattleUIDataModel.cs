@@ -40,6 +40,10 @@ namespace Runtime.UI.DataModels
 
         [SerializeField] private GameObject shootButton;
 
+        [SerializeField] private GameObject tooltipMenu;
+
+        [SerializeField] private TMP_Text tooltipText;
+
         [SerializeField] private UIPopupCreator uiPopupCreator;
 
         [SerializeField] private AssetReference healthbarUI;
@@ -50,10 +54,18 @@ namespace Runtime.UI.DataModels
 
         [SerializeField] private Transform displayBarParent;
         
-        [SerializeField] private CharacterSide playerSide;
+        [SerializeField] private string m_playerSideRef;
 
         [SerializeField] private List<AbilityCooldowns> m_abilityCooldownImages = new List<AbilityCooldowns>();
 
+        [Header("ScoreBoard")] 
+        
+        [SerializeField] private TMP_Text m_blueScoreText;
+ 
+        [SerializeField] private TMP_Text m_redScoreText;
+
+        [SerializeField] private TMP_Text m_turnCounterText;
+        
         #endregion
 
         #region Private Fields
@@ -76,6 +88,8 @@ namespace Runtime.UI.DataModels
 
         private List<GameObject> m_cachedTeamHealthBars = new List<GameObject>();
 
+        private CharacterSide m_playerSide;
+
         #endregion
 
         #region Accessors
@@ -85,13 +99,27 @@ namespace Runtime.UI.DataModels
         public bool canDoAction => isPlayerTurn && 
                                    !activePlayer.IsNull() &&!activePlayer.isBusy;
 
+        public CharacterSide playerSide => CommonUtils.GetRequiredComponent(ref m_playerSide, () =>
+        {
+            var _side = ScriptableDataController.Instance.GetSideByGuid(m_playerSideRef);
+            return _side;
+        });
+
         #endregion
 
         #region Unity Events
 
         private void Start()
         {
-            StartCoroutine(C_LoadHealthBar());
+            if (loadedHealthBarGO.IsNull())
+            {
+                StartCoroutine(C_LoadHealthBar());
+            }
+
+            if (loadedDisplayBarGO.IsNull())
+            {
+                StartCoroutine(C_LoadDisplayBar());
+            }
         }
 
         private void OnEnable()
@@ -103,6 +131,8 @@ namespace Runtime.UI.DataModels
             TurnController.OnChangeActiveTeam += OnChangeActiveTeam;
             CharacterBase.BallPickedUp += OnBallPickedUp;
             CharacterAbilityManager.ActionUsed += OnAbilityUsed;
+            WinConditionController.PointScored += OnPointScored;
+            WinConditionController.TurnCounterChanged += OnTurnCounterChanged;
         }
 
         private void OnDisable()
@@ -114,6 +144,8 @@ namespace Runtime.UI.DataModels
             TurnController.OnChangeActiveTeam -= OnChangeActiveTeam;
             CharacterBase.BallPickedUp -= OnBallPickedUp;
             CharacterAbilityManager.ActionUsed -= OnAbilityUsed;
+            WinConditionController.PointScored -= OnPointScored;
+            WinConditionController.TurnCounterChanged -= OnTurnCounterChanged;
         }
 
         #endregion
@@ -134,15 +166,13 @@ namespace Runtime.UI.DataModels
         {
             if (_meeple.IsNull())
             {
+                Debug.Log("MEEPLE NULL");
                 return;
             }
             
             AddHealthBar(_meeple);
 
-            if (_meeple.side == playerSide)
-            {
-                AddDisplayBar(_meeple);
-            }
+            AddDisplayBar(_meeple);
             
         }
 
@@ -160,18 +190,18 @@ namespace Runtime.UI.DataModels
         {
             if (loadedHealthBarGO.IsNull())
             {
-                if (!m_isLoadingHealthBar)
-                {
-                    yield return StartCoroutine(C_LoadHealthBar());
-                }
-                else
-                {
-                    yield return new WaitUntil(() => m_isLoadingHealthBar = false);
-                }
+                Debug.Log("<color=blue>Waiting</color>");
+                yield return new WaitUntil(() => m_isLoadingHealthBar == false);
+                Debug.Log("<color=blue>WAITING FINISHED</color>");
             }
             
             var newHealthBar = m_cachedHealthbars.Count > 0 ? m_cachedHealthbars.FirstOrDefault() : loadedHealthBarGO.Clone(healthBarParent);
            
+            if (newHealthBar.IsNull())
+            {
+                Debug.Log("Health Bar null");
+            }
+            
             newHealthBar.SetActive(true);
             
             if (m_cachedHealthbars.Contains(newHealthBar))
@@ -191,6 +221,8 @@ namespace Runtime.UI.DataModels
 
         private IEnumerator C_LoadHealthBar()
         {
+            m_isLoadingHealthBar = true;
+
             var handle = Addressables.LoadAssetAsync<GameObject>(healthbarUI);
             
             Debug.Log("<color=#00FF00>Loading GameObject</color>");
@@ -203,27 +235,33 @@ namespace Runtime.UI.DataModels
             if (handle.Status == AsyncOperationStatus.Succeeded)
             {
                 loadedHealthBarGO = handle.Result;
+                for (int i = 0; i < 10; i++)
+                {
+                    var hb= loadedHealthBarGO.Clone(healthBarParent);
+                    hb.SetActive(false);
+                    m_cachedHealthbars.Add(hb);
+                }
             }else{
                 Debug.LogError($"Could not load addressable, {healthbarUI.Asset.name}", healthbarUI.Asset);
                 Addressables.Release(handle);
             }
+
+            m_isLoadingHealthBar = false;
         }
 
         private IEnumerator C_AddDisplayBar(CharacterBase _character)
         {
             if (loadedDisplayBarGO.IsNull())
             {
-                if (!m_isLoadingDisplayBar)
-                {
-                    yield return StartCoroutine(C_LoadDisplayBar());
-                }
-                else
-                {
-                    yield return new WaitUntil(() => m_isLoadingDisplayBar = false);
-                }
+                yield return new WaitUntil(() => m_isLoadingDisplayBar == false);
             }
             
-            var newDisplayBar = m_cachedTeamHealthBars.Count > 0 ? m_cachedTeamHealthBars.FirstOrDefault() :  loadedDisplayBarGO.Clone(displayBarParent);
+            var newDisplayBar = m_cachedTeamHealthBars.Count > 0 ? m_cachedTeamHealthBars.FirstOrDefault() : loadedDisplayBarGO.Clone(displayBarParent);
+
+            if (newDisplayBar.IsNull())
+            {
+                Debug.Log("Display Bar null");
+            }
             
             newDisplayBar.SetActive(true);
             
@@ -255,10 +293,28 @@ namespace Runtime.UI.DataModels
             if (handle.Status == AsyncOperationStatus.Succeeded)
             {
                 loadedDisplayBarGO = handle.Result;
+                
+                for (int i = 0; i < 5; i++)
+                {
+                    var hb= loadedDisplayBarGO.Clone(displayBarParent);
+                    hb.SetActive(false);
+                    m_cachedTeamHealthBars.Add(hb);
+                }
             }else{
                 Debug.LogError($"Could not load addressable, {healthbarUI.Asset.name}", healthbarUI.Asset);
                 Addressables.Release(handle);
             }
+        }
+        
+        private void OnPointScored(int _blueScore, int _redScore)
+        {
+            m_blueScoreText.text = _blueScore.ToString();
+            m_redScoreText.text = _redScore.ToString();
+        }
+        
+        private void OnTurnCounterChanged(int _newTurnAmount)
+        {
+            m_turnCounterText.text = _newTurnAmount.ToString();
         }
 
         private void OnBattleEnded()
@@ -285,7 +341,9 @@ namespace Runtime.UI.DataModels
         private void OnChangeCharacterTurn(CharacterBase _character)
         {
             isPlayerTurn = _character.side == playerSide;
+            
             playerVisuals.SetActive(isPlayerTurn);
+            
             if (isPlayerTurn)
             {
                 shootButton.SetActive(!_character.heldBall.IsNull());
@@ -330,6 +388,24 @@ namespace Runtime.UI.DataModels
             }
             
             activePlayer.UseCharacterAbility(0);
+        }
+
+        public void DescribeAbility(int _index)
+        {
+            if (!canDoAction)
+            {
+                return;
+            }
+
+            var highlightedAbility = activePlayer.characterAbilityManager.GetAbilityAtIndex(_index);
+            tooltipMenu.SetActive(true);
+            tooltipText.text = $"{highlightedAbility.abilityName}: <br> {highlightedAbility.abilityDescription} <br> " +
+                               $"Target Type: {highlightedAbility.targetType} <br> Cooldown: {highlightedAbility.roundCooldownTimer} Turn(s)";
+        }
+
+        public void CloseToolTipMenu()
+        {
+            tooltipMenu.SetActive(false);
         }
 
         public void UseSecondAbility()

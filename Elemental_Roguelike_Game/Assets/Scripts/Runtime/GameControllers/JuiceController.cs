@@ -42,6 +42,12 @@ namespace Runtime.GameControllers
 
         [SerializeField] private Camera deathCam;
 
+        [SerializeField] private Texture characterTex1;
+        
+        [SerializeField] private Texture characterTex2;
+        
+        [SerializeField] private Texture characterTex3;
+
         #endregion
         
         #region Private Fields
@@ -53,6 +59,8 @@ namespace Runtime.GameControllers
         private List<DamageTextUIItem> cachedDamageTexts = new List<DamageTextUIItem>();
 
         private Transform m_textPool;
+
+        private bool m_isShakingCamera;
         
         #endregion
 
@@ -66,7 +74,9 @@ namespace Runtime.GameControllers
 
 
         private Camera cameraRef => CameraUtils.GetMainCamera();
-        
+
+        public bool isDoingActionAnimation { get; private set; }
+
         #endregion
 
         #region Unity Events
@@ -114,6 +124,21 @@ namespace Runtime.GameControllers
             }
         }
 
+        public Texture GetTexture1()
+        {
+            return characterTex1;
+        }
+
+        public Texture GetTexture2()
+        {
+            return characterTex2;
+        }
+
+        public Texture GetTexture3()
+        {
+            return characterTex3;
+        }
+
         private void InitializeJuiceUI(GameObject _uiWindowGO)
         {
             _uiWindowGO.TryGetComponent(out JuiceUIDataModel uiDataModel);
@@ -137,13 +162,31 @@ namespace Runtime.GameControllers
 
         public void DoCameraShake(float _duration, float _strength, int _amplitude, float randomness)
         {
+            if (m_isShakingCamera)
+            {
+                return;
+            }
+
+            m_isShakingCamera = true;
+            StartCoroutine(C_CameraShake(_duration, _strength, _amplitude, randomness));
+        }
+
+        private IEnumerator C_CameraShake(float _duration, float _strength, int _amplitude, float randomness)
+        {
             cameraRef.DOShakePosition(_duration, _strength, _amplitude, randomness);
+
+            yield return new WaitForSeconds(_duration);
+
+            m_isShakingCamera = false;
+            cameraRef.transform.localPosition = Vector3.zero;
         }
 
         public IEnumerator C_ScorePoint(bool _isPlayerGoal, Transform cameraPos)
         {
             cameraHolder.SetActive(true);
 
+            isDoingActionAnimation = true;
+            
             //scored on player, highlight enemy
             if (_isPlayerGoal)
             {
@@ -160,13 +203,17 @@ namespace Runtime.GameControllers
 
             yield return StartCoroutine(juiceUIDataModel.C_ScoreGoal(_isPlayerGoal));
 
+            isDoingActionAnimation = false;
+            
             ResetCam();
         }
 
 
-        public IEnumerator DoReactionAnimation(Transform LCameraPoint, Transform RCameraPoint, int _endValueL, int _endValueR)
+        public IEnumerator C_DoReactionAnimation(Transform LCameraPoint, Transform RCameraPoint, int _endValueL, int _endValueR)
         {
             cameraHolder.SetActive(true);
+
+            isDoingActionAnimation = true;
             
             leftCharCam.transform.position = LCameraPoint.position;
             leftCharCam.transform.forward = LCameraPoint.forward;
@@ -175,16 +222,26 @@ namespace Runtime.GameControllers
             rightCharCam.transform.forward = RCameraPoint.forward;
             
             yield return StartCoroutine(juiceUIDataModel.C_ReactionEvent(_endValueL, _endValueR, ResetCam));
+
+            isDoingActionAnimation = false;
+            
+            ResetCam();
         }
 
         public IEnumerator C_DoDeathAnimation(Transform _deadCharacterCameraPoint)
         {
+            isDoingActionAnimation = true;
+            
+            CameraUtils.SetCameraTrackPos(_deadCharacterCameraPoint.position, true);
+            
             cameraHolder.SetActive(true);
             deathCam.transform.position = _deadCharacterCameraPoint.position;
             deathCam.transform.forward = _deadCharacterCameraPoint.forward;
             
             yield return StartCoroutine(juiceUIDataModel.C_DeathUIEvent());
-            
+
+            isDoingActionAnimation = false;
+
             ResetCam();
         }
 

@@ -41,16 +41,16 @@ ModelImporter:
     second: Armature|MeepleIdleFCover2
   - first:
       74: 6330554796396086999
-    second: Armature|MeepleCast
+    second: MeepleCast
   - first:
       74: -4484546943002059226
-    second: Armature|MeepleDamaged
+    second: MeepleDamaged
   - first:
       74: 6557745755801676397
-    second: Armature|MeepleThrow
+    second: MeepleThrow
   - first:
       74: -1228815568222789012
-    second: Armature|MeepleShootPistol
+    second: MeepleShootPistol
   - first:
       74: -1493258344118884699
     second: Armature|MeepleShootPistol (1)
@@ -65,34 +65,34 @@ ModelImporter:
     second: MeepleRun
   - first:
       74: -6186370227301188968
-    second: Armature|MeepleFailReaction
+    second: MeepleFailReaction
   - first:
       74: 8396726780716817610
-    second: Armature|MeepleIdle
+    second: MeepleIdle
   - first:
       74: 5181474309456546875
     second: Armature|[Ability]BashGround
   - first:
       74: -6100349223377923124
-    second: Armature|MeepleTeleport
+    second: MeepleTeleport
   - first:
       74: 7716649276572761915
-    second: Armature|MeepleGroundSlam
+    second: MeepleGroundSlam
   - first:
       74: 8029912688707332542
-    second: Armature|MeepleCast2
+    second: MeepleCast2
   - first:
       74: 5887660954499537018
-    second: Armature|MeepleCreateDark
+    second: MeepleCreateDark
   - first:
       74: 1573493517487431554
-    second: Armature|MeepleCreateDark2
+    second: MeepleCreateDark2
   - first:
       74: 4094116283964454818
     second: Armature|MeepleCreateNormal
   - first:
       74: 7742111609445540382
-    second: Armature|MeepleTeleport2
+    second: MeepleTeleport2
   externalObjects: {}
   materials:
     materialImportMode: 2
@@ -152,7 +152,7 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: Armature|MeepleCast
+      name: MeepleCast
       takeName: Armature|MeepleCast
       internalID: 0
       firstFrame: 0
@@ -202,7 +202,7 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: Armature|MeepleDamaged
+      name: MeepleDamaged
       takeName: Armature|MeepleDamaged
       internalID: 0
       firstFrame: 0
@@ -238,7 +238,7 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: Armature|MeepleThrow
+      name: MeepleThrow
       takeName: Armature|MeepleThrow
       internalID: 0
       firstFrame: 0
@@ -281,7 +281,7 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: Armature|MeepleShootPistol
+      name: MeepleShootPistol
       takeName: Armature|MeepleShootPistol
       internalID: 0
       firstFrame: 0
@@ -324,7 +324,7 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: Armature|MeepleTeleport
+      name: MeepleTeleport
       takeName: Armature|MeepleTeleport
       internalID: 0
       firstFrame: 0
@@ -374,7 +374,7 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: Armature|MeepleFailReaction
+      name: MeepleFailReaction
       takeName: Armature|MeepleFailReaction
       internalID: 0
       firstFrame: 0
@@ -403,7 +403,7 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: Armature|MeepleIdle
+      name: MeepleIdle
       takeName: Armature|MeepleIdle
       internalID: 0
       firstFrame: 0
@@ -432,7 +432,7 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: Armature|MeepleGroundSlam
+      name: MeepleGroundSlam
       takeName: Armature|MeepleGroundSlam
       internalID: 0
       firstFrame: 0
@@ -475,7 +475,7 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: Armature|MeepleCast2
+      name: MeepleCast2
       takeName: Armature|MeepleCast2
       internalID: 0
       firstFrame: 0
@@ -518,7 +518,7 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: Armature|MeepleCreateDark
+      name: MeepleCreateDark
       takeName: Armature|MeepleCreateDark
       internalID: 0
       firstFrame: 0
@@ -568,7 +568,7 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: Armature|MeepleCreateDark2
+      name: MeepleCreateDark2
       takeName: Armature|MeepleCreateDark2
       internalID: 0
       firstFrame: 0
@@ -611,7 +611,7 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: Armature|MeepleTeleport2
+      name: MeepleTeleport2
       takeName: Armature|MeepleTeleport2
       internalID: 0
       firstFrame: 0

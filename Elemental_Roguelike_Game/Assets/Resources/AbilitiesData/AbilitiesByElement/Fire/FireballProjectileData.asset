@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bc7d6c41bd954f04d882af9b1ce8b9f1, type: 3}
   m_Name: FireballProjectileData
   m_EditorClassIdentifier: 
-  projectileDamage: 10
+  projectileDamage: 40
   projectileDamageRadius: 0.25
   projectileSpeed: 14
   isAffectArmor: 1

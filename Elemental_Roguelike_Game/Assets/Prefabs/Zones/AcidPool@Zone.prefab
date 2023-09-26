@@ -9646,7 +9646,7 @@ GameObject:
   - component: {fileID: 8358084241812798988}
   - component: {fileID: 8358084241812798991}
   - component: {fileID: 8358084241812798990}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: AcidPool@Zone
   m_TagString: Untagged
   m_Icon: {fileID: 0}

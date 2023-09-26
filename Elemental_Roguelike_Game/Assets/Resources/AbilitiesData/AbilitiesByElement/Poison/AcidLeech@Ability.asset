@@ -16,12 +16,14 @@ MonoBehaviour:
   abilityDescription: Apply LifeSteal
   abilityGUID: e9f68603-4a7e-42ba-b79b-96f250199f0d
   roundCooldownTimer: 5
+  abilityType: 3
   targetType: 4
   range: 1
-  abilityAnimationOverride: {fileID: 6330554796396086999, guid: 0482992e3f9407b4586dac22cbbd90f7,
+  abilityAnimationOverride: {fileID: 8321497468441966868, guid: bebfcdc4c42436247b79402fd9c6a234,
     type: 3}
   playVFXAtTransform: 0
   abilityIcon: {fileID: 0}
   abilityVFX: {fileID: 0}
-  abilityParameters: []
+  abilityParameters:
+  - {fileID: 11400000, guid: 8b1ddddfd61066143b71ba5f6e943b81, type: 2}
   statusEffect: {fileID: 11400000, guid: 24938d9a89e35594b9c60ab5eb61c95e, type: 2}

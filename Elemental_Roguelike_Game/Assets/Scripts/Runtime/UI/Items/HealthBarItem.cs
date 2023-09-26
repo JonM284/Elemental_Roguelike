@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using Data.Sides;
 using Project.Scripts.Utils;
 using Runtime.Character;
+using Runtime.GameControllers;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -37,7 +39,11 @@ namespace Runtime.UI.Items
         [Header("Both")] 
         
         [SerializeField] private List<GameObject> shieldIcons = new List<GameObject>();
-        
+
+        [SerializeField] private List<GameObject> actionPointSmall = new List<GameObject>();
+
+        [SerializeField] private List<GameObject> actionPointLarge = new List<GameObject>();
+
         #endregion
 
         #region Private Fields
@@ -109,9 +115,11 @@ namespace Runtime.UI.Items
             CharacterBase.CharacterHovered += CharacterBaseOnCharacterHovered;
             CharacterLifeManager.OnCharacterHealthChange += OnCharacterHealthChange;
             CharacterLifeManager.OnCharacterDied += OnCharacterDied;
+            CharacterBase.CharacterUsedActionPoint += OnCharacterUsedActionPoint;
             CharacterBase.CharacterReset += OnCharacterReset;
             CharacterBase.StatusAdded += CharacterBaseOnStatusAdded;
             CharacterBase.StatusRemoved += CharacterBaseOnStatusRemoved;
+            TurnController.OnChangeActiveTeam += OnChangeActiveTeam;
         }
 
         private void OnDisable()
@@ -119,9 +127,12 @@ namespace Runtime.UI.Items
             CharacterBase.CharacterHovered -= CharacterBaseOnCharacterHovered;
             CharacterLifeManager.OnCharacterHealthChange -= OnCharacterHealthChange;
             CharacterLifeManager.OnCharacterDied -= OnCharacterDied;
+            CharacterBase.CharacterUsedActionPoint -= OnCharacterUsedActionPoint;
             CharacterBase.CharacterReset -= OnCharacterReset;
             CharacterBase.StatusAdded -= CharacterBaseOnStatusAdded;
             CharacterBase.StatusRemoved -= CharacterBaseOnStatusRemoved;
+            TurnController.OnChangeActiveTeam -= OnChangeActiveTeam;
+
         }
 
         #endregion
@@ -139,12 +150,66 @@ namespace Runtime.UI.Items
             
             Debug.Log("Connected");
             
-            OnCharacterHealthChange();
+            OnCharacterHealthChange(m_associatedCharacter);
         }
         
-        private void OnCharacterHealthChange()
+        private void OnChangeActiveTeam(CharacterSide _side)
         {
             if (m_associatedCharacter.IsNull())
+            {
+                return;
+            }
+
+            if (_side != m_associatedCharacter.side)
+            {
+                //ToDo: check AI, sometimes they randomly attack when it isn't their turn
+                //After checking, remove all comments here
+                //actionPointSmall.ForEach(g => g.SetActive(true));
+                //actionPointLarge.ForEach(g => g.SetActive(true));
+                return;
+            }
+            
+            actionPointSmall.ForEach(g => g.SetActive(true));
+            actionPointLarge.ForEach(g => g.SetActive(true));
+        }
+        
+        private void OnCharacterUsedActionPoint(CharacterBase _character, int _amountLeft)
+        {
+            if (m_associatedCharacter.IsNull())
+            {
+                return;
+            }
+
+            if (_character != m_associatedCharacter)
+            {
+                return;
+            }
+
+            for (int i = 0; i < actionPointSmall.Count; i++)
+            {
+                if (i == _amountLeft)
+                {
+                    actionPointSmall[i].SetActive(false);
+                }
+            }
+            
+            for (int i = 0; i < actionPointLarge.Count; i++)
+            {
+                if (i == _amountLeft)
+                {
+                    actionPointLarge[i].SetActive(false);
+                }
+            }
+        }
+        
+        private void OnCharacterHealthChange(CharacterBase _character)
+        {
+            if (m_associatedCharacter.IsNull())
+            {
+                return;
+            }
+            
+            if (_character != m_associatedCharacter)
             {
                 return;
             }

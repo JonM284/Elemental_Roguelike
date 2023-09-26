@@ -14550,7 +14550,7 @@ GameObject:
   - component: {fileID: 7969233808580170415}
   - component: {fileID: 7969233808580170413}
   - component: {fileID: 7969233808580170412}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: Tremor@Zone
   m_TagString: Untagged
   m_Icon: {fileID: 0}

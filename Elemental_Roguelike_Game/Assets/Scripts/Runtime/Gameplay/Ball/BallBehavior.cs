@@ -13,13 +13,13 @@ namespace Runtime.Gameplay
 
         #region Serialized Field
 
-        [Header("Ball Variables")]
-        [SerializeField] private float m_dragSpeed = 4;
-
-        [SerializeField] private float m_wallRayLegnth = 0.3f;
+        [Header("Ball Variables")] [SerializeField]
+        private float m_wallRayLegnth = 0.3f;
 
         [SerializeField] private LayerMask wallLayers;
-        
+
+        [SerializeField] private float m_fullDecelTime = 1.9f;
+
         [Space(15)] [Header("Player Check")] [SerializeField]
         private float playerCheckRadius;
 
@@ -52,6 +52,8 @@ namespace Runtime.Gameplay
 
         private float m_initialY;
 
+        private float m_tempDragSpeed;
+
         private float m_afterThrowThreshold = 0.25f;
 
         private float m_currentThrowTime;
@@ -81,7 +83,7 @@ namespace Runtime.Gameplay
         });
 
         public bool isControlled { get; private set; }
-        
+
         public Transform followerTransform { get; private set; }
 
         public CharacterBase currentOwner { get; private set; }
@@ -94,8 +96,8 @@ namespace Runtime.Gameplay
 
         public List<CharacterBase> lastContactedCharacters => m_lastContactedCharacters;
 
-        public CharacterSide lastThrownCharacterSide { get; private set; }
-
+        public CharacterBase lastThrownCharacter { get; private set; }
+        
         public CharacterSide controlledCharacterSide { get; private set; }
 
         #endregion
@@ -129,14 +131,14 @@ namespace Runtime.Gameplay
         
         #region Class Implementation
 
-        public void ThrowBall(Vector3 direction, float throwForce, bool _isThrown, CharacterSide _characterSide, int _thrownBallStat)
+        public void ThrowBall(Vector3 direction, float throwForce, bool _isThrown, CharacterBase _character, int _thrownBallStat)
         {
             thrownBallStat = _thrownBallStat;
             m_currentThrowTime = 0;
             isThrown = _isThrown;
             if (isThrown)
             {
-                lastThrownCharacterSide = _characterSide;
+                lastThrownCharacter = _character;
             }
             isControlled = false;
             controlledCharacterSide = null;
@@ -145,6 +147,7 @@ namespace Runtime.Gameplay
             currentOwner = null;
             m_ballThrownDirection = direction;
             m_currentBallForce = throwForce;
+            m_tempDragSpeed = (throwForce)/m_fullDecelTime;
         }
 
         private void FollowTransform()
@@ -169,8 +172,8 @@ namespace Runtime.Gameplay
                     m_ballThrownDirection = Vector3.Reflect(m_ballThrownDirection, hit.normal);
                 }
                 
-                m_currentBallForce -= m_dragSpeed * Time.deltaTime;
-                thrownBallStat -= m_dragSpeed * Time.deltaTime;
+                m_currentBallForce -= m_tempDragSpeed * Time.deltaTime;
+                thrownBallStat -= m_tempDragSpeed * Time.deltaTime;
                 var ballVelocity = m_ballThrownDirection.normalized * (m_currentBallForce * Time.deltaTime);
                 rb.MovePosition(rb.position + ballVelocity);
             }else if (m_currentBallForce <= 0)
@@ -179,6 +182,7 @@ namespace Runtime.Gameplay
                 {
                     isThrown = false;
                     thrownBallStat = 0;
+                    lastThrownCharacter = null;
                 }   
             }
             
@@ -233,11 +237,18 @@ namespace Runtime.Gameplay
                             {
                                 return;
                             }
+
+                            if (!lastThrownCharacter.IsNull() && characterBase == lastThrownCharacter)
+                            {
+                                return;
+                            }
+                            
                             isControlled = true;
                             if (isThrown)
                             {
                                 m_currentBallForce = 0;
                                 isThrown = false;
+                                lastThrownCharacter = null;
                             }
                             controlledCharacterSide = characterBase.side;
                             interactable?.PickUpBall(this);

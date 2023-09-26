@@ -9,7 +9,7 @@ namespace Runtime.Character
 
         public void KnockBallAway(Transform attacker);
         
-        public void ThrowBall(Vector3 direction);
+        public void ThrowBall(Vector3 direction, bool _isShot);
         
     }
 }

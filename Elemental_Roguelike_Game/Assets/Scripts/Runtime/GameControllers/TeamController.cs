@@ -29,7 +29,7 @@ namespace Runtime.GameControllers
 
         #region Serialized Fields
 
-        [SerializeField] private int m_teamSize = 5;
+        [SerializeField] private int m_teamSize = 4;
 
         [SerializeField] private int m_generatedTeamSize = 3;
 

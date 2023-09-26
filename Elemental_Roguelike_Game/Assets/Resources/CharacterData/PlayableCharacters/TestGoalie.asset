@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6e30cf3dd6a8ee349ac5bc304a59fcb7, type: 3}
+  m_Name: TestGoalie
+  m_EditorClassIdentifier: 
+  isCaptain: 0
+  baseSpeed: 10
+  baseHealth: 100
+  baseShields: 100
+  movementDistance: 1
+  tackleDamageAmount: 15
+  tackleScore: 95
+  agilityScore: 95
+  shootingScore: 95
+  passingScore: 95
+  characterColor: {r: 0.5377358, g: 0.5377358, b: 0.5377358, a: 1}
+  typing: {fileID: 11400000, guid: c9878cd57e22d2f4294bb226cbe069b6, type: 2}
+  abilities: []
+  classTyping: {fileID: 0}
+  characterAssetRef:
+    m_AssetGUID: 
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_EditorAssetChanged: 0
+  characterGUID: a1140934-89ed-44ef-80cb-24eeacf7a141

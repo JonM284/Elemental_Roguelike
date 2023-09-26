@@ -21,6 +21,10 @@ namespace Runtime.GameControllers
         public static event Action<bool> ReportMatchResults;
 
         public static event Action PointThresholdReached;
+        
+        public static event Action<int,int> PointScored;
+
+        public static event Action<int> TurnCounterChanged;
 
         #endregion
         
@@ -39,6 +43,12 @@ namespace Runtime.GameControllers
         private bool m_isPlayerVictory;
 
         private bool m_isGameConditionMet;
+        
+        private int m_turnCounter;
+
+        private int m_activeTeamsAmount;
+
+        private int m_internalTeamCounter;
 
         #endregion
         
@@ -49,22 +59,26 @@ namespace Runtime.GameControllers
         public int blueTeamPoints { get; private set; }
 
         public bool isGameOver => m_isGameConditionMet;
-
+        
         #endregion
 
         #region Unity Events
 
         private void OnEnable()
         {
-            TurnController.OnBattleStarted += TurnControllerOnOnBattleStarted;
-            TurnController.OnRunEnded += TurnController_OnRunEnded;
+            TurnController.OnBattleStarted += OnBattleStarted;
+            TurnController.OnRunEnded += OnRunEnded;
+            TurnController.OnResetField += ResetTurnCounter;
+            TurnController.OnChangeActiveTeam += OnChangeActiveTeam;
             SceneController.OnLevelFinishedLoading += OnLevelFinishedLoading;
         }
 
         private void OnDisable()
         {
-            TurnController.OnBattleStarted -= TurnControllerOnOnBattleStarted;
-            TurnController.OnRunEnded -= TurnController_OnRunEnded;
+            TurnController.OnBattleStarted -= OnBattleStarted;
+            TurnController.OnRunEnded -= OnRunEnded;
+            TurnController.OnResetField -= ResetTurnCounter;
+            TurnController.OnChangeActiveTeam -= OnChangeActiveTeam;
             SceneController.OnLevelFinishedLoading -= OnLevelFinishedLoading;
         }
 
@@ -88,12 +102,32 @@ namespace Runtime.GameControllers
 
         #region Class Implementation
         
-        private void TurnControllerOnOnBattleStarted()
+        private void OnBattleStarted(int _teamAmount)
         {
             m_isGameConditionMet = false;
+            m_activeTeamsAmount = _teamAmount;
+            ResetTurnCounter();
         }
 
-        private void TurnController_OnRunEnded()
+        private void ResetTurnCounter()
+        {
+            m_turnCounter = 1;
+            m_internalTeamCounter = 0;
+            TurnCounterChanged?.Invoke(m_turnCounter);
+        }
+        
+        private void OnChangeActiveTeam(CharacterSide _side)
+        {
+            m_internalTeamCounter++;
+            if (m_internalTeamCounter >= m_activeTeamsAmount)
+            {
+                m_turnCounter++;
+                m_internalTeamCounter = 0;
+                TurnCounterChanged?.Invoke(m_turnCounter);
+            }
+        }
+
+        private void OnRunEnded()
         {
             if (!is_Initialized)
             {
@@ -106,6 +140,7 @@ namespace Runtime.GameControllers
         {
             if (redTeamPoints < pointsToWin && blueTeamPoints < pointsToWin)
             {
+                PointScored?.Invoke(blueTeamPoints, redTeamPoints);
                 return;
             }
 

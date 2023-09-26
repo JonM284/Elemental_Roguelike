@@ -16,9 +16,10 @@ MonoBehaviour:
   abilityDescription: Boost Tackle Ability by 20 for 1 round
   abilityGUID: fb45641f-6282-4fee-a10d-6f32cdee690c
   roundCooldownTimer: 5
+  abilityType: 14
   targetType: 4
   range: 1
-  abilityAnimationOverride: {fileID: 6330554796396086999, guid: 0482992e3f9407b4586dac22cbbd90f7,
+  abilityAnimationOverride: {fileID: 8321497468441966868, guid: bebfcdc4c42436247b79402fd9c6a234,
     type: 3}
   playVFXAtTransform: 0
   abilityIcon: {fileID: 0}

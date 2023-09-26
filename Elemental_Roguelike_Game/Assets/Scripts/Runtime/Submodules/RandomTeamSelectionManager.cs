@@ -9,6 +9,7 @@ using Runtime.Cards;
 using Runtime.Character;
 using Runtime.GameControllers;
 using Runtime.UI.DataModels;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.Events;
@@ -123,6 +124,8 @@ namespace Runtime.Submodules
         });
 
         private int generatedTeamSize => teamController.generatedTeamSize;
+
+        private int fullTeamSize => teamController.teamSize;
         
 
         #endregion
@@ -147,7 +150,7 @@ namespace Runtime.Submodules
 
         public void ConfirmTeam()
         {
-            if (selectedTeamData.Count != 5)
+            if (selectedTeamData.Count != fullTeamSize)
             {
                 return;
             }
@@ -203,7 +206,7 @@ namespace Runtime.Submodules
                 var _foundClass = meepleController.GetClassByGUID(teamMember.classReferenceType);
                 
                 //Get Card
-                var card = m_cachedCards.FirstOrDefault(card => card.classData == _foundClass);
+                var card = m_cachedCards.FirstOrDefault(card => card.classData.classGUID == _foundClass.classGUID);
 
                 m_cachedCards.Remove(card);
                 card.transform.parent = null;
@@ -227,6 +230,22 @@ namespace Runtime.Submodules
         public void SetupRandomTeamGenerator()
         {
             m_isFirstTime = true;
+
+            if (m_selectedCards.Count > 0)
+            {
+                m_selectedCards.ForEach(mci =>
+                {
+                    mci.ForceUnselected();
+                    CacheMeepleGameObject(mci.assignedMeepleObj);
+                    mci.CleanUp();
+                    CacheCard(mci);
+                });
+                
+            }
+            
+            m_selectedCards.Clear();
+            selectedTeamData.Clear();
+            
             StartCoroutine(C_SetupRandomGenerator());
         }
         
@@ -245,20 +264,23 @@ namespace Runtime.Submodules
             onFinishedLoading?.Invoke();
             
             yield return new WaitForSeconds(0.3f);
-            
+
             GenerateNewTeam();
 
         }
 
         private IEnumerator C_PreInstantiateGameObjects()
         {
-            if (m_cachedSavedMeepleObjects.Count != 0)
+            if (m_cachedSavedMeepleObjects.Count > 0 && m_cachedCards.Count > 0)
             {
                 yield break;
             }
             
+            yield return null;
+
             for (int i = 0; i < 8; i++)
             {
+                yield return null;
                 var instantiatedMeeple = Instantiate(loadedDisplayMeepleObject, cachedMeepleObjectPool);
                 m_cachedSavedMeepleObjects.Add(instantiatedMeeple);
             }
@@ -267,10 +289,13 @@ namespace Runtime.Submodules
             {
                 for (int i = 0; i < 8; i++)
                 {
+                    yield return null;
                     var instantiatedCard = Instantiate(cardByClass.loadedCardGO, cachedCardObjectPool);
                     instantiatedCard.TryGetComponent(out MeepleCardItem cardItem);
+                    Debug.Log("Right before cache");
                     if (!cardItem.IsNull())
                     {
+                        Debug.Log("Caching card");
                         CacheCard(cardItem);
                     }
                 }
@@ -375,7 +400,7 @@ namespace Runtime.Submodules
                 var _foundClass = meepleController.GetClassByGUID(newCharacter.classReferenceType);
                 
                 //Get Card
-                var card = m_cachedCards.FirstOrDefault(card => card.classData == _foundClass);
+                var card = m_cachedCards.FirstOrDefault(card => card.classData.classGUID == _foundClass.classGUID);
 
                 m_cachedCards.Remove(card);
                 card.transform.parent = null;
@@ -464,8 +489,8 @@ namespace Runtime.Submodules
                 }
             }
             
-            //Don't add more than 5
-            if (selectedTeamData.Count == 5)
+            //Don't add more than team size
+            if (selectedTeamData.Count == fullTeamSize)
             {
                 return;
             }
@@ -500,7 +525,7 @@ namespace Runtime.Submodules
                 m_selectedCards[i].SetMovement(selectedTeamLocations[i].position, selectedTeamLocations[i].forward, false);
             }
 
-            if (m_selectedCards.Count == 5)
+            if (m_selectedCards.Count == fullTeamSize)
             {
                 onTeamAmountReached?.Invoke();
                 m_isButtonOpen = true;
@@ -549,8 +574,12 @@ namespace Runtime.Submodules
             {
                 return;
             }
+
+            if (m_activeCards.Contains(_item))
+            {
+                m_activeCards.Remove(_item);
+            }
             
-            m_activeCards.Remove(_item);
             m_cachedCards.Add(_item);
 
             _item.transform.parent = cachedCardObjectPool;

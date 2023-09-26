@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Data;
+using UnityEngine;
 using UnityEngine.AddressableAssets;
 using Utils;
 
@@ -9,7 +10,7 @@ namespace Runtime.UI
 
         #region Serialized Fields
 
-        [SerializeField] private AssetReferenceT<UIBase> uiWindowAssetRef;
+        [SerializeField] private UIWindowData uiWindowData;
 
         #endregion
         
@@ -17,7 +18,7 @@ namespace Runtime.UI
 
         public void OpenUIWindow()
         {
-            UIUtils.OpenUI(uiWindowAssetRef, uiWindowAssetRef.editorAsset.uiLayerData);
+            UIUtils.OpenUI(uiWindowData.uiWindowAssetReference, uiWindowData.layerData);
         }
 
         #endregion

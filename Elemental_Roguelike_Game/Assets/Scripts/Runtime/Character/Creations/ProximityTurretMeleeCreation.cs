@@ -122,6 +122,7 @@ namespace Runtime.Character.Creations
                 return false;
             }
 
+            //ToDo: Could just do damage to everyone around
             private IEnumerator C_FireAtSurroundingEnemies(List<CharacterBase> _enemies)
             {
                 if (_enemies.Count == 0)

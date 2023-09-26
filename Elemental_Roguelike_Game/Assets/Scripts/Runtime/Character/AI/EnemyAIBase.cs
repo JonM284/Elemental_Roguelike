@@ -4,12 +4,16 @@ using System.Collections.Generic;
 using System.Linq;
 using Data;
 using Project.Scripts.Utils;
+using Runtime.Abilities;
 using Runtime.Environment;
 using Runtime.GameControllers;
 using Runtime.Gameplay;
 using Runtime.Managers;
+using Runtime.Status;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
+using Random = UnityEngine.Random;
 
 namespace Runtime.Character.AI
 {
@@ -28,7 +32,17 @@ namespace Runtime.Character.AI
 
         private CharacterBase m_characterBase;
 
-        private CharacterBase m_targetCharacter;
+        protected CharacterBase m_targetCharacter;
+
+        protected float m_standardWaitTime = 0.3f;
+
+        protected bool m_isPerformingAction;
+
+        #endregion
+
+        #region Protected Fields
+
+        protected bool m_isPerformingAbility;
 
         #endregion
 
@@ -46,6 +60,8 @@ namespace Runtime.Character.AI
         public float enemyMovementRange => characterBase.characterMovement.battleMoveDistance - 0.03f;
         
         protected Transform playerTeamGoal => TurnController.Instance.GetPlayerManager().goalPosition;
+
+        protected Transform enemyTeamGoal => TurnController.Instance.GetTeamManager(characterBase.side).goalPosition;
 
         protected BallBehavior ballReference => TurnController.Instance.ball;
         
@@ -92,71 +108,24 @@ namespace Runtime.Character.AI
         
         private IEnumerator C_Turn()
         {
+            yield return StartCoroutine(C_PerformEnemyAction());
             
-            characterBase.ResetCharacterActions();
-
-            yield return new WaitForSeconds(0.5f);
-
             if (!characterBase.isAlive)
             {
+                //Break because character base will take care of death action
                 yield break;
             }
 
-            yield return new WaitForSeconds(0.5f);
-            
-            while (characterBase.characterActionPoints > 0)
+            if (!characterBase.finishedTurn)
             {
-                //ToDo: Create actions depending on whether or not the character can act
-                if (characterBase.characterMovement.isRooted)
-                {
-                    characterBase.EndTurn();
-                }
-                
-                if (!TurnController.Instance.ball.isControlled)
-                {
-
-                    if (IsBallInMovementRange())
-                    {
-                        yield return StartCoroutine(C_GoForBall());
-                    }
-                    else
-                    {
-                        //ToDo: Change with Different Action
-                        yield return StartCoroutine(C_GoForBall());
-                    }
-                }
-                else
-                {
-                    
-                    //This character has the ball
-                    if (!characterBase.heldBall.IsNull())
-                    {
-
-                        if (IsInShootRange())
-                        {
-                            yield return StartCoroutine(C_ShootBall());
-                        }
-                        else
-                        {
-                            yield return StartCoroutine(C_PositionToScore());
-                        }
-                    }
-                    else
-                    {
-                        yield return StartCoroutine(C_PerformEnemyAction());
-                    }
-                }
-
-                yield return new WaitForSeconds(0.5f);
+                characterBase.EndTurn();
             }
-            
-            characterBase.EndTurn();
         }
 
         protected IEnumerator C_GoForBall()
         {
-            
             characterBase.characterMovement.SetCharacterMovable(true, null, characterBase.UseActionPoint);
+         
             var ballPosition = ballReference.transform.position;
             var direction = ballPosition - transform.position;
             var adjustedPos = Vector3.zero;
@@ -179,11 +148,14 @@ namespace Runtime.Character.AI
                 yield return new WaitUntil(() => !characterBase.characterMovement.isInReaction);
             }
 
+            m_isPerformingAction = false;
+
         }
 
         protected IEnumerator C_GoForBallCarrier()
         {
             characterBase.characterMovement.SetCharacterMovable(true, null, characterBase.UseActionPoint);
+           
             var ballCarrierPosition = ballReference.currentOwner.transform.position;
             var direction = ballCarrierPosition - transform.position;
             var adjustedPos = Vector3.zero;
@@ -206,6 +178,8 @@ namespace Runtime.Character.AI
             {
                 yield return new WaitUntil(() => characterBase.characterMovement.isInReaction == false);
             }
+            
+            m_isPerformingAction = false;
 
         }
         
@@ -216,29 +190,108 @@ namespace Runtime.Character.AI
             characterBase.SetCharacterThrowAction();
             characterBase.CheckAllAction(playerTeamGoal.position , false);
 
+            yield return new WaitUntil(() => !ballReference.isThrown);
+
+            yield return new WaitForSeconds(m_standardWaitTime);
+            
+            m_isPerformingAction = false;
+
+        }
+
+        protected IEnumerator C_TryPass()
+        {
+            var allAlliesInRange = GetAllTargets(false, characterBase.shotStrength);
+            List<CharacterBase> passableAllies = new List<CharacterBase>();
+
+            foreach (var ally in allAlliesInRange)
+            {
+                var dir = playerTeamGoal.position - transform.position;
+                var dirToAlly = ally.transform.position - transform.position;
+                var angle = Vector3.Angle(dir, dirToAlly);
+                if (angle < 90f)
+                {
+                    passableAllies.Add(ally);
+                }
+            }
+
+            if (passableAllies.Count == 0)
+            {
+                StartCoroutine(C_PositionToScore());
+                yield break;
+            }
+
+            CharacterBase bestPossiblePass = null;
+
+            foreach (var availableAlly in passableAllies)
+            {
+                if (!bestPossiblePass.IsNull())
+                {
+                    continue;
+                }
+                
+                var dirToAlly = availableAlly.transform.position - transform.position;
+                if (!IsPlayerInDirection(dirToAlly))
+                {
+                    bestPossiblePass = availableAlly;
+                }
+            }
+
+            if (bestPossiblePass.IsNull())
+            {
+                StartCoroutine(C_PositionToScore());
+                yield break;
+            }
+            
+            Debug.Log("THROW BALL");
+            
+            characterBase.SetCharacterThrowAction();
+            characterBase.CheckAllAction(bestPossiblePass.transform.position , false);
+
             yield return new WaitUntil(() => characterBase.isSetupThrowBall == false);
 
-            yield return new WaitForSeconds(0.2f);
+            yield return new WaitForSeconds(m_standardWaitTime);
+            
+            m_isPerformingAction = false;
 
+        }
+
+        protected bool IsPlayerInDirection(Vector3 direction)
+        {
+            var dirMagnitude = direction.magnitude;
+            var dirNormalized = direction.normalized;
+            if (Physics.Raycast(transform.position, dirNormalized, out RaycastHit hit, dirMagnitude, characterCheckMask))
+            {
+                hit.transform.TryGetComponent(out PlayableCharacter player);
+                if (!player.IsNull())
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         protected IEnumerator C_PositionToScore()
         {
             characterBase.characterMovement.SetCharacterMovable(true, null, characterBase.UseActionPoint);
+            
+            var randomPosition = Random.insideUnitCircle * characterBase.shotStrength;
+            var adjustedRandomPos = new Vector2(Mathf.Abs(randomPosition.x), randomPosition.y);
+            var randomPointInShotRange = new Vector3(playerTeamGoal.position.x + adjustedRandomPos.x, playerTeamGoal.position.y, playerTeamGoal.position.z + adjustedRandomPos.y);
+            var closestPossiblePoint = randomPointInShotRange;
+            var dirToRandomPoint = randomPointInShotRange - transform.position;
+            
+            Debug.Log(dirToRandomPoint.magnitude);
+            Debug.Log(dirToRandomPoint.sqrMagnitude);
+            
+            if (dirToRandomPoint.magnitude >= enemyMovementRange)
+            {
+                closestPossiblePoint = transform.position + (dirToRandomPoint.normalized * enemyMovementRange);
+            }
 
-            var direction = playerTeamGoal.position - transform.position;
-            var adjustedPos = Vector3.zero;
+            characterBase.CheckAllAction(closestPossiblePoint, false); 
             
-            if (direction.magnitude > enemyMovementRange)
-            {
-                adjustedPos = transform.position + (direction.normalized * enemyMovementRange);
-            }
-            else
-            {
-                adjustedPos = playerTeamGoal.position;
-            }
-            
-            characterBase.CheckAllAction(adjustedPos, false); 
+            Debug.DrawLine(transform.position, randomPointInShotRange, Color.magenta, 10f);
             
             yield return new WaitUntil(() => characterBase.characterMovement.isUsingMoveAction == false);
 
@@ -246,14 +299,41 @@ namespace Runtime.Character.AI
             {
                 yield return new WaitUntil(() => characterBase.characterMovement.isInReaction == false);
             }
+            
+            m_isPerformingAction = false;
+        }
 
+        protected bool HasPlayerBlockingRoute()
+        {
+            var dirToGoal = playerTeamGoal.position - transform.position;
+            RaycastHit[] hits = Physics.CapsuleCastAll(transform.position, playerTeamGoal.position, 0.2f, dirToGoal, dirToGoal.magnitude);
+            
+            foreach (RaycastHit hit in hits)
+            {
+                //if they are running into an enemy character, make them stop at that character and perform melee
+                if (hit.collider.TryGetComponent(out CharacterBase otherCharacter))
+                {
+                    if (otherCharacter.side != characterBase.side && otherCharacter != this)
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        protected bool HasPassableTeammate()
+        {
+            var allAlliesInRange = GetAllTargets(false, characterBase.shotStrength);
+            return allAlliesInRange.Count > 0;
         }
         
         
         //Checks if there is a target in attack range
-        protected List<CharacterBase> GetAllTargets(bool isPlayerTeam)
+        protected List<CharacterBase> GetAllTargets(bool isPlayerTeam, float _checkRange)
         {
-            Collider[] colliders = Physics.OverlapSphere(transform.position, 10f, characterCheckMask);
+            Collider[] colliders = Physics.OverlapSphere(transform.position, _checkRange, characterCheckMask);
             List<CharacterBase> _targetTransforms = new List<CharacterBase>();
             if (colliders.Length > 0)
             {
@@ -261,7 +341,7 @@ namespace Runtime.Character.AI
                 {
                     if (isPlayerTeam)
                     {
-                        var playerCharacter = col.GetComponent<PlayableCharacter>();
+                        col.TryGetComponent(out PlayableCharacter playerCharacter);
                         if (playerCharacter)
                         {
                             _targetTransforms.Add(playerCharacter);   
@@ -269,10 +349,13 @@ namespace Runtime.Character.AI
                     }
                     else
                     {
-                        var _character = col.GetComponent<CharacterBase>();
+                        col.TryGetComponent(out CharacterBase _character);
                         if (_character is EnemyCharacterRegular || _character is EnemyCharacterMeeple)
                         {
-                            _targetTransforms.Add(_character);   
+                            if (_character != this.characterBase)
+                            {
+                                _targetTransforms.Add(_character);
+                            }
                         }
                     }
                     
@@ -280,6 +363,225 @@ namespace Runtime.Character.AI
             }
 
             return _targetTransforms;
+        }
+
+        protected bool HasAvailableAbilities()
+        {
+            var abilities = characterBase.characterAbilityManager.GetAssignedAbilities();
+
+            CharacterAbilityManager.AssignedAbilities usableAbility = null;
+            
+            foreach (var ability in abilities)
+            {
+                if (ability.canUse)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        protected IEnumerator C_ConsiderAbilities()
+        {
+            Debug.Log($"<color=orange>{gameObject.name} is considering abilities</color>");
+
+            var abilities = characterBase.characterAbilityManager.GetAssignedAbilities();
+
+            CharacterAbilityManager.AssignedAbilities usableAbility = null;
+            
+            
+            foreach (var ability in abilities)
+            {
+                if (!usableAbility.IsNull())
+                {
+                    continue;
+                }
+                
+                if (ability.canUse)
+                {
+                    usableAbility = ability;
+                }
+
+            }
+
+            if (usableAbility.IsNull())
+            {
+                //Do Something Else
+                Debug.Log("Abilities aren't USEABLE, going for ball");
+                if (IsBallInMovementRange())
+                {
+                    yield return StartCoroutine(C_GoForBall());
+                }
+                else
+                {
+                    characterBase.UseActionPoint();    
+                }
+                yield break;
+            }
+
+            var _abilityIndex = abilities.IndexOf(usableAbility);
+            Debug.Log($"<color=green>Ability Index:{_abilityIndex}</color>");
+            
+            //Check what type of ability it is, do thing accordingly
+            switch (usableAbility.ability.abilityType)
+            {
+                case AbilityType.ProjectileDamage: case AbilityType.ProjectileKnockback : case AbilityType.ProjectileStatus: case AbilityType.ApplyStatusEnemy:
+                    //Check to see if enemy is in range, if they are: USE ABILITY
+                    if (IsNearPlayerMember(usableAbility.ability.range))
+                    {
+                        m_isPerformingAbility = true;
+                        var availableTargets = GetAllTargets(true, usableAbility.ability.range);
+                        characterBase.UseCharacterAbility(_abilityIndex);
+                        if (usableAbility.ability.targetType == AbilityTargetType.CHARACTER_TRANSFORM)
+                        {
+                            availableTargets.FirstOrDefault().OnSelect();
+                        }
+                        else
+                        {
+                            characterBase.CheckAllAction(availableTargets.FirstOrDefault().transform.position, false);
+                        }
+                        Debug.Log($"<color=green>Ability Index 2:{_abilityIndex}</color>");
+                    }
+                    break;
+                case AbilityType.ZoneHeal: 
+                    //Look for allies to help, try to fire as close as possible
+                    if (IsNearTeammates(usableAbility.ability.range))
+                    {
+                        var availableTargets = GetAllTargets(false, usableAbility.ability.range);
+                        if (!availableTargets.TrueForAll(cb => cb.characterLifeManager.currentHealthPoints == cb.characterLifeManager.maxHealthPoints))
+                        {
+                            m_isPerformingAbility = true;
+                            characterBase.UseCharacterAbility(_abilityIndex);
+                            var _actualTarget = availableTargets.FirstOrDefault(cb =>
+                                cb.characterLifeManager.currentHealthPoints < cb.characterLifeManager.maxHealthPoints);
+                            if (usableAbility.ability.targetType == AbilityTargetType.CHARACTER_TRANSFORM)
+                            {
+                                _actualTarget.OnSelect();
+                            }
+                            else
+                            {
+                                characterBase.CheckAllAction(_actualTarget.transform.position, false);
+                            }
+                        }
+                    }
+                    break;
+                case AbilityType.ApplyStatusTarget:
+                    if (IsNearTeammates(usableAbility.ability.range))
+                    {
+                        var availableTargets = GetAllTargets(false, usableAbility.ability.range);
+                        if (!availableTargets.TrueForAll(cb => cb.appliedStatus.IsNull()))
+                        {
+                            var _actualTarget = availableTargets.FirstOrDefault(cb =>
+                                cb.appliedStatus.status.statusType == StatusType.Negative);
+                            if (!_actualTarget.IsNull())
+                            {
+                                m_isPerformingAbility = true;
+                                characterBase.UseCharacterAbility(_abilityIndex);
+                                if (usableAbility.ability.targetType == AbilityTargetType.CHARACTER_TRANSFORM)
+                                {
+                                    _actualTarget.OnSelect();
+                                }
+                                else
+                                {
+                                    characterBase.CheckAllAction(_actualTarget.transform.position, false);
+                                }
+                            }
+                        }
+                    }
+                    break;
+                case AbilityType.ApplyStatusSelf: case AbilityType.AgilityStatUpgrade: case AbilityType.ThrowStatUpgrade: case AbilityType.DamageStatUpgrade: case AbilityType.MovementUpgrade:
+                    //Just apply to self?
+                    //Maybe depends?
+                    Debug.Log($"<color=orange>Applying Status or Upgrade Self</color>");
+                    if (characterBase.appliedStatus.IsNull())
+                    {
+                        m_isPerformingAbility = true;
+                        characterBase.UseCharacterAbility(_abilityIndex);
+                        Debug.Log($"<color=green>Ability Index 2:{_abilityIndex}</color>");
+                    }
+                    else
+                    {
+                        if (characterBase.appliedStatus.status.statusType == StatusType.Negative)
+                        {
+                            m_isPerformingAbility = true;
+                            characterBase.UseCharacterAbility(_abilityIndex);
+                            Debug.Log($"<color=green>Ability Index 3:{_abilityIndex}</color>");
+                        }
+                    }
+                    break;
+                case AbilityType.Teleport:
+                    if (IsNearPlayerMember(characterBase.characterMovement.battleMoveDistance))
+                    {
+                        var nearByPlayers = GetAllTargets(true, characterBase.characterMovement.battleMoveDistance);
+                        foreach (var player in nearByPlayers)
+                        {
+                            if (player.characterClassManager.assignedClass.classType == CharacterClass.BRUISER)
+                            {
+                                //Use Teleport otherwise unnecessary
+                                m_isPerformingAbility = true;
+                            }
+                        }
+                    }
+                    break;
+                case AbilityType.Movement:
+                    //Not sure yet
+                    break;
+                case AbilityType.ZoneDamage: case AbilityType.DamageCreation: case AbilityType.TrapCreation:
+                    //Do Damage
+                    if (IsNearPlayerMember(usableAbility.ability.range))
+                    {
+                        m_isPerformingAbility = true;
+                        var availableTargets = GetAllTargets(true, usableAbility.ability.range);
+                        characterBase.UseCharacterAbility(_abilityIndex);
+                        characterBase.CheckAllAction(availableTargets.FirstOrDefault().transform.position, false);
+                    }
+                    break;
+                case AbilityType.ZoneSelf:
+                    if (IsNearPlayerMember(usableAbility.ability.range))
+                    {
+                        m_isPerformingAbility = true;
+                        characterBase.UseCharacterAbility(_abilityIndex);
+                        characterBase.CheckAllAction(this.transform.position, false);
+                    }
+                    break;
+                case AbilityType.WallCreation:
+                    //First check type, 
+                    //Bruiser => Deal Damage to Enemy
+                    //Defender => Protect Goal
+                        
+                    break;
+            }
+
+            yield return null;
+
+            if (m_isPerformingAbility)
+            {
+                Debug.Log("Is waiting for ability");
+                yield return new WaitUntil(() => !characterBase.characterAbilityManager.isUsingAbilityAction);
+            }
+            else
+            {
+                Debug.Log("Can't use FOUND ability: going for ball 2");
+                if (IsBallInMovementRange())
+                {
+                    yield return StartCoroutine(C_GoForBall());
+                }
+                else
+                {
+                    characterBase.UseActionPoint();    
+                }
+                yield break;
+            }
+           
+            Debug.Log("<color=red>Complete Ability Consideration</color>");
+
+            m_isPerformingAbility = false;
+            
+            yield return new WaitForSeconds(m_standardWaitTime);
+
+            m_isPerformingAction = false;
+
         }
 
         protected CharacterBase GetClosestTarget(List<CharacterBase> _possibleTargets)
@@ -408,9 +710,14 @@ namespace Runtime.Character.AI
 
         }
 
-        protected bool IsNearEnemyMember()
+        protected bool IsNearPlayerMember(float _range)
         {
-            return GetAllTargets(true).Count > 0;
+            return GetAllTargets(true, _range).Count > 0;
+        }
+
+        protected bool IsNearTeammates(float _range)
+        {
+            return GetAllTargets(false, _range).Count > 0;
         }
 
         protected bool InLineOfSight(Vector3 _checkPos)

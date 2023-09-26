@@ -92,7 +92,7 @@ namespace Runtime.CameraBehaviour
             
             if(m_isLocked)
             {
-                m_velocity = trackedPosition;
+                m_velocity = ConstrainRange(trackedPosition);
             }
             
         }
@@ -123,7 +123,6 @@ namespace Runtime.CameraBehaviour
             
             if (m_player.GetButtonDown("Confirm"))
             {
-                m_isDrag = true;
                 if (m_isLocked)
                 {
                     UnlockCameraPosition();
@@ -143,6 +142,10 @@ namespace Runtime.CameraBehaviour
                 if (m_dragPlane.Raycast(ray, out entry))
                 {
                     var dragCurrentPosition = ray.GetPoint(entry);
+                    if ((m_dragStartPos - dragCurrentPosition).magnitude > 0.01)
+                    {
+                        m_isDrag = true;
+                    }
                     m_velocity = ConstrainRange(transform.position + m_dragStartPos - dragCurrentPosition);
                 }
             }
@@ -201,7 +204,7 @@ namespace Runtime.CameraBehaviour
                 m_trackedPosition = _trackPosition;    
             }
 
-            m_velocity = _trackPosition;
+            m_velocity = ConstrainRange(_trackPosition);
 
         }
 
@@ -214,7 +217,7 @@ namespace Runtime.CameraBehaviour
                 m_trackedTransform = _trackTransform;    
             }
 
-            m_velocity = _trackTransform.position;
+            m_velocity = ConstrainRange(_trackTransform.position);
             
         }
 
@@ -228,7 +231,7 @@ namespace Runtime.CameraBehaviour
                 m_trackedPosition = centralPos;
             }
 
-            m_velocity = centralPos;
+            m_velocity = ConstrainRange(centralPos);
         }
 
         public void ResetCameraBeforeLock()

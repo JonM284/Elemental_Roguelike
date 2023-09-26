@@ -22,9 +22,13 @@ namespace Data.CharacterData
         [Range(1, 100)] [SerializeField] private int AgilityStatMin = 1;
         [Range(1, 100)] [SerializeField] private int AgilityStatMax = 100;
 
-        [Header("Throwing Stats")]
+        [Header("Shooting Stats")]
         [Range(1, 100)] [SerializeField] private int ShootingStatMin = 1;
         [Range(1, 100)] [SerializeField] private int ShootingStatMax = 100;
+        
+        [Header("Passing Stats")]
+        [Range(1, 100)] [SerializeField] private int PassingStatMin = 1;
+        [Range(1, 100)] [SerializeField] private int PassingStatMax = 100;
 
         [Header("Damage Stats")]
         [Range(1, 100)] [SerializeField] private int DamageStatMin = 1;
@@ -35,6 +39,8 @@ namespace Data.CharacterData
         public Color passiveColor;
 
         [SerializeField] private float moveDistance;
+
+        [SerializeField] private int tackleDamageAmount;
 
         public string classGUID;
 
@@ -56,6 +62,11 @@ namespace Data.CharacterData
             return moveDistance;
         }
 
+        public int GetTackleDamage()
+        {
+            return tackleDamageAmount;
+        }
+
         public int GetRandomHealth()
         {
             return Random.Range(HealthMin, HealthMax);
@@ -74,6 +85,11 @@ namespace Data.CharacterData
         public int GetRandomShootingScore()
         {
             return Random.Range(ShootingStatMin, ShootingStatMax);
+        }
+        
+        public int GetRandomPassingScore()
+        {
+            return Random.Range(PassingStatMin, PassingStatMax);
         }
         
         public int GetRandomDamageScore()

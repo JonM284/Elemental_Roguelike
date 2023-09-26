@@ -10,7 +10,8 @@ namespace Data
     {
 
         #region Public Fields
-
+        
+        [Tooltip("Positive Num = Damage, Negative Num = HEAL")]
         public int projectileDamage = 1;
 
         public float projectileDamageRadius = 0.5f;

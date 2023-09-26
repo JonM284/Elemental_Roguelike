@@ -42,7 +42,7 @@ namespace Runtime.GameControllers
 
         public static event Action OnBattlePreStart;
 
-        public static event Action OnBattleStarted;
+        public static event Action<int> OnBattleStarted;
 
         public static event Action OnResetField;
         
@@ -81,9 +81,7 @@ namespace Runtime.GameControllers
         #region Private Fields
         
         private int m_currentTeamTurnIndex = 0;
-
-        [SerializeField] private List<CharacterBase> m_allBattlers = new List<CharacterBase>();
-
+        
         private Transform m_knockedPlayerPool;
 
         private List<ArenaTeamManager> teamManagers = new List<ArenaTeamManager>();
@@ -99,6 +97,8 @@ namespace Runtime.GameControllers
         private bool m_hasScoredPoint;
 
         private bool m_isSettingUpMatch;
+
+        private bool m_isEndingTurn;
 
         #endregion
 
@@ -198,22 +198,28 @@ namespace Runtime.GameControllers
 
             var availableTeamMembers = GetAvailableTeamMembers();
             
-            if(availableTeamMembers.Count <= 1)
+            if(availableTeamMembers.Count == 0)
             {
-                //Only 1 or None = turn end
+                //None = turn end
                 return;
             }
 
-            var currentCharacterIndex = !activeCharacter.IsNull() ? availableTeamMembers.IndexOf(activeCharacter) : 0;
-            var _amountChange = _isNext ? 1 : -1;
-            var nextIndex = currentCharacterIndex + _amountChange;
-            if (nextIndex < 0)
+            int nextIndex = 0;
+            
+            if(availableTeamMembers.Count > 1)
             {
-                nextIndex = availableTeamMembers.Count - 1;
-            }else if (nextIndex >= availableTeamMembers.Count)
-            {
-                nextIndex = 0;
+                var currentCharacterIndex = !activeCharacter.IsNull() ? availableTeamMembers.IndexOf(activeCharacter) : 0;
+                var _amountChange = _isNext ? 1 : -1;
+                nextIndex = currentCharacterIndex + _amountChange;
+                if (nextIndex < 0)
+                {
+                    nextIndex = availableTeamMembers.Count - 1;
+                }else if (nextIndex >= availableTeamMembers.Count)
+                {
+                    nextIndex = 0;
+                }
             }
+            
 
             if (availableTeamMembers[nextIndex].IsNull())
             {
@@ -270,14 +276,20 @@ namespace Runtime.GameControllers
             
             UIUtils.OpenUI(battleUIData);
 
-            m_allBattlers.Clear();
-
+            yield return new WaitForSeconds(0.3f);
+            
             //Find both team arena managers
+
+            if (teamManagers.Count > 0)
+            {
+                teamManagers.Clear();
+            }
 
             var allTeamSides = GameObject.FindObjectsOfType<ArenaTeamManager>();
 
             foreach (var manager in allTeamSides)
             {
+                yield return null;
                 teamManagers.Add(manager);
             }
             
@@ -295,16 +307,16 @@ namespace Runtime.GameControllers
             }
 
             ball = ballRef;
+
+            //Spawn Enemy Team
+
+            yield return StartCoroutine(C_LoadEnemyTeam());
+            
+            yield return null;
             
             //Spawn Player Team
 
             yield return StartCoroutine(C_LoadPlayerTeam());
-
-            yield return null;
-            
-            //Spawn Enemy Team
-
-            yield return StartCoroutine(C_LoadEnemyTeam());
             
             StartBattle();
         }
@@ -428,6 +440,8 @@ namespace Runtime.GameControllers
         {
             isInBattle = true;
             
+            m_hasScoredPoint = false;
+            
             OnBattlePreStart?.Invoke();
 
             yield return new WaitForSeconds(1f);
@@ -443,8 +457,18 @@ namespace Runtime.GameControllers
             SetTeamActive();
 
             m_isSettingUpMatch = false;
+
+            int teamAmount = 0;
             
-            OnBattleStarted?.Invoke();
+            battlersBySides.ForEach(bbs =>
+            {
+                if (bbs.teamMembers.Count > 0)
+                {
+                    teamAmount++;
+                }
+            });
+            
+            OnBattleStarted?.Invoke(teamAmount);
             
         }
         
@@ -457,7 +481,6 @@ namespace Runtime.GameControllers
             
             if (battlersBySides[activeTeamID].teamSide != playerSide)
             {
-                Debug.Log("NOT PLAYERS TURN");
                 return;
             }
 
@@ -465,27 +488,25 @@ namespace Runtime.GameControllers
             //Case Scenario: Healing Ally - it will then go past this check
             if (!battlersBySides[activeTeamID].teamMembers.Contains(_character))
             {
-                Debug.LogError("NOT IN ACTIVE TEAM");
                 return;
             }
 
             //If this character doesn't have points left, ignore them
             if (_character.characterActionPoints <= 0)
             {
-                Debug.LogError("NOT ENOUGH POINTS");
                 return;
             }
 
             //If the already active character is doing an action, then the character selected is 
             // the receiver of the action.
             //Case Scenario: Healing Ally
-            if (activeCharacter != null)
+            if (!activeCharacter.IsNull())
             {
                 if (activeCharacter.isDoingAction)
                 {
-                    Debug.LogError("IS DOING ACTION");
                     return;
                 }
+                activeCharacter.StopAllActions();
             }
             
             activeCharacter = _character;
@@ -510,29 +531,69 @@ namespace Runtime.GameControllers
                 activeCharacter = null;
             }
 
-            if (_character.side == playerSide)
-            {
-                return;
-            }
-            
             if (!battlersBySides[activeTeamID].teamMembers.FindAll(cb => cb.isAlive).TrueForAll(cb => cb.finishedTurn))
             {
+                if (_character.side == playerSide)
+                {
+                    StartCoroutine(C_WaitToSwap(_character));
+                    return;
+                }
+                return;
+            }
+
+            Debug.Log("Team Turn Ended");
+            if (m_isEndingTurn)
+            {
                 return;
             }
             
-            Debug.Log("Team Turn Ended");
             StartCoroutine(C_EndTeamTurn());
+        }
+
+        public IEnumerator C_WaitToSwap(CharacterBase _character)
+        {
+            yield return null;
+
+            yield return new WaitForSeconds(0.3f);
+
+            if (_character.isDoingAction)
+            {
+                yield return new WaitUntil(() => !_character.isDoingAction);
+            }
+
+            if (ball.isThrown)
+            {
+                yield return new WaitUntil(() => !ball.isThrown);
+            }
+            
+            SelectAvailablePlayer(true);
+
         }
 
         public void EndTeamTurn()
         {
+            if (m_isEndingTurn)
+            {
+                return;
+            }
+            
             StartCoroutine(C_EndTeamTurn());
         }
 
         private IEnumerator C_EndTeamTurn()
         {
-            
+            m_isEndingTurn = true;
             yield return new WaitForSeconds(0.5f);
+
+            if (ball.isThrown)
+            {
+                yield return new WaitUntil(() => !ball.isThrown);
+            }
+
+            if (m_hasScoredPoint)
+            {
+                yield break;
+            }
 
             activeTeamID++;
             if (activeTeamID >= battlersBySides.Count)
@@ -542,6 +603,7 @@ namespace Runtime.GameControllers
 
             if (battlersBySides[activeTeamID].teamMembers.Count == 0)
             {
+                yield return null;
                 StartCoroutine(C_EndTeamTurn());
                 yield break;
             }
@@ -578,6 +640,8 @@ namespace Runtime.GameControllers
             
             JuiceController.Instance.ChangeSide(isPlayerSide);
             
+            m_isEndingTurn = false;
+
             OnChangeActiveTeam?.Invoke(battlersBySides[activeTeamID].teamSide);
         }
 
@@ -711,6 +775,11 @@ namespace Runtime.GameControllers
 
             UIUtils.FadeBlack(false);
 
+            if (battlersBySides[activeTeamID].teamSide == playerSide)
+            {
+                EndTeamTurn();
+            }
+
         }
 
         public void ResetField(CharacterSide _characterSide)
@@ -731,8 +800,6 @@ namespace Runtime.GameControllers
 
         private void RemoveAllCharacters()
         {
-            m_allBattlers.Clear();
-            
             battlersBySides.ForEach(bbs =>
             {
                 bbs.teamMembers.ForEach(cb => GameObject.Destroy(cb.gameObject));
@@ -744,11 +811,19 @@ namespace Runtime.GameControllers
             });
             
             teamManagers.Clear();
+            m_cachedHiddenCharacters.Clear();
         }
 
         public void HaltAllPlayers()
         {
-            battlersBySides.ForEach(bbs => bbs.teamMembers.ForEach(cb => cb.SetCharacterUsable(false)));
+            battlersBySides.ForEach(bbs =>
+            {
+                bbs.teamMembers.ForEach(cb =>
+                {
+                    cb.StopAllActions();
+                    cb.SetCharacterUsable(false);
+                });
+            });
             m_hasScoredPoint = true;
         }
 
@@ -769,7 +844,6 @@ namespace Runtime.GameControllers
             {
                 _character.characterLifeManager.FullReviveCharacter();
                 _character.RemoveEffect();
-                
             }
             
             isInBattle = false;

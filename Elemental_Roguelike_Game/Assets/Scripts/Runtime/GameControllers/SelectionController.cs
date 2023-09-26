@@ -19,13 +19,19 @@ namespace Runtime.GameControllers
 
         private float m_mouseDownTime;
 
-        private float m_mouseInputThreshold = 0.1f;
+        private float m_mouseInputThreshold = 0.25f;
 
         private int playerID = 0;
 
         private Player m_player;
 
         private UnityEngine.Camera m_mainCamera;
+        
+        private Plane m_dragPlane = new Plane(Vector3.up, Vector3.zero);
+        
+        private bool m_isDrag;
+        
+        private Vector3 m_dragStartPos;
 
         #endregion
 
@@ -62,15 +68,36 @@ namespace Runtime.GameControllers
             if (m_player.GetButtonDown("Confirm"))
             {
                 m_mouseDownTime = Time.time;
+                Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
+                float entry;
+                if (m_dragPlane.Raycast(ray, out entry))
+                {
+                    m_dragStartPos = ray.GetPoint(entry);
+                }
+            }
+            
+            if(m_player.GetButton("Confirm")){
+                Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
+                float entry;
+                if (m_dragPlane.Raycast(ray, out entry))
+                {
+                    var dragCurrentPosition = ray.GetPoint(entry);
+                    if ((m_dragStartPos - dragCurrentPosition).magnitude > 0.2)
+                    {
+                        m_isDrag = true;
+                    }
+                }
             }
 
             if (m_player.GetButtonUp("Confirm"))
             {
                 var _timeFromPress = Time.time - m_mouseDownTime;
-                if (_timeFromPress <= m_mouseInputThreshold)
+                if (_timeFromPress <= m_mouseInputThreshold && !m_isDrag)
                 {
                     TrySelect();
                 }
+
+                m_isDrag = false;
             }
         }
 

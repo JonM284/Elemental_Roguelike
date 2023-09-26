@@ -62,7 +62,7 @@ namespace Runtime.Character
 
         private bool m_isKnockedBack;
 
-        private bool m_canKnockback = true;
+        private float m_knockbackMod = 1f;
 
         private float m_knockbackTimer;
 
@@ -339,21 +339,21 @@ namespace Runtime.Character
             }
         }
 
-        public void SetKnockbackable(bool _canKnockback)
+        public void SetKnockbackable(float _newModifier)
         {
-            m_canKnockback = _canKnockback;
+            m_knockbackMod = _newModifier;
         }
 
         public void ApplyKnockback(float _knockbackForce, Vector3 _direction, float _duration)
         {
-            if (!m_canKnockback || isRooted)
+            if (isRooted)
             {
                 return;
             }
             
             m_knockbackTimer = _duration;
             m_knockbackDir = _direction;
-            m_knockbackForce = _knockbackForce;
+            m_knockbackForce = (_knockbackForce * m_knockbackMod);
             m_isKnockedBack = true;
             m_canMove = true;
             

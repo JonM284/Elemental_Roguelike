@@ -16,9 +16,10 @@ MonoBehaviour:
   abilityDescription: Create Fire Circle
   abilityGUID: fb7358bb-15fd-4b1a-b68b-1dc5d3f31e13
   roundCooldownTimer: 6
+  abilityType: 6
   targetType: 1
   range: 4
-  abilityAnimationOverride: {fileID: 6557745755801676397, guid: 0482992e3f9407b4586dac22cbbd90f7,
+  abilityAnimationOverride: {fileID: -184410558708688335, guid: c753a0c20aeb2514295eb195d84644e1,
     type: 3}
   playVFXAtTransform: 0
   abilityIcon: {fileID: 0}

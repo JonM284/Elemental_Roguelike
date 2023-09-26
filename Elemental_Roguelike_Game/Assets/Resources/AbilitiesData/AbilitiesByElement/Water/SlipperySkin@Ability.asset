@@ -16,6 +16,7 @@ MonoBehaviour:
   abilityDescription: Gain 20 to Agility Stat for 1 rounds
   abilityGUID: 3bc152d2-6f08-4298-902a-8b83b19e2082
   roundCooldownTimer: 4
+  abilityType: 13
   targetType: 4
   range: 1
   abilityAnimationOverride: {fileID: 6330554796396086999, guid: 0482992e3f9407b4586dac22cbbd90f7,

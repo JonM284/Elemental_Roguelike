@@ -30,6 +30,8 @@ namespace Data.CharacterData
         
         public int damageScore;
 
+        public int passingScore;
+
         //Distance from start position, character is able to move
         public float movementDistance;
 

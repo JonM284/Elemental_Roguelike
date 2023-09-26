@@ -16,6 +16,7 @@ MonoBehaviour:
   abilityDescription: Increase movement range for 1 round
   abilityGUID: 1b31ad9c-319c-42ab-972d-408e614a8beb
   roundCooldownTimer: 3
+  abilityType: 12
   targetType: 4
   range: 1
   abilityAnimationOverride: {fileID: 6330554796396086999, guid: 0482992e3f9407b4586dac22cbbd90f7,

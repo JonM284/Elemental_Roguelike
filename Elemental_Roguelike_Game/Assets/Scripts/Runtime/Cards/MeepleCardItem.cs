@@ -237,6 +237,11 @@ namespace Runtime.Cards
             m_isMoving = false;
         }
 
+        public void ForceUnselected()
+        {
+            isSelected = false;
+        }
+
         private void SelectCard()
         {
             isSelected = !isSelected;

@@ -99,6 +99,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   eventQuad: {fileID: 1867668579981237751}
+  m_activeColor: {r: 0.8962264, g: 0.5745329, b: 0.114142045, a: 1}
+  m_highlightColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+  m_selectedColor: {r: 0.009878943, g: 0.6981132, b: 0.009878943, a: 1}
+  m_normalColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+  m_inactiveColor: {r: 0.23584908, g: 0.23584908, b: 0.23584908, a: 1}
 --- !u!65 &1077341400530696244
 BoxCollider:
   m_ObjectHideFlags: 0

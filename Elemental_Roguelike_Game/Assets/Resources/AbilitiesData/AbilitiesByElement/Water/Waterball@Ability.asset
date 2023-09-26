@@ -13,17 +13,13 @@ MonoBehaviour:
   m_Name: Waterball@Ability
   m_EditorClassIdentifier: 
   abilityName: Waterball
-  abilityDescription: 'Send a Water Projectile to target, apply Cleanse status effect.
-
-    Cooldown:
-    (1) Turn(s)
-
-    [Cleanse: Immedietly remove other status effects]'
+  abilityDescription: Send a Water Projectile to target, apply Cleanse status effect.
   abilityGUID: a6298a73-f291-4307-b862-41ebefb1ddec
   roundCooldownTimer: 3
+  abilityType: 5
   targetType: 0
   range: 5
-  abilityAnimationOverride: {fileID: 6557745755801676397, guid: 0482992e3f9407b4586dac22cbbd90f7,
+  abilityAnimationOverride: {fileID: -184410558708688335, guid: c753a0c20aeb2514295eb195d84644e1,
     type: 3}
   playVFXAtTransform: 0
   abilityIcon: {fileID: 0}

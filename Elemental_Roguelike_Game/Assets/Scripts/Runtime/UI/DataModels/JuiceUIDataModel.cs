@@ -72,6 +72,13 @@ namespace Runtime.UI.DataReceivers
         
         [SerializeField] private AnimationListPlayer deathMiddleAnimation;
 
+        [Header("Common")]
+        [SerializeField] private List<RawImage> tex1Images;
+        
+        [SerializeField] private List<RawImage> tex2Images;
+        
+        [SerializeField] private List<RawImage> tex3Images;
+        
         #endregion
 
         #region Private Fields
@@ -92,6 +99,11 @@ namespace Runtime.UI.DataReceivers
 
         #region Unity Events
 
+        private void Start()
+        {
+            SetImageTextureReferences();
+        }
+
         private void OnEnable()
         {
             TurnController.OnBattleEnded += TurnControllerOnOnBattleEnded;
@@ -105,10 +117,21 @@ namespace Runtime.UI.DataReceivers
         #endregion
 
         #region Class Implementation
-        
+
         private void TurnControllerOnOnBattleEnded()
         {
             uiWindow.Close();
+        }
+
+        private void SetImageTextureReferences()
+        {
+            var tex1 = JuiceController.Instance.GetTexture1();
+            var tex2 = JuiceController.Instance.GetTexture2();
+            var tex3 = JuiceController.Instance.GetTexture3();
+            
+            tex1Images.ForEach(i => i.texture = tex1);
+            tex2Images.ForEach(i => i.texture = tex2);
+            tex3Images.ForEach(i => i.texture = tex3);
         }
         
         public IEnumerator C_ReactionEvent(int _endValueL, int _endValueR, Action callback)

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Data.DataSaving;
 using Project.Scripts.Utils;
 using Rewired.Data.Mapping;
@@ -13,6 +14,14 @@ namespace Runtime.GameControllers
         #region Static
 
         public static MapDataController Instance { get; private set; }
+
+        #endregion
+
+        #region Actions
+
+        public static event Action RegenerateOriginalMap;
+
+        public static event Action RestartRealScene; 
 
         #endregion
 
@@ -87,9 +96,14 @@ namespace Runtime.GameControllers
             allRowsByLevel = copy;
         }
 
-        public void ChangeSavedPoint(int _selectionLevel, MapController.SaveablePointData _point)
+        public void RecreateMap()
         {
-            
+            RegenerateOriginalMap?.Invoke();
+        }
+
+        public void StartFromBeginning()
+        {
+            RestartRealScene?.Invoke();
         }
 
         public void ResetAll()
@@ -97,7 +111,7 @@ namespace Runtime.GameControllers
             m_selectionLevel = 0;
             m_currentEventIdentifier = "";
             m_lastPressedPOILocation = Vector3.zero;
-            allRowsByLevel = new List<MapController.RowData>();
+            allRowsByLevel.Clear();
         }
 
         #endregion

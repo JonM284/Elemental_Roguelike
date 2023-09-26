@@ -6,6 +6,7 @@ using Data.Sides;
 using Project.Scripts.Utils;
 using Runtime.GameControllers;
 using Runtime.Gameplay;
+using Runtime.Managers;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -13,10 +14,10 @@ using Random = UnityEngine.Random;
 
 namespace Runtime.Character
 {
-    
+
     [RequireComponent(typeof(CharacterBase))]
     [DisallowMultipleComponent]
-    public class CharacterClassManager: MonoBehaviour
+    public class CharacterClassManager : MonoBehaviour
     {
 
         #region Read-Only
@@ -53,8 +54,12 @@ namespace Runtime.Character
 
         private bool m_canPerformReaction = true;
 
+        private bool m_isWaitingForReactionQueue;
+
+        private ArenaTeamManager m_teamManager;
+
         #endregion
-        
+
         #region Accessors
 
         public CharacterBase characterBase => CommonUtils.GetRequiredComponent(ref m_characterBase, () =>
@@ -64,22 +69,34 @@ namespace Runtime.Character
         });
 
         public CharacterClassData assignedClass => m_assignedClass;
-        
+
         public BallBehavior ball => CommonUtils.GetRequiredComponent(ref m_ballRef, () =>
         {
             var bb = TurnController.Instance.ball;
             return bb;
         });
 
+        private ArenaTeamManager teamManager => CommonUtils.GetRequiredComponent(ref m_teamManager, () =>
+        {
+            var atm = TurnController.Instance.GetTeamManager(characterBase.side);
+            return atm;
+        });
+
+        public bool isPerformingReaction => m_isPerformingReaction;
+
         public int agilityScore { get; private set; }
 
         public int shootingScore { get; private set; }
-        
+
+        public int passingScore { get; private set; }
+
         public int tacklingScore { get; private set; }
         
         public int currentMaxAgilityScore { get; private set; }
         
         public int currentMaxShootingScore { get; private set; }
+        
+        public int currentMaxPassingScore { get; private set; }
         
         public int currentMaxTacklingScore { get; private set; }
 
@@ -125,7 +142,7 @@ namespace Runtime.Character
 
         #region Class Implementation
 
-        public void InitializedCharacterPassive(CharacterClassData _data, int agilityScore, int shootingScore, int tacklingScore)
+        public void InitializedCharacterPassive(CharacterClassData _data, int agilityScore, int shootingScore, int passingScore ,int tacklingScore)
         {
             if (_data.IsNull())
             {
@@ -134,14 +151,31 @@ namespace Runtime.Character
             }
             
             m_assignedClass = _data;
-            passiveRadius = _data.radius;
+
+            float _modifiedAmount = _data.radius;
+
+            switch (m_assignedClass.classType)
+            {
+                case CharacterClass.BRUISER:
+                    _modifiedAmount = ((float)(tacklingScore) / 100f) * _data.radius;
+                    break;
+                case CharacterClass.DEFENDER: case CharacterClass.PLAYMAKER:
+                    _modifiedAmount = ((float)(agilityScore) / 100f) * _data.radius;
+                    break;
+            }
+            
+            passiveRadius = _modifiedAmount;
+
+            m_characterBase = this.GetComponent<CharacterBase>();
             
             this.agilityScore = agilityScore;
             this.shootingScore = shootingScore;
+            this.passingScore = passingScore;
             this.tacklingScore = tacklingScore;
 
             currentMaxAgilityScore = this.agilityScore;
             currentMaxShootingScore = this.shootingScore;
+            currentMaxPassingScore = this.passingScore;
             currentMaxTacklingScore = this.tacklingScore;
             
             if (m_passiveIndicator.IsNull())
@@ -159,8 +193,8 @@ namespace Runtime.Character
             var indicatorMat = meshRend.materials[0];
             
             indicatorMat.SetColor(m_colorVarName, _data.passiveColor);
-            
-            m_passiveIndicator.SetActive(false);
+
+            DisplayIndicator(false);
         }
 
         public void SetCharacterPassive(CharacterSide _side)
@@ -176,7 +210,7 @@ namespace Runtime.Character
                 }
                 if (!m_passiveIndicator.IsNull())
                 {
-                    m_passiveIndicator.SetActive(!_isActiveTeam);
+                    DisplayIndicator(!_isActiveTeam);
                 }    
             }
             else
@@ -188,7 +222,7 @@ namespace Runtime.Character
                 }
                 if (!m_passiveIndicator.IsNull())
                 {
-                    m_passiveIndicator.SetActive(_isActiveTeam);
+                    DisplayIndicator(_isActiveTeam);
                 }    
             }
             
@@ -200,24 +234,93 @@ namespace Runtime.Character
             {
                 return;
             }
+
+            if (m_isWaitingForReactionQueue)
+            {
+                return;
+            }
             
             switch (m_assignedClass.classType)
             {
                 case CharacterClass.DEFENDER:
                     if (IsBallThrownInRange())
                     {
-                        m_isPerformingReaction = true;
-                        StartCoroutine(C_AttemptGrabBall());
+                        m_isWaitingForReactionQueue = true;
+                        teamManager.QueueReaction(this, PerformDefenderAction);
                     }
                     break;
                 case CharacterClass.BRUISER:
                     if (IsEnemyWalkInRange())
                     {
-                        m_isPerformingReaction = true;
-                        StartCoroutine(C_AttemptAttackPlayer());
+                        m_isWaitingForReactionQueue = true;
+                        teamManager.QueueReaction(this, PerformBruiserAction);
+                    }
+                    break;
+                case CharacterClass.PLAYMAKER:
+                    if (IsBallDroppedInRange())
+                    {
+                        m_isWaitingForReactionQueue = true;
+                        teamManager.QueueReaction(this, PerformPlaymakerAction);
+                    }
+                    break;
+                case CharacterClass.ALL:
+                    if (IsEnemyWalkInRange())
+                    {
+                        m_isWaitingForReactionQueue = true;
+                        teamManager.QueueReaction(this, PerformBruiserAction);
+                    }else if (IsBallThrownInRange())
+                    {
+                        m_isWaitingForReactionQueue = true;
+                        teamManager.QueueReaction(this, PerformDefenderAction);
+                    }else if (IsBallDroppedInRange())
+                    {
+                        m_isWaitingForReactionQueue = true;
+                        teamManager.QueueReaction(this, PerformPlaymakerAction);
                     }
                     break;
             }
+        }
+
+        private void PerformDefenderAction()
+        {
+            m_isPerformingReaction = true;
+            m_isWaitingForReactionQueue = false;
+
+            if (!IsBallThrownInRange())
+            {
+                m_isPerformingReaction = false;
+                return;
+            }
+            
+            StartCoroutine(C_AttemptGrabBall());
+        }
+        
+        private void PerformPlaymakerAction()
+        {
+            m_isPerformingReaction = true;
+            m_isWaitingForReactionQueue = false;
+
+            if (!IsBallDroppedInRange())
+            {
+                m_isPerformingReaction = false;
+                return;
+            }
+            
+            StartCoroutine(C_AttemptGrabBall());
+        }
+        
+        private void PerformBruiserAction()
+        {
+            m_isPerformingReaction = true;
+            m_isWaitingForReactionQueue = false;
+
+            if (!IsEnemyWalkInRange())
+            {
+                m_isPerformingReaction = false;
+                return;
+            }
+            
+            StartCoroutine(C_AttemptAttackPlayer());
         }
 
 
@@ -243,7 +346,7 @@ namespace Runtime.Character
 
             int _RValue = isPlayer ? (int)ball.thrownBallStat : rollToGrab;
 
-            yield return StartCoroutine(JuiceController.Instance.DoReactionAnimation(_LCam, _RCam ,_LValue, _RValue));
+            yield return StartCoroutine(JuiceController.Instance.C_DoReactionAnimation(_LCam, _RCam ,_LValue, _RValue));
 
             if (ball.thrownBallStat > rollToGrab)
             {
@@ -297,7 +400,7 @@ namespace Runtime.Character
 
             int _RValue = isPlayer ? enemyAttackRoll : rollToAttack;
 
-            yield return StartCoroutine(JuiceController.Instance.DoReactionAnimation(_LCam, _RCam, _LValue, _RValue));
+            yield return StartCoroutine(JuiceController.Instance.C_DoReactionAnimation(_LCam, _RCam, _LValue, _RValue));
             
             //Missed Attack
             if (enemyAttackRoll > rollToAttack)
@@ -339,7 +442,7 @@ namespace Runtime.Character
                     ChangeToVisualLayer(_layer);
                     m_inRangeCharacter.characterClassManager.ChangeToVisualLayer(oppositeLayer);
 
-                    yield return StartCoroutine(JuiceController.Instance.DoReactionAnimation(_LCam, _RCam,_LValue, _RValue));
+                    yield return StartCoroutine(JuiceController.Instance.C_DoReactionAnimation(_LCam, _RCam,_LValue, _RValue));
 
                     //Missed On Reroll
                     if (enemyAgilityRoll > rollToAttack)
@@ -364,14 +467,32 @@ namespace Runtime.Character
             yield return new WaitForSeconds(0.5f);
             
             m_inRangeCharacter.characterMovement.ForceStopMovement(true);
+
+            DisplayIndicator(false);
             
-            characterBase.characterMovement.SetCharacterMovable(true, null, HasPerformedReaction);
-            characterBase.CheckAllAction(m_inRangeCharacter.transform.position, true);
+            characterBase.characterMovement.SetCharacterMovable(true, null, SuccessfulMeleeReaction);
+            characterBase.characterMovement.MoveCharacter(m_inRangeCharacter.transform.position, true);
             
             m_inRangeCharacter = null;
             
             yield return new WaitUntil(() => characterBase.characterMovement.isUsingMoveAction == false);
 
+        }
+
+        private bool IsBallDroppedInRange()
+        {
+            var directionToBall = ball.transform.position - transform.position;
+            directionToBall.FlattenVector3Y();
+
+            if (directionToBall.magnitude < passiveRadius)
+            {
+                if (!ball.isThrown && ball.currentOwner.IsNull())
+                {
+                    return true;
+                }
+            }
+            
+            return false;
         }
 
         private bool IsBallThrownInRange()
@@ -452,7 +573,19 @@ namespace Runtime.Character
         {
             m_hasPerformedReaction = true;
             m_isPerformingReaction = false;
-            m_passiveIndicator.SetActive(false);
+            DisplayIndicator(false);
+        }
+
+        private void DisplayIndicator(bool _display)
+        {
+            m_passiveIndicator.SetActive(_display);
+        }
+
+        private void SuccessfulMeleeReaction()
+        {
+            m_hasPerformedReaction = false;
+            m_isPerformingReaction = false;
+            DisplayIndicator(true);
         }
 
         public int GetRandomAgilityStat()
@@ -468,6 +601,16 @@ namespace Runtime.Character
         public int GetRandomDamageStat()
         {
             return Random.Range(1, currentMaxTacklingScore);
+        }
+
+        public int GetRandomPassingStat()
+        {
+            return Random.Range(1, currentMaxPassingScore);
+        }
+
+        public int GetMaxDamageStat()
+        {
+            return currentMaxTacklingScore;
         }
 
         public int GetReroll()
@@ -497,6 +640,9 @@ namespace Runtime.Character
                 case CharacterStatsEnum.TACKLE:
                     currentMaxTacklingScore = newAmount;
                     break;
+                case CharacterStatsEnum.PASSING:
+                    currentMaxPassingScore = newAmount;
+                    break;
             }
         }
 
@@ -522,6 +668,7 @@ namespace Runtime.Character
             currentMaxAgilityScore = agilityScore;
             currentMaxShootingScore = shootingScore;
             currentMaxTacklingScore = tacklingScore;
+            currentMaxPassingScore = passingScore;
         }
         #endregion
 

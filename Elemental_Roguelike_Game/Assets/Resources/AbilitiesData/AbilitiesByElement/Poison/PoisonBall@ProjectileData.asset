@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bc7d6c41bd954f04d882af9b1ce8b9f1, type: 3}
   m_Name: PoisonBall@ProjectileData
   m_EditorClassIdentifier: 
-  projectileDamage: 20
+  projectileDamage: 30
   projectileDamageRadius: 0.15
   projectileSpeed: 15
   isAffectArmor: 0

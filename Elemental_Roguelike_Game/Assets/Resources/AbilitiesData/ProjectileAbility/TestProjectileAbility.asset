@@ -18,8 +18,7 @@ MonoBehaviour:
   roundCooldownTimer: 3
   targetType: 0
   range: 5
-  abilityAnimationOverride: {fileID: 6557745755801676397, guid: 0482992e3f9407b4586dac22cbbd90f7,
-    type: 3}
+  abilityAnimationOverride: {fileID: 0}
   playVFXAtTransform: 0
   abilityIcon: {fileID: 0}
   abilityVFX: {fileID: 0}

@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Project.Scripts.Utils;
 using Runtime.Abilities;
 using Runtime.GameControllers;
-using UnityEditor.Animations;
 using UnityEngine;
-using Utils;
+using UnityEngine.Rendering;
 
 namespace Runtime.Character
 {
@@ -28,6 +26,23 @@ namespace Runtime.Character
         
         private readonly string abilityTwoClipName = "DefaultAbility2";
         
+        private readonly string DefaultAttack = "DefaultAttack";
+        
+        private readonly string DefaultDamaged = "DefaultDamaged";
+
+        private readonly string DefaultDeath = "DefaultDeath";
+
+        private readonly string DefaultIdle = "DefaultIdle";
+
+        private readonly string DefaultWalk = "DefaultWalk";
+        
+        #endregion
+
+        #region Serialized Fields
+
+        [SerializeField]
+        private bool m_isEnemy;
+
         #endregion
 
         #region Private Fields
@@ -35,7 +50,7 @@ namespace Runtime.Character
         private CharacterMovement m_characterMovement;
 
         private Animator m_animator;
-        
+
         #endregion
 
         #region Accessor
@@ -51,6 +66,10 @@ namespace Runtime.Character
             var a = GetComponent<Animator>();
             return a;
         });
+        
+        private AnimatorOverrideController originalAnimOverrideController => animator.runtimeAnimatorController as AnimatorOverrideController;
+
+        private AnimatorOverrideController currentOverrideController => animator.runtimeAnimatorController as AnimatorOverrideController;
 
         private bool isWalking => characterMovement != null && characterMovement.isMoving && !characterMovement.isPaused;
 
@@ -84,23 +103,20 @@ namespace Runtime.Character
                 
             });
 
-            if (abilities.Count == 0)
+            if (abilities.Count == 0 || m_isEnemy)
             {
-                Debug.LogError("This has no abilities", this);
                 return;
             }
             
             //Create new overrides for abilities
-            
             var newAnimator = new AnimatorOverrideController(animator.runtimeAnimatorController);
 
             var overrides = new List<KeyValuePair<AnimationClip, AnimationClip>>(newAnimator.overridesCount);
             
-            newAnimator.GetOverrides(overrides);
+            originalAnimOverrideController.GetOverrides(overrides);
 
             for(int i = 0; i < overrides.Count; i++)
             {
-
                 if (overrides[i].Key.name == abilityOneClipName)
                 {
                     if (abilities[0].abilityAnimationOverride.IsNull())
@@ -119,14 +135,8 @@ namespace Runtime.Character
                     var newValuePair = new KeyValuePair<AnimationClip, AnimationClip>(overrides[i].Key, abilities[1].abilityAnimationOverride);
                     overrides[i] = newValuePair;
                 }
-                else
-                {
-                    var newValuePair = new KeyValuePair<AnimationClip, AnimationClip>(overrides[i].Key,
-                        animator.runtimeAnimatorController.animationClips[i]);
-                    overrides[i] = newValuePair;
-                }
             }
-            
+
             newAnimator.ApplyOverrides(overrides);
             newAnimator.name = "NewOverride";
             

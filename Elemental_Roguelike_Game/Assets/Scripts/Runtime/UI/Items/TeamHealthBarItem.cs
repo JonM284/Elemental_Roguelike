@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Data.Sides;
 using Project.Scripts.Utils;
 using Runtime.Character;
 using Runtime.GameControllers;
@@ -34,6 +35,8 @@ namespace Runtime.UI.Items
 
         [SerializeField] private List<GameObject> shieldIcons = new List<GameObject>();
 
+        [SerializeField] private List<GameObject> actionPointObj = new List<GameObject>();
+
         #endregion
 
         #region Private Fields
@@ -61,17 +64,21 @@ namespace Runtime.UI.Items
         private void OnEnable()
         {
             TurnController.OnChangeActiveCharacter += OnChangeActiveCharacter;
+            TurnController.OnChangeActiveTeam += OnChangeActiveTeam;
             CharacterLifeManager.OnCharacterHealthChange += OnCharacterHealthChange;
             CharacterLifeManager.OnCharacterDied += OnCharacterDied;
             CharacterBase.CharacterReset += OnCharacterReset;
+            CharacterBase.CharacterUsedActionPoint += OnCharacterUsedActionPoint;
         }
 
         private void OnDisable()
         {
             TurnController.OnChangeActiveCharacter -= OnChangeActiveCharacter;
-            CharacterLifeManager.OnCharacterHealthChange += OnCharacterHealthChange;
-            CharacterLifeManager.OnCharacterDied += OnCharacterDied;
-            CharacterBase.CharacterReset += OnCharacterReset;
+            TurnController.OnChangeActiveTeam -= OnChangeActiveTeam;
+            CharacterLifeManager.OnCharacterHealthChange -= OnCharacterHealthChange;
+            CharacterLifeManager.OnCharacterDied -= OnCharacterDied;
+            CharacterBase.CharacterReset -= OnCharacterReset;
+            CharacterBase.CharacterUsedActionPoint -= OnCharacterUsedActionPoint;
         }
 
         #endregion
@@ -97,12 +104,38 @@ namespace Runtime.UI.Items
 
             Debug.Log("Connected");
             
-            OnCharacterHealthChange();
+            OnCharacterHealthChange(m_associatedCharacter);
         }
         
-        private void OnCharacterHealthChange()
+        private void OnCharacterUsedActionPoint(CharacterBase _character, int _amountLeft)
         {
             if (m_associatedCharacter.IsNull())
+            {
+                return;
+            }
+
+            if (_character != m_associatedCharacter)
+            {
+                return;
+            }
+
+            for (int i = 0; i < actionPointObj.Count; i++)
+            {
+                if (i == _amountLeft)
+                {
+                    actionPointObj[i].SetActive(false);
+                }
+            }
+        }
+        
+        private void OnCharacterHealthChange(CharacterBase _character)
+        {
+            if (m_associatedCharacter.IsNull())
+            {
+                return;
+            }
+
+            if (_character != m_associatedCharacter)
             {
                 return;
             }
@@ -113,6 +146,22 @@ namespace Runtime.UI.Items
             
             shieldIcons.ForEach(g => g.SetActive(hasShield));
 
+        }
+        
+        private void OnChangeActiveTeam(CharacterSide _side)
+        {
+            if (m_associatedCharacter.IsNull())
+            {
+                return;
+            }
+
+            if (_side != m_associatedCharacter.side)
+            {
+                actionPointObj.ForEach(g => g.SetActive(false));
+                return;
+            }
+            
+            actionPointObj.ForEach(g => g.SetActive(true));
         }
         
         private void OnChangeActiveCharacter(CharacterBase _character)
@@ -148,6 +197,15 @@ namespace Runtime.UI.Items
             }
 
             holder.SetActive(true);
+        }
+        
+        public void OnPortraitPressed(){
+            if (m_associatedCharacter.IsNull())
+            {
+                return;
+            }
+            
+            m_associatedCharacter.OnSelect();
         }
 
         #endregion

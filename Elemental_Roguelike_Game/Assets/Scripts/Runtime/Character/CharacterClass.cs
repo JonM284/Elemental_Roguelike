@@ -5,5 +5,7 @@
         STRIKER,
         DEFENDER,
         BRUISER,
+        PLAYMAKER,
+        ALL,
     }
 }

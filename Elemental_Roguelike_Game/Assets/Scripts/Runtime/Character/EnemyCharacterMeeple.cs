@@ -23,6 +23,8 @@ namespace Runtime.Character
         /// </summary>
         public override void InitializeCharacter()
         {
+            side = ScriptableDataController.Instance.GetSideByGuid(characterSideRef);
+
             var elementType = ElementUtils.GetElementTypeByGUID(m_enemyMeepleStats.meepleElementTypeRef);
             var classType = MeepleController.Instance.GetClassByGUID(m_enemyMeepleStats.classReferenceType);
             

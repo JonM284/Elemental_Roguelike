@@ -44,7 +44,11 @@ namespace Runtime.GameControllers
 
         #region Serialized Fields
 
-        [SerializeField] private AssetReference meepleAsset;
+        [SerializeField] private AssetReference strikerMeepleAsset;
+        
+        [SerializeField] private AssetReference bruiserMeepleAsset;
+        
+        [SerializeField] private AssetReference defenderMeepleAsset;
 
         [SerializeField] private AssetReference enemyMeeplAsset;
 
@@ -146,11 +150,32 @@ namespace Runtime.GameControllers
             _character.agilityScore = foundClass.GetRandomAgilityScore();
             _character.shootingScore = foundClass.GetRandomShootingScore();
             _character.damageScore = foundClass.GetRandomDamageScore();
+            _character.passingScore = foundClass.GetRandomPassingScore();
         }
 
         public IEnumerator InstantiatePremadeMeeple(CharacterStatsData _meepleCharacter, Vector3 spawnLocation, Vector3 spawnRotation)
         {
+            yield return null;
 
+            var correctClass = GetClassByGUID(_meepleCharacter.classReferenceType);
+            AssetReference prefabByClass;
+
+            switch (correctClass.classType)
+            {
+                case CharacterClass.STRIKER:
+                    prefabByClass = strikerMeepleAsset;
+                    break;
+                case CharacterClass.BRUISER:
+                    prefabByClass = bruiserMeepleAsset;
+                    break;
+                case CharacterClass.DEFENDER:
+                    prefabByClass = defenderMeepleAsset;
+                    break;
+                default:
+                    prefabByClass = strikerMeepleAsset;
+                    break;
+            }
+            
             var adjustedSpawnLocation = spawnLocation != Vector3.zero ? spawnLocation : Vector3.zero;
 
             var adjustedSpawnRotation = spawnRotation != Vector3.zero ? spawnRotation : Vector3.zero;
@@ -159,10 +184,10 @@ namespace Runtime.GameControllers
             if (!loadedPlayableMeeple.IsNull())
             {
                 Debug.Log("<color=orange>Already Loaded</color>");
-                var newPlayerMeeple = Instantiate(loadedPlayableMeeple, adjustedSpawnLocation, Quaternion.Euler(adjustedSpawnRotation));
-                newPlayerMeeple.transform.position = adjustedSpawnLocation;
-                Debug.Log(adjustedSpawnLocation);
-                var playerMeeple = newPlayerMeeple.GetComponent<PlayableCharacter>();
+                var newPlayerMeeple = prefabByClass.InstantiateAsync(adjustedSpawnLocation, Quaternion.Euler(adjustedSpawnRotation));
+                yield return newPlayerMeeple;
+                newPlayerMeeple.Result.transform.position = adjustedSpawnLocation;
+                var playerMeeple = newPlayerMeeple.Result.GetComponent<PlayableCharacter>();
                 playerMeeple.AssignStats(_meepleCharacter);
                 playerMeeple.InitializeCharacter();
                 PlayerMeepleCreated?.Invoke(playerMeeple, _meepleCharacter);
@@ -171,7 +196,7 @@ namespace Runtime.GameControllers
             
             //if asset is not loaded, 1. load asset, 2. Instantiate loaded asset
             
-            var handle = Addressables.LoadAssetAsync<GameObject>(meepleAsset);
+            var handle = prefabByClass.InstantiateAsync(adjustedSpawnLocation, Quaternion.Euler(adjustedSpawnRotation));
             
             Debug.Log("<color=#00FF00>Loading Premade Meeple</color>");
 
@@ -182,15 +207,15 @@ namespace Runtime.GameControllers
             
             if (handle.Status == AsyncOperationStatus.Succeeded)
             {
-                var newMeepleObject = Instantiate(handle.Result, adjustedSpawnLocation, Quaternion.Euler(adjustedSpawnRotation));
-                loadedPlayableMeeple = handle.Result;
-                if (newMeepleObject.TryGetComponent(out CharacterBase newMeeple))
+                //loadedPlayableMeeple = handle.Result;
+                if (handle.Result.TryGetComponent(out CharacterBase newMeeple))
                 {
                     if (newMeeple is PlayableCharacter playableCharacter)
                     {
                         playableCharacter.AssignStats(_meepleCharacter);
                     }
                     newMeeple.InitializeCharacter();
+                    Debug.Log("MAKING LOADED MEEPLE - LOADING FINISHED");
                     PlayerMeepleCreated?.Invoke(newMeeple, _meepleCharacter);
                 }
             }else {

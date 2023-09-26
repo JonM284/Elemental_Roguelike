@@ -16,6 +16,7 @@ MonoBehaviour:
   abilityDescription: Apply Cloak
   abilityGUID: d4ac5f8f-ab59-4749-99a8-5fb496e81b54
   roundCooldownTimer: 5
+  abilityType: 3
   targetType: 4
   range: 1
   abilityAnimationOverride: {fileID: 6330554796396086999, guid: 0482992e3f9407b4586dac22cbbd90f7,

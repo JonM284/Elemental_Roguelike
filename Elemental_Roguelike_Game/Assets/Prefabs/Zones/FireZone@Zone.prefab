@@ -14271,7 +14271,7 @@ GameObject:
   - component: {fileID: 9707132548774977}
   - component: {fileID: 9707132548774976}
   - component: {fileID: 9707132548774991}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: FireZone@Zone
   m_TagString: Untagged
   m_Icon: {fileID: 0}

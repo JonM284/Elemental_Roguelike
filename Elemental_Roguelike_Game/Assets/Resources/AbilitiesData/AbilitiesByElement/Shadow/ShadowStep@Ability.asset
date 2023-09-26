@@ -13,10 +13,11 @@ MonoBehaviour:
   m_Name: ShadowStep@Ability
   m_EditorClassIdentifier: 
   abilityName: Shadow Step
-  abilityDescription: "Teleport to another location in {0} distance from original
-    location. \nCooldown: (1) Turn(s)"
+  abilityDescription: 'Teleport to another location in {0} distance from original
+    location. '
   abilityGUID: e68b99eb-c218-4774-ae98-9f3fc4ea2050
   roundCooldownTimer: 3
+  abilityType: 16
   targetType: 1
   range: 6
   abilityAnimationOverride: {fileID: 7742111609445540382, guid: 0482992e3f9407b4586dac22cbbd90f7,

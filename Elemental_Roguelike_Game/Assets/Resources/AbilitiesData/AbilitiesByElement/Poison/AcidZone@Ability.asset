@@ -16,12 +16,15 @@ MonoBehaviour:
   abilityDescription: Create a pool of acid.
   abilityGUID: 3f15caf0-61c3-409c-be98-7bb6d863dda5
   roundCooldownTimer: 4
+  abilityType: 6
   targetType: 1
   range: 5
-  abilityAnimationOverride: {fileID: 6557745755801676397, guid: 0482992e3f9407b4586dac22cbbd90f7,
+  abilityAnimationOverride: {fileID: -184410558708688335, guid: c753a0c20aeb2514295eb195d84644e1,
     type: 3}
   playVFXAtTransform: 0
   abilityIcon: {fileID: 0}
   abilityVFX: {fileID: 0}
-  abilityParameters: []
+  abilityParameters:
+  - {fileID: 11400000, guid: 93a632a6a96b32b428b04d561e44a367, type: 2}
+  - {fileID: 11400000, guid: 2eb259194d5e9ea4d8e45c3b81473bb1, type: 2}
   projectileInfo: {fileID: 11400000, guid: 34903c88d7171114d9c5934e17bccd6b, type: 2}

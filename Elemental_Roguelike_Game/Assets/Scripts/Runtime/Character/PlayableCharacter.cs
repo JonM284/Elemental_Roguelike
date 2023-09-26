@@ -24,15 +24,20 @@ namespace Runtime.Character
         /// </summary>
         public override void InitializeCharacter()
         {
+            side = ScriptableDataController.Instance.GetSideByGuid(characterSideRef);
+            Debug.Log($"Side={side.name}");
             var elementType = ElementUtils.GetElementTypeByGUID(m_characterStatsData.meepleElementTypeRef);
             var classType = MeepleController.Instance.GetClassByGUID(m_characterStatsData.classReferenceType);
 
             characterVisuals.InitializeMeepleCharacterVisuals(elementType);
             
-            characterMovement.InitializeCharacterMovement(m_characterStatsData.baseSpeed, m_characterStatsData.movementDistance, m_characterStatsData.damageScore, elementType);
+            characterMovement.InitializeCharacterMovement(m_characterStatsData.baseSpeed, m_characterStatsData.movementDistance, classType.GetTackleDamage(), elementType);
             
             characterLifeManager.InitializeCharacterHealth(m_characterStatsData.baseHealth, m_characterStatsData.baseShields,
                 m_characterStatsData.currentHealth, m_characterStatsData.currentShield, elementType);
+
+            characterClassManager.InitializedCharacterPassive(classType, m_characterStatsData.agilityScore, 
+                m_characterStatsData.shootingScore, m_characterStatsData.passingScore ,m_characterStatsData.damageScore);
             
             if (m_characterStatsData.abilityReferences.Count > 0)
             {
@@ -40,9 +45,6 @@ namespace Runtime.Character
 
                 characterAnimations.InitializeAnimations(m_characterStatsData.abilityReferences, m_characterStatsData.classReferenceType ,m_characterStatsData.meepleElementTypeRef);
             }
-            
-            characterClassManager.InitializedCharacterPassive(classType, m_characterStatsData.agilityScore, 
-                m_characterStatsData.shootingScore, m_characterStatsData.damageScore);
         }
 
         public override float GetBaseSpeed()

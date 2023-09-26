@@ -22,6 +22,8 @@ namespace Runtime.ScriptedAnimations.RectTransform
 
         private Color m_currentTo;
 
+        private Color m_proxyColor;
+
         #endregion
 
         #region Accessors
@@ -36,7 +38,9 @@ namespace Runtime.ScriptedAnimations.RectTransform
         
         public override void SetAnimationValue(float progress)
         {
-            targetImage.color = Color.LerpUnclamped(m_currentFrom, m_currentTo, progress);
+            m_proxyColor = targetImage.color;
+            m_proxyColor.a = Mathf.Lerp(m_currentFrom.a, m_currentTo.a, progress);
+            targetImage.color = m_proxyColor;
         }
         
         public override void SetInitialValues()

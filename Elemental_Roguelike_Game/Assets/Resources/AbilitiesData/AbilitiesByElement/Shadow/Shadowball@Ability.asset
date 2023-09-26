@@ -13,15 +13,13 @@ MonoBehaviour:
   m_Name: Shadowball@Ability
   m_EditorClassIdentifier: 
   abilityName: Shadowball
-  abilityDescription: 'Launch a shadow projectile in selected direction.
-
-    Cooldown:
-    (1) Turn(s)'
+  abilityDescription: Launch a shadow projectile in selected direction.
   abilityGUID: 83bae319-c9f5-469b-8771-4dcae6daba48
   roundCooldownTimer: 3
+  abilityType: 4
   targetType: 3
   range: 5
-  abilityAnimationOverride: {fileID: 6557745755801676397, guid: 0482992e3f9407b4586dac22cbbd90f7,
+  abilityAnimationOverride: {fileID: -184410558708688335, guid: c753a0c20aeb2514295eb195d84644e1,
     type: 3}
   playVFXAtTransform: 0
   abilityIcon: {fileID: 0}

@@ -12,12 +12,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bc7d6c41bd954f04d882af9b1ce8b9f1, type: 3}
   m_Name: TestProjectileData
   m_EditorClassIdentifier: 
-  projectileDamage: 1
+  projectileDamage: 50
   projectileDamageRadius: 0.5
   projectileSpeed: 5
-  isArmorPiercing: 0
+  isAffectArmor: 1
+  isKnockBack: 0
+  isAffectWhileMoving: 0
   projectileType: {fileID: 11400000, guid: c9878cd57e22d2f4294bb226cbe069b6, type: 2}
-  statusEffect: {fileID: 11400000, guid: 105104d71c6a3354f95ca160d3294c22, type: 2}
+  chanceToApplyStatus: 0
+  statusEffect: {fileID: 0}
   projectileCollisionLayers:
     serializedVersion: 2
     m_Bits: 768

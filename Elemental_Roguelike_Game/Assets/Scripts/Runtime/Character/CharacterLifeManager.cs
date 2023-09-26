@@ -13,7 +13,7 @@ namespace Runtime.Character
 
         public static event Action<CharacterBase> OnCharacterDied;
 
-        public static event Action OnCharacterHealthChange;
+        public static event Action<CharacterBase> OnCharacterHealthChange;
         
         public static event Action<CharacterBase,int> CharacterTookDamage;
         
@@ -108,7 +108,7 @@ namespace Runtime.Character
                 }
             }
             
-            OnCharacterHealthChange?.Invoke();
+            OnCharacterHealthChange?.Invoke(ownCharacter);
             
             JuiceController.Instance.CreateDamageText(_fixedIncomingDamage, healthBarPos.position);
 
@@ -135,17 +135,19 @@ namespace Runtime.Character
         {
             currentHealthPoints = maxHealthPoints;
             currentShieldPoints = maxSheildPoints;
-            OnCharacterHealthChange?.Invoke();
+            OnCharacterHealthChange?.Invoke(ownCharacter);
         }
 
         public void PartialReviveCharacter(float _percentHeal)
         {
             currentHealthPoints += Mathf.RoundToInt(maxHealthPoints * _percentHeal);
-            OnCharacterHealthChange?.Invoke();
+            OnCharacterHealthChange?.Invoke(ownCharacter);
         }
 
         public void HealCharacter(int _healAmount, bool _isHealArmor = false)
         {
+            var adjustedAmount = Mathf.Abs(_healAmount);
+            
             if (_isHealArmor)
             {
                 if (currentShieldPoints >= maxSheildPoints)
@@ -153,15 +155,15 @@ namespace Runtime.Character
                     return;
                 }
 
-                if (currentShieldPoints + _healAmount > maxSheildPoints)
+                if (currentShieldPoints + adjustedAmount > maxSheildPoints)
                 {
                     currentShieldPoints = maxSheildPoints;
                     return;
                 }
                 
                 Debug.Log($"<color=green> {this.gameObject.name} Health{!_isHealArmor}:Shield{_isHealArmor} // " +
-                          $"Healed for Amount:{_healAmount} /// hp now: {currentHealthPoints} shields: {currentShieldPoints} </color>");
-                currentShieldPoints += _healAmount;
+                          $"Healed for Amount:{adjustedAmount} /// hp now: {currentHealthPoints} shields: {currentShieldPoints} </color>");
+                currentShieldPoints = adjustedAmount;
                 return;
             }
 
@@ -170,18 +172,18 @@ namespace Runtime.Character
                 return;
             }
             
-            if (currentHealthPoints + _healAmount > maxHealthPoints)
+            if (currentHealthPoints + adjustedAmount > maxHealthPoints)
             {
                 currentHealthPoints = maxHealthPoints;
                 return;
             }
             
-            currentHealthPoints += _healAmount;
+            currentHealthPoints += adjustedAmount;
             
-            OnCharacterHealthChange?.Invoke();
+            OnCharacterHealthChange?.Invoke(ownCharacter);
             
             Debug.Log($"<color=green> {this.gameObject.name} Health{!_isHealArmor}:Shield{_isHealArmor} // " +
-                      $"Healed for Amount:{_healAmount} /// hp now: {currentHealthPoints} shields: {currentShieldPoints} </color>");
+                      $"Healed for Amount:{adjustedAmount} /// hp now: {currentHealthPoints} shields: {currentShieldPoints} </color>");
 
         }
 

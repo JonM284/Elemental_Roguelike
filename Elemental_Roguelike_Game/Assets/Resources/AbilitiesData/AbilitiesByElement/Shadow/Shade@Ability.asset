@@ -16,9 +16,10 @@ MonoBehaviour:
   abilityDescription: Create a smoke that applies Cloak to anyone that enters.
   abilityGUID: 5043b8cf-c6c0-450c-ae0d-69f07a2c5c6e
   roundCooldownTimer: 4
+  abilityType: 5
   targetType: 1
   range: 4
-  abilityAnimationOverride: {fileID: 6557745755801676397, guid: 0482992e3f9407b4586dac22cbbd90f7,
+  abilityAnimationOverride: {fileID: -184410558708688335, guid: c753a0c20aeb2514295eb195d84644e1,
     type: 3}
   playVFXAtTransform: 0
   abilityIcon: {fileID: 0}

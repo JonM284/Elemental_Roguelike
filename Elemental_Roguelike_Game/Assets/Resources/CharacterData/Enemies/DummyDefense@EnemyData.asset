@@ -12,21 +12,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6e30cf3dd6a8ee349ac5bc304a59fcb7, type: 3}
   m_Name: DummyDefense@EnemyData
   m_EditorClassIdentifier: 
-  initiativeNumber: 10
-  baseSpeed: 4.3
+  isCaptain: 0
+  baseSpeed: 6
   baseHealth: 100
   baseShields: 100
   movementDistance: 3.5
+  tackleDamageAmount: 15
   tackleScore: 55
   agilityScore: 75
   shootingScore: 50
+  passingScore: 47
   characterColor: {r: 0.9607843, g: 0.30588236, b: 0.30588236, a: 1}
-  typing: {fileID: 11400000, guid: 3007beed4b27d8b458961ac106f278d9, type: 2}
+  typing: {fileID: 11400000, guid: 3c9c561ec5c01714b84d55420dbb7e71, type: 2}
   abilities:
-  - {fileID: 11400000, guid: d9993ef56166a964eaac910560bacc93, type: 2}
+  - {fileID: 11400000, guid: b0fe0a8bb1df9c3429c95bc235541af7, type: 2}
+  - {fileID: 11400000, guid: b0fe0a8bb1df9c3429c95bc235541af7, type: 2}
   classTyping: {fileID: 11400000, guid: c187bfa56bf1fa8458a541f355280f7f, type: 2}
   characterAssetRef:
     m_AssetGUID: 025833770be343149b0bc011b785969e
     m_SubObjectName: 
     m_SubObjectType: 
     m_EditorAssetChanged: 0
+  characterGUID: 667753fc-586f-409b-bce7-e040351a584a

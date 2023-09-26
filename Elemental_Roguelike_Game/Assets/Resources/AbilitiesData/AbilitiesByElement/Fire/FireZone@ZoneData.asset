@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   roundStayAmount: 2
   zoneStaySeconds: 0
-  zoneDamage: 10
+  zoneDamage: 28
   zoneRadius: 1
   isArmorAffecting: 1
   hasKnockback: 0

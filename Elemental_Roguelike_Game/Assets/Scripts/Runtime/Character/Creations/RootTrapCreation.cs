@@ -211,9 +211,12 @@ namespace Runtime.Character.Creations
 
         public override void DestroyCreation()
         {
+            if (!m_triggeredEnemy.IsNull())
+            {
+                m_triggeredEnemy.characterMovement.SetCharacterRooted(false);
+                m_triggeredEnemy = null;    
+            }
             base.DestroyCreation();
-            m_triggeredEnemy.characterMovement.SetCharacterRooted(false);
-            m_triggeredEnemy = null;
         }
 
         #endregion

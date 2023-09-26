@@ -12,16 +12,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bc7d6c41bd954f04d882af9b1ce8b9f1, type: 3}
   m_Name: StandardWeaponProjectile
   m_EditorClassIdentifier: 
-  projectileDamage: 1
+  projectileDamage: 50
   projectileDamageRadius: 0.5
   projectileSpeed: 5
-  isArmorPiercing: 0
+  isAffectArmor: 0
+  isKnockBack: 0
+  isAffectWhileMoving: 0
   projectileType: {fileID: 0}
+  chanceToApplyStatus: 0
   statusEffect: {fileID: 0}
   projectileCollisionLayers:
     serializedVersion: 2
     m_Bits: 0
-  projectileAsset:
+  projectilePrefab:
     m_AssetGUID: 
     m_SubObjectName: 
     m_SubObjectType: 

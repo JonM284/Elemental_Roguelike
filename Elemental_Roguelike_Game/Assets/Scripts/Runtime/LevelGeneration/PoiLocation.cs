@@ -25,6 +25,21 @@ namespace Project.Scripts.Runtime.LevelGeneration
         #region Serialized Fields
 
         [SerializeField] private MeshRenderer eventQuad;
+        
+        [SerializeField]
+        private Color m_activeColor = Color.white;
+
+        [SerializeField]
+        private Color m_highlightColor = Color.yellow;
+
+        [SerializeField]
+        private Color m_selectedColor = Color.green;
+
+        [SerializeField]
+        private Color m_normalColor = Color.grey;
+
+        [SerializeField]
+        private Color m_inactiveColor = Color.black;
 
         #endregion
 
@@ -35,16 +50,6 @@ namespace Project.Scripts.Runtime.LevelGeneration
         private Material m_clonedMaterial;
 
         private bool m_isActive;
-        
-        private Color m_activeColor = Color.white;
-
-        private Color m_highlightColor = Color.yellow;
-
-        private Color m_selectedColor = Color.green;
-
-        private Color m_normalColor = Color.grey;
-
-        private Color m_inactiveColor = Color.black;
 
         #endregion
 

@@ -4844,7 +4844,7 @@ GameObject:
   - component: {fileID: 1023253108157846675}
   - component: {fileID: 5030630091111081178}
   - component: {fileID: 8603316496917306631}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: FireFlash@Zone
   m_TagString: Untagged
   m_Icon: {fileID: 0}

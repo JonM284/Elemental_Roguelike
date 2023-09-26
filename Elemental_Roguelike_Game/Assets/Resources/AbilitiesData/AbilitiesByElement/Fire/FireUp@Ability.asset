@@ -16,6 +16,7 @@ MonoBehaviour:
   abilityDescription: Add 10 to Throw stat for the next 4 rounds.
   abilityGUID: aa7a294e-ac44-453b-b354-fb99af736b59
   roundCooldownTimer: 7
+  abilityType: 15
   targetType: 4
   range: 1
   abilityAnimationOverride: {fileID: 6330554796396086999, guid: 0482992e3f9407b4586dac22cbbd90f7,

@@ -113,7 +113,15 @@ namespace Runtime.Managers
 
         private bool m_currentEventEnded;
 
+        private List<GameObject> m_cachedPoiLocations = new List<GameObject>();
+
+        private List<GameObject> m_cachedConnectors = new List<GameObject>();
+        
+        private List<GameObject> m_activePointConnectors = new List<GameObject>();
+
         private PointData m_currentPoint;
+
+        private Transform m_inactivePool;
         
         [SerializeField]
         private List<RowData> allRowsByLevel = new List<RowData>();
@@ -121,6 +129,19 @@ namespace Runtime.Managers
         private List<GameObject> m_cachedDataPointObjects = new List<GameObject>();
 
         private List<GameplayEventType> m_possibleEventTypes = new List<GameplayEventType>();
+
+        #endregion
+
+        #region Accessors
+
+        public Transform inactivePool => CommonUtils.GetRequiredComponent(ref m_inactivePool, () =>
+        {
+            var pool = TransformUtils.CreatePool(this.transform, false);
+            pool.RenameTransform("Map Inactive Pool");
+            return pool;
+        });
+
+        public bool mapIsShown { get; private set; }
 
         #endregion
 
@@ -132,6 +153,7 @@ namespace Runtime.Managers
             LevelEventController.EventEnded += OnEventEnded;
             LevelEventController.DisplayMap += DisplayMap;
             LevelEventController.HideMap += HideMap;
+            MapDataController.RegenerateOriginalMap += MapDataControllerOnRegenerateOriginalMap;
         }
 
         private void OnDisable()
@@ -140,6 +162,7 @@ namespace Runtime.Managers
             LevelEventController.EventEnded -= OnEventEnded;
             LevelEventController.DisplayMap -= DisplayMap;
             LevelEventController.HideMap -= HideMap;
+            MapDataController.RegenerateOriginalMap -= MapDataControllerOnRegenerateOriginalMap;
         }
 
         #endregion
@@ -148,6 +171,7 @@ namespace Runtime.Managers
 
         public void DisplayMap()
         {
+            mapIsShown = true;
             onDisplayMap?.Invoke();
         }
 
@@ -164,6 +188,7 @@ namespace Runtime.Managers
 
         public void HideMap()
         {
+            mapIsShown = false;
             onHideMap?.Invoke();
         }
 
@@ -177,6 +202,17 @@ namespace Runtime.Managers
             }
             
             RecreateMap();
+        }
+        
+        private void MapDataControllerOnRegenerateOriginalMap()
+        {
+            if (allRowsByLevel.IsNull() || allRowsByLevel.Count == 0)
+            {
+                return;
+            }
+
+            CacheAllPreviousItems();
+            CreateOverviewMap();
         }
         
         //When this event is finished
@@ -204,6 +240,8 @@ namespace Runtime.Managers
             currentIterator = startingIterator;
             
             MapDataController.Instance.ResetAll();
+            
+            allRowsByLevel.Clear();
 
             for (int i = 0; i < maxAmountOfRows + 2; i++)
             {
@@ -870,6 +908,27 @@ namespace Runtime.Managers
             
         }
 
+        private void CacheAllPreviousItems()
+        {
+            foreach (var _row in allRowsByLevel)
+            {
+                foreach (var _point in _row.rowPoints)
+                {
+                    
+                    m_cachedPoiLocations.Add(_point.actualPoiLocation.gameObject);
+                    _point.actualPoiLocation.transform.parent = inactivePool;
+                }
+            }
+
+            foreach (var _connector in m_activePointConnectors)
+            {
+                m_cachedConnectors.Add(_connector);
+                _connector.transform.parent = inactivePool;
+            }
+            
+            m_activePointConnectors.Clear();
+        }
+
 
         //ToDo: This is set to completely random, this should be controlled randomness
         //Set rows, match row, item row, etc
@@ -886,7 +945,19 @@ namespace Runtime.Managers
 
         private PoiLocation InstantiatePointAt(Vector3 _instPosition, string _eventType = "")
         {
-            var go = Instantiate(poiPrefab, mapGenParent);
+            GameObject go;
+            
+            if (m_cachedPoiLocations.Count > 0)
+            {
+                go = m_cachedPoiLocations[0];
+                go.transform.parent = mapGenParent;
+                m_cachedPoiLocations.Remove(go);
+            }
+            else
+            {
+                go = Instantiate(poiPrefab, mapGenParent);
+            }
+            
             go.transform.localPosition = _instPosition;
             
             //Initialize Point
@@ -902,13 +973,27 @@ namespace Runtime.Managers
 
         private void ConnectPoints(Vector3 _point1LocPos, Vector3 _point2LocPos)
         {
-            var lineGo = Instantiate(connectorPrefab, mapGenParent);
+            GameObject lineGo;
+            
+            if (m_cachedConnectors.Count > 0)
+            {
+                lineGo = m_cachedConnectors[0];
+                lineGo.transform.parent = mapGenParent;
+                m_cachedConnectors.Remove(lineGo);
+            }
+            else
+            {
+                lineGo = Instantiate(connectorPrefab, mapGenParent);
+            }
+            
             var lineRend = lineGo.GetComponent<LineRenderer>();
             for (int i = 0; i < lineRend.positionCount; i++)
             {
                 var corrPos = i == 0 ? _point1LocPos : _point2LocPos;
                 lineRend.SetPosition(i, corrPos);
             }
+
+            m_activePointConnectors.Add(lineGo);
         }
 
         #endregion

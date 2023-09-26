@@ -18,7 +18,7 @@ MonoBehaviour:
   m_GUID: 123cab9b39a868e4ea3ffd5a6b46c2c1
   m_SerializeEntries:
   - m_GUID: 8214c403d76305c43986943a2c13b094
-    m_Address: Player
+    m_Address: StrikerMeeple@Prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 1c746b542452d464eb2218f0132b29e0
@@ -51,6 +51,14 @@ MonoBehaviour:
     m_SerializedLabels: []
   - m_GUID: 025833770be343149b0bc011b785969e
     m_Address: DummyDefenderEnemy@Enemy
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: dda94c9ad737c084bb4fbe7d6e1f91fa
+    m_Address: DefenderMeeple@Prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 3bd2647e0e8e39c47b9c0f4eb87446df
+    m_Address: BruiserMeeple@Prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
   m_ReadOnly: 0

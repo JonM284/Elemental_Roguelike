@@ -5,5 +5,6 @@
         AGILITY,
         SHOOTING,
         TACKLE,
+        PASSING,
     }
 }

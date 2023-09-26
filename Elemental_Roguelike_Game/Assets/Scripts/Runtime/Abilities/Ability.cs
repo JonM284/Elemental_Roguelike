@@ -24,6 +24,8 @@ namespace Runtime.Abilities
 
         //cooldowns are determined by rounds
         public int roundCooldownTimer;
+
+        public AbilityType abilityType;
         
         public AbilityTargetType targetType;
 

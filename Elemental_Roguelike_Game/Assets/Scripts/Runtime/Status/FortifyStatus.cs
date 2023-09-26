@@ -11,6 +11,8 @@ namespace Runtime.Status
         #region Serialized Fields
 
         [SerializeField] private float fortifyDamageAmount = 0.5f;
+
+        [SerializeField] private float fortifyKnockbackReductionMod = 0.5f;
         
         #endregion
 
@@ -29,7 +31,7 @@ namespace Runtime.Status
                 return;
             }
             
-            _character.characterMovement.SetKnockbackable(false);
+            _character.characterMovement.SetKnockbackable(fortifyKnockbackReductionMod);
             _character.characterLifeManager.SetDamageIntakeModifier(fortifyDamageAmount);
         }
 
@@ -40,7 +42,7 @@ namespace Runtime.Status
                 return;
             }
             
-            _character.characterMovement.SetKnockbackable(true);
+            _character.characterMovement.SetKnockbackable(m_normalAmount);
             _character.characterLifeManager.SetDamageIntakeModifier(m_normalAmount);
         }
         

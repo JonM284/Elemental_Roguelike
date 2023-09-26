@@ -19,11 +19,14 @@ MonoBehaviour:
   ShieldMin: 70
   ShieldMax: 100
   AgilityStatMin: 75
-  AgilityStatMax: 90
+  AgilityStatMax: 95
   ShootingStatMin: 80
   ShootingStatMax: 95
-  DamageStatMin: 70
-  DamageStatMax: 85
+  PassingStatMin: 34
+  PassingStatMax: 52
+  DamageStatMin: 38
+  DamageStatMax: 55
   passiveColor: {r: 1, g: 0.70980394, b: 0.23137255, a: 1}
   moveDistance: 5.8
+  tackleDamageAmount: 10
   classGUID: 9f1bfb9b-bd5c-4e49-b319-75fea0cb1b51

@@ -861,6 +861,14 @@ MonoBehaviour:
   deathStartedAnimation: {fileID: 4085217511395935959}
   deathEndedAnimation: {fileID: 3712573749740390028}
   deathMiddleAnimation: {fileID: 5501028368682181517}
+  tex1Images:
+  - {fileID: 773283435959392079}
+  - {fileID: 4142258281274049963}
+  tex2Images:
+  - {fileID: 3970324476007006431}
+  - {fileID: 4010249153879151311}
+  tex3Images:
+  - {fileID: 2241843830314107400}
 --- !u!1 &826924185227529082
 GameObject:
   m_ObjectHideFlags: 0
@@ -2692,7 +2700,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Texture: {fileID: 8400000, guid: 9653f9b2328235f47aabe7f358df3e0a, type: 2}
+  m_Texture: {fileID: 0}
   m_UVRect:
     serializedVersion: 2
     x: 0
@@ -4179,7 +4187,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Texture: {fileID: 8400000, guid: 25eee37584751d745ba47aae39c62c0d, type: 2}
+  m_Texture: {fileID: 0}
   m_UVRect:
     serializedVersion: 2
     x: 0
@@ -4540,7 +4548,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Texture: {fileID: 8400000, guid: 900434b8903a66a4895c089253257419, type: 2}
+  m_Texture: {fileID: 0}
   m_UVRect:
     serializedVersion: 2
     x: 0
@@ -6877,7 +6885,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Texture: {fileID: 8400000, guid: 25eee37584751d745ba47aae39c62c0d, type: 2}
+  m_Texture: {fileID: 0}
   m_UVRect:
     serializedVersion: 2
     x: 0
@@ -7515,7 +7523,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Texture: {fileID: 8400000, guid: 9653f9b2328235f47aabe7f358df3e0a, type: 2}
+  m_Texture: {fileID: 0}
   m_UVRect:
     serializedVersion: 2
     x: 0

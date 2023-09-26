@@ -172,18 +172,36 @@ namespace Runtime.Weapons
             {
                 collider.TryGetComponent(out IEffectable effectable);
 
-                if (effectable.IsNull())
+                if (IsUser(collider))
                 {
                     continue;
                 }
-
-                if (effectable.currentStatus != statusEffect)
-                {
-                    effectable.ApplyEffect(statusEffect);
-                }
                 
+                effectable?.ApplyEffect(statusEffect);
             }
             
+        }
+        
+        private bool IsUser(Collider _collider)
+        {
+            if (_collider.IsNull())
+            {
+                return false;
+            }
+
+            if (m_user.IsNull())
+            {
+                Debug.Log("USER NULL");
+                return false;
+            }
+
+            if (_collider.transform == m_user)
+            {
+                return true;
+            }
+
+
+            return false;
         }
 
         public void ForceStopProjectile()

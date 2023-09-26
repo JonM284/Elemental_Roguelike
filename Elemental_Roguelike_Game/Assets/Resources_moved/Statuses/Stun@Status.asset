@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c450f87ecb124f44a5ce7c39edda5bc9, type: 3}
+  m_Name: Stun@Status
+  m_EditorClassIdentifier: 
+  statusName: Stun
+  roundCooldownTimer: 1
+  chanceToRemove: 20
+  abilityElement: {fileID: 0}
+  statusType: 1
+  statusStayVFX: {fileID: 8734192179742222016, guid: 96687615fbae43c408b5b589a6c69c21,
+    type: 3}
+  statusOneTimeVFX: {fileID: 9034318327960476629, guid: 3b24a118a9c45fe46a0f60bc0a995b44,
+    type: 3}
+  playVFXOnTrigger: 0
+  statusIcon: {fileID: 127839659, guid: cbb7c9f40afd9f4428d7625db200f40d, type: 3}
+  statusIconLow: {fileID: -1340026606, guid: cbb7c9f40afd9f4428d7625db200f40d, type: 3}

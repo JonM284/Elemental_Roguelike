@@ -15,8 +15,11 @@ MonoBehaviour:
   projectileDamage: 0
   projectileDamageRadius: 0
   projectileSpeed: 14
-  isArmorPiercing: 0
+  isAffectArmor: 0
+  isKnockBack: 0
+  isAffectWhileMoving: 0
   projectileType: {fileID: 11400000, guid: 3c9c561ec5c01714b84d55420dbb7e71, type: 2}
+  chanceToApplyStatus: 0
   statusEffect: {fileID: 0}
   projectileCollisionLayers:
     serializedVersion: 2

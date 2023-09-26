@@ -13,7 +13,7 @@ namespace Data.CharacterData
         #region Public Fields
 
         [Header("Always used stats")] 
-        public int initiativeNumber = 0;
+        public bool isCaptain;
 
         [Tooltip("Speed character will normally move at")]
         public float baseSpeed = 1;
@@ -28,11 +28,22 @@ namespace Data.CharacterData
         [Tooltip("Distance from start position, character is able to move")]
         public float movementDistance = 1f;
 
+        [Tooltip("Damage on regular tackle")] 
+        public int tackleDamageAmount = 15;
+        
         [Header("Stats")]
         [Tooltip("tackle score and damage")]
+        [Range(1,100)]
         public int tackleScore = 1;
+        [Tooltip("movement and dodge tackle reaction")]
+        [Range(1,100)]
         public int agilityScore = 1;
+        [Tooltip("throw ball for shot distance")]
+        [Range(1,100)]
         public int shootingScore = 1;
+        [Tooltip("throw ball for pass distance")]
+        [Range(1,100)]
+        public int passingScore = 1;
 
         [Tooltip("Character associated color")]
         public Color characterColor = Color.white;
@@ -46,7 +57,24 @@ namespace Data.CharacterData
 
         public AssetReference characterAssetRef;
 
+        public string characterGUID;
+        
+        #endregion
+        
+        
+        #region Class Implementation
 
+        [ContextMenu("Generate GUID")]
+        private void GenerateID()
+        {
+            if (characterGUID != string.Empty)
+            {
+                return;
+            }
+            
+            characterGUID = System.Guid.NewGuid().ToString();
+        }
+        
         #endregion
 
 

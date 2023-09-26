@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a3174c979e6e4c85960b7c354792b687, type: 3}
+  m_Name: Playmaker
+  m_EditorClassIdentifier: 
+  classType: 3
+  radius: 1.5
+  HealthMin: 60
+  HealthMax: 80
+  ShieldMin: 70
+  ShieldMax: 100
+  AgilityStatMin: 63
+  AgilityStatMax: 79
+  ShootingStatMin: 28
+  ShootingStatMax: 49
+  PassingStatMin: 83
+  PassingStatMax: 96
+  DamageStatMin: 30
+  DamageStatMax: 48
+  passiveColor: {r: 0.8566245, g: 0.4273318, b: 0.9339623, a: 1}
+  moveDistance: 5
+  tackleDamageAmount: 10
+  classGUID: 9864fd0c-7f70-4f75-b387-3dce412f8e55

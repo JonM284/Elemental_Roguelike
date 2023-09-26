@@ -32,6 +32,16 @@ namespace Runtime.Managers
 
         }
 
+        private void OnEnable()
+        {
+            MapDataController.RestartRealScene += CheckOptions;
+        }
+
+        private void OnDisable()
+        {
+            MapDataController.RestartRealScene -= CheckOptions;
+        }
+
         #endregion
         
         
@@ -41,6 +51,10 @@ namespace Runtime.Managers
         {
             if (TeamController.Instance.GetTeam().Count == 0)
             {
+                if (mapController.mapIsShown)
+                {
+                    mapController.HideMap();
+                }
                 randomTeamSelectionManager.SetupRandomTeamGenerator();
                 return;
             }

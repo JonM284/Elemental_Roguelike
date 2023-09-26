@@ -71,9 +71,12 @@ namespace Runtime.Character
         {
             if (!m_savedPlayer.IsNull())
             {
+                Debug.Log("No saved player");
                 m_savedPlayer = null;
             }
+
             characterAnimations.AbilityAnim(characterAbilityManager.GetPreviousActiveAbilityIndex(),false);
+            characterBase.UseActionPoint();
         }
 
         public void OnDamageEnded()
@@ -95,7 +98,14 @@ namespace Runtime.Character
         public void PlayVFX()
         {
             var ability = characterAbilityManager.GetActiveAbility();
+
+            if (ability.IsNull())
+            {
+                return;
+            }
+            
             var abilityVFX = ability.abilityVFX;
+            
             if (abilityVFX.IsNull())
             {
                 return;

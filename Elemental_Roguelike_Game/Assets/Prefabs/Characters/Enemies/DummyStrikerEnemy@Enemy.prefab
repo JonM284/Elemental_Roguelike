@@ -639,7 +639,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_characterStatsBase: {fileID: 11400000, guid: 973a40b48d294f94d967e9c8f60328ae,
     type: 2}
-  characterSide: {fileID: 11400000, guid: c38c044ae08c0994d8a3f8033ae06bf5, type: 2}
+  characterSideRef: 3809f259-b149-4697-aaef-86ef47e7b29e
   deathVFX: {fileID: 5269481490371825388, guid: a47c62049fca59048afe703c9e1ded0f,
     type: 3}
   damageVFX: {fileID: 8956745814830301739, guid: 36cb9e6760aafa04ea8ba4d86841ee3e,
@@ -652,6 +652,9 @@ MonoBehaviour:
   shakeStrength: 1.25
   shakeVibrationAmount: 6
   shakeRandomness: 0
+  goalLayer:
+    serializedVersion: 2
+    m_Bits: 16384
   onHighlight:
     m_PersistentCalls:
       m_Calls: []
@@ -1221,6 +1224,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 54386ba3475b42d19470c3f1ba487b92, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_isEnemy: 1
 --- !u!114 &7221374007309385714
 MonoBehaviour:
   m_ObjectHideFlags: 0

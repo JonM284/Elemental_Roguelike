@@ -34,8 +34,7 @@ namespace Runtime.Character
         private Action OnAbilityUsed;
         
         public static event Action<CharacterBase> ActionUsed; 
-
-
+        
         #endregion
 
         #region Serialize Fields
@@ -141,6 +140,14 @@ namespace Runtime.Character
         public List<AssignedAbilities> GetAssignedAbilities()
         {
             return m_assignedAbilities;
+        }
+
+        public Ability GetAbilityAtIndex(int _index)
+        {
+            Mathf.Clamp(_index, 0, 1);
+
+            return m_assignedAbilities[_index].ability;
+
         }
 
         public Ability GetActiveAbility()
@@ -325,6 +332,7 @@ namespace Runtime.Character
             if (!IsInRange(_targetTransform.position))
             {
                 Debug.Log($"<color=red>Target OUT OF RANGE</color>");
+                CancelAbilityUse();
                 return;
             }
             
@@ -369,6 +377,7 @@ namespace Runtime.Character
             if (!IsInRange(_targetPos))
             {
                 Debug.Log($"<color=red>Target OUT OF RANGE</color>");
+                CancelAbilityUse();
                 return;
             }
             
@@ -384,15 +393,24 @@ namespace Runtime.Character
             {
                 return;
             }
-            
-            if (isDir)
+
+            if (_active)
             {
-                abilityDirectionIndicator.gameObject.SetActive(_active);
+                if (isDir)
+                {
+                    abilityDirectionIndicator.gameObject.SetActive(_active);
+                }
+                else
+                {
+                    abilityPositionIndicator.SetActive(_active);
+                }
             }
             else
             {
+                abilityDirectionIndicator.gameObject.SetActive(_active);
                 abilityPositionIndicator.SetActive(_active);
             }
+            
             abilityRangeIndicator.SetActive(_active);
         }
 

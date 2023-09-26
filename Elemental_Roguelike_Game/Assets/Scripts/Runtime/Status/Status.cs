@@ -22,6 +22,8 @@ namespace Runtime.Status
         
         public ElementTyping abilityElement;
 
+        public StatusType statusType;
+
         [Header("VFX")]
         
         public VFXPlayer statusStayVFX;

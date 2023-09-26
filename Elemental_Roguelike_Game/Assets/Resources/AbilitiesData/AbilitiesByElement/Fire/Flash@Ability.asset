@@ -16,9 +16,10 @@ MonoBehaviour:
   abilityDescription: Create Immediate Zone, apply Blind to anyone in zone
   abilityGUID: 2419139e-3a9a-4158-a61a-d4bf031ea53e
   roundCooldownTimer: 7
+  abilityType: 8
   targetType: 4
   range: 1
-  abilityAnimationOverride: {fileID: 6330554796396086999, guid: 0482992e3f9407b4586dac22cbbd90f7,
+  abilityAnimationOverride: {fileID: -623603649343465320, guid: 12ea374ee5728e145bae404432c865dd,
     type: 3}
   playVFXAtTransform: 0
   abilityIcon: {fileID: 0}

@@ -70,14 +70,14 @@ ModelImporter:
       curves: []
       events:
       - time: 0.9205608
-        functionName: OnAttackEnded
+        functionName: OnAbilityEnded
         data: 
         objectReferenceParameter: {instanceID: 0}
         floatParameter: 0
         intParameter: 0
         messageOptions: 0
       - time: 0.6168224
-        functionName: Attack
+        functionName: UseAbility
         data: 
         objectReferenceParameter: {instanceID: 0}
         floatParameter: 0

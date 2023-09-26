@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bc7d6c41bd954f04d882af9b1ce8b9f1, type: 3}
   m_Name: AcidPool@ZoneProjectileData
   m_EditorClassIdentifier: 
-  projectileDamage: 1
+  projectileDamage: 0
   projectileDamageRadius: 0.5
   projectileSpeed: 5
   isAffectArmor: 0

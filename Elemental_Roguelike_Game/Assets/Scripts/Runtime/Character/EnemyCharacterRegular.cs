@@ -1,5 +1,6 @@
 ﻿using Project.Scripts.Data;
 using Project.Scripts.Utils;
+using Runtime.GameControllers;
 using UnityEngine;
 using Utils;
 
@@ -16,8 +17,9 @@ namespace Runtime.Character
         /// </summary>
         public override void InitializeCharacter()
         {
+            side = ScriptableDataController.Instance.GetSideByGuid(characterSideRef);
             characterVisuals.InitializeCharacterVisuals(); 
-            characterMovement.InitializeCharacterMovement(m_characterStatsBase.baseSpeed, m_characterStatsBase.movementDistance, m_characterStatsBase.tackleScore, m_characterStatsBase.typing);
+            characterMovement.InitializeCharacterMovement(m_characterStatsBase.baseSpeed, m_characterStatsBase.movementDistance, m_characterStatsBase.tackleDamageAmount, m_characterStatsBase.typing);
             characterLifeManager.InitializeCharacterHealth(m_characterStatsBase.baseHealth, m_characterStatsBase.baseShields, m_characterStatsBase.baseHealth,
                 m_characterStatsBase.baseShields, m_characterStatsBase.typing);
             
@@ -27,7 +29,7 @@ namespace Runtime.Character
             }
             
             characterClassManager.InitializedCharacterPassive(m_characterStatsBase.classTyping, m_characterStatsBase.agilityScore,
-            m_characterStatsBase.shootingScore, m_characterStatsBase.tackleScore);
+            m_characterStatsBase.shootingScore, m_characterStatsBase.passingScore ,m_characterStatsBase.tackleScore);
         }
 
         public override float GetBaseSpeed()

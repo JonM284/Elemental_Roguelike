@@ -17,9 +17,10 @@ MonoBehaviour:
     throws by 15, Stop passing projectiles
   abilityGUID: 0fd858fd-883b-4179-bd68-e3e5b11a0660
   roundCooldownTimer: 6
+  abilityType: 10
   targetType: 2
   range: 3
-  abilityAnimationOverride: {fileID: 1573493517487431554, guid: 0482992e3f9407b4586dac22cbbd90f7,
+  abilityAnimationOverride: {fileID: -184410558708688335, guid: c753a0c20aeb2514295eb195d84644e1,
     type: 3}
   playVFXAtTransform: 0
   abilityIcon: {fileID: 0}

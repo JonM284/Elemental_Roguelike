@@ -58,6 +58,7 @@ namespace Runtime.Weapons
             TurnController.OnChangeActiveTeam += OnChangeActiveTeam;
             TurnController.OnRunEnded += EndZone;
             TurnController.OnResetField += EndZone;
+            TurnController.OnBattleEnded += EndZone;
         }
 
         private void OnDisable()
@@ -65,6 +66,7 @@ namespace Runtime.Weapons
             TurnController.OnChangeActiveTeam -= OnChangeActiveTeam;
             TurnController.OnRunEnded -= EndZone;
             TurnController.OnResetField -= EndZone;
+            TurnController.OnBattleEnded -= EndZone;
         }
 
         private void OnTriggerEnter(Collider other)

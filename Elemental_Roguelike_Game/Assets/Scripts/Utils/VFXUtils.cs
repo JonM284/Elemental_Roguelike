@@ -1,4 +1,5 @@
 ﻿using GameControllers;
+using Project.Scripts.Utils;
 using Runtime.VFX;
 using UnityEngine;
 
@@ -48,6 +49,10 @@ namespace Utils
 
         public static void PlayAt(this VFXPlayer vfxPlayer, Vector3 position, Quaternion rotation, Transform activeParent = null)
         {
+            if (vfxPlayer.IsNull())
+            {
+                return;
+            }
             Debug.Log($"playing {vfxPlayer.vfxplayerIdentifier}: {Time.time}");
             vfxController.PlayAt(vfxPlayer, position, rotation, activeParent);
         }
