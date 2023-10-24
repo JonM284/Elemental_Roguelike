@@ -12,3 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d70631ced3254131a184f99c4656cbd6, type: 3}
   m_Name: MainCanvasBackground
   m_EditorClassIdentifier: 
+  guid: ec6bc5b2-718b-45c6-b240-845aa04d9a10

@@ -193,7 +193,9 @@ namespace Runtime.Submodules
             m_isFirstTime = false;
             
             //Get created team
-            selectedTeamData = teamController.GetTeam();
+            //selectedTeamData = teamController.GetTeam();
+
+            yield break;
             
             DisplayRedoButton(false);
 

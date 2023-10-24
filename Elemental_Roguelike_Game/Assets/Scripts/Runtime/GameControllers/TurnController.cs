@@ -71,9 +71,7 @@ namespace Runtime.GameControllers
         [SerializeField] private CharacterSide neutralSide;
 
         [SerializeField] private List<BattlersBySide> battlersBySides = new List<BattlersBySide>();
-
-        [SerializeField] private EnemyAITeamData temporaryEnemyTeamData;
-
+        
         [SerializeField] private AssetReference ballReference;
 
         #endregion
@@ -128,20 +126,18 @@ namespace Runtime.GameControllers
         private void OnEnable()
         {
             SceneController.OnLevelFinishedLoading += OnLevelFinishedLoading;
-            MeepleController.PlayerMeepleCreated += MeepleControllerOnPlayerMeepleCreated;
+            CharacterGameController.CharacterCreated += OnCharacterCreated;
             CharacterBase.CharacterSelected += OnCharacterSelected;
             CharacterBase.CharacterEndedTurn += OnCharacterEndedTurn;
-            EnemyController.EnemyCreated += OnEnemyCreated;
             WinConditionController.PointThresholdReached += EndBattle;
         }
 
         private void OnDisable()
         {
             SceneController.OnLevelFinishedLoading -= OnLevelFinishedLoading;
-            MeepleController.PlayerMeepleCreated -= MeepleControllerOnPlayerMeepleCreated;
+            CharacterGameController.CharacterCreated -= OnCharacterCreated;
             CharacterBase.CharacterSelected -= OnCharacterSelected;
             CharacterBase.CharacterEndedTurn -= OnCharacterEndedTurn;
-            EnemyController.EnemyCreated -= OnEnemyCreated;
             WinConditionController.PointThresholdReached -= EndBattle;
         }
 
@@ -189,9 +185,22 @@ namespace Runtime.GameControllers
             return activeTeam.FindAll(cb => cb.characterActionPoints != 0);
         }
 
+        public void AddGoalieToTeam(CharacterBase _character)
+        {
+            var correctTeam = battlersBySides.FirstOrDefault(bbs => bbs.teamSide == _character.side);
+            if(!correctTeam.teamMembers.Contains(_character)){
+                correctTeam.teamMembers.Add(_character);
+            }
+        }
+
         public void SelectAvailablePlayer(bool _isNext)
         {
             if (!isPlayerTurn)
+            {
+                return;
+            }
+
+            if (!activeCharacter.IsNull())
             {
                 return;
             }
@@ -350,37 +359,59 @@ namespace Runtime.GameControllers
             
             for (int i = 0; i < teamMembers.Count; i++)
             {
-                yield return StartCoroutine(MeepleController.Instance.InstantiatePremadeMeeple(teamMembers[i],
+                yield return StartCoroutine(CharacterGameController.Instance.C_CreateCharacter(teamMembers[i],
                     correctSide.startPositions[i].position, correctSide.startPositions[i].localEulerAngles));;
 
                 yield return null;
             }
             
-            
-            
+            yield return StartCoroutine(correctSide.C_SpawnGoalie());
+
         }
         
-        private void MeepleControllerOnPlayerMeepleCreated(CharacterBase characterBase, CharacterStatsData stats)
+        private void OnCharacterCreated(CharacterBase _character)
         {
             if (!is_Initialized)
             {
                 return;
             }
             
-            var _playerTeam = battlersBySides.FirstOrDefault(bbs => bbs.teamSide == playerSide);
-
-            if (_playerTeam.IsNull())
+            if (_character.IsNull())
             {
-                Debug.LogError("Player Team NULL");
                 return;
             }
+
+            if (_character.side == playerSide)
+            {
+                var _playerTeam = battlersBySides.FirstOrDefault(bbs => bbs.teamSide == playerSide);
+
+                if (_playerTeam.IsNull())
+                {
+                    Debug.LogError("Player Team NULL");
+                    return;
+                }
             
-            _playerTeam.teamMembers.Add(characterBase);
+                _playerTeam.teamMembers.Add(_character);
+            }
+            else
+            {
+                var _enemyTeam = battlersBySides.FirstOrDefault(bbs => bbs.teamSide == enemySide);
+
+                if (_enemyTeam.IsNull())
+                {
+                    Debug.LogError("Enemy Team NULL");
+                    return;
+                }
+            
+                _enemyTeam.teamMembers.Add(_character);
+            }
+            
         }
 
         private IEnumerator C_LoadEnemyTeam()
         {
-            if (temporaryEnemyTeamData.IsNull())
+            var teamData = TournamentController.Instance.GetCurrentEnemyTeam();
+            if (teamData.IsNull())
             {
                 yield return new WaitForSeconds(1f);
                 yield break;
@@ -397,7 +428,7 @@ namespace Runtime.GameControllers
                 battlersBySides.Add(_batBySide);
             }
             
-            var teamMembers = temporaryEnemyTeamData.enemyCharacters;
+            var teamMembers = teamData.enemyCharacters;
             
             Debug.Log($"Team Members = {teamMembers.Count}");
             
@@ -405,32 +436,15 @@ namespace Runtime.GameControllers
             
             for (int i = 0; i < teamMembers.Count; i++)
             {
-                yield return StartCoroutine(EnemyController.Instance.C_AddEnemy(teamMembers[i],
+                yield return StartCoroutine(CharacterGameController.Instance.C_CreateCharacter(teamMembers[i],
                     correctSide.startPositions[i].position, correctSide.startPositions[i].localEulerAngles));;
 
                 yield return null;
             }
-            
-        }
-        
-        private void OnEnemyCreated(CharacterBase _character)
-        {
-            if (!is_Initialized)
-            {
-                return;
-            }
-            
-            var _enemyTeam = battlersBySides.FirstOrDefault(bbs => bbs.teamSide == enemySide);
 
-            if (_enemyTeam.IsNull())
-            {
-                Debug.LogError("Enemy Team NULL");
-                return;
-            }
-            
-            _enemyTeam.teamMembers.Add(_character);
+            yield return StartCoroutine(correctSide.C_SpawnGoalie());
         }
-        
+
         public void StartBattle()
         {
             StartCoroutine(C_StartBattle());
@@ -476,11 +490,13 @@ namespace Runtime.GameControllers
         {
             if (!is_Initialized)
             {
+                Debug.Log("NOT INITIALIZED");
                 return;
             }
             
-            if (battlersBySides[activeTeamID].teamSide != playerSide)
+            if (battlersBySides[activeTeamID].teamSide.sideGUID != playerSide.sideGUID)
             {
+                Debug.Log("NOT PLAYERS TURN");
                 return;
             }
 
@@ -488,12 +504,14 @@ namespace Runtime.GameControllers
             //Case Scenario: Healing Ally - it will then go past this check
             if (!battlersBySides[activeTeamID].teamMembers.Contains(_character))
             {
+                Debug.Log("Doesn't contain player");
                 return;
             }
 
             //If this character doesn't have points left, ignore them
             if (_character.characterActionPoints <= 0)
             {
+                UIController.Instance.CreateFloatingTextAtCursor("No Action Points", Color.red);
                 return;
             }
 
@@ -531,7 +549,7 @@ namespace Runtime.GameControllers
                 activeCharacter = null;
             }
 
-            if (!battlersBySides[activeTeamID].teamMembers.FindAll(cb => cb.isAlive).TrueForAll(cb => cb.finishedTurn))
+            if (!battlersBySides[activeTeamID].teamMembers.FindAll(cb => cb.isAlive).TrueForAll(cb => cb.characterActionPoints == 0))
             {
                 if (_character.side == playerSide)
                 {
@@ -564,6 +582,11 @@ namespace Runtime.GameControllers
             if (ball.isThrown)
             {
                 yield return new WaitUntil(() => !ball.isThrown);
+            }
+
+            if (!activeCharacter.IsNull())
+            {
+                yield break;
             }
             
             SelectAvailablePlayer(true);

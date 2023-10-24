@@ -17,6 +17,8 @@ namespace Runtime.UI.Items
 
         [SerializeField] private GameObject holder;
 
+        [SerializeField] private GameObject captainStar;
+
         [SerializeField] private Image frame;
 
         [SerializeField] private GameObject highlightObj;
@@ -101,6 +103,8 @@ namespace Runtime.UI.Items
             m_characterImage.sprite = _element.meepleIcon;
 
             frame.color = _element.meepleColors[0];
+            
+            captainStar.SetActive(_character.characterStatsBase.isCaptain);
 
             Debug.Log("Connected");
             
@@ -160,8 +164,11 @@ namespace Runtime.UI.Items
                 actionPointObj.ForEach(g => g.SetActive(false));
                 return;
             }
-            
-            actionPointObj.ForEach(g => g.SetActive(true));
+
+            for (int i = 0; i < m_associatedCharacter.characterActionPoints; i++)
+            {
+                actionPointObj[i].SetActive(true);
+            }
         }
         
         private void OnChangeActiveCharacter(CharacterBase _character)

@@ -16,8 +16,9 @@ MonoBehaviour:
   abilityDescription: Launch a ball of Poison, Ignores Armor on contact.
   abilityGUID: 71add7fc-3ade-4099-8ba4-638bd171007a
   roundCooldownTimer: 3
+  abilityType: 0
   targetType: 0
-  range: 5
+  range: 4
   abilityAnimationOverride: {fileID: 4604576603371296227, guid: bebfcdc4c42436247b79402fd9c6a234,
     type: 3}
   playVFXAtTransform: 0

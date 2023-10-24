@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Runtime.GameplayEvents
 {
-    [CreateAssetMenu(menuName = "Custom Data/Shop Event Type")]
+    [CreateAssetMenu(menuName = "Custom Data/Event/Shop Event Type")]
     public class ShopEventType: GameplayEventType
     {
         [SerializeField] private int amountOfItems = 3;

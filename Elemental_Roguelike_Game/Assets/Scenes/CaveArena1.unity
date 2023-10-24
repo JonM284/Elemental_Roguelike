@@ -272,7 +272,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 39396376}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
   m_LocalPosition: {x: -3.57, y: -2.373, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -282,9 +282,10 @@ Transform:
   - {fileID: 2125623539}
   - {fileID: 266510565}
   - {fileID: 2001965465}
+  - {fileID: 2085109708}
   m_Father: {fileID: 2095026729}
-  m_RootOrder: 5
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_RootOrder: 4
+  m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
 --- !u!1001 &49720765
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2956,10 +2957,10 @@ GameObject:
   m_Layer: 0
   m_Name: SpawnPos (3)
   m_TagString: Untagged
-  m_Icon: {fileID: -5442936267250999957, guid: 0000000000000000d000000000000000, type: 0}
+  m_Icon: {fileID: 7174288486110832750, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &657372443
 Transform:
   m_ObjectHideFlags: 0
@@ -2967,13 +2968,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 657372442}
-  m_LocalRotation: {x: 0, y: -0.7071068, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: -1.75, z: -6}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.6229999, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1583254488}
-  m_RootOrder: 4
+  m_Father: {fileID: 1397728078}
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: -90, z: 0}
 --- !u!1001 &673628850
 PrefabInstance:
@@ -7496,7 +7497,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1397728077}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: -0.7071068, z: 0, w: 0.7071068}
   m_LocalPosition: {x: 3.57, y: -2.373, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -7506,9 +7507,10 @@ Transform:
   - {fileID: 1504184933}
   - {fileID: 113752856}
   - {fileID: 456351247}
+  - {fileID: 657372443}
   m_Father: {fileID: 1583254488}
-  m_RootOrder: 5
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_RootOrder: 4
+  m_LocalEulerAnglesHint: {x: 0, y: -90, z: 0}
 --- !u!1 &1404535996
 GameObject:
   m_ObjectHideFlags: 0
@@ -8305,7 +8307,6 @@ Transform:
   - {fileID: 536683342}
   - {fileID: 750234948}
   - {fileID: 1414063515}
-  - {fileID: 657372443}
   - {fileID: 1397728078}
   m_Father: {fileID: 841297772}
   m_RootOrder: 1
@@ -8323,6 +8324,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_characterSide: {fileID: 11400000, guid: c38c044ae08c0994d8a3f8033ae06bf5, type: 2}
+  m_goalieRef: {fileID: 11400000, guid: 4f8e824ca9875fd46bd0cc4c765a14f4, type: 2}
   m_startPositions:
   - {fileID: 1302975438}
   - {fileID: 536683342}
@@ -10496,10 +10498,10 @@ GameObject:
   m_Layer: 0
   m_Name: SpawnPos (3)
   m_TagString: Untagged
-  m_Icon: {fileID: 4422084297763085224, guid: 0000000000000000d000000000000000, type: 0}
+  m_Icon: {fileID: -5397416234189338067, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &2085109708
 Transform:
   m_ObjectHideFlags: 0
@@ -10507,13 +10509,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2085109707}
-  m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: -1.75, z: -6}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.6229999, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 2095026729}
-  m_RootOrder: 4
+  m_Father: {fileID: 39396377}
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
 --- !u!1 &2095026728
 GameObject:
@@ -10549,7 +10551,6 @@ Transform:
   - {fileID: 1519359757}
   - {fileID: 259156945}
   - {fileID: 1609081443}
-  - {fileID: 2085109708}
   - {fileID: 39396377}
   m_Father: {fileID: 841297772}
   m_RootOrder: 0
@@ -10567,6 +10568,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_characterSide: {fileID: 11400000, guid: 4f4a1f8261e23184aacfe1c2d1a7e5e2, type: 2}
+  m_goalieRef: {fileID: 11400000, guid: 919d9fe540521494098246441c01e658, type: 2}
   m_startPositions:
   - {fileID: 1335032043}
   - {fileID: 1519359757}

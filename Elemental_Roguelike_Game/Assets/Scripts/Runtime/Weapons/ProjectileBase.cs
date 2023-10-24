@@ -2,6 +2,7 @@
 using Data;
 using Data.Elements;
 using Project.Scripts.Utils;
+using Runtime.Character;
 using Runtime.Damage;
 using Runtime.Status;
 using UnityEngine;
@@ -20,6 +21,12 @@ namespace Runtime.Weapons
         public UnityEvent onProjectileStart;
 
         public UnityEvent onProjectileEnd;
+
+        #endregion
+
+        #region Serialized Fields
+
+        [SerializeField] private float m_debugRadius = 1f;
 
         #endregion
 
@@ -63,6 +70,20 @@ namespace Runtime.Weapons
 
         #region Unity Events
 
+        private void OnDrawGizmos()
+        {
+            if (m_projectileRef.IsNull())
+            {
+                Gizmos.color = Color.magenta;
+                Gizmos.DrawWireSphere(transform.position, m_debugRadius);
+            }
+            else
+            {
+                Gizmos.color = Color.magenta;
+                Gizmos.DrawWireSphere(transform.position, m_projectileRef.projectileDamageRadius);
+            }
+        }
+
         void Update()
         {
             if (!isShot)
@@ -72,10 +93,7 @@ namespace Runtime.Weapons
 
             if (m_projectileRef.isAffectWhileMoving)
             {
-                if (hasStatusEffect)
-                {
-                    AffectAllInRange();
-                }
+                AffectAllInRange();
             }
 
             var progress = (Time.time - m_startTime) / m_endTime;
@@ -99,8 +117,7 @@ namespace Runtime.Weapons
         }
 
         #endregion
-
-
+        
         #region Class Implementation
 
         protected virtual void OnEndMovement()
@@ -133,24 +150,45 @@ namespace Runtime.Weapons
             {
                 foreach (var collider in colliders)
                 {
+                    
+                    if (IsUser(collider))
+                    {
+                        continue;
+                    }
+
+                    if (m_projectileRef.isStopReaction)
+                    {
+                        collider.TryGetComponent(out CharacterClassManager classManager);
+                        if (!classManager.IsNull())
+                        {
+                            classManager.SetAbleToReact(false);
+                        }
+                    }
+
                     var damageable = collider.GetComponent<IDamageable>();
                     if (isDamageDealing)
                     {
-                        damageable?.OnDealDamage(m_user, damage, !armorAffecting, type, transform ,m_projectileRef.isKnockBack);
+                        var attackerProx = m_projectileRef.isRandomKnockBallAway ? null : transform;
+                        damageable?.OnDealDamage(m_user, damage, !armorAffecting, type, attackerProx ,m_projectileRef.isKnockBack);
                     }
                     else if(damage < 0)
                     {
                         damageable?.OnHeal(damage, armorAffecting);
                     }
                     
+                    if (m_projectileRef.isRandomKnockBallAway)
+                    {
+                        collider.TryGetComponent(out IBallInteractable ballInteractable);
+                        if (!ballInteractable.IsNull())
+                        {
+                            ballInteractable.KnockBallAway(null);
+                        }
+                    }
+
                     if (hasStatusEffect)
                     {
-                        var randomChanceToHit = Random.Range(0, 100);
-                        if (randomChanceToHit <= m_projectileRef.chanceToApplyStatus)
-                        {
-                            var effectable = collider.GetComponent<IEffectable>();
-                            effectable?.ApplyEffect(statusEffect);       
-                        }
+                        var effectable = collider.GetComponent<IEffectable>();
+                        effectable?.ApplyEffect(statusEffect);  
                     }
                     
                 }
@@ -178,6 +216,18 @@ namespace Runtime.Weapons
                 }
                 
                 effectable?.ApplyEffect(statusEffect);
+
+                if (m_projectileRef.isKnockBack)
+                {
+                    if (collider.TryGetComponent(out CharacterBase _character))
+                    {
+                        if(_character.characterMovement.isKnockedBack){
+                            continue;
+                        }
+                        
+                        _character.characterMovement.ApplyKnockback(8f, _character.transform.position - transform.position, 0.5f);
+                    }
+                }
             }
             
         }

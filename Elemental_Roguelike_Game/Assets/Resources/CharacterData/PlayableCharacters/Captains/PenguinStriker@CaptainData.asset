@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6e30cf3dd6a8ee349ac5bc304a59fcb7, type: 3}
+  m_Name: PenguinStriker@CaptainData
+  m_EditorClassIdentifier: 
+  isCaptain: 1
+  characterName: Mac
+  baseSpeed: 10
+  baseHealth: 100
+  baseShields: 60
+  tackleDamageAmount: 10
+  tackleScore: 40
+  agilityScore: 75
+  shootingScore: 90
+  passingScore: 40
+  characterColor: {r: 0.45817015, g: 0.9811321, b: 0.9760642, a: 1}
+  characterColorDark: {r: 0.04743683, g: 0.73805606, b: 0.7735849, a: 1}
+  typing: {fileID: 11400000, guid: b6a3358631c8026478f44a1bcf5d24f7, type: 2}
+  abilities:
+  - {fileID: 11400000, guid: 8e81dc0bab727704b9176bb854ab5ea2, type: 2}
+  - {fileID: 11400000, guid: 8cc64695f6a01284bbb2f157264d0939, type: 2}
+  classTyping: {fileID: 11400000, guid: b4466eb0195bc9f4596847e268136c87, type: 2}
+  characterAssetRef:
+    m_AssetGUID: 022d3e6dff7bcc54e8a33a2b3452fd8d
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_EditorAssetChanged: 0
+  characterGUID: 1588433c-0866-4815-9abe-509e5e54d4e9
+  characterImage: {fileID: 21300000, guid: 9c017c5641bd2b644997206c3fd5710a, type: 3}

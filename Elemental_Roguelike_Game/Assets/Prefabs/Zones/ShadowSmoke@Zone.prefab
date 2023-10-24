@@ -4902,6 +4902,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  m_debugRadius: 1.18
 --- !u!114 &7538420837606974603
 MonoBehaviour:
   m_ObjectHideFlags: 0

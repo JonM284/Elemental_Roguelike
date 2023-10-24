@@ -13,12 +13,13 @@ MonoBehaviour:
   m_Name: Paralyzed@Status
   m_EditorClassIdentifier: 
   statusName: Paralyzed
-  roundCooldownTimer: 5
-  chanceToRemove: 0
+  roundCooldownTimer: 2
+  chanceToRemove: 19
   abilityElement: {fileID: 11400000, guid: b5ba9f007020f914f9c8d519cccd8f04, type: 2}
   statusType: 1
   statusStayVFX: {fileID: 0}
-  statusOneTimeVFX: {fileID: 0}
+  statusOneTimeVFX: {fileID: 1472207216188466634, guid: fecaf9e18fc1354469dd606d2a66ea2e,
+    type: 3}
   playVFXOnTrigger: 0
   statusIcon: {fileID: 1089193339, guid: cbb7c9f40afd9f4428d7625db200f40d, type: 3}
   statusIconLow: {fileID: -1340026606, guid: cbb7c9f40afd9f4428d7625db200f40d, type: 3}

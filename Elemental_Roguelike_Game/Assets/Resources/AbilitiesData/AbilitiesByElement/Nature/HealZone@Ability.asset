@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b83bfd763b54c5ba7f412756f6f85f4, type: 3}
+  m_Name: HealZone@Ability
+  m_EditorClassIdentifier: 
+  abilityName: Heal Zone
+  abilityDescription: Create an immediate Heal zone AOE around player
+  abilityGUID: 6d20ddb2-fa8d-4db1-80db-a75e07053851
+  roundCooldownTimer: 6
+  abilityType: 7
+  targetType: 4
+  range: 1
+  abilityAnimationOverride: {fileID: 0}
+  playVFXAtTransform: 0
+  abilityIcon: {fileID: 0}
+  abilityVFX: {fileID: 0}
+  abilityParameters: []
+  m_zoneInfo: {fileID: 11400000, guid: 2d0988cc18f4ef74c82f43c6fa58423b, type: 2}

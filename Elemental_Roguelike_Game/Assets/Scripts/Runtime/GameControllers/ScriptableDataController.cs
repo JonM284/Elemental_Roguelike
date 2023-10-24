@@ -21,6 +21,10 @@ namespace Runtime.GameControllers
 
         [SerializeField] private List<Status.Status> m_statuses = new List<Status.Status>();
 
+        [SerializeField] private Status.Status m_fenceAppliedStatus;
+
+        [SerializeField] private int m_fenceDamage = 10;
+
         #endregion
 
         #region GameControllerBase Inherited Methods
@@ -45,6 +49,16 @@ namespace Runtime.GameControllers
             var side = m_characterSides.FirstOrDefault(cs => cs.sideGUID == _searchGUID);
             Debug.Log(side);
             return side;
+        }
+
+        public Status.Status GetFenceAppliedStatus()
+        {
+            return m_fenceAppliedStatus;
+        }
+
+        public int GetFenceDamage()
+        {
+            return m_fenceDamage;
         }
 
         #endregion

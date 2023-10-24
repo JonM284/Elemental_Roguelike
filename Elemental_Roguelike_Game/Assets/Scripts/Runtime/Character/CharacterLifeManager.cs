@@ -30,7 +30,7 @@ namespace Runtime.Character
 
         private CharacterBase m_ownCharacter;
 
-        private float m_damageMod;
+        private float m_damageMod = 1f;
 
         #endregion
 
@@ -78,18 +78,7 @@ namespace Runtime.Character
 
         public void DealDamage(Transform _attacker, int _incomingDamage, bool _armorPiercing, ElementTyping _type)
         {
-            if (characterElementType == null)
-            {
-                Debug.LogError("<color=cyan>NULL is characterElementType</color>");
-                return;
-            }
-
-            var _fixedIncomingDamage = _incomingDamage;
-            
-            if (!_type.IsNull() && _incomingDamage > 0)
-            {
-                _fixedIncomingDamage = characterElementType.CalculateDamageOnWeakness(_incomingDamage, _type);
-            }
+            var _fixedIncomingDamage = Mathf.RoundToInt(_incomingDamage * m_damageMod);
             
             if (_armorPiercing)
             {
@@ -120,8 +109,6 @@ namespace Runtime.Character
                     CharacterTookDamage?.Invoke(_character, _fixedIncomingDamage);
                 }    
             }
-            
-
 
             Debug.Log($"<color=orange> {this.gameObject.name} took damage Amount:{_incomingDamage} /// hp now: {currentHealthPoints} shields: {currentShieldPoints} </color>");
 

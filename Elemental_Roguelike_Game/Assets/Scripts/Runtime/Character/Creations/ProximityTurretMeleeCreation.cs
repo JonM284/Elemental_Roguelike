@@ -67,11 +67,6 @@ namespace Runtime.Character.Creations
         
         #region Unity Events
 
-        private void OnDrawGizmos()
-        {
-            Gizmos.DrawWireSphere(transform.position, m_detonationRadius);
-        }
-
         private void Update()
         {
             if (isDoingAction || hasDoneAction)
@@ -141,8 +136,14 @@ namespace Runtime.Character.Creations
                     meleePosition.position = targetPosition;
                     
                     StartMeleeAnimation();
-                    
-                    yield return new WaitUntil(() => !animator.GetBool(IsAttacking));
+                    if (!animator.IsNull())
+                    {
+                        yield return new WaitUntil(() => !animator.GetBool(IsAttacking));
+                    }
+                    else
+                    {
+                        yield return new WaitForSeconds(0.3f);
+                    }
                 }
 
             }
@@ -234,9 +235,11 @@ namespace Runtime.Character.Creations
 
             var _surroundingEnemies = GetSurroundingEnemies();
 
+            
+            
             if (_surroundingEnemies.Count > 0)
             {
-                StartCoroutine(C_FireAtSurroundingEnemies(_surroundingEnemies));
+                AttackAround();
             }
             
             hasDoneAction = true;
@@ -250,9 +253,35 @@ namespace Runtime.Character.Creations
             isDoingAction = false;
         }
 
+        public void AttackAround()
+        {
+            Collider[] colliders = Physics.OverlapSphere(transform.position,  m_detonationRadius);
+
+            if (colliders.Length == 0)
+            {
+                return;
+            }
+
+            foreach (var collider in colliders)
+            {
+                if(collider.transform == this.transform)
+                {
+                    continue;
+                }
+                
+                collider.TryGetComponent(out IDamageable damageable);
+                damageable?.OnDealDamage(owner, m_damageAmount, false, elementTyping, this.transform, m_dealsKnockback);
+            }
+        }
+
         //Animation Event
         public void OnAttackEnded()
         {
+            if (animator.IsNull())
+            {
+                return;
+            }
+            
             animator.SetBool(IsAttacking, false);
         }
 
@@ -276,6 +305,11 @@ namespace Runtime.Character.Creations
         
         private void StartMeleeAnimation()
         {
+            if (animator.IsNull())
+            {
+                return;
+            }
+            
             animator.SetBool(IsAttacking, true);
         }
 

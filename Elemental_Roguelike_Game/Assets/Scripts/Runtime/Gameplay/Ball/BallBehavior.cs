@@ -92,12 +92,18 @@ namespace Runtime.Gameplay
 
         public bool isThrown { get; private set; }
 
+        public bool canBeCaught { get; private set; }
+
+        public bool isMoving => m_currentBallForce > 0;
+        
         public float thrownBallStat { get; private set; }
 
         public List<CharacterBase> lastContactedCharacters => m_lastContactedCharacters;
 
         public CharacterBase lastThrownCharacter { get; private set; }
-        
+
+        public CharacterBase lastHeldCharacter { get; private set; }
+
         public CharacterSide controlledCharacterSide { get; private set; }
 
         #endregion
@@ -136,10 +142,12 @@ namespace Runtime.Gameplay
             thrownBallStat = _thrownBallStat;
             m_currentThrowTime = 0;
             isThrown = _isThrown;
-            if (isThrown)
+            if (isThrown && !_character.IsNull())
             {
                 lastThrownCharacter = _character;
             }
+
+            lastHeldCharacter = _character;
             isControlled = false;
             controlledCharacterSide = null;
             followerTransform = null;
@@ -188,10 +196,18 @@ namespace Runtime.Gameplay
             
             if (m_currentThrowTime > m_afterThrowThreshold)
             {
+                if (!canBeCaught)
+                {
+                    canBeCaught = true;
+                }
                 CheckForPlayer();
             }
             else
             {
+                if (canBeCaught)
+                {
+                    canBeCaught = false;
+                }
                 m_currentThrowTime += Time.deltaTime;
             }
 
@@ -244,9 +260,9 @@ namespace Runtime.Gameplay
                             }
                             
                             isControlled = true;
+                            m_currentBallForce = 0;
                             if (isThrown)
                             {
-                                m_currentBallForce = 0;
                                 isThrown = false;
                                 lastThrownCharacter = null;
                             }

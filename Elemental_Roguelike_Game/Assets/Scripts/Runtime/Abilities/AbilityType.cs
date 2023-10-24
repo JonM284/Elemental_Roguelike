@@ -20,5 +20,7 @@
         ThrowStatUpgrade,
         Teleport,
         Movement,
+        Pull,
+        Dash,
     }
 }

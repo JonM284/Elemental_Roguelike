@@ -15,7 +15,12 @@ namespace Runtime.Status
             }
             
             _character.SetCharacterUsable(false);
-            
+            _character.characterClassManager.SetAbleToReact(false);
+
+            if (!_character.heldBall.IsNull())
+            {
+                _character.KnockBallAway();
+            }
         }
 
         public override void ResetStatusEffect(CharacterBase _character)
@@ -26,6 +31,7 @@ namespace Runtime.Status
             }
             
             _character.SetCharacterUsable(true);
+            _character.characterClassManager.SetAbleToReact(true);
         }
     }
 }

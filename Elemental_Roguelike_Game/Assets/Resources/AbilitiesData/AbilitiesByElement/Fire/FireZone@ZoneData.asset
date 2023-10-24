@@ -18,6 +18,7 @@ MonoBehaviour:
   zoneRadius: 1
   isArmorAffecting: 1
   hasKnockback: 0
+  isRandomKnockawayBall: 1
   isIgnoreUser: 0
   zoneCheckLayer:
     serializedVersion: 2

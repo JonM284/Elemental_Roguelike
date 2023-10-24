@@ -21,17 +21,19 @@ namespace Data
         [Tooltip("Do other damageables get knocked back?")]
         public bool hasKnockback;
 
+        [Tooltip("Will this ability knock the ball away from the holder?")]
+        public bool isRandomKnockawayBall;
+
+        [Tooltip("Will this zone stop character reactions")]
+        public bool isStopReaction;
+
         [Tooltip("Should the user of this ability be ignored during the damage/ heal/ status check?")]
         public bool isIgnoreUser;
         
         public LayerMask zoneCheckLayer;
 
         public ElementTyping elementType;
-        
-        [Tooltip("Chance to apply status when ability hits")]
-        [Range(0,100)]
-        public int chanceToApplyStatus;
-        
+
         public Status statusEffect;
         
         public AssetReference zonePrefab;

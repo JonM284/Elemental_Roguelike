@@ -161,7 +161,7 @@ namespace Runtime.Character.Creations
         
         //---------------------
 
-        #region IDamageable Inherited Methods
+        #region ISelectable Inherited Methods
 
         public void OnSelect()
         {
@@ -186,7 +186,7 @@ namespace Runtime.Character.Creations
         
         //-------------------------
 
-        #region ISelectable Inherited Methods
+        #region IDamageable Inherited Methods
 
         public void OnRevive()
         {

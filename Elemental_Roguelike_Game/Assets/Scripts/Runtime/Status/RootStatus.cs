@@ -15,6 +15,12 @@ namespace Runtime.Status
             }
             
             _character.characterMovement.ChangeMovementRange(0);
+            _character.characterClassManager.SetAbleToReact(false);
+            
+            if (!_character.heldBall.IsNull())
+            {
+                _character.KnockBallAway();
+            }
         }
 
         public override void ResetStatusEffect(CharacterBase _character)
@@ -25,6 +31,7 @@ namespace Runtime.Status
             }
             
             _character.characterMovement.ResetOriginalMoveDistance();
+            _character.characterClassManager.SetAbleToReact(true);
         }
     }
 }

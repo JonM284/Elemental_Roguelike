@@ -18,12 +18,13 @@ MonoBehaviour:
   zoneRadius: 1
   isArmorAffecting: 0
   hasKnockback: 0
+  isRandomKnockawayBall: 1
+  isStopReaction: 0
   isIgnoreUser: 0
   zoneCheckLayer:
     serializedVersion: 2
     m_Bits: 768
   elementType: {fileID: 11400000, guid: 95a8ef5f5dc6d1041b926a50980d0665, type: 2}
-  chanceToApplyStatus: 70
   statusEffect: {fileID: 11400000, guid: c896b909142993a4bb8c2e4269e1ee69, type: 2}
   zonePrefab:
     m_AssetGUID: 11b82e026e656f34bbf4f20f7315c71e

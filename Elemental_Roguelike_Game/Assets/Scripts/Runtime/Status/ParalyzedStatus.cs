@@ -22,13 +22,14 @@ namespace Runtime.Status
                 return;
             }
 
-            var randomAmount = Random.Range(0,100);
-            if (randomAmount >= chanceToParalyze)
+            _character.SetCharacterUsable(false);
+            _character.characterClassManager.SetAbleToReact(false);
+
+            if (!_character.heldBall.IsNull())
             {
-                return;
+                _character.KnockBallAway();
             }
             
-            _character.SetCharacterUsable(false);
         }
 
         public override void ResetStatusEffect(CharacterBase _character)
@@ -38,7 +39,8 @@ namespace Runtime.Status
                 return;
             }
             
-            _character.SetCharacterUsable(false);
+            _character.SetCharacterUsable(true);
+            _character.characterClassManager.SetAbleToReact(true);
         }
     }
 }

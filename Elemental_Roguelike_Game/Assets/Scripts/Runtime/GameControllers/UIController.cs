@@ -5,6 +5,9 @@ using System.Linq;
 using Data;
 using Project.Scripts.Utils;
 using Runtime.UI;
+using Runtime.UI.Items;
+using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.Events;
@@ -52,6 +55,8 @@ namespace Runtime.GameControllers
         [SerializeField] private ModalsByLayer popupAssetReference;
 
         [SerializeField] private List<CanvasByLayer> canvasByLayers = new List<CanvasByLayer>();
+
+        [SerializeField] private AssetReference textAssetRef;
         
         #endregion
 
@@ -61,10 +66,16 @@ namespace Runtime.GameControllers
 
         private List<UIBase> m_cachedUIWindows = new List<UIBase>();
 
-        [SerializeField] private List<UIPopupDialog> m_cachedPopups = new List<UIPopupDialog>();
+        private List<UIPopupDialog> m_cachedPopups = new List<UIPopupDialog>();
+
+        private List<UIPopupDialog> m_activePopups = new List<UIPopupDialog>();
 
         private Transform m_cachedUIPoolTransform;
-        
+
+        private Transform m_cachedPopupTextPool;
+
+        private List<PopupTextItem> m_cachedPopupTexts = new List<PopupTextItem>();
+
         #endregion
 
         #region Accessors
@@ -73,6 +84,14 @@ namespace Runtime.GameControllers
             CommonUtils.GetRequiredComponent(ref m_cachedUIPoolTransform, ()=>
             {
                 var poolTransform = TransformUtils.CreatePool(this.transform, false);
+                return poolTransform;
+            });
+        
+        public Transform cachedPopupTextPool =>
+            CommonUtils.GetRequiredComponent(ref m_cachedPopupTextPool, ()=>
+            {
+                var poolTransform = TransformUtils.CreatePool(this.transform, false);
+                poolTransform.RenameTransform("Text Pool");
                 return poolTransform;
             });
 
@@ -134,16 +153,39 @@ namespace Runtime.GameControllers
 
         public void AddUI(UIWindowData _uiWindowData)
         {
-            var _cachedWindow = m_cachedUIWindows.FirstOrDefault(ui => ui.uiWindowData == _uiWindowData);
-            var _foundCanvasByLayer = canvasByLayers.FirstOrDefault(cbl => cbl.layer == _uiWindowData.layerData);
+            if (_uiWindowData.IsNull())
+            {
+                Debug.LogError($"UI window data null");
+                return;
+            }
             
-            if (_cachedWindow != null)
+            Debug.Log($"{_uiWindowData.layerData.name}");
+            
+            var _cachedWindow = m_cachedUIWindows.FirstOrDefault(ui => ui.uiWindowData == _uiWindowData);
+            var _foundCanvasByLayer = canvasByLayers.FirstOrDefault(cbl => cbl.layer.guid == _uiWindowData.layerData.guid);
+            
+            if (!_cachedWindow.IsNull())
             {
                 m_cachedUIWindows.Remove(_cachedWindow);
                 _cachedWindow.uiRectTransform.ResetTransform(_foundCanvasByLayer.associatedCanvas.transform);
                 m_activeUIWindows.Add(_cachedWindow);
                 Debug.Log("Found Window");
                 return;
+            }
+
+            if (_uiWindowData.uiWindowAssetReference.IsNull())
+            {
+                Debug.LogError("Asset Reference NULL");
+            }
+
+            if (_foundCanvasByLayer.IsNull())
+            {
+                Debug.LogError("Found canvas null");
+            }
+
+            if (_foundCanvasByLayer.associatedCanvas.IsNull())
+            {
+                Debug.LogError("Associated Canvas null");
             }
             
             _uiWindowData.uiWindowAssetReference.CloneAddressable(_foundCanvasByLayer.associatedCanvas.transform);
@@ -185,6 +227,10 @@ namespace Runtime.GameControllers
 
             if (_uiWindow is UIPopupDialog popup)
             {
+                if (m_activePopups.Contains(popup))
+                {
+                    m_activePopups.Remove(popup);
+                }
                 m_cachedPopups.Add(popup);
                 popup.uiRectTransform.ResetTransform(cachedUIPool);
                 return;
@@ -204,6 +250,7 @@ namespace Runtime.GameControllers
             if (foundPopup != null)
             {
                 m_cachedPopups.Remove(foundPopup);
+                m_activePopups.Add(foundPopup);
                 foundPopup.uiRectTransform.ResetTransform(_foundCanvasByLayer.associatedCanvas.transform);
                 Debug.Log("Found Popup");
                 return;
@@ -222,6 +269,7 @@ namespace Runtime.GameControllers
                     if (newPopup != null)
                     {
                         newPopup.AssignArguments(arg);
+                        m_activePopups.Add(newPopup);
                     }
                 }
             };
@@ -237,6 +285,61 @@ namespace Runtime.GameControllers
 
             var cachedPopup = m_cachedPopups.FirstOrDefault(uip => uip.data == _dialogData);
             return cachedPopup;
+        }
+
+        public void CreateFloatingTextAtCursor(string _displayString, Color _color)
+        {
+            var foundText = m_cachedPopupTexts.FirstOrDefault();
+            var _textLayer = canvasByLayers[1].associatedCanvas;
+            
+            //If the popup already exists, use same popup
+            if (!foundText.IsNull())
+            {
+                m_cachedPopupTexts.Remove(foundText);
+                foundText.uiRectTransform.ResetTransform(_textLayer.transform);
+                foundText.uiRectTransform.anchoredPosition = Input.mousePosition / _textLayer.scaleFactor;
+                foundText.SetupText(_displayString, _color, CacheTextPopup);
+                Debug.Log("Found Usable Text");
+                return;
+            }
+            
+            //Otherwise create a new popup text
+            var handle = Addressables.LoadAssetAsync<GameObject>(textAssetRef);
+            handle.Completed += operation =>
+            {
+                if (operation.Status == AsyncOperationStatus.Succeeded)
+                {
+                    var newPopupTextObject = Instantiate(handle.Result, _textLayer.transform);
+                    newPopupTextObject.TryGetComponent(out PopupTextItem _textItem);
+                    if (!_textItem.IsNull())
+                    {
+                        _textItem.uiRectTransform.anchoredPosition = Input.mousePosition / _textLayer.scaleFactor;
+                        _textItem.SetupText(_displayString, _color, CacheTextPopup);
+                    }
+                }
+            };
+        }
+        
+        private void CacheTextPopup(PopupTextItem _textItem){
+            if (_textItem.IsNull())
+            {
+                return;
+            }
+            
+            m_cachedPopupTexts.Add(_textItem);
+            _textItem.uiRectTransform.ResetTransform(cachedPopupTextPool);
+        }
+
+        public void CloseAllPopups()
+        {
+            if (m_activePopups.Count == 0)
+            {
+                return;
+            }
+
+            var newPopuplist = CommonUtils.ToList(m_activePopups);
+
+            newPopuplist.ForEach(upd => upd.Close());
         }
 
         #endregion

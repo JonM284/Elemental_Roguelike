@@ -583,6 +583,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_characterStatsBase: {fileID: 0}
+  m_maxActionPoints: 2
+  isGoalie: 0
   characterSideRef: 014d2592-f501-43ce-b562-46d3f896e78c
   deathVFX: {fileID: 5269481490371825388, guid: 937bc3e3a97813a4dab4e90150355a6c,
     type: 3}
@@ -626,9 +628,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 43acbc57e22c4f8e8c4a352846ae4b6c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  characterVisual: {fileID: 0}
+  characterVisual: {fileID: 2805309664574381807}
   highlightColor: {r: 1, g: 0.91517913, b: 0, a: 1}
   m_isMeeple: 1
+  m_isChangeColor: 1
   meepleSkinnedMeshRenderers:
   - {fileID: 6280845204105371537}
   meepleMeshRenderers:
@@ -1454,7 +1457,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &557645494760753916
 Transform:
   m_ObjectHideFlags: 0
@@ -1464,7 +1467,7 @@ Transform:
   m_GameObject: {fileID: 8019618715460069810}
   m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
   m_LocalPosition: {x: 0, y: -0.5, z: 0}
-  m_LocalScale: {x: 5, y: 5, z: 3}
+  m_LocalScale: {x: 3, y: 3, z: 3}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 8626873723231766950}
@@ -1915,6 +1918,12 @@ MonoBehaviour:
 --- !u!4 &2300878827366984850 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8644089605843024392, guid: bebfcdc4c42436247b79402fd9c6a234,
+    type: 3}
+  m_PrefabInstance: {fileID: 1721601387277166954}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &2805309664574381807 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3533686411961350021, guid: bebfcdc4c42436247b79402fd9c6a234,
     type: 3}
   m_PrefabInstance: {fileID: 1721601387277166954}
   m_PrefabAsset: {fileID: 0}

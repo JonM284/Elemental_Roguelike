@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using Runtime.GameControllers;
-using Runtime.Submodules;
 using UnityEngine;
 
 namespace Runtime.Managers
@@ -11,7 +9,7 @@ namespace Runtime.Managers
 
         #region Serialized Fields
 
-        [SerializeField] private RandomTeamSelectionManager randomTeamSelectionManager;
+        [SerializeField] private TeamSelectionManager teamSelectionManager;
 
         [SerializeField] private MapController mapController;
 
@@ -55,7 +53,7 @@ namespace Runtime.Managers
                 {
                     mapController.HideMap();
                 }
-                randomTeamSelectionManager.SetupRandomTeamGenerator();
+                teamSelectionManager.OpenTeamWindow();
                 return;
             }
 

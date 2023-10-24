@@ -17,7 +17,7 @@ MonoBehaviour:
   abilityGUID: a95b5058-a75e-4fb4-96c2-df6dc6d38588
   roundCooldownTimer: 6
   abilityType: 4
-  targetType: 1
+  targetType: 2
   range: 4.5
   abilityAnimationOverride: {fileID: -623603649343465320, guid: 12ea374ee5728e145bae404432c865dd,
     type: 3}

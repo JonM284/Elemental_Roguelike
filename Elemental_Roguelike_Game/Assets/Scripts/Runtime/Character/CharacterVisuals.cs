@@ -28,6 +28,8 @@ namespace Runtime.Character
 
         [SerializeField] private bool m_isMeeple;
 
+        [SerializeField] private bool m_isChangeColor;
+
         [SerializeField] private List<SkinnedMeshRenderer> meepleSkinnedMeshRenderers = new List<SkinnedMeshRenderer>();
 
         [SerializeField] private List<MeshRenderer> meepleMeshRenderers = new List<MeshRenderer>();
@@ -52,6 +54,8 @@ namespace Runtime.Character
 
         public GameObject characterModel { get; private set; }
 
+        public bool isMeeple => m_isMeeple;
+
         #endregion
 
         #region Class Implementation
@@ -63,7 +67,20 @@ namespace Runtime.Character
                 characterModel = characterVisual;
             }
 
-            var _mat = characterModel.GetComponent<SkinnedMeshRenderer>().materials[0];
+            Material _mat;
+            
+            characterModel.TryGetComponent(out SkinnedMeshRenderer skinnedMeshRenderer);
+
+            if (skinnedMeshRenderer.IsNull())
+            {
+                characterModel.TryGetComponent(out MeshRenderer meshRenderer);
+                _mat = meshRenderer.materials[0];
+            }
+            else
+            {
+                _mat = skinnedMeshRenderer.materials[0];
+            }
+            
             if (_mat.IsNull())
             {
                 Debug.Log("Can not find material // or skinned mesh renderer");
@@ -71,8 +88,6 @@ namespace Runtime.Character
             }
 
             InitializeHighlightVariables(_mat);
-
-
         }
 
         public void InitializeMeepleCharacterVisuals(ElementTyping _type)
@@ -94,10 +109,13 @@ namespace Runtime.Character
             {
                 mr.material = m_clonedMaterial;
             });
-            
-            m_clonedMaterial.SetColor(LightColor, _type.meepleColors[0]);
-            m_clonedMaterial.SetColor(DarkColor, _type.meepleColors[1]);
 
+            if (m_isChangeColor)
+            {
+                m_clonedMaterial.SetColor(LightColor, _type.meepleColors[0]);
+                m_clonedMaterial.SetColor(DarkColor, _type.meepleColors[1]);     
+            }
+            
             InitializeHighlightVariables(m_clonedMaterial);
         }
 

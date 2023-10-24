@@ -106,7 +106,7 @@ namespace Runtime.GameControllers
                 foundEnemy.transform.parent = null;
                 foundEnemy.transform.position = adjustedSpawnLocation;
                 foundEnemy.transform.rotation = Quaternion.Euler(adjustedSpawnRotation);
-                foundEnemy.InitializeCharacter();
+                foundEnemy.InitializeCharacter(_enemyStats);
                 EnemyCreated?.Invoke(foundEnemy);
                 yield break;
             }
@@ -118,7 +118,7 @@ namespace Runtime.GameControllers
             {
                 var _newEnemyGO = Instantiate(foundLoadedEnemy.gameObject, adjustedSpawnLocation, Quaternion.Euler(adjustedSpawnRotation));
                 var _enemyComp = _newEnemyGO.GetComponent<CharacterBase>();
-                _enemyComp.InitializeCharacter();
+                _enemyComp.InitializeCharacter(_enemyStats);
                 EnemyCreated?.Invoke(_enemyComp);
                 yield break;
             }
@@ -140,7 +140,7 @@ namespace Runtime.GameControllers
                 m_cachedLoadedEnemies.Add(handle.Result.GetComponent<CharacterBase>());
                 if (_newEnemy != null)
                 {
-                    _newEnemy.InitializeCharacter();
+                    _newEnemy.InitializeCharacter(_enemyStats);
                 }
                 EnemyCreated?.Invoke(_newEnemy);
             }

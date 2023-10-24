@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Runtime.Weapons
 {
-    [CreateAssetMenu(menuName = "Custom Data/Projectile Weapon")]
+    [CreateAssetMenu(menuName = "Custom Data/Weapon/Projectile Weapon")]
     public class ProjectileWeaponData: WeaponData
     {
 

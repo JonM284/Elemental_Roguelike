@@ -1435,6 +1435,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_characterStatsBase: {fileID: 0}
+  m_maxActionPoints: 2
+  isGoalie: 0
   characterSideRef: 014d2592-f501-43ce-b562-46d3f896e78c
   deathVFX: {fileID: 5269481490371825388, guid: 937bc3e3a97813a4dab4e90150355a6c,
     type: 3}
@@ -1478,9 +1480,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 43acbc57e22c4f8e8c4a352846ae4b6c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  characterVisual: {fileID: 5105239391387843634}
+  characterVisual: {fileID: 4812649010307704075}
   highlightColor: {r: 1, g: 0.91517913, b: 0, a: 1}
   m_isMeeple: 1
+  m_isChangeColor: 1
   meepleSkinnedMeshRenderers:
   - {fileID: 6681550327239089201}
   meepleMeshRenderers:
@@ -2236,6 +2239,12 @@ Transform:
 --- !u!4 &4078500536266983880 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8251055613847718059, guid: 0482992e3f9407b4586dac22cbbd90f7,
+    type: 3}
+  m_PrefabInstance: {fileID: 5339050328112087395}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &4812649010307704075 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 635547659545568360, guid: 0482992e3f9407b4586dac22cbbd90f7,
     type: 3}
   m_PrefabInstance: {fileID: 5339050328112087395}
   m_PrefabAsset: {fileID: 0}

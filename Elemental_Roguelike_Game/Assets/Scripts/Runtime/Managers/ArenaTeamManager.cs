@@ -17,17 +17,6 @@ namespace Runtime.Managers
     public class ArenaTeamManager: MonoBehaviour
     {
 
-        #region Nested Classes
-
-        [Serializable]
-        public class CharacterReactor
-        {
-            public CharacterClassManager classManager;
-            public Action reactionToPerform;
-        }
-
-        #endregion
-
         #region Read-Only
 
         private readonly string ballTag = "BALL";
@@ -38,21 +27,19 @@ namespace Runtime.Managers
 
         [SerializeField] private CharacterSide m_characterSide;
 
+        [SerializeField] private CharacterStatsBase m_goalieRef;
+
         [SerializeField] private List<Transform> m_startPositions = new List<Transform>();
 
         [SerializeField] private Transform m_goalPosition;
 
         [SerializeField] private VFXPlayer goalVFXPlayer;
-
+        
         #endregion
 
         #region Private Fields
-
-        private List<CharacterReactor> m_queuedReactions = new List<CharacterReactor>();
-
+        
         private bool m_isScoring;
-
-        private Coroutine m_reactionCoroutine;
         
         #endregion
 
@@ -85,59 +72,7 @@ namespace Runtime.Managers
 
         #endregion
 
-
         #region Class Implementation
-
-        public void QueueReaction(CharacterClassManager _newQueuer, Action callback)
-        {
-            if (_newQueuer.IsNull())
-            {
-                return;
-            }
-
-            var _reactor = new CharacterReactor
-            {
-                classManager   = _newQueuer,
-                reactionToPerform = callback
-            };
-
-
-            if (!m_queuedReactions.Contains(_reactor))
-            {
-                m_queuedReactions.Add(_reactor);
-            }
-
-            if (m_reactionCoroutine.IsNull())
-            {
-                m_reactionCoroutine = StartCoroutine(C_AllowCharacterPerformReaction());
-            }
-        }
-
-        private void EndReactionQueue()
-        {
-            StopCoroutine(m_reactionCoroutine);
-            m_reactionCoroutine = null;
-        }
-
-        private IEnumerator C_AllowCharacterPerformReaction()
-        {
-            yield return null;
-
-            while (m_queuedReactions.Count > 0)
-            {
-                yield return null;
-
-                var currentReactor = m_queuedReactions[0];
-                
-                currentReactor.reactionToPerform?.Invoke();
-                yield return new WaitUntil(() => !currentReactor.classManager.isPerformingReaction);
-
-                m_queuedReactions.Remove(currentReactor);
-            }
-            
-            EndReactionQueue();
-            
-        }
 
         private IEnumerator C_ScoreGoal(BallBehavior _ball)
         {
@@ -170,8 +105,13 @@ namespace Runtime.Managers
             }
         }
 
+        public IEnumerator C_SpawnGoalie()
+        {
+            yield return StartCoroutine(CharacterGameController.Instance.C_CreateCharacter(m_goalieRef,
+                goalPosition.position, goalPosition.localEulerAngles));
+        }
+
         #endregion
-
-
+        
     }
 }

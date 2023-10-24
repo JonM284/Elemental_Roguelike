@@ -38,7 +38,7 @@ namespace Runtime.Abilities
 
         public override void UseAbility(Vector3 _ownerUsePos)
         {
-            var m_endPos = m_targetTransform != null ? m_targetTransform.position : m_targetPosition;
+            var m_endPos = m_targetTransform != null ? m_targetTransform.position.FlattenVector3Y() : m_targetPosition;
             m_zoneInfo.PlayAt(m_endPos, currentOwner.transform);
             base.UseAbility(_ownerUsePos);
         }

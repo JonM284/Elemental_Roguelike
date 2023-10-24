@@ -1,4 +1,5 @@
-﻿using Runtime.Character;
+﻿using Project.Scripts.Utils;
+using Runtime.Character;
 using UnityEngine;
 
 namespace Runtime.Status
@@ -19,14 +20,19 @@ namespace Runtime.Status
 
         #region Status Inherited Methods
 
-        public override void TriggerStatusEffect(CharacterBase affectedCharacter)
+        public override void TriggerStatusEffect(CharacterBase _character)
         {
-            if (affectedCharacter == null)
+            if (_character.IsNull())
             {
                 return;
             }
             
-            affectedCharacter.OnDealDamage(affectedCharacter.transform, damageOverTime, isArmorPiercing, abilityElement, affectedCharacter.transform ,false);
+            _character.OnDealDamage(_character.transform, damageOverTime, isArmorPiercing, abilityElement, _character.transform ,false);
+            
+            if (!_character.heldBall.IsNull())
+            {
+                _character.KnockBallAway();
+            }
         }
 
         public override void ResetStatusEffect(CharacterBase _character)

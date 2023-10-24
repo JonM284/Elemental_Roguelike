@@ -676,7 +676,7 @@ ParticleSystem:
     sphericalDirectionAmount: 0
     randomPositionAmount: 0
     radius:
-      value: 4.3
+      value: 2.35
       mode: 0
       spread: 0
       speed:
@@ -5531,7 +5531,7 @@ ParticleSystem:
     sphericalDirectionAmount: 0
     randomPositionAmount: 0
     radius:
-      value: 3.88
+      value: 2.23
       mode: 0
       spread: 0
       speed:
@@ -10386,7 +10386,7 @@ ParticleSystem:
     sphericalDirectionAmount: 0
     randomPositionAmount: 0
     radius:
-      value: 3.88
+      value: 2.23
       mode: 0
       spread: 0
       speed:
@@ -14611,7 +14611,7 @@ SphereCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 4.3
+  m_Radius: 1
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &3336411892468747791
 MonoBehaviour:
@@ -14655,6 +14655,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  m_debugRadius: 2.38
 --- !u!82 &7977776393328294098
 AudioSource:
   m_ObjectHideFlags: 0
@@ -15428,7 +15429,7 @@ ParticleSystem:
     sphericalDirectionAmount: 0
     randomPositionAmount: 0
     radius:
-      value: 4.3
+      value: 2.35
       mode: 0
       spread: 0
       speed:
@@ -15657,8 +15658,8 @@ ParticleSystem:
       countCurve:
         serializedVersion: 2
         minMaxState: 3
-        scalar: 120
-        minScalar: 80
+        scalar: 60
+        minScalar: 40
         maxCurve:
           serializedVersion: 2
           m_Curve:
@@ -19691,6 +19692,10 @@ PrefabInstance:
       value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 19820568, guid: 5128d0fb523fca6439fa131a1063c074, type: 3}
+      propertyPath: InitialModule.startSize.scalar
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 19820568, guid: 5128d0fb523fca6439fa131a1063c074, type: 3}
       propertyPath: EmissionModule.rateOverTime.scalar
       value: 0
       objectReference: {fileID: 0}
@@ -19729,6 +19734,10 @@ PrefabInstance:
     - target: {fileID: 19849562, guid: 5128d0fb523fca6439fa131a1063c074, type: 3}
       propertyPath: lengthInSec
       value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 19849562, guid: 5128d0fb523fca6439fa131a1063c074, type: 3}
+      propertyPath: ShapeModule.radius.value
+      value: 2.22
       objectReference: {fileID: 0}
     - target: {fileID: 19849562, guid: 5128d0fb523fca6439fa131a1063c074, type: 3}
       propertyPath: EmissionModule.m_BurstCount
@@ -19869,6 +19878,10 @@ PrefabInstance:
     - target: {fileID: 19858566, guid: 5128d0fb523fca6439fa131a1063c074, type: 3}
       propertyPath: ShapeModule.arc.spread
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 19858566, guid: 5128d0fb523fca6439fa131a1063c074, type: 3}
+      propertyPath: ShapeModule.radius.value
+      value: 2.34
       objectReference: {fileID: 0}
     - target: {fileID: 19858566, guid: 5128d0fb523fca6439fa131a1063c074, type: 3}
       propertyPath: InitialModule.startSizeY.scalar

@@ -26,7 +26,8 @@ MonoBehaviour:
   PassingStatMax: 96
   DamageStatMin: 30
   DamageStatMax: 48
-  passiveColor: {r: 0.8566245, g: 0.4273318, b: 0.9339623, a: 1}
+  passiveColor: {r: 1, g: 0.48584908, b: 0.97168773, a: 1}
+  darkColor: {r: 0.8207547, g: 0.56910825, b: 0.8073079, a: 1}
   moveDistance: 5
   tackleDamageAmount: 10
   classGUID: 9864fd0c-7f70-4f75-b387-3dce412f8e55

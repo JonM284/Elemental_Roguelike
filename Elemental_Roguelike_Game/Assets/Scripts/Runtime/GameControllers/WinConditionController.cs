@@ -59,6 +59,8 @@ namespace Runtime.GameControllers
         public int blueTeamPoints { get; private set; }
 
         public bool isGameOver => m_isGameConditionMet;
+
+        public bool isPlayerVictory => m_isPlayerVictory;
         
         #endregion
 
@@ -171,7 +173,7 @@ namespace Runtime.GameControllers
             }
             else
             {
-                if (_name == SceneName.RealWorldScene)
+                if (_name == SceneName.RealWorldScene || _name == SceneName.MainMenu)
                 {
                     Debug.Log("REPORT MATCH RESULTS");
                     ReportMatchResults?.Invoke(m_isPlayerVictory);

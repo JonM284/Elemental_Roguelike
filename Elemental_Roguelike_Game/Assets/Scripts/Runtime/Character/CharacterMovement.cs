@@ -3,9 +3,12 @@ using Data.Elements;
 using Data.Sides;
 using Project.Scripts.Utils;
 using Runtime.Damage;
+using Runtime.GameControllers;
 using Runtime.VFX;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.Events;
 
 namespace Runtime.Character
 {
@@ -21,7 +24,7 @@ namespace Runtime.Character
         private Action OnFinishMovementCallback;
 
         #endregion
-    
+
         #region SerializedFields
     
         [SerializeField] private float gravity;
@@ -71,6 +74,8 @@ namespace Runtime.Character
         private float m_originalMoveDistance;
 
         private bool m_isElementalTackle;
+
+        private bool m_isGoalie;
         
         private float m_floorOffset = 0.1f;
 
@@ -81,6 +86,10 @@ namespace Runtime.Character
         private NavMeshPath m_navMeshPath;
 
         private CharacterSide m_characterSide;
+        
+        private Transform m_goalPivotTransform;
+
+        private CharacterBase m_characterBase;
         
         #endregion
     
@@ -108,6 +117,18 @@ namespace Runtime.Character
             return s;
         });
         
+        private CharacterBase characterBase => CommonUtils.GetRequiredComponent(ref m_characterBase, () =>
+        {
+            var s = GetComponent<CharacterBase>();
+            return s;
+        });
+        
+        public Transform pivotTransform => CommonUtils.GetRequiredComponent(ref m_goalPivotTransform, () =>
+        {
+            var t = TurnController.Instance.GetTeamManager(characterSide).goalPosition.transform;
+            return t;
+        });
+        
         public Vector3 velocity => _velocity;
     
         public bool isInBattle { get; private set; }
@@ -124,6 +145,8 @@ namespace Runtime.Character
 
         public bool isInReaction { get; private set; }
 
+        public int layerMask => LayerMask.GetMask("WallObstruction");
+        
         #endregion
 
         #region Unity Events
@@ -165,13 +188,21 @@ namespace Runtime.Character
     
         #region Class Implementation
 
-        public void InitializeCharacterMovement(float _speed, float _moveDistance, int _tackleDamage, ElementTyping _damageType)
+        public void InitializeCharacterMovement(float _speed, float _moveDistance, int _tackleDamage, ElementTyping _damageType, bool _isGoalie)
         {
             speed = _speed;
             battleMoveDistance = _moveDistance;
             m_originalMoveDistance = _moveDistance;
             tackleDamage = _tackleDamage;
             tackleDamageType = _damageType;
+            m_isGoalie = _isGoalie;
+            
+            if (m_isGoalie)
+            {
+                movementRangeIndicator.transform.parent = pivotTransform;
+                movementRangeIndicator.transform.position = new Vector3(pivotTransform.position.x, transform.position.y,
+                    pivotTransform.position.z);
+            }
         }
 
         public void MarkMovementLocation(Vector3 _position)
@@ -181,7 +212,10 @@ namespace Runtime.Character
                 return;
             }
 
-            var distanceToPos = _position - transform.position;
+            var pivotPos = m_isGoalie ? pivotTransform.position : transform.position;
+
+            var distanceToPos = _position - pivotPos;
+           
             if (distanceToPos.magnitude >= battleMoveDistance)
             {
                 return;
@@ -228,7 +262,7 @@ namespace Runtime.Character
             m_startPos = playerPosition.position;
             m_finalPos = _movePosition;
             m_isMovingOnPath = true;
-            
+
             Debug.Log("Setting to moving on path");
             
             OnBeforeMovementCallback?.Invoke();
@@ -308,7 +342,7 @@ namespace Runtime.Character
         {
             isInReaction = _isInReaction;
             
-            if (m_navMeshPath.corners.Length > 0)
+            if (!m_navMeshPath.IsNull() && m_navMeshPath.corners.Length > 0)
             {
                 m_navMeshPath.ClearCorners();
             }
@@ -350,10 +384,11 @@ namespace Runtime.Character
             {
                 return;
             }
-            
+
             m_knockbackTimer = _duration;
             m_knockbackDir = _direction;
             m_knockbackForce = (_knockbackForce * m_knockbackMod);
+            Debug.DrawRay(transform.position, m_knockbackDir.normalized * m_knockbackForce, Color.yellow, 10f);
             m_isKnockedBack = true;
             m_canMove = true;
             
@@ -373,6 +408,11 @@ namespace Runtime.Character
 
             if (m_knockbackTimer > 0)
             {
+                if (Physics.Raycast(transform.position, m_knockbackDir, 0.5f, layerMask))
+                {
+                    HitElectricFence();
+                }
+                
                 m_knockbackTimer -= Time.deltaTime;
             }else if (m_knockbackTimer <= 0)
             {
@@ -431,7 +471,7 @@ namespace Runtime.Character
 
         public void TeleportCharacter(Vector3 teleportPosition)
         {
-            if (m_navMeshPath != null && m_navMeshPath.corners.Length > 0)
+            if (!m_navMeshPath.IsNull() && m_navMeshPath.corners.Length > 0)
             {
                 m_navMeshPath.ClearCorners();
             }
@@ -452,6 +492,7 @@ namespace Runtime.Character
             characterController.enabled = false;
             transform.position = _position;
             characterController.enabled = true;
+            ForceStopMovement(false);
         }
 
         public void ChangeMovementRange(float _newRange)
@@ -473,6 +514,29 @@ namespace Runtime.Character
             
             movementRangeIndicator.SetActive(_isActive);
             movementPositionIndicator.SetActive(_isActive);
+        }
+
+        private void HitElectricFence()
+        {
+            Debug.Log($"<color=cyan>{this.gameObject.name} has hit electric fence</color>");
+            
+            m_isKnockedBack = false;
+            m_canMove = false;
+
+            m_knockbackTimer = 0;
+            
+            if (isInReaction)
+            {
+                isInReaction = false;
+                OnFinishMovementCallback?.Invoke();
+            }
+                
+            if (!knockbackParticles.IsNull())
+            {
+                knockbackParticles.Stop();
+            }
+
+            characterBase.HitFence();
         }
         
         private void PerformMelee()

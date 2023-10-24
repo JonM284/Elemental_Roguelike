@@ -41,6 +41,14 @@ MonoBehaviour:
     m_Address: MeleeTurretCreation@Prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
+  - m_GUID: 4cb13a8da637a4b4fae75766adacca66
+    m_Address: InterceptorCreation@Prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 6dbfce692cb6dea4088c0893cbf0c464
+    m_Address: PlaymakerCreation@Prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: c51bc8bdb2bb6e5479c05b7cf9bc0f75, type: 2}
   m_SchemaSet:

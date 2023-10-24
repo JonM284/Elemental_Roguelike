@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using Runtime.Character;
 using Runtime.GameControllers;
 using Runtime.ScriptedAnimations;
 using TMPro;
@@ -25,6 +26,12 @@ namespace Runtime.UI.DataReceivers
         [SerializeField] private TMP_Text leftCharacterText;
 
         [SerializeField] private TMP_Text rightCharacterText;
+
+        [SerializeField] private TMP_Text leftDescriptionText;
+        
+        [SerializeField] private TMP_Text rightDescriptionText;
+
+        [SerializeField] private TMP_Text reactionDescriptionText;
 
         [SerializeField] private List<RectTransform> sideParents = new List<RectTransform>();
 
@@ -134,7 +141,7 @@ namespace Runtime.UI.DataReceivers
             tex3Images.ForEach(i => i.texture = tex3);
         }
         
-        public IEnumerator C_ReactionEvent(int _endValueL, int _endValueR, Action callback)
+        public IEnumerator C_ReactionEvent(int _endValueL, int _endValueR, Action callback, CharacterClass _characterClass, bool _isLeftReactor)
         {
             reactionUI.SetActive(true);
 
@@ -143,6 +150,11 @@ namespace Runtime.UI.DataReceivers
             
             leftCharacterText.text = "0";
             rightCharacterText.text = "0";
+
+            reactionDescriptionText.text = $"{_characterClass.ToString()} Reaction";
+
+            leftDescriptionText.text = _isLeftReactor ? "Reactor" : "Target";
+            rightDescriptionText.text = _isLeftReactor ? "Target" : "Reactor";
 
             sideParents.ForEach(rt => rt.localScale = Vector3.one);
             

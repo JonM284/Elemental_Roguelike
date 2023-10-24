@@ -38,10 +38,12 @@ namespace Runtime.UI.DataModels
 
         [SerializeField] private GameObject playerVisuals;
 
+        [SerializeField] private GameObject selectedCharacterVisuals;
+
         [SerializeField] private GameObject shootButton;
 
         [SerializeField] private GameObject tooltipMenu;
-
+        
         [SerializeField] private TMP_Text tooltipText;
 
         [SerializeField] private UIPopupCreator uiPopupCreator;
@@ -56,7 +58,15 @@ namespace Runtime.UI.DataModels
         
         [SerializeField] private string m_playerSideRef;
 
+        [SerializeField] private List<GameObject> abilityButtons = new List<GameObject>();
+
         [SerializeField] private List<AbilityCooldowns> m_abilityCooldownImages = new List<AbilityCooldowns>();
+        
+        [Header("Timer")]
+        
+        [SerializeField] private Image timerSlider;
+
+        [SerializeField] private TMP_Text timerText;
 
         [Header("ScoreBoard")] 
         
@@ -90,6 +100,12 @@ namespace Runtime.UI.DataModels
 
         private CharacterSide m_playerSide;
 
+        private float currentTime = 0;
+
+        private float maxTimer = 60f;
+
+        private bool m_isOutOfTime = false;
+
         #endregion
 
         #region Accessors
@@ -122,10 +138,38 @@ namespace Runtime.UI.DataModels
             }
         }
 
+        private void Update()
+        {
+            if (!isPlayerTurn)
+            {
+                return;
+            }
+
+            if (m_isOutOfTime)
+            {
+                return;
+            }
+
+            if (currentTime > 0 && !m_isOutOfTime)
+            {
+                currentTime -= Time.deltaTime;
+                timerSlider.fillAmount = currentTime / maxTimer;
+                int seconds = ((int)currentTime % 60);
+                int minutes = ((int)currentTime / 60);
+                timerText.text = string.Format("{0:00}:{1:00}",minutes, seconds);
+            }
+            else if(currentTime <= 0 && !m_isOutOfTime)
+            {
+                StopTimer();
+                OnTimerFinished();
+            }
+            
+            
+        }
+
         private void OnEnable()
         {
-            MeepleController.PlayerMeepleCreated += MeepleControllerOnPlayerMeepleCreated;
-            EnemyController.EnemyCreated += EnemyControllerOnEnemyCreated;
+            CharacterGameController.CharacterCreated += OnCharacterCreated;
             TurnController.OnBattleEnded += OnBattleEnded;
             TurnController.OnChangeActiveCharacter += OnChangeCharacterTurn;
             TurnController.OnChangeActiveTeam += OnChangeActiveTeam;
@@ -137,8 +181,7 @@ namespace Runtime.UI.DataModels
 
         private void OnDisable()
         {
-            MeepleController.PlayerMeepleCreated -= MeepleControllerOnPlayerMeepleCreated;
-            EnemyController.EnemyCreated -= EnemyControllerOnEnemyCreated;
+            CharacterGameController.CharacterCreated -= OnCharacterCreated;
             TurnController.OnBattleEnded -= OnBattleEnded;   
             TurnController.OnChangeActiveCharacter -= OnChangeCharacterTurn;
             TurnController.OnChangeActiveTeam -= OnChangeActiveTeam;
@@ -151,29 +194,15 @@ namespace Runtime.UI.DataModels
         #endregion
 
         #region Class Implementation
-        
-        private void EnemyControllerOnEnemyCreated(CharacterBase _enemy)
+
+        private void OnCharacterCreated(CharacterBase _character)
         {
-            if (_enemy.IsNull())
+            if (_character.side == playerSide)
             {
-                return;
+                AddDisplayBar(_character);
             }
             
-            AddHealthBar(_enemy);
-        }
-
-        private void MeepleControllerOnPlayerMeepleCreated(CharacterBase _meeple, CharacterStatsData _stats)
-        {
-            if (_meeple.IsNull())
-            {
-                Debug.Log("MEEPLE NULL");
-                return;
-            }
-            
-            AddHealthBar(_meeple);
-
-            AddDisplayBar(_meeple);
-            
+            AddHealthBar(_character);
         }
 
         private void AddHealthBar(CharacterBase _character)
@@ -310,6 +339,8 @@ namespace Runtime.UI.DataModels
         {
             m_blueScoreText.text = _blueScore.ToString();
             m_redScoreText.text = _redScore.ToString();
+
+            StopTimer();
         }
         
         private void OnTurnCounterChanged(int _newTurnAmount)
@@ -340,13 +371,18 @@ namespace Runtime.UI.DataModels
         
         private void OnChangeCharacterTurn(CharacterBase _character)
         {
-            isPlayerTurn = _character.side == playerSide;
+            var _isPlayerTurn = _character.side == playerSide;
             
-            playerVisuals.SetActive(isPlayerTurn);
+            selectedCharacterVisuals.SetActive(_isPlayerTurn);
             
-            if (isPlayerTurn)
+            if (_isPlayerTurn)
             {
                 shootButton.SetActive(!_character.heldBall.IsNull());
+            }
+
+            if (!_isPlayerTurn)
+            {
+                return;
             }
 
             CheckAbilities();
@@ -451,8 +487,14 @@ namespace Runtime.UI.DataModels
         
         private void OnChangeActiveTeam(CharacterSide characterSide)
         {
-            var _isPlayerTeam = characterSide == playerSide;   
-            playerVisuals.SetActive(_isPlayerTeam);
+            isPlayerTurn = characterSide == playerSide;   
+            
+            playerVisuals.SetActive(isPlayerTurn);
+            
+            if (isPlayerTurn)
+            {
+                ResetTimer();
+            }
         }
         
         private void OnAbilityUsed(CharacterBase _character)
@@ -470,15 +512,17 @@ namespace Runtime.UI.DataModels
             }   
             
             CheckAbilities();
-            
         }
 
         private void CheckAbilities()
         {
             var activePlayerAbilities = activePlayer.characterAbilityManager.GetAssignedAbilities();
 
+            abilityButtons.ForEach(g => g.SetActive(false));
+            
             for (int i = 0; i < activePlayerAbilities.Count; i++)
             {
+                abilityButtons[i].SetActive(true);
                 m_abilityCooldownImages[i].cooldownImage.SetActive(!activePlayerAbilities[i].canUse);
 
                 if (!activePlayerAbilities[i].canUse)
@@ -489,6 +533,23 @@ namespace Runtime.UI.DataModels
                 }
             }
             
+        }
+
+        private void ResetTimer()
+        {
+            currentTime = maxTimer;
+            m_isOutOfTime = false;
+        }
+
+        private void StopTimer()
+        {
+            m_isOutOfTime = true;
+        }
+
+        private void OnTimerFinished()
+        {
+            UIController.Instance.CloseAllPopups();
+            ConfirmEndTurn();
         }
 
         #endregion

@@ -12,3 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d70631ced3254131a184f99c4656cbd6, type: 3}
   m_Name: MainCanvasLayer
   m_EditorClassIdentifier: 
+  guid: cf0388ab-414a-4fbc-9a43-d6e4923fb491

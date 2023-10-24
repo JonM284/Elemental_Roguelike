@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Project.Scripts.Data
 {
-    [CreateAssetMenu(menuName = "Custom Data/Level Generation Settings")]
+    [CreateAssetMenu(menuName = "Custom Data/Generation/Level Generation Settings")]
     public class LevelGenerationRulesData : ScriptableObject
     {
 

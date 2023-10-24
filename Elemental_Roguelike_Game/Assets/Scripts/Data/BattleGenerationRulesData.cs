@@ -9,7 +9,7 @@ using Random = UnityEngine.Random;
 
 namespace Data
 {
-    [CreateAssetMenu(menuName = "Custom Data/ Battle Generation Rules")]
+    [CreateAssetMenu(menuName = "Custom Data/Generation/ Battle Generation Rules")]
     public class BattleGenerationRulesData: ScriptableObject
     {
         #region Nested Classes

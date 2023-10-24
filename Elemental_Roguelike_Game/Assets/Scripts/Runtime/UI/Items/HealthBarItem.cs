@@ -21,6 +21,8 @@ namespace Runtime.UI.Items
         [SerializeField] private GameObject highDetail;
         
         [SerializeField] private Slider healthBarHigh;
+
+        [SerializeField] private Image healthBarHighImage;
         
         [SerializeField] private TMP_Text healthText;
         
@@ -36,8 +38,16 @@ namespace Runtime.UI.Items
 
         [SerializeField] private Image lowStatusIcon;
         
+        [SerializeField] private Image healthBarLowImage;
+
         [Header("Both")] 
         
+        [SerializeField] private Color playerBarColor;
+        
+        [SerializeField] private Color enemyBarColor;
+        
+        [SerializeField] private List<GameObject> captainStars = new List<GameObject>();
+
         [SerializeField] private List<GameObject> shieldIcons = new List<GameObject>();
 
         [SerializeField] private List<GameObject> actionPointSmall = new List<GameObject>();
@@ -119,6 +129,7 @@ namespace Runtime.UI.Items
             CharacterBase.CharacterReset += OnCharacterReset;
             CharacterBase.StatusAdded += CharacterBaseOnStatusAdded;
             CharacterBase.StatusRemoved += CharacterBaseOnStatusRemoved;
+            CharacterBase.CharacterEndedTurn += OnCharacterEndedTurn;
             TurnController.OnChangeActiveTeam += OnChangeActiveTeam;
         }
 
@@ -131,6 +142,7 @@ namespace Runtime.UI.Items
             CharacterBase.CharacterReset -= OnCharacterReset;
             CharacterBase.StatusAdded -= CharacterBaseOnStatusAdded;
             CharacterBase.StatusRemoved -= CharacterBaseOnStatusRemoved;
+            CharacterBase.CharacterEndedTurn -= OnCharacterEndedTurn;
             TurnController.OnChangeActiveTeam -= OnChangeActiveTeam;
 
         }
@@ -162,15 +174,16 @@ namespace Runtime.UI.Items
 
             if (_side != m_associatedCharacter.side)
             {
-                //ToDo: check AI, sometimes they randomly attack when it isn't their turn
-                //After checking, remove all comments here
-                //actionPointSmall.ForEach(g => g.SetActive(true));
-                //actionPointLarge.ForEach(g => g.SetActive(true));
+                actionPointSmall.ForEach(g => g.SetActive(false));
+                actionPointLarge.ForEach(g => g.SetActive(false));
                 return;
             }
-            
-            actionPointSmall.ForEach(g => g.SetActive(true));
-            actionPointLarge.ForEach(g => g.SetActive(true));
+
+            for (int i = 0; i < m_associatedCharacter.characterActionPoints; i++)
+            {
+                actionPointSmall[i].SetActive(true);
+                actionPointLarge[i].SetActive(true);
+            }
         }
         
         private void OnCharacterUsedActionPoint(CharacterBase _character, int _amountLeft)
@@ -202,6 +215,22 @@ namespace Runtime.UI.Items
             }
         }
         
+        private void OnCharacterEndedTurn(CharacterBase _character)
+        {
+            if (m_associatedCharacter.IsNull())
+            {
+                return;
+            }
+
+            if (_character != m_associatedCharacter)
+            {
+                return;
+            }
+
+            actionPointSmall.ForEach(g => g.SetActive(false));
+            actionPointLarge.ForEach(g => g.SetActive(false));
+        }
+        
         private void OnCharacterHealthChange(CharacterBase _character)
         {
             if (m_associatedCharacter.IsNull())
@@ -219,10 +248,17 @@ namespace Runtime.UI.Items
             healthBarLow.value = healthPercentage;
             healthBarHigh.value = healthPercentage;
 
+            var _isPlayer = _character.side.sideGUID == TurnController.Instance.playersSide.sideGUID;
+
+            healthBarHighImage.color = _isPlayer ? playerBarColor : enemyBarColor;
+            
+            healthBarLowImage.color = _isPlayer ? playerBarColor : enemyBarColor;
+
             shieldText.text = currentShield.ToString();
 
             shieldIcons.ForEach(g => g.SetActive(hasShield));
-
+            
+            captainStars.ForEach(g => g.SetActive(_character.characterStatsBase.isCaptain));
         }
         
         private void OnCharacterDied(CharacterBase _character)

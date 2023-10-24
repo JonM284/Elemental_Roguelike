@@ -9,6 +9,7 @@ using Project.Scripts.Utils;
 using Runtime.GameControllers;
 using Runtime.ScriptedAnimations;
 using Runtime.Submodules;
+using Runtime.UI.DataModels;
 using UnityEngine;
 using UnityEngine.Events;
 using Utils;
@@ -66,7 +67,7 @@ namespace Runtime.GameplayEvents
         private void OnEnable()
         {
             PoiLocation.POILocationSelected += SetupEvent;
-            RandomTeamSelectionManager.TeamMembersConfirmed += OnTeamMembersConfirmed;
+            TeamSelectionUIDataModel.TeamConfirmed += OnTeamMembersConfirmed;
             GameplayEventBase.GameplayEventEnded += OnGameplayEventEnded;
             WinConditionController.ReportMatchResults += WinConditionControllerOnReportMatchResults;
         }
@@ -74,7 +75,7 @@ namespace Runtime.GameplayEvents
         private void OnDisable()
         {
             PoiLocation.POILocationSelected -= SetupEvent;
-            RandomTeamSelectionManager.TeamMembersConfirmed -= OnTeamMembersConfirmed;
+            TeamSelectionUIDataModel.TeamConfirmed -= OnTeamMembersConfirmed;
             GameplayEventBase.GameplayEventEnded -= OnGameplayEventEnded;
             WinConditionController.ReportMatchResults -= WinConditionControllerOnReportMatchResults;
         }
@@ -189,8 +190,13 @@ namespace Runtime.GameplayEvents
         }
         
         //--------- Team Selection Update ---------
-        private void OnTeamMembersConfirmed(List<CharacterStatsData> obj, bool _isFirstTime)
+        private void OnTeamMembersConfirmed(List<CharacterStatsBase> _characters, bool _isFirstTime, bool _isRandomTeam)
         {
+            if (!_isRandomTeam)
+            {
+                return;
+            }
+            
             if (_isFirstTime)
             {
                 DisplayMap?.Invoke();

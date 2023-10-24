@@ -12,3 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d70631ced3254131a184f99c4656cbd6, type: 3}
   m_Name: PopupLayer
   m_EditorClassIdentifier: 
+  guid: f8b026d2-7542-4f58-b422-4e8111184c30

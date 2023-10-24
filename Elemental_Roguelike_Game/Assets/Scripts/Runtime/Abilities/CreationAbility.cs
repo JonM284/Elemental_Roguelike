@@ -26,7 +26,7 @@ namespace Runtime.Abilities
                 return;
             }
             
-            m_targetPosition = _inputPosition;
+            m_targetPosition = _inputPosition.FlattenVector3Y();
         }
 
         public override void SelectTarget(Transform _inputTransform)
@@ -42,7 +42,8 @@ namespace Runtime.Abilities
             }
 
             currentOwner.TryGetComponent(out CharacterBase _character);
-            var direction = _ownerUsePos.FlattenVector3Y() - currentOwner.transform.position.FlattenVector3Y();
+            var direction = m_targetPosition.FlattenVector3Y() - currentOwner.transform.position.FlattenVector3Y();
+            
             CreationController.Instance.GetCreationAt(m_creationData, m_targetPosition, direction,
                 currentOwner.transform, _character.side);
             base.UseAbility(_ownerUsePos);

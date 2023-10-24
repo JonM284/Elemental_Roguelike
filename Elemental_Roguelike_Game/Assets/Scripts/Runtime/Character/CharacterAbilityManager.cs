@@ -78,7 +78,9 @@ namespace Runtime.Character
         #region Accessors
         
         public bool isUsingAbilityAction => m_activeAbilityIndex != -1;
-        
+
+        public bool hasCanceledAbility { get; private set; }
+
         private Vector3 abilityPos => abilityUseTransform != null ? abilityUseTransform.position : transform.position;
         
         private CharacterMovement characterMovement => CommonUtils.GetRequiredComponent(ref m_characterMovement, () =>
@@ -131,6 +133,7 @@ namespace Runtime.Character
 
             if (!_selectedCharacter.isTargetable)
             {
+                UIController.Instance.CreateFloatingTextAtCursor("Can't Target", Color.red);
                 return;
             }
             
@@ -228,16 +231,18 @@ namespace Runtime.Character
             if (m_isAbilityDisallowed && m_assignedAbilities[_abilityIndex].ability.targetType != m_allowedType)
             {
                 Debug.Log("This ability type isn't allowed");
+                UIController.Instance.CreateFloatingTextAtCursor("Ability can't be used", Color.red);
                 return;
             }
 
             if (!m_assignedAbilities[_abilityIndex].canUse)
             {
                 Debug.LogError("Ability on cooldown");
+                UIController.Instance.CreateFloatingTextAtCursor("Ability on Cooldown", Color.red);
                 return;
             }
-            
-            
+
+            hasCanceledAbility = false;
             m_assignedAbilities[_abilityIndex].ability.Initialize(this.gameObject);
             m_activeAbilityIndex = _abilityIndex;
             SetIndicators(true, m_assignedAbilities[_abilityIndex].ability.targetType == AbilityTargetType.DIRECTIONAL);
@@ -307,6 +312,7 @@ namespace Runtime.Character
             
             m_assignedAbilities[m_activeAbilityIndex].ability.CancelAbilityUse();
             m_activeAbilityIndex = m_defaultInactiveAbilityIndex;
+            hasCanceledAbility = true;
             OnAbilityUsed = null;
         }
         
@@ -320,18 +326,21 @@ namespace Runtime.Character
             if (m_assignedAbilities[m_activeAbilityIndex].ability.targetType　== AbilityTargetType.LOCATION)
             {
                 Debug.Log($"<color=red>Target Type:{m_assignedAbilities[m_activeAbilityIndex].ability.targetType}</color>");
+                UIController.Instance.CreateFloatingTextAtCursor("Select Location", Color.red);
                 return;
             }
             
             if (!InLineOfSight(_targetTransform.position))
             {
                 Debug.Log("<color=red>Can't hit target</color>");
+                UIController.Instance.CreateFloatingTextAtCursor("Not in Line of Sight", Color.red);
                 return;
             }
 
             if (!IsInRange(_targetTransform.position))
             {
                 Debug.Log($"<color=red>Target OUT OF RANGE</color>");
+                UIController.Instance.CreateFloatingTextAtCursor("Out of Range", Color.red);
                 CancelAbilityUse();
                 return;
             }
@@ -370,6 +379,8 @@ namespace Runtime.Character
             if (m_assignedAbilities[m_activeAbilityIndex].ability.targetType　== AbilityTargetType.CHARACTER_TRANSFORM)
             {
                 Debug.Log($"<color=red>Target Type:{m_assignedAbilities[m_activeAbilityIndex].ability.targetType}</color>");
+                UIController.Instance.CreateFloatingTextAtCursor("Select Character", Color.red);
+
                 CancelAbilityUse();
                 return;
             }
@@ -377,6 +388,7 @@ namespace Runtime.Character
             if (!IsInRange(_targetPos))
             {
                 Debug.Log($"<color=red>Target OUT OF RANGE</color>");
+                UIController.Instance.CreateFloatingTextAtCursor("Out of Range", Color.red);
                 CancelAbilityUse();
                 return;
             }

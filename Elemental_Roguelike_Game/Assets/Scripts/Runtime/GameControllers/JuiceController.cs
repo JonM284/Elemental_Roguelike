@@ -209,7 +209,7 @@ namespace Runtime.GameControllers
         }
 
 
-        public IEnumerator C_DoReactionAnimation(Transform LCameraPoint, Transform RCameraPoint, int _endValueL, int _endValueR)
+        public IEnumerator C_DoReactionAnimation(Transform LCameraPoint, Transform RCameraPoint, int _endValueL, int _endValueR, CharacterClass _characterClass, bool _isLeftReactor)
         {
             cameraHolder.SetActive(true);
 
@@ -221,7 +221,7 @@ namespace Runtime.GameControllers
             rightCharCam.transform.position = RCameraPoint.position;
             rightCharCam.transform.forward = RCameraPoint.forward;
             
-            yield return StartCoroutine(juiceUIDataModel.C_ReactionEvent(_endValueL, _endValueR, ResetCam));
+            yield return StartCoroutine(juiceUIDataModel.C_ReactionEvent(_endValueL, _endValueR, ResetCam, _characterClass, _isLeftReactor));
 
             isDoingActionAnimation = false;
             

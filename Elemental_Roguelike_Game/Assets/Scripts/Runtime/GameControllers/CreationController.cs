@@ -19,12 +19,6 @@ namespace Runtime.GameControllers
         public static CreationController Instance { get; private set; }
 
         #endregion
-        
-        #region Serialized Fields
-
-        
-        
-        #endregion
 
         #region Private Fields
         
@@ -89,20 +83,26 @@ namespace Runtime.GameControllers
                 Debug.LogError("Creation Info Null");
                 return;
             }
-            
+
             var foundCreation = m_cachedCreations.FirstOrDefault(c => c.creationData == _creationInfo);
+            
+            if (m_cachedCreations.Contains(foundCreation))
+            {
+                m_cachedCreations.Remove(foundCreation);
+            }
 
             //projectile not found in cachedProjectiles
-            if (foundCreation == null)
+            if (foundCreation.IsNull())
             {
+                Debug.Log($"<color=#00FF00>Creation: {startPos} /// {startRotation} /// {_user} /// {_side}</color>");
+                Debug.DrawLine(_user.transform.position, startPos, Color.green, 10f);
                 //instantiate gameobject
-                var handle = Addressables.LoadAssetAsync<GameObject>(_creationInfo.creationRef);
+                var handle = _creationInfo.creationRef.InstantiateAsync(startPos, Quaternion.Euler(startRotation));
                 handle.Completed += operation =>
                 {
                     if (operation.Status == AsyncOperationStatus.Succeeded)
                     {
-                        var _newCreationObj = Instantiate(handle.Result, startPos, Quaternion.Euler(startRotation));
-                        _newCreationObj.TryGetComponent(out CreationBase _creation);
+                        handle.Result.TryGetComponent(out CreationBase _creation);
                         if (!_creation.IsNull())
                         {
                             foundCreation = _creation;
@@ -110,12 +110,8 @@ namespace Runtime.GameControllers
                         }
                     }
                 };
+                
                 return;
-            }
-
-            if (m_cachedCreations.Contains(foundCreation))
-            {
-                m_cachedCreations.Remove(foundCreation);
             }
 
             foundCreation.transform.parent = null;

@@ -3,6 +3,7 @@ using Data.Elements;
 using Runtime.Abilities;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
+using UnityEngine.UI;
 
 namespace Data.CharacterData
 {
@@ -15,6 +16,8 @@ namespace Data.CharacterData
         [Header("Always used stats")] 
         public bool isCaptain;
 
+        public string characterName;
+
         [Tooltip("Speed character will normally move at")]
         public float baseSpeed = 1;
 
@@ -24,29 +27,28 @@ namespace Data.CharacterData
         
         [Tooltip("Max shield of character")]
         public int baseShields = 0;
-        
-        [Tooltip("Distance from start position, character is able to move")]
-        public float movementDistance = 1f;
 
         [Tooltip("Damage on regular tackle")] 
         public int tackleDamageAmount = 15;
         
         [Header("Stats")]
         [Tooltip("tackle score and damage")]
-        [Range(1,100)]
-        public int tackleScore = 1;
+        [Range(30,100)]
+        public int tackleScore = 30;
         [Tooltip("movement and dodge tackle reaction")]
-        [Range(1,100)]
-        public int agilityScore = 1;
+        [Range(30,100)]
+        public int agilityScore = 30;
         [Tooltip("throw ball for shot distance")]
-        [Range(1,100)]
-        public int shootingScore = 1;
+        [Range(30,100)]
+        public int shootingScore = 30;
         [Tooltip("throw ball for pass distance")]
-        [Range(1,100)]
-        public int passingScore = 1;
+        [Range(30,100)]
+        public int passingScore = 30;
 
         [Tooltip("Character associated color")]
         public Color characterColor = Color.white;
+        
+        public Color characterColorDark = Color.white;
 
         [Tooltip("Character Element type")] 
         public ElementTyping typing;
@@ -58,6 +60,8 @@ namespace Data.CharacterData
         public AssetReference characterAssetRef;
 
         public string characterGUID;
+
+        public Sprite characterImage;
         
         #endregion
         

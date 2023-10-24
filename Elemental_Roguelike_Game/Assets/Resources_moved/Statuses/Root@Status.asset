@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Root@Status
   m_EditorClassIdentifier: 
   statusName: Rooted
-  roundCooldownTimer: 2
+  roundCooldownTimer: 1
   chanceToRemove: 0
   abilityElement: {fileID: 0}
   statusType: 1

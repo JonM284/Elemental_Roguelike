@@ -16,6 +16,7 @@ namespace Runtime.Status
             }
 
             _character.characterAbilityManager.SetAbilityTypeAllowed(AbilityTargetType.SELF);
+            _character.characterClassManager.SetAbleToReact(false);
         }
 
         public override void ResetStatusEffect(CharacterBase _character)
@@ -26,6 +27,7 @@ namespace Runtime.Status
             }
 
             _character.characterAbilityManager.AllowAllAbilityActive();
+            _character.characterClassManager.SetAbleToReact(true);
         }
     }
 }

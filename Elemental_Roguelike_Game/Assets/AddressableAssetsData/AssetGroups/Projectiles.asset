@@ -61,6 +61,30 @@ MonoBehaviour:
     m_Address: FireBall@ProjectileZoneAbility
     m_ReadOnly: 0
     m_SerializedLabels: []
+  - m_GUID: 45355a8a58d4d4c4291ff2817650b94c
+    m_Address: IceBall@ProjectileZoneAbility
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: af982fbf19189324b864a96a459f820a
+    m_Address: SonicWave@Projectile
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 8fbd04d135221e54fb0b1aa2e8e48f01
+    m_Address: ElectricDash@Projectile
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: a9e6e4260b2b2324393410fafd520179
+    m_Address: Snowball@ProjectileAbility
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: edb17b483463f54429a0656ea956e57e
+    m_Address: Gust@ProjectileAbility
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 0055977058acbfc409b40c8670b85518
+    m_Address: GhostBall@ProjectileAbility
+    m_ReadOnly: 0
+    m_SerializedLabels: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: c51bc8bdb2bb6e5479c05b7cf9bc0f75, type: 2}
   m_SchemaSet:

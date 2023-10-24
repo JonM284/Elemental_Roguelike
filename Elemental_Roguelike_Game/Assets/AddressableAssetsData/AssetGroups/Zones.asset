@@ -45,6 +45,14 @@ MonoBehaviour:
     m_Address: ShadowSmoke@Zone
     m_ReadOnly: 0
     m_SerializedLabels: []
+  - m_GUID: 70baf231680577d42b02fc669e050931
+    m_Address: IceZone@Zone
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: e9616ddf75ed0a746af1cdc0a7fb3bcf
+    m_Address: LightningStrike@Zone
+    m_ReadOnly: 0
+    m_SerializedLabels: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: c51bc8bdb2bb6e5479c05b7cf9bc0f75, type: 2}
   m_SchemaSet:

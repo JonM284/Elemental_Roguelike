@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6e30cf3dd6a8ee349ac5bc304a59fcb7, type: 3}
+  m_Name: Bruiser_PoisonBruiser@SidekickData
+  m_EditorClassIdentifier: 
+  isCaptain: 0
+  characterName: Poison Bruiser
+  baseSpeed: 10
+  baseHealth: 200
+  baseShields: 100
+  tackleDamageAmount: 25
+  tackleScore: 90
+  agilityScore: 50
+  shootingScore: 50
+  passingScore: 50
+  characterColor: {r: 0.843087, g: 0.30980393, b: 0.9254902, a: 1}
+  characterColorDark: {r: 0.54168016, g: 0.13955145, b: 0.6037736, a: 1}
+  typing: {fileID: 11400000, guid: 95a8ef5f5dc6d1041b926a50980d0665, type: 2}
+  abilities:
+  - {fileID: 11400000, guid: 2b7f44457c1005c4fb51b431c7b3358c, type: 2}
+  classTyping: {fileID: 11400000, guid: 2c9f419d2dfa1b84489eb60e15d61b2e, type: 2}
+  characterAssetRef:
+    m_AssetGUID: 3bd2647e0e8e39c47b9c0f4eb87446df
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_EditorAssetChanged: 0
+  characterGUID: 24ae53d1-c0bb-4680-a5df-4ba44a791d52
+  characterImage: {fileID: 21300000, guid: 9350eccef21ef0d40aec1e1a8644220c, type: 3}

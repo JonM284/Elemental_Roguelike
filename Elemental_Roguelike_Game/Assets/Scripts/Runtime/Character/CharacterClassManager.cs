@@ -17,7 +17,7 @@ namespace Runtime.Character
 
     [RequireComponent(typeof(CharacterBase))]
     [DisallowMultipleComponent]
-    public class CharacterClassManager : MonoBehaviour
+    public class CharacterClassManager : MonoBehaviour, IReactor
     {
 
         #region Read-Only
@@ -58,6 +58,12 @@ namespace Runtime.Character
 
         private ArenaTeamManager m_teamManager;
 
+        private int failedReactionCounter;
+
+        private int successfulMeleeReactionCounter = 1;
+
+        private float bottomRangeMod = 0.2f;
+        
         #endregion
 
         #region Accessors
@@ -82,7 +88,11 @@ namespace Runtime.Character
             return atm;
         });
 
-        public bool isPerformingReaction => m_isPerformingReaction;
+        bool IReactor.isPerformingReaction
+        {
+            get => m_isPerformingReaction;
+            set => m_isPerformingReaction = value;
+        }
 
         public int agilityScore { get; private set; }
 
@@ -99,6 +109,12 @@ namespace Runtime.Character
         public int currentMaxPassingScore { get; private set; }
         
         public int currentMaxTacklingScore { get; private set; }
+        
+        public int bottomRange => assignedClass.classType == CharacterClass.ALL ? 100 : 1;
+
+        private bool isPlayer => characterBase.side.sideGUID == TurnController.Instance.playersSide.sideGUID;
+
+        public bool hasPerformedReaction => m_hasPerformedReaction;
 
         public Transform reactionCameraPoint => m_reactionCameraPoint;
 
@@ -200,32 +216,43 @@ namespace Runtime.Character
         public void SetCharacterPassive(CharacterSide _side)
         {
             var _isActiveTeam = characterBase.side == _side;
-            if (assignedClass.classType != CharacterClass.STRIKER)
+
+            if (!m_canPerformReaction)
             {
-                isCheckingPassive = !_isActiveTeam;
-                if (!_isActiveTeam)
-                {
-                    m_isPerformingReaction = false;
-                    m_hasPerformedReaction = false;
-                }
-                if (!m_passiveIndicator.IsNull())
-                {
-                    DisplayIndicator(!_isActiveTeam);
-                }    
+                DisplayIndicator(false);
+                return;
             }
-            else
+
+
+            switch (assignedClass.classType)
             {
-                if (_isActiveTeam)
-                {
-                    m_isPerformingReaction = false;
-                    m_hasPerformedReaction = false;   
-                }
-                if (!m_passiveIndicator.IsNull())
-                {
-                    DisplayIndicator(_isActiveTeam);
-                }    
+                case CharacterClass.STRIKER:
+                    //Striker passive, active on team turn
+                    if (_isActiveTeam)
+                    {
+                        m_isPerformingReaction = false;
+                        m_hasPerformedReaction = false;   
+                    }
+                    if (!m_passiveIndicator.IsNull())
+                    {
+                        DisplayIndicator(_isActiveTeam);
+                    }   
+                    break;
+                default:
+                    isCheckingPassive = !_isActiveTeam;
+                    if (!_isActiveTeam)
+                    {
+                        m_isPerformingReaction = false;
+                        m_hasPerformedReaction = false;
+                    }
+                    if (!m_passiveIndicator.IsNull())
+                    {
+                        DisplayIndicator(!_isActiveTeam);
+                    }
+                    
+                    break;
             }
-            
+
         }
 
         private void Check()
@@ -239,6 +266,16 @@ namespace Runtime.Character
             {
                 return;
             }
+
+            if (characterBase.characterMovement.isKnockedBack)
+            {
+                return;
+            }
+
+            if (!m_canPerformReaction)
+            {
+                return;
+            }
             
             switch (m_assignedClass.classType)
             {
@@ -246,39 +283,45 @@ namespace Runtime.Character
                     if (IsBallThrownInRange())
                     {
                         m_isWaitingForReactionQueue = true;
-                        teamManager.QueueReaction(this, PerformDefenderAction);
+                        ReactionQueueController.Instance.QueueReaction(this, PerformDefenderAction);
                     }
                     break;
                 case CharacterClass.BRUISER:
                     if (IsEnemyWalkInRange())
                     {
                         m_isWaitingForReactionQueue = true;
-                        teamManager.QueueReaction(this, PerformBruiserAction);
+                        ReactionQueueController.Instance.QueueReaction(this, PerformBruiserAction);
                     }
                     break;
                 case CharacterClass.PLAYMAKER:
                     if (IsBallDroppedInRange())
                     {
                         m_isWaitingForReactionQueue = true;
-                        teamManager.QueueReaction(this, PerformPlaymakerAction);
+                        ReactionQueueController.Instance.QueueReaction(this, PerformPlaymakerAction);
                     }
                     break;
                 case CharacterClass.ALL:
                     if (IsEnemyWalkInRange())
                     {
                         m_isWaitingForReactionQueue = true;
-                        teamManager.QueueReaction(this, PerformBruiserAction);
+                        ReactionQueueController.Instance.QueueReaction(this, PerformBruiserAction);
                     }else if (IsBallThrownInRange())
                     {
                         m_isWaitingForReactionQueue = true;
-                        teamManager.QueueReaction(this, PerformDefenderAction);
+                        ReactionQueueController.Instance.QueueReaction(this, PerformDefenderAction);
                     }else if (IsBallDroppedInRange())
                     {
                         m_isWaitingForReactionQueue = true;
-                        teamManager.QueueReaction(this, PerformPlaymakerAction);
+                        ReactionQueueController.Instance.QueueReaction(this, PerformPlaymakerAction);
                     }
                     break;
             }
+        }
+
+        public void SetAbleToReact(bool _isAble)
+        {
+            m_canPerformReaction = _isAble;
+            DisplayIndicator(_isAble);
         }
 
         private void PerformDefenderAction()
@@ -327,10 +370,12 @@ namespace Runtime.Character
         private IEnumerator C_AttemptGrabBall()
         {
             ball.SetBallPause(true);
+
+            var originalPosition = transform.position.FlattenVector3Y();
             
             var rollToGrab = GetRandomAgilityStat();
 
-            bool isPlayer = characterBase.side == TurnController.Instance.playersSide;
+            bool isPlayer = characterBase.side.sideGUID == TurnController.Instance.playersSide.sideGUID;
             
             var _layer = isPlayer ? displayLayerVal : displayEnemyLayerVal;
             var oppositeLayer = isPlayer ? displayEnemyLayerVal : displayLayerVal;
@@ -346,7 +391,7 @@ namespace Runtime.Character
 
             int _RValue = isPlayer ? (int)ball.thrownBallStat : rollToGrab;
 
-            yield return StartCoroutine(JuiceController.Instance.C_DoReactionAnimation(_LCam, _RCam ,_LValue, _RValue));
+            yield return StartCoroutine(JuiceController.Instance.C_DoReactionAnimation(_LCam, _RCam ,_LValue, _RValue, assignedClass.classType, isPlayer));
 
             if (ball.thrownBallStat > rollToGrab)
             {
@@ -372,11 +417,23 @@ namespace Runtime.Character
             yield return new WaitUntil(() => characterBase.characterMovement.isUsingMoveAction == false);
 
             ball.SetBallPause(false);
+            
+            if (characterBase.isGoalieCharacter)
+            {
+                yield return new WaitForSeconds(0.3f);
+                
+                characterBase.characterMovement.SetCharacterMovable(true, null, null);
+                characterBase.characterMovement.MoveCharacter(originalPosition, true);
+
+                yield return new WaitUntil(() => characterBase.characterMovement.isUsingMoveAction == false);
+            }
         }
 
         private IEnumerator C_AttemptAttackPlayer()
         {
             var rollToAttack = GetRandomDamageStat();
+
+            var originalPosition = transform.position.FlattenVector3Y();
 
             Debug.Log($"{m_inRangeCharacter.name} /// Class:{m_inRangeCharacter.characterClassManager.assignedClass.classType.ToString()}", m_inRangeCharacter);
             
@@ -400,13 +457,14 @@ namespace Runtime.Character
 
             int _RValue = isPlayer ? enemyAttackRoll : rollToAttack;
 
-            yield return StartCoroutine(JuiceController.Instance.C_DoReactionAnimation(_LCam, _RCam, _LValue, _RValue));
+            yield return StartCoroutine(JuiceController.Instance.C_DoReactionAnimation(_LCam, _RCam, _LValue, _RValue, assignedClass.classType, isPlayer));
             
             //Missed Attack
             if (enemyAttackRoll > rollToAttack)
             {
                 Debug.Log($"<color=orange>BIG MISS ON ATTACK /// Other: {enemyAttackRoll} // Self: {rollToAttack}</color>", this);
                 m_inRangeCharacter.characterMovement.PauseMovement(false);
+                m_inRangeCharacter.characterClassManager.OnPassedReaction();
 
                 ChangeToVisualLayer(charLayerVal);
                 m_inRangeCharacter.characterClassManager.ChangeToVisualLayer(charLayerVal);
@@ -424,7 +482,7 @@ namespace Runtime.Character
             yield return new WaitUntil(() => !m_inRangeCharacter.characterMovement.isMoving);
 
             //Reroll if striker
-            if (m_inRangeCharacter.characterClassManager.assignedClass.classType == CharacterClass.STRIKER)
+            if (m_inRangeCharacter.characterClassManager.assignedClass.classType == CharacterClass.STRIKER && !m_inRangeCharacter.characterClassManager.hasPerformedReaction)
             {
                 //re-roll
                 
@@ -442,14 +500,15 @@ namespace Runtime.Character
                     ChangeToVisualLayer(_layer);
                     m_inRangeCharacter.characterClassManager.ChangeToVisualLayer(oppositeLayer);
 
-                    yield return StartCoroutine(JuiceController.Instance.C_DoReactionAnimation(_LCam, _RCam,_LValue, _RValue));
+                    yield return StartCoroutine(JuiceController.Instance.C_DoReactionAnimation(_LCam, _RCam,_LValue, _RValue,  assignedClass.classType, isPlayer));
 
                     //Missed On Reroll
                     if (enemyAgilityRoll > rollToAttack)
                     {
                         Debug.Log("<color=orange>Striker Rerolled and WON!</color>", this);
                         m_inRangeCharacter.characterMovement.PauseMovement(false);
-                        
+                        m_inRangeCharacter.characterClassManager.OnPassedReaction();
+
                         ChangeToVisualLayer(charLayerVal);
                         m_inRangeCharacter.characterClassManager.ChangeToVisualLayer(charLayerVal);
 
@@ -468,28 +527,69 @@ namespace Runtime.Character
             
             m_inRangeCharacter.characterMovement.ForceStopMovement(true);
 
+            m_inRangeCharacter.characterClassManager.OnFailedReaction();
+
             DisplayIndicator(false);
             
-            characterBase.characterMovement.SetCharacterMovable(true, null, SuccessfulMeleeReaction);
+            characterBase.characterMovement.SetCharacterMovable(true, null, HasPerformedReaction);
             characterBase.characterMovement.MoveCharacter(m_inRangeCharacter.transform.position, true);
             
             m_inRangeCharacter = null;
             
             yield return new WaitUntil(() => characterBase.characterMovement.isUsingMoveAction == false);
 
+            OnSuccessfulReaction();
+
+            if (characterBase.isGoalieCharacter)
+            {
+                yield return new WaitForSeconds(0.3f);
+
+                characterBase.characterMovement.SetCharacterMovable(true, null, null);
+                characterBase.characterMovement.MoveCharacter(originalPosition, true);
+
+                yield return new WaitUntil(() => characterBase.characterMovement.isUsingMoveAction == false);
+            }
+
         }
 
         private bool IsBallDroppedInRange()
         {
+            if (characterBase.isBusy)
+            {
+                return false;
+            }
+            
+            if (!ball.canBeCaught)
+            {
+                return false;
+            }
+
+            if (!ball.isMoving)
+            {
+                return false;
+            }
+
+            if (ball.isThrown)
+            {
+                return false;
+            }
+
+            if (ball.lastHeldCharacter == this.characterBase)
+            {
+                return false;
+            }
+
+            if (!ball.currentOwner.IsNull())
+            {
+                return false;
+            }
+            
             var directionToBall = ball.transform.position - transform.position;
             directionToBall.FlattenVector3Y();
 
-            if (directionToBall.magnitude < passiveRadius)
+            if (directionToBall.magnitude <= passiveRadius)
             {
-                if (!ball.isThrown && ball.currentOwner.IsNull())
-                {
-                    return true;
-                }
+                return true;
             }
             
             return false;
@@ -497,15 +597,42 @@ namespace Runtime.Character
 
         private bool IsBallThrownInRange()
         {
+            if (characterBase.isBusy)
+            {
+                return false;
+            }
+
+            if (!ball.canBeCaught)
+            {
+                return false;
+            }
+
+            if (!ball.isMoving)
+            {
+                return false;
+            }
+
+            if (!ball.isThrown)
+            {
+                return false;
+            }
+
+            if (ball.lastHeldCharacter == this.characterBase)
+            {
+                return false;
+            }
+
+            if (!ball.currentOwner.IsNull())
+            {
+                return false;
+            }
+            
             var directionToBall = ball.transform.position - transform.position;
             directionToBall.FlattenVector3Y();
 
-            if (directionToBall.magnitude < passiveRadius)
+            if (directionToBall.magnitude <= passiveRadius)
             {
-                if (ball.isThrown)
-                {
-                    return true;
-                }
+                return true;
             }
             
             return false;
@@ -513,6 +640,11 @@ namespace Runtime.Character
 
         private bool IsEnemyWalkInRange()
         {
+            if (characterBase.isBusy)
+            {
+                return false;
+            }
+            
             Collider[] colliders = Physics.OverlapSphere(transform.position, passiveRadius);
 
             if (colliders.Length > 0)
@@ -545,6 +677,64 @@ namespace Runtime.Character
             
             return false;
         }
+        
+        private bool IsEnemyWalkInRangeLimited()
+        {
+            if (characterBase.isBusy)
+            {
+                return false;
+            }
+            
+            Collider[] colliders = Physics.OverlapSphere(transform.position, passiveRadius);
+
+            if (colliders.Length > 0)
+            {
+                foreach (var col in colliders)
+                {
+                    col.TryGetComponent(out CharacterBase character);
+                    if (!character)
+                    {
+                        continue;
+                    }
+
+                    if (!character.characterMovement.isMoving)
+                    {
+                        continue;
+                    }
+
+                    if (character.side == this.characterBase.side)
+                    {
+                        continue;
+                    }
+                    
+                    if (character == this.characterBase)
+                    {
+                        continue;
+                    }
+
+                    var dirToCharacter = character.transform.position - transform.position;
+                    var dot = Vector3.Dot(transform.forward.normalized, dirToCharacter.normalized);
+
+                    //if the distance is super close, instant return true
+                    if (dirToCharacter.magnitude <= 0.5f)
+                    {
+                        m_inRangeCharacter = character;
+                        return true;
+                    }
+                    
+                    //if the character is behind this character, ignore it. Unless it's close
+                    if (dot < 0)
+                    {
+                        continue;
+                    }
+                    
+                    m_inRangeCharacter = character;
+                    return true;
+                }
+            }
+            
+            return false;
+        }
 
         private void GetClosestTarget()
         {
@@ -564,9 +754,27 @@ namespace Runtime.Character
             }
         }
 
+        public void OnFailedReaction()
+        {
+            failedReactionCounter++;
+        }
+
+        public void OnPassedReaction()
+        {
+            failedReactionCounter = 0;
+        }
+
         private void OnMissedReaction()
         {
             m_inRangeCharacter = null;
+            failedReactionCounter++;
+
+            successfulMeleeReactionCounter = 1;
+        }
+
+        private void OnSuccessfulReaction()
+        {
+            successfulMeleeReactionCounter++;
         }
 
         private void HasPerformedReaction()
@@ -590,22 +798,86 @@ namespace Runtime.Character
 
         public int GetRandomAgilityStat()
         {
-            return Random.Range(1, currentMaxAgilityScore);
+            if (assignedClass.classType == CharacterClass.ALL)
+            {
+                return bottomRange;
+            }
+
+            if (isPlayer)
+            {
+                if (failedReactionCounter >= 2)
+                {
+                    return currentMaxAgilityScore;
+                }
+
+                var adjustedBottomRange = Mathf.RoundToInt(currentMaxAgilityScore * bottomRangeMod);
+                return Random.Range(adjustedBottomRange, currentMaxAgilityScore);
+            }
+            
+            return Random.Range(bottomRange, currentMaxAgilityScore);
         }
         
         public int GetRandomShootStat()
         {
-            return Random.Range(1, currentMaxShootingScore);
+            if (assignedClass.classType == CharacterClass.ALL)
+            {
+                return bottomRange;
+            }
+            
+            if (isPlayer)
+            {
+                if (failedReactionCounter >= 2)
+                {
+                    return currentMaxShootingScore;
+                }
+
+                var adjustedBottomRange = Mathf.RoundToInt(currentMaxShootingScore * bottomRangeMod);
+                return Random.Range(adjustedBottomRange, currentMaxShootingScore);
+            }
+
+            return Random.Range(bottomRange, currentMaxShootingScore);
         }
         
         public int GetRandomDamageStat()
         {
-            return Random.Range(1, currentMaxTacklingScore);
+            if (assignedClass.classType == CharacterClass.ALL)
+            {
+                return bottomRange;
+            }
+            
+            if (isPlayer)
+            {
+                if (failedReactionCounter >= 2)
+                {
+                    return currentMaxTacklingScore;
+                }
+                
+                var adjustedBottomRange = Mathf.RoundToInt(currentMaxTacklingScore * bottomRangeMod);
+                return Random.Range(adjustedBottomRange, currentMaxTacklingScore);
+            }
+            
+            return Random.Range(bottomRange, (currentMaxTacklingScore/successfulMeleeReactionCounter));
         }
 
         public int GetRandomPassingStat()
         {
-            return Random.Range(1, currentMaxPassingScore);
+            if (assignedClass.classType == CharacterClass.ALL)
+            {
+                return bottomRange;
+            }
+            
+            if (isPlayer)
+            {
+                if (failedReactionCounter >= 2)
+                {
+                    return currentMaxPassingScore;
+                }
+
+                var adjustedBottomRange = Mathf.RoundToInt(currentMaxPassingScore * bottomRangeMod);
+                return Random.Range(adjustedBottomRange, currentMaxPassingScore);
+            }
+            
+            return Random.Range(bottomRange, currentMaxPassingScore);
         }
 
         public int GetMaxDamageStat()

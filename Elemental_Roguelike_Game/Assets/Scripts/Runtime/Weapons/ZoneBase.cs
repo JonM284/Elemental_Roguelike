@@ -3,6 +3,7 @@ using System.Collections;
 using Data;
 using Data.Sides;
 using Project.Scripts.Utils;
+using Runtime.Character;
 using Runtime.Damage;
 using Runtime.GameControllers;
 using Runtime.Status;
@@ -22,6 +23,12 @@ namespace Runtime.Weapons
         public UnityEvent onZoneStart;
 
         public UnityEvent onZoneEnd;
+
+        #endregion
+
+        #region Serialized Fields
+
+        [SerializeField] private float m_debugRadius = 1f;
 
         #endregion
 
@@ -47,10 +54,15 @@ namespace Runtime.Weapons
 
         private void OnDrawGizmos()
         {
-            Gizmos.color = Color.green;
-            Gizmos.DrawWireSphere(transform.position, m_zoneRef.zoneRadius);
-            Gizmos.color = Color.red;
-            Gizmos.DrawWireSphere(transform.position, m_zoneRef.zoneRadius * 9);
+            if(!m_zoneRef.IsNull()){
+                Gizmos.color = Color.red;
+                Gizmos.DrawWireSphere(transform.position, m_zoneRef.zoneRadius);
+            }
+            else
+            {
+                Gizmos.color = Color.red;
+                Gizmos.DrawWireSphere(transform.position, m_debugRadius);
+            }
         }
 
         private void OnEnable()
@@ -81,12 +93,14 @@ namespace Runtime.Weapons
                 return;
             }
 
-            var randomChanceToHit = Random.Range(0, 100);
-            if (randomChanceToHit <= m_zoneRef.chanceToApplyStatus)
+            //fixes lingering trigger area
+            if (m_zoneRef.roundStayAmount == 0)
             {
-                other.TryGetComponent(out IEffectable effectable);
-                effectable?.ApplyEffect(m_zoneRef.statusEffect);   
+                return;
             }
+
+            other.TryGetComponent(out IEffectable effectable);
+            effectable?.ApplyEffect(m_zoneRef.statusEffect);  
         }
 
         #endregion
@@ -136,7 +150,10 @@ namespace Runtime.Weapons
         
         private void OnChangeActiveTeam(CharacterSide _side)
         {
-            DoEffect();
+            if (m_zoneRef.roundStayAmount > 0)
+            {
+                DoEffect();
+            }
             
             if (_side != this.m_side)
             {
@@ -167,7 +184,16 @@ namespace Runtime.Weapons
                             continue;
                         }
                     }
-                    
+
+                    if (m_zoneRef.isStopReaction)
+                    {
+                        collider.TryGetComponent(out CharacterClassManager classManager);
+                        if (!classManager.IsNull())
+                        {
+                            classManager.SetAbleToReact(false);
+                        }
+                    }
+
                     var damageable = collider.GetComponent<IDamageable>();
                     if (m_zoneRef.zoneDamage > 0)
                     {
@@ -179,14 +205,19 @@ namespace Runtime.Weapons
                         damageable?.OnHeal(m_zoneRef.zoneDamage, m_zoneRef.isArmorAffecting);
                     }
                     
+                    if (m_zoneRef.isRandomKnockawayBall)
+                    {
+                        collider.TryGetComponent(out IBallInteractable ballInteractable);
+                        if (!ballInteractable.IsNull())
+                        {
+                            ballInteractable.KnockBallAway(null);
+                        }
+                    }
+
                     if (hasStatusEffect)
                     {
-                        var randomChanceToHit = Random.Range(0, 100);
-                        if (randomChanceToHit <= m_zoneRef.chanceToApplyStatus)
-                        {
-                            collider.TryGetComponent(out IEffectable effectable);
-                            effectable?.ApplyEffect(m_zoneRef.statusEffect);   
-                        }
+                        collider.TryGetComponent(out IEffectable effectable);
+                        effectable?.ApplyEffect(m_zoneRef.statusEffect);   
                     }
                     
                 }

@@ -27,6 +27,7 @@ MonoBehaviour:
   DamageStatMin: 38
   DamageStatMax: 55
   passiveColor: {r: 1, g: 0.70980394, b: 0.23137255, a: 1}
+  darkColor: {r: 0.8207547, g: 0.6409677, b: 0.3445621, a: 1}
   moveDistance: 5.8
   tackleDamageAmount: 10
   classGUID: 9f1bfb9b-bd5c-4e49-b319-75fea0cb1b51

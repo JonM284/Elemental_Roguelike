@@ -15,16 +15,17 @@ MonoBehaviour:
   roundStayAmount: 0
   zoneStaySeconds: 4
   zoneDamage: 30
-  zoneRadius: 0.5
+  zoneRadius: 1
   isArmorAffecting: 1
   hasKnockback: 0
+  isRandomKnockawayBall: 1
+  isStopReaction: 0
   isIgnoreUser: 1
   zoneCheckLayer:
     serializedVersion: 2
     m_Bits: 768
   elementType: {fileID: 11400000, guid: e835342fdbc753849a4b2cb4161a5a57, type: 2}
-  chanceToApplyStatus: 65
-  statusEffect: {fileID: 11400000, guid: 95c369958300dd04dbcd73bf39c4057a, type: 2}
+  statusEffect: {fileID: 11400000, guid: 82a05dd2cb8bb0d47995f4f04086aa30, type: 2}
   zonePrefab:
     m_AssetGUID: 7778944b1771f974383a46a0c8b6329f
     m_SubObjectName: 

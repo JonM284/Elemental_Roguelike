@@ -188,8 +188,8 @@ namespace Runtime.GameControllers
                 yield return newPlayerMeeple;
                 newPlayerMeeple.Result.transform.position = adjustedSpawnLocation;
                 var playerMeeple = newPlayerMeeple.Result.GetComponent<PlayableCharacter>();
-                playerMeeple.AssignStats(_meepleCharacter);
-                playerMeeple.InitializeCharacter();
+                //playerMeeple.AssignStats(_meepleCharacter);
+                //playerMeeple.InitializeCharacter();
                 PlayerMeepleCreated?.Invoke(playerMeeple, _meepleCharacter);
                 yield break;
             }
@@ -212,9 +212,9 @@ namespace Runtime.GameControllers
                 {
                     if (newMeeple is PlayableCharacter playableCharacter)
                     {
-                        playableCharacter.AssignStats(_meepleCharacter);
+                        //playableCharacter.AssignStats(_meepleCharacter);
                     }
-                    newMeeple.InitializeCharacter();
+                    //newMeeple.InitializeCharacter();
                     Debug.Log("MAKING LOADED MEEPLE - LOADING FINISHED");
                     PlayerMeepleCreated?.Invoke(newMeeple, _meepleCharacter);
                 }
@@ -232,7 +232,7 @@ namespace Runtime.GameControllers
                 newEnemyMeeple.transform.position = new Vector3(0,newEnemyMeeple.transform.localScale.y / 2,0);
                 var enemyMeeple = newEnemyMeeple.GetComponent<EnemyCharacterMeeple>();
                 enemyMeeple.AssignStats(_meepleStats);
-                enemyMeeple.InitializeCharacter();
+                //enemyMeeple.InitializeCharacter();
                 return;
             }
 
@@ -251,7 +251,7 @@ namespace Runtime.GameControllers
                         {
                             enemyMeeple.AssignStats(_meepleStats);
                         }
-                        newMeeple.InitializeCharacter();
+                        //newMeeple.InitializeCharacter();
                     }
                 }
             };

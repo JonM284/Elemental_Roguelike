@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Goalie
   m_EditorClassIdentifier: 
   classType: 4
-  radius: 1
+  radius: 2
   HealthMin: 60
   HealthMax: 80
   ShieldMin: 70
@@ -26,7 +26,8 @@ MonoBehaviour:
   PassingStatMax: 95
   DamageStatMin: 78
   DamageStatMax: 95
-  passiveColor: {r: 1, g: 0.51682967, b: 0, a: 1}
+  passiveColor: {r: 0.5993017, g: 0.31011927, b: 0.9528302, a: 1}
+  darkColor: {r: 0.51220816, g: 0.37486652, b: 0.6792453, a: 1}
   moveDistance: 2
   tackleDamageAmount: 30
   classGUID: 900a6d6c-5b05-41de-b289-ed91937cbe75

@@ -61,6 +61,50 @@ MonoBehaviour:
     m_Address: BruiserMeeple@Prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
+  - m_GUID: f7df39e50747f2145a94b5c89fd04aee
+    m_Address: EnemyGoalie@Enemy
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 336ea0ec529030a44ab8794a5dbe5a26
+    m_Address: TestGoalieMeeple@Prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 022d3e6dff7bcc54e8a33a2b3452fd8d
+    m_Address: PenguinCap@Prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 767d335de3f5ca348b23b0dc9d95ab17
+    m_Address: PottedPlant@Prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 5b9598c1945477d41b9a6b231b02b8d0
+    m_Address: BruiserTestCaptain@EnemyPrefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: ab44b9000b5f28645885dac788d11070
+    m_Address: DefenderTestCaptain@EnemyPrefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: d54c2e600582da1449af3c7e6b230fcc
+    m_Address: Captain1@EnemyPrefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 856022386712d6045ad315526530c70a
+    m_Address: StrikerTestCaptain@EnemyPrefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 2701782d9ee14cb448fb5035f51463ed
+    m_Address: Captain3@EnemyPrefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: cbde7471cb9882a4aa3300a67c823809
+    m_Address: PlaymakerTestCaptain@EnemyPrefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 9bdf0b4d55c642346b91ff14b57da4ab
+    m_Address: DummyPlaymakerEnemy@EnemyPrefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: c51bc8bdb2bb6e5479c05b7cf9bc0f75, type: 2}
   m_SchemaSet:

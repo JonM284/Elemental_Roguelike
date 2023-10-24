@@ -4881,6 +4881,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  m_debugRadius: 3.5
 --- !u!1 &3308142621729448394
 GameObject:
   m_ObjectHideFlags: 0

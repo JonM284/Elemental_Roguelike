@@ -1,6 +1,7 @@
 ﻿using System;
 using Project.Scripts.Utils;
 using Runtime.Character;
+using Runtime.GameControllers;
 using UnityEngine;
 using UnityEngine.AI;
 using Utils;
@@ -57,10 +58,12 @@ namespace Runtime.Selection
                 setDistance = activeCharacter.characterMovement.battleMoveDistance;
             }
             
-            var _magToPoint = Vector3.Magnitude(_pathPosition.FlattenVector3Y() - activeCharacter.transform.position.FlattenVector3Y());
+            var _correctPivot = !activeCharacter.isGoalieCharacter ? activeCharacter.transform.position.FlattenVector3Y() : activeCharacter.characterMovement.pivotTransform.position.FlattenVector3Y();
+            var _magToPoint = Vector3.Magnitude(_pathPosition.FlattenVector3Y() - _correctPivot);
             if (_magToPoint > setDistance)
             {
                 Debug.LogError("<color=red>Position too far</color>");
+                UIController.Instance.CreateFloatingTextAtCursor("Too Far", Color.red);
                 return;
             }    
 

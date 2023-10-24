@@ -16,10 +16,10 @@ MonoBehaviour:
   abilityDescription: Hit Ground, deal damage and knockback all characters around
     you.
   abilityGUID: c753e444-0b02-49f4-8728-1ecc671f6b57
-  roundCooldownTimer: 1
+  roundCooldownTimer: 6
   abilityType: 8
   targetType: 4
-  range: 1
+  range: 4
   abilityAnimationOverride: {fileID: 953904890265791125, guid: bebfcdc4c42436247b79402fd9c6a234,
     type: 3}
   playVFXAtTransform: 0

@@ -49,6 +49,50 @@ MonoBehaviour:
     m_Address: MatchEndUI@Prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
+  - m_GUID: 2ba49bd13182d5b4d9e950d0f374d5eb
+    m_Address: TeamSelectionCaptain@UIItem
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: ce817e1ee8ffa1d41bf7dfcf225df9e0
+    m_Address: TeamSelection@UIWindowPrefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: c6a40bbf35448eb46ba185f6388bc987
+    m_Address: TeamSelectionSidekick@UIItem
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 0c6e450846191394f84f13298e668112
+    m_Address: TeamSelectionBasic@UIItem
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 3599a36327cf24746a8eae1353ee4bcc
+    m_Address: CharacterSelection-DataDisplayItem@Prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 7b509607595520e45b05835f6e9c19cc
+    m_Address: TournamentSelectionUI@Prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: be1e569a36e8690409a115ec09417abf
+    m_Address: MainMenuUI@Prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 6310f46a6e8654946bb21a1991603891
+    m_Address: TournamentItem@Prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 39fca3920cb197143a5b002d86b3d0f3
+    m_Address: TournamentMatchDisplayUI@Prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 908d4995f7b854f4a9da09d07014eb3d
+    m_Address: MatchResultUI@Prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 5a165cadcf8dfd1418394580be378f1c
+    m_Address: PopupTextItem@Prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: c51bc8bdb2bb6e5479c05b7cf9bc0f75, type: 2}
   m_SchemaSet:

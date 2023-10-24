@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6e30cf3dd6a8ee349ac5bc304a59fcb7, type: 3}
+  m_Name: FrogPlaymaker@ENEMYCaptainData
+  m_EditorClassIdentifier: 
+  isCaptain: 1
+  characterName: Frog Captain
+  baseSpeed: 10
+  baseHealth: 100
+  baseShields: 100
+  tackleDamageAmount: 15
+  tackleScore: 40
+  agilityScore: 90
+  shootingScore: 40
+  passingScore: 90
+  characterColor: {r: 0.5294118, g: 0.6313726, b: 0.9607843, a: 1}
+  characterColorDark: {r: 0.2784314, g: 0.38039216, b: 0.69803923, a: 1}
+  typing: {fileID: 11400000, guid: 3007beed4b27d8b458961ac106f278d9, type: 2}
+  abilities:
+  - {fileID: 11400000, guid: 39521109b8e2b8b4da14f143291691c9, type: 2}
+  - {fileID: 11400000, guid: fbfaa199bf5afff40b5dabaa486880c1, type: 2}
+  classTyping: {fileID: 11400000, guid: ba97e3930af5aa444b3fd0c1f9fd8381, type: 2}
+  characterAssetRef:
+    m_AssetGUID: cbde7471cb9882a4aa3300a67c823809
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_EditorAssetChanged: 0
+  characterGUID: ec84acfc-0385-4441-b7e2-a4de4b8c9403
+  characterImage: {fileID: 321739564, guid: 6a6f25e903f18fd4db55f0dfe52e535c, type: 3}

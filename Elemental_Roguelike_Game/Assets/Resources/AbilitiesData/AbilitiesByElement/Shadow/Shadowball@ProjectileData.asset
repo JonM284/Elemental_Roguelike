@@ -17,9 +17,11 @@ MonoBehaviour:
   projectileSpeed: 15
   isAffectArmor: 0
   isKnockBack: 0
+  isRandomKnockBallAway: 0
+  isStopReaction: 1
   isAffectWhileMoving: 1
   projectileType: {fileID: 11400000, guid: 4457294a69c0af54c83492d26e8140bd, type: 2}
-  chanceToApplyStatus: 95
+  chanceToApplyStatus: 100
   statusEffect: {fileID: 11400000, guid: a6ddaedcfcefbfd4e9fdf6ba2bf79bcd, type: 2}
   projectileCollisionLayers:
     serializedVersion: 2

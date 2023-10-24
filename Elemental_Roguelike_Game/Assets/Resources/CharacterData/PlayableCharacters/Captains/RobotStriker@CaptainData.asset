@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6e30cf3dd6a8ee349ac5bc304a59fcb7, type: 3}
+  m_Name: RobotStriker@CaptainData
+  m_EditorClassIdentifier: 
+  isCaptain: 1
+  characterName: Music Robot
+  baseSpeed: 10
+  baseHealth: 100
+  baseShields: 60
+  tackleDamageAmount: 10
+  tackleScore: 40
+  agilityScore: 75
+  shootingScore: 90
+  passingScore: 40
+  characterColor: {r: 0.8352877, g: 0.9339623, b: 0.2687344, a: 1}
+  characterColorDark: {r: 0.63880515, g: 0.735849, b: 0.079832695, a: 1}
+  typing: {fileID: 11400000, guid: b5ba9f007020f914f9c8d519cccd8f04, type: 2}
+  abilities:
+  - {fileID: 11400000, guid: 9faf2bec34c964445aa6e1ac91edee19, type: 2}
+  - {fileID: 11400000, guid: 4527ed912be1af24196623c293468767, type: 2}
+  classTyping: {fileID: 11400000, guid: b4466eb0195bc9f4596847e268136c87, type: 2}
+  characterAssetRef:
+    m_AssetGUID: 8214c403d76305c43986943a2c13b094
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_EditorAssetChanged: 0
+  characterGUID: c8971335-9240-4446-bf94-66435ec24ffa
+  characterImage: {fileID: -1938427514, guid: 6a6f25e903f18fd4db55f0dfe52e535c, type: 3}

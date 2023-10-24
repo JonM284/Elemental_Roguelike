@@ -40,7 +40,7 @@ namespace Runtime.UI.DataModels
         public void EndMatch()
         {
             Debug.Log("PRESSED END MATCH");
-            SceneController.Instance.LoadScene(SceneName.RealWorldScene, false);
+            SceneController.Instance.LoadScene(SceneName.MainMenu, false);
         }
 
         #endregion

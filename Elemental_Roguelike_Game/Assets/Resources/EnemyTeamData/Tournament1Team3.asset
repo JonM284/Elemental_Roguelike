@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e910a4a454e941f98deee2c16845703a, type: 3}
+  m_Name: Tournament1Team3
+  m_EditorClassIdentifier: 
+  tournamentGuid: b9b19562-4cc4-4ea2-9720-94ea7ad40bef
+  enemyCharacters:
+  - {fileID: 11400000, guid: 0e5aeed3d574149438c1aafc09e03f3a, type: 2}
+  - {fileID: 11400000, guid: fc6cea0ee4912004fafd4eb01fb35671, type: 2}
+  - {fileID: 11400000, guid: 9a18f0881db336b4da00776de650275a, type: 2}
+  - {fileID: 11400000, guid: 973a40b48d294f94d967e9c8f60328ae, type: 2}

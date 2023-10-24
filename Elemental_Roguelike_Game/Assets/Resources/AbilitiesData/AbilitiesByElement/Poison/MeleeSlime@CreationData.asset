@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 50fa579eaee1486b93aa7a15464018c0, type: 3}
+  m_Name: MeleeSlime@CreationData
+  m_EditorClassIdentifier: 
+  health: 1
+  isIndestructible: 0
+  radius: 1.25
+  isHidden: 0
+  roundStayAmount: 3
+  isInfiniteTime: 0
+  creationRef:
+    m_AssetGUID: efba4f92dbd60be45a4a13ac6fc74622
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_EditorAssetChanged: 0
+  meleeDamage: 20
+  elementTyping: {fileID: 11400000, guid: 95a8ef5f5dc6d1041b926a50980d0665, type: 2}
+  dealsKnockback: 0
