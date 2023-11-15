@@ -9,10 +9,7 @@ namespace Data
         public string itemName;
         public AssetReference itemImage;
 
-        public abstract void DoEffects(CharacterBase _character);
-
-        public abstract float GetAffectedFloat(float _numToModify);
-
-        public abstract int GetAffectFloat(int _numToModify);
+        //Do Something
+        public abstract void InitializeAffects(CharacterBase _character);
     }
 }

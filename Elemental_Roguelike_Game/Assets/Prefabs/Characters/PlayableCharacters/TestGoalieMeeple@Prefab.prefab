@@ -1447,6 +1447,7 @@ MonoBehaviour:
   ballOwnerIndicator: {fileID: 5221864410178889277}
   activePlayerIndicator: {fileID: 6929952212811954912}
   ballThrowIndicator: {fileID: 3344188365971079642}
+  characterClassMarker: {fileID: 3043055319243607311}
   shakeDuration: 0.5
   shakeStrength: 1.25
   shakeVibrationAmount: 6
@@ -1482,7 +1483,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   characterVisual: {fileID: 5105239391387843634}
-  highlightColor: {r: 1, g: 0.91517913, b: 0, a: 1}
+  highlightColor: {r: 0.17647058, g: 0.63362604, b: 1, a: 1}
   m_isMeeple: 1
   m_isChangeColor: 0
   meepleSkinnedMeshRenderers:

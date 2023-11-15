@@ -965,7 +965,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 5f1f6c9b4c504ca45981ae7f046ae201, type: 2}
+  - {fileID: 2100000, guid: f166c3bcbc65d9e43816a62f23e04ee1, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1446,6 +1446,7 @@ MonoBehaviour:
   ballOwnerIndicator: {fileID: 5221864410178889277}
   activePlayerIndicator: {fileID: 6929952212811954912}
   ballThrowIndicator: {fileID: 3344188365971079642}
+  characterClassMarker: {fileID: 3043055319243607311}
   shakeDuration: 0.5
   shakeStrength: 1.25
   shakeVibrationAmount: 6
@@ -1481,7 +1482,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   characterVisual: {fileID: 4812649010307704075}
-  highlightColor: {r: 1, g: 0.91517913, b: 0, a: 1}
+  highlightColor: {r: 0.17647058, g: 0.63362604, b: 1, a: 1}
   m_isMeeple: 1
   m_isChangeColor: 1
   meepleSkinnedMeshRenderers:

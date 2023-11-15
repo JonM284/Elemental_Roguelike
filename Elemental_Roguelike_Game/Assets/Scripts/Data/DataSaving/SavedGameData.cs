@@ -9,10 +9,10 @@ namespace Data.DataSaving
 {
     
     [System.Serializable]
-    public class SavedGameData 
+    public class SavedGameData
     {
-        
-        public List<string> savedTeamMembers;
+
+        public List<SavedMemberData> savedTeamMembers;
 
         public int savedUpgradePoints;
 
@@ -34,7 +34,7 @@ namespace Data.DataSaving
 
         public SavedGameData()
         {
-            this.savedTeamMembers = new List<string>();
+            this.savedTeamMembers = new List<SavedMemberData>();
             this.savedUpgradePoints = 0;
             this.savedMapSelectionLevel = 0;
             this.currentTournamentIndex = 0;

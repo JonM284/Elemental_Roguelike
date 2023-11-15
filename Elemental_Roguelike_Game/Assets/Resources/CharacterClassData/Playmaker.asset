@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Playmaker
   m_EditorClassIdentifier: 
   classType: 3
-  radius: 1.5
+  radius: 1
   HealthMin: 60
   HealthMax: 80
   ShieldMin: 70
@@ -28,6 +28,38 @@ MonoBehaviour:
   DamageStatMax: 48
   passiveColor: {r: 1, g: 0.48584908, b: 0.97168773, a: 1}
   darkColor: {r: 0.8207547, g: 0.56910825, b: 0.8073079, a: 1}
+  barColor: {r: 0.9811321, g: 0.22677112, b: 0.94082254, a: 1}
   moveDistance: 5
   tackleDamageAmount: 10
   classGUID: 9864fd0c-7f70-4f75-b387-3dce412f8e55
+  _iconsByOption:
+  - _option: 0
+    _icons:
+    - {fileID: 43929567, guid: c675ecfb3d2f3cf4ea5fe95ba9bdf0d3, type: 3}
+    - {fileID: -473157087, guid: c675ecfb3d2f3cf4ea5fe95ba9bdf0d3, type: 3}
+    - {fileID: -1962788300, guid: c675ecfb3d2f3cf4ea5fe95ba9bdf0d3, type: 3}
+    - {fileID: -105664880, guid: c675ecfb3d2f3cf4ea5fe95ba9bdf0d3, type: 3}
+  - _option: 1
+    _icons:
+    - {fileID: 1318293774, guid: 1d9aec68fb841b747ba028e1c8bce42e, type: 3}
+    - {fileID: -619257388, guid: 1d9aec68fb841b747ba028e1c8bce42e, type: 3}
+    - {fileID: 1768169513, guid: 1d9aec68fb841b747ba028e1c8bce42e, type: 3}
+    - {fileID: 1432632002, guid: 1d9aec68fb841b747ba028e1c8bce42e, type: 3}
+  - _option: 2
+    _icons:
+    - {fileID: 304310610, guid: ca68794761dd70440b97c9d4d520db76, type: 3}
+    - {fileID: 1657396427, guid: ca68794761dd70440b97c9d4d520db76, type: 3}
+    - {fileID: 1436472560, guid: ca68794761dd70440b97c9d4d520db76, type: 3}
+    - {fileID: 1554145662, guid: ca68794761dd70440b97c9d4d520db76, type: 3}
+  - _option: 3
+    _icons:
+    - {fileID: 1766987545, guid: 207e21b0afff1b544914b9fd28af15df, type: 3}
+    - {fileID: 1229055782, guid: 207e21b0afff1b544914b9fd28af15df, type: 3}
+    - {fileID: -1399245122, guid: 207e21b0afff1b544914b9fd28af15df, type: 3}
+    - {fileID: 393265145, guid: 207e21b0afff1b544914b9fd28af15df, type: 3}
+  - _option: 4
+    _icons:
+    - {fileID: -1855253963, guid: 88b640af89e44894ca743553c29d345c, type: 3}
+    - {fileID: 1894209053, guid: 88b640af89e44894ca743553c29d345c, type: 3}
+    - {fileID: 1771485831, guid: 88b640af89e44894ca743553c29d345c, type: 3}
+    - {fileID: -528152970, guid: 88b640af89e44894ca743553c29d345c, type: 3}

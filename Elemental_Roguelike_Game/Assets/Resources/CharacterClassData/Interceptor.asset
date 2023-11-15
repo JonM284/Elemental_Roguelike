@@ -28,6 +28,38 @@ MonoBehaviour:
   DamageStatMax: 70
   passiveColor: {r: 0.30989075, g: 1, b: 0.23137254, a: 1}
   darkColor: {r: 0.45467556, g: 0.7830189, b: 0.41736382, a: 1}
+  barColor: {r: 0.24143542, g: 0.9716981, b: 0.19708972, a: 1}
   moveDistance: 5
   tackleDamageAmount: 18
   classGUID: 9d38c2b5-8615-4d56-8dd8-4cebfb42703b
+  _iconsByOption:
+  - _option: 0
+    _icons:
+    - {fileID: 1973489923, guid: 125254610c4a6d1438cae8b7dcbe64f4, type: 3}
+    - {fileID: -2093232014, guid: 125254610c4a6d1438cae8b7dcbe64f4, type: 3}
+    - {fileID: 1825362488, guid: 125254610c4a6d1438cae8b7dcbe64f4, type: 3}
+    - {fileID: -997109947, guid: 125254610c4a6d1438cae8b7dcbe64f4, type: 3}
+  - _option: 1
+    _icons:
+    - {fileID: -729934699, guid: 32b1ed6620e1f074e9f664b95f71f2f5, type: 3}
+    - {fileID: 1979542066, guid: 32b1ed6620e1f074e9f664b95f71f2f5, type: 3}
+    - {fileID: -1621628670, guid: 32b1ed6620e1f074e9f664b95f71f2f5, type: 3}
+    - {fileID: -479631761, guid: 32b1ed6620e1f074e9f664b95f71f2f5, type: 3}
+  - _option: 2
+    _icons:
+    - {fileID: 1276850226, guid: 38f04c5a71de3594a858c0536d3feeb5, type: 3}
+    - {fileID: 1121306137, guid: 38f04c5a71de3594a858c0536d3feeb5, type: 3}
+    - {fileID: 1284285747, guid: 38f04c5a71de3594a858c0536d3feeb5, type: 3}
+    - {fileID: -863026993, guid: 38f04c5a71de3594a858c0536d3feeb5, type: 3}
+  - _option: 3
+    _icons:
+    - {fileID: 1387194847, guid: 9fcb80c39a4eedf4a9041c385e1cf8ac, type: 3}
+    - {fileID: -196283366, guid: 9fcb80c39a4eedf4a9041c385e1cf8ac, type: 3}
+    - {fileID: -1398906496, guid: 9fcb80c39a4eedf4a9041c385e1cf8ac, type: 3}
+    - {fileID: -1139898434, guid: 9fcb80c39a4eedf4a9041c385e1cf8ac, type: 3}
+  - _option: 4
+    _icons:
+    - {fileID: 1941325181, guid: 5168d5510b64b514db07e10cae8b1d1a, type: 3}
+    - {fileID: -84959937, guid: 5168d5510b64b514db07e10cae8b1d1a, type: 3}
+    - {fileID: 531084821, guid: 5168d5510b64b514db07e10cae8b1d1a, type: 3}
+    - {fileID: -171648952, guid: 5168d5510b64b514db07e10cae8b1d1a, type: 3}

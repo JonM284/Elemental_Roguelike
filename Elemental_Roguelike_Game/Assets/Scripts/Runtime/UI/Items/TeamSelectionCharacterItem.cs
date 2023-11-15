@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Data;
 using Data.CharacterData;
 using Project.Scripts.Utils;
 using TMPro;
@@ -13,9 +14,9 @@ namespace Runtime.UI.Items
 
         #region Actions
 
-        private Action<CharacterStatsBase> ItemPressedCallback;
+        private Action<SavedMemberData> ItemPressedCallback;
         
-        private Action<CharacterStatsBase, bool> ItemHighlightedCallback;
+        private Action<SavedMemberData, bool> ItemHighlightedCallback;
         
         #endregion
 
@@ -57,21 +58,21 @@ namespace Runtime.UI.Items
         #endregion
 
         #region Accessors
-
-        public CharacterStatsBase m_assignedStats { get; private set; }
+        
+        public SavedMemberData m_assignedData { get; private set; }
 
         #endregion
 
         #region Class Implementation
 
-        public void InitializeCharacterItem(CharacterStatsBase _characterStats, Action<CharacterStatsBase> pressedCallback, Action<CharacterStatsBase, bool> highlightCallback = null)
+        public void InitializeCharacterItem(SavedMemberData _memberData, Action<SavedMemberData> pressedCallback, Action<SavedMemberData, bool> highlightCallback = null)
         {
-            if (_characterStats.IsNull())
+            if (_memberData.IsNull())
             {
                 return;
             }
             
-            m_assignedStats = _characterStats;
+            m_assignedData = _memberData;
 
             AssignCharacterImage();
 
@@ -95,12 +96,12 @@ namespace Runtime.UI.Items
                 return;
             }
 
-            if (m_assignedStats.characterImage.IsNull())
+            if (m_assignedData.m_characterStatsBase.characterImage.IsNull())
             {
                 return;
             }
 
-            characterImage.sprite = m_assignedStats.characterImage;
+            characterImage.sprite = m_assignedData.m_characterStatsBase.characterImage;
         }
 
         private void AssignVisuals()
@@ -110,29 +111,29 @@ namespace Runtime.UI.Items
                 return;
             }
             
-            title.text = m_assignedStats.characterName;
+            title.text = m_assignedData.m_characterStatsBase.characterName;
             
-            classTypeText.text = $"<u>Class Type:</u> {m_assignedStats.classTyping}";
+            classTypeText.text = $"<u>Class Type:</u> {m_assignedData.m_characterStatsBase.classTyping}";
 
-            agilityStatText.text = $"<u>Agility</u>\r\n{m_assignedStats.agilityScore}";
+            agilityStatText.text = $"<u>Agility</u>\r\n{m_assignedData.m_characterStatsBase.agilityScore}";
 
-            shootingStatText.text = $"<u>Shoot</u>\r\n{m_assignedStats.shootingScore}";
+            shootingStatText.text = $"<u>Shoot</u>\r\n{m_assignedData.m_characterStatsBase.shootingScore}";
             
-            passingStatText.text = $"<u>Pass</u>\r\n{m_assignedStats.passingScore}";
+            passingStatText.text = $"<u>Pass</u>\r\n{m_assignedData.m_characterStatsBase.passingScore}";
             
-            tackleStatText.text = $"<u>Tackle</u>\r\n{m_assignedStats.tackleScore}";
+            tackleStatText.text = $"<u>Tackle</u>\r\n{m_assignedData.m_characterStatsBase.tackleScore}";
 
-            agilityBar.fillAmount = m_assignedStats.agilityScore / 100f;
+            agilityBar.fillAmount = m_assignedData.m_characterStatsBase.agilityScore / 100f;
 
-            shootingBar.fillAmount = m_assignedStats.shootingScore / 100f;
+            shootingBar.fillAmount = m_assignedData.m_characterStatsBase.shootingScore / 100f;
 
-            passingBar.fillAmount = m_assignedStats.passingScore / 100f;
+            passingBar.fillAmount = m_assignedData.m_characterStatsBase.passingScore / 100f;
 
-            tackleBar.fillAmount = m_assignedStats.tackleScore / 100f;
+            tackleBar.fillAmount = m_assignedData.m_characterStatsBase.tackleScore / 100f;
 
             ClearAbilities();
             
-            if (m_assignedStats.abilities.Count > 0)
+            if (m_assignedData.m_characterStatsBase.abilities.Count > 0)
             {
                 SetupAbilityDisplays();
             }
@@ -140,12 +141,12 @@ namespace Runtime.UI.Items
 
         public void OnPress()
         {
-            ItemPressedCallback?.Invoke(m_assignedStats);
+            ItemPressedCallback?.Invoke(m_assignedData);
         }
 
         public void MarkHighlight(bool _active)
         {
-            ItemHighlightedCallback?.Invoke(m_assignedStats, _active);
+            ItemHighlightedCallback?.Invoke(m_assignedData, _active);
             characterStatsHighlight.SetActive(_active);
         }
 
@@ -158,9 +159,9 @@ namespace Runtime.UI.Items
 
         private void SetupAbilityDisplays()
         {
-            for (int i = 0; i < m_assignedStats.abilities.Count; i++)
+            for (int i = 0; i < m_assignedData.m_characterStatsBase.abilities.Count; i++)
             {
-                var _ability = m_assignedStats.abilities[i];
+                var _ability = m_assignedData.m_characterStatsBase.abilities[i];
                 if (_ability.IsNull())
                 {
                     continue;

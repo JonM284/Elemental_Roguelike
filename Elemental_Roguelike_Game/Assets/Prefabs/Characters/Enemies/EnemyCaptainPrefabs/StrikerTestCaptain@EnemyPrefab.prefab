@@ -449,7 +449,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4729591039992768111}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.523, z: 0}
+  m_LocalPosition: {x: 0, y: 0.773, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -745,7 +745,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   characterVisual: {fileID: 0}
-  highlightColor: {r: 1, g: 0.9529412, b: 0, a: 1}
+  highlightColor: {r: 1, g: 0.1462264, b: 0.1462264, a: 1}
   m_isMeeple: 1
   m_isChangeColor: 1
   meepleSkinnedMeshRenderers:
@@ -778,6 +778,7 @@ MonoBehaviour:
   ballOwnerIndicator: {fileID: 2435286916875952432}
   activePlayerIndicator: {fileID: 4302769482804244790}
   ballThrowIndicator: {fileID: 0}
+  characterClassMarker: {fileID: 7314438531724270552}
   shakeDuration: 0.5
   shakeStrength: 1.25
   shakeVibrationAmount: 6
@@ -1046,7 +1047,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 9edbfd80100e58b49b2918962d402204, type: 2}
+  - {fileID: 2100000, guid: f166c3bcbc65d9e43816a62f23e04ee1, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1509,6 +1510,19 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &3743733302796256270
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1015027253044574101}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 54386ba3475b42d19470c3f1ba487b92, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_isEnemy: 0
 --- !u!114 &7953772292039821856
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1537,19 +1551,6 @@ MonoBehaviour:
   - {fileID: 4482248094916157400}
   - {fileID: 3458406251434530864}
   - {fileID: 4221259031863994871}
---- !u!114 &3743733302796256270
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1015027253044574101}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 54386ba3475b42d19470c3f1ba487b92, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_isEnemy: 0
 --- !u!137 &1474593915309135766 stripped
 SkinnedMeshRenderer:
   m_CorrespondingSourceObject: {fileID: 1630794972795428178, guid: 0482992e3f9407b4586dac22cbbd90f7,

@@ -10,7 +10,7 @@ namespace Runtime.Status
 
         #region Serialized Fields
 
-        [SerializeField] private float damageModAmount = 1.5f;
+        [SerializeField] private float damageModAmount = 1.75f;
         
         #endregion
         

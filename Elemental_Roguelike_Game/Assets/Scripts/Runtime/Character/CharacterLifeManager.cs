@@ -44,7 +44,7 @@ namespace Runtime.Character
 
         public int maxHealthPoints { get; private set; }
 
-        public int maxSheildPoints { get; private set; }
+        public int maxShieldPoints { get; private set; }
         
         public ElementTyping characterElementType { get; private set; }
 
@@ -65,10 +65,22 @@ namespace Runtime.Character
         public void InitializeCharacterHealth(int _maxHealth, int _maxShields, int _currentHealth, int _currentShield, ElementTyping _typing)
         {
             maxHealthPoints = _maxHealth;
-            maxSheildPoints = _maxShields;
+            maxShieldPoints = _maxShields;
             currentHealthPoints = _currentHealth;
             currentShieldPoints = _currentShield;
             characterElementType = _typing;
+        }
+
+        public void ChangeMaxShield(int _newShieldsAmount)
+        {
+            maxShieldPoints = _newShieldsAmount;
+            currentShieldPoints = _newShieldsAmount;
+        }
+
+        public void ChangeMaxHealth(int _newHealthAmount)
+        {
+            maxHealthPoints = _newHealthAmount;
+            currentHealthPoints = _newHealthAmount;
         }
 
         public void SetDamageIntakeModifier(float _newModifierAmount)
@@ -121,7 +133,7 @@ namespace Runtime.Character
         public void FullReviveCharacter()
         {
             currentHealthPoints = maxHealthPoints;
-            currentShieldPoints = maxSheildPoints;
+            currentShieldPoints = maxShieldPoints;
             OnCharacterHealthChange?.Invoke(ownCharacter);
         }
 
@@ -137,14 +149,14 @@ namespace Runtime.Character
             
             if (_isHealArmor)
             {
-                if (currentShieldPoints >= maxSheildPoints)
+                if (currentShieldPoints >= maxShieldPoints)
                 {
                     return;
                 }
 
-                if (currentShieldPoints + adjustedAmount > maxSheildPoints)
+                if (currentShieldPoints + adjustedAmount > maxShieldPoints)
                 {
-                    currentShieldPoints = maxSheildPoints;
+                    currentShieldPoints = maxShieldPoints;
                     return;
                 }
                 

@@ -28,9 +28,9 @@ MonoBehaviour:
   abilities:
   - {fileID: 11400000, guid: 0c099645600808b418ad5ce7b2cf8f17, type: 2}
   - {fileID: 11400000, guid: 0ff704b1770cc5c428abefee050071e9, type: 2}
-  classTyping: {fileID: 11400000, guid: 2c9f419d2dfa1b84489eb60e15d61b2e, type: 2}
+  classTyping: {fileID: 11400000, guid: c8118c2db42deb143ac472125c0e61d6, type: 2}
   characterAssetRef:
-    m_AssetGUID: 3bd2647e0e8e39c47b9c0f4eb87446df
+    m_AssetGUID: 3357899e454e8f24cb7a285f1a25bf6a
     m_SubObjectName: 
     m_SubObjectType: 
     m_EditorAssetChanged: 0

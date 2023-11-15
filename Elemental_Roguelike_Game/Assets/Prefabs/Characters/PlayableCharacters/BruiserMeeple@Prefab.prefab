@@ -108,14 +108,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1592740797344170208}
-  m_LocalRotation: {x: -0.7071068, y: 0, z: 0, w: 0.7071068}
+  m_LocalRotation: {x: 0, y: 0.7071068, z: 0.7071068, w: 0}
   m_LocalPosition: {x: 0, y: -0.489, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 8626873723231766950}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: -90, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: -90, y: 180, z: 0}
 --- !u!33 &6449337087668952896
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -144,7 +144,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 5f1f6c9b4c504ca45981ae7f046ae201, type: 2}
+  - {fileID: 2100000, guid: 3c54ff595abf1f146a6b048892c32c6c, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -594,6 +594,7 @@ MonoBehaviour:
   ballOwnerIndicator: {fileID: 707326785315180151}
   activePlayerIndicator: {fileID: 2417031290885083818}
   ballThrowIndicator: {fileID: 8056894020897499536}
+  characterClassMarker: {fileID: 7754140027743102277}
   shakeDuration: 0.5
   shakeStrength: 1.25
   shakeVibrationAmount: 6
@@ -629,7 +630,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   characterVisual: {fileID: 2805309664574381807}
-  highlightColor: {r: 1, g: 0.91517913, b: 0, a: 1}
+  highlightColor: {r: 0.17647058, g: 0.63362604, b: 1, a: 1}
   m_isMeeple: 1
   m_isChangeColor: 1
   meepleSkinnedMeshRenderers:

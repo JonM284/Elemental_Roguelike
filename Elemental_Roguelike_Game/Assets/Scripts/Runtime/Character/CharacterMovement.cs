@@ -333,6 +333,11 @@ namespace Runtime.Character
             m_isElementalTackle = _isElementTackle;
         }
 
+        public void UpdateTackleDamage(int _newAmount)
+        {
+            tackleDamage = _newAmount;
+        }
+
         public void PauseMovement(bool _isPaused)
         {
             m_isPaused = _isPaused;

@@ -23,5 +23,5 @@ MonoBehaviour:
   playVFXOnTrigger: 1
   statusIcon: {fileID: -1595181397, guid: cbb7c9f40afd9f4428d7625db200f40d, type: 3}
   statusIconLow: {fileID: -1340026606, guid: cbb7c9f40afd9f4428d7625db200f40d, type: 3}
-  damageOverTime: 10
+  damageOverTime: 8
   isArmorPiercing: 0

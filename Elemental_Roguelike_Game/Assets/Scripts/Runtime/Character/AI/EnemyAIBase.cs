@@ -285,6 +285,40 @@ namespace Runtime.Character.AI
             return false;
         }
 
+        protected bool IsNearBruiserCharacter(float range)
+        {
+            var adjustedRange = (range/2) - 0.07f;
+            Collider[] colliders = Physics.OverlapSphere(transform.position, adjustedRange, characterCheckMask);
+
+            if (colliders.Length <= 0)
+            {
+                return false;
+            }
+
+            foreach (var _collider in colliders)
+            {
+                _collider.TryGetComponent(out CharacterBase _characterBase);
+                if (!_characterBase)
+                {
+                    continue;
+                }
+
+                if (!_characterBase.characterClassManager.isAbleToReact)
+                {
+                    continue;
+                }
+
+                if (_characterBase.characterClassManager.assignedClass.classType != CharacterClass.BRUISER)
+                {
+                    continue;
+                }
+
+                return true;
+            }
+
+            return false;
+        }
+
         protected IEnumerator C_GoToGoal()
         {
             characterBase.characterMovement.SetCharacterMovable(true, null, characterBase.UseActionPoint);
@@ -327,10 +361,7 @@ namespace Runtime.Character.AI
             var randomPointInShotRange = new Vector3(playerTeamGoal.position.x + adjustedRandomPos.x, playerTeamGoal.position.y, playerTeamGoal.position.z + adjustedRandomPos.y);
             var closestPossiblePoint = randomPointInShotRange;
             var dirToRandomPoint = randomPointInShotRange - transform.position;
-            
-            Debug.Log(dirToRandomPoint.magnitude);
-            Debug.Log(dirToRandomPoint.sqrMagnitude);
-            
+
             if (dirToRandomPoint.magnitude >= enemyMovementRange)
             {
                 closestPossiblePoint = transform.position + (dirToRandomPoint.normalized * enemyMovementRange);
@@ -420,23 +451,48 @@ namespace Runtime.Character.AI
             {
                 foreach (var col in colliders)
                 {
-                    if (isPlayerTeam)
+                    col.TryGetComponent(out CharacterBase _characterBase);
+
+                    if (!_characterBase)
                     {
-                        col.TryGetComponent(out PlayableCharacter playerCharacter);
-                        if (playerCharacter && !playerCharacter.isGoalieCharacter && playerCharacter.isTargetable)
+                        continue;
+                    }
+
+                    if (_characterBase == characterBase)
+                    {
+                        continue;
+                    }
+
+                    //Don't do anything to dead or dying characters
+                    if (!_characterBase.isAlive)
+                    {
+                        continue;
+                    }
+                    
+                    if (isPlayerTeam) //Get Player Team Members only
+                    {
+                        //Is On enemy team
+                        if (_characterBase.side.sideGUID == characterBase.side.sideGUID)
                         {
-                            _targetTransforms.Add(playerCharacter);   
+                            continue;
+                        }
+                        
+                        if (!_characterBase.isGoalieCharacter && _characterBase.isTargetable)
+                        {
+                            _targetTransforms.Add(_characterBase);   
                         }
                     }
-                    else
+                    else // Get AI team Members only
                     {
-                        col.TryGetComponent(out CharacterBase _character);
-                        if (_character is EnemyCharacterRegular || _character is EnemyCharacterMeeple)
+                        //Not on AI team
+                        if (_characterBase.side.sideGUID != characterBase.side.sideGUID)
                         {
-                            if (_character != this.characterBase)
-                            {
-                                _targetTransforms.Add(_character);
-                            }
+                            continue;
+                        }
+                        
+                        if (_characterBase != this.characterBase)
+                        {
+                            _targetTransforms.Add(_characterBase);
                         }
                     }
                     
@@ -448,6 +504,11 @@ namespace Runtime.Character.AI
 
         protected CharacterAbilityManager.AssignedAbilities GetBestAbility()
         {
+            if (characterBase.isSilenced)
+            {
+                return null;
+            }
+            
             var abilities = characterBase.characterAbilityManager.GetAssignedAbilities();
 
             CharacterAbilityManager.AssignedAbilities usableAbility = null;
@@ -994,6 +1055,11 @@ namespace Runtime.Character.AI
             
             foreach (var target in _possibleTargets)
             {
+                if (!target.isAlive)
+                {
+                    continue;
+                }
+                
                 if (target.characterLifeManager.currentOverallHealth < bestTarget.characterLifeManager.currentOverallHealth)
                 {
                     bestTarget = target;

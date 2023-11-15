@@ -29,7 +29,9 @@ namespace Runtime.Abilities
         
         public AbilityTargetType targetType;
 
-        public float range = 1;
+        public float range = 1f;
+
+        public float abilitySize = 1f;
         
         public AnimationClip abilityAnimationOverride;
 

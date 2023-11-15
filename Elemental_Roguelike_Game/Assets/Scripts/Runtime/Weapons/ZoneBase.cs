@@ -187,10 +187,11 @@ namespace Runtime.Weapons
 
                     if (m_zoneRef.isStopReaction)
                     {
-                        collider.TryGetComponent(out CharacterClassManager classManager);
-                        if (!classManager.IsNull())
+                        collider.TryGetComponent(out CharacterBase _character);
+                        if (_character)
                         {
-                            classManager.SetAbleToReact(false);
+                            _character.SetCharacterUsable(false);
+                            _character.characterClassManager.SetAbleToReact(false);
                         }
                     }
 

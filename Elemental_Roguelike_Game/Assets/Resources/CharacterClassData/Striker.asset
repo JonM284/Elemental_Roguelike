@@ -26,8 +26,40 @@ MonoBehaviour:
   PassingStatMax: 52
   DamageStatMin: 38
   DamageStatMax: 55
-  passiveColor: {r: 1, g: 0.70980394, b: 0.23137255, a: 1}
-  darkColor: {r: 0.8207547, g: 0.6409677, b: 0.3445621, a: 1}
+  passiveColor: {r: 1, g: 0.8752895, b: 0.23137254, a: 1}
+  darkColor: {r: 0.81960785, g: 0.75537455, b: 0.34509805, a: 1}
+  barColor: {r: 1, g: 0.916964, b: 0.031372547, a: 1}
   moveDistance: 5.8
   tackleDamageAmount: 10
   classGUID: 9f1bfb9b-bd5c-4e49-b319-75fea0cb1b51
+  _iconsByOption:
+  - _option: 0
+    _icons:
+    - {fileID: -1350175786, guid: d154654b873763441841b234a4c6d1a0, type: 3}
+    - {fileID: 1309238929, guid: d154654b873763441841b234a4c6d1a0, type: 3}
+    - {fileID: -1805059564, guid: d154654b873763441841b234a4c6d1a0, type: 3}
+    - {fileID: 1255864124, guid: d154654b873763441841b234a4c6d1a0, type: 3}
+  - _option: 1
+    _icons:
+    - {fileID: 87819565, guid: 472b0c64680514047a9710561e87319f, type: 3}
+    - {fileID: -463905865, guid: 472b0c64680514047a9710561e87319f, type: 3}
+    - {fileID: 2130833583, guid: 472b0c64680514047a9710561e87319f, type: 3}
+    - {fileID: 595133555, guid: 472b0c64680514047a9710561e87319f, type: 3}
+  - _option: 2
+    _icons:
+    - {fileID: -1034620570, guid: d9ff42e234a12af49a7face4e60a6123, type: 3}
+    - {fileID: -1818521757, guid: d9ff42e234a12af49a7face4e60a6123, type: 3}
+    - {fileID: 658091262, guid: d9ff42e234a12af49a7face4e60a6123, type: 3}
+    - {fileID: -860568991, guid: d9ff42e234a12af49a7face4e60a6123, type: 3}
+  - _option: 3
+    _icons:
+    - {fileID: -1145148774, guid: fe7853d6b25d7cf48bc4f376046e281c, type: 3}
+    - {fileID: 472812034, guid: fe7853d6b25d7cf48bc4f376046e281c, type: 3}
+    - {fileID: 242866224, guid: fe7853d6b25d7cf48bc4f376046e281c, type: 3}
+    - {fileID: -70744909, guid: fe7853d6b25d7cf48bc4f376046e281c, type: 3}
+  - _option: 4
+    _icons:
+    - {fileID: -838449631, guid: a5661cdf6e0ced4498d84f9d3c9d1abb, type: 3}
+    - {fileID: -1055387341, guid: a5661cdf6e0ced4498d84f9d3c9d1abb, type: 3}
+    - {fileID: 848529698, guid: a5661cdf6e0ced4498d84f9d3c9d1abb, type: 3}
+    - {fileID: 10094151, guid: a5661cdf6e0ced4498d84f9d3c9d1abb, type: 3}

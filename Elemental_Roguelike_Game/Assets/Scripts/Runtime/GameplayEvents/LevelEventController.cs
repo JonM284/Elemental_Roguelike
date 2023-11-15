@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Data;
 using Data.CharacterData;
 using Data.DataSaving;
 using Project.Scripts.Runtime.LevelGeneration;
@@ -190,7 +191,7 @@ namespace Runtime.GameplayEvents
         }
         
         //--------- Team Selection Update ---------
-        private void OnTeamMembersConfirmed(List<CharacterStatsBase> _characters, bool _isFirstTime, bool _isRandomTeam)
+        private void OnTeamMembersConfirmed(List<SavedMemberData> _characters, bool _isFirstTime, bool _isRandomTeam)
         {
             if (!_isRandomTeam)
             {

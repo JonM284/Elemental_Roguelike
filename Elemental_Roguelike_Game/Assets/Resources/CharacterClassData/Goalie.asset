@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Goalie
   m_EditorClassIdentifier: 
   classType: 4
-  radius: 2
+  radius: 1.25
   HealthMin: 60
   HealthMax: 80
   ShieldMin: 70
@@ -28,6 +28,38 @@ MonoBehaviour:
   DamageStatMax: 95
   passiveColor: {r: 0.5993017, g: 0.31011927, b: 0.9528302, a: 1}
   darkColor: {r: 0.51220816, g: 0.37486652, b: 0.6792453, a: 1}
+  barColor: {r: 0.4299481, g: 0.062077243, b: 0.8773585, a: 1}
   moveDistance: 2
   tackleDamageAmount: 30
   classGUID: 900a6d6c-5b05-41de-b289-ed91937cbe75
+  _iconsByOption:
+  - _option: 0
+    _icons:
+    - {fileID: -1597069732, guid: 6a6f25e903f18fd4db55f0dfe52e535c, type: 3}
+    - {fileID: -1597069732, guid: 6a6f25e903f18fd4db55f0dfe52e535c, type: 3}
+    - {fileID: -1597069732, guid: 6a6f25e903f18fd4db55f0dfe52e535c, type: 3}
+    - {fileID: -1597069732, guid: 6a6f25e903f18fd4db55f0dfe52e535c, type: 3}
+  - _option: 1
+    _icons:
+    - {fileID: -1597069732, guid: 6a6f25e903f18fd4db55f0dfe52e535c, type: 3}
+    - {fileID: -1597069732, guid: 6a6f25e903f18fd4db55f0dfe52e535c, type: 3}
+    - {fileID: -1597069732, guid: 6a6f25e903f18fd4db55f0dfe52e535c, type: 3}
+    - {fileID: -1597069732, guid: 6a6f25e903f18fd4db55f0dfe52e535c, type: 3}
+  - _option: 2
+    _icons:
+    - {fileID: -1597069732, guid: 6a6f25e903f18fd4db55f0dfe52e535c, type: 3}
+    - {fileID: -1597069732, guid: 6a6f25e903f18fd4db55f0dfe52e535c, type: 3}
+    - {fileID: -1597069732, guid: 6a6f25e903f18fd4db55f0dfe52e535c, type: 3}
+    - {fileID: -1597069732, guid: 6a6f25e903f18fd4db55f0dfe52e535c, type: 3}
+  - _option: 3
+    _icons:
+    - {fileID: -1597069732, guid: 6a6f25e903f18fd4db55f0dfe52e535c, type: 3}
+    - {fileID: -1597069732, guid: 6a6f25e903f18fd4db55f0dfe52e535c, type: 3}
+    - {fileID: -1597069732, guid: 6a6f25e903f18fd4db55f0dfe52e535c, type: 3}
+    - {fileID: -1597069732, guid: 6a6f25e903f18fd4db55f0dfe52e535c, type: 3}
+  - _option: 4
+    _icons:
+    - {fileID: -1597069732, guid: 6a6f25e903f18fd4db55f0dfe52e535c, type: 3}
+    - {fileID: -1597069732, guid: 6a6f25e903f18fd4db55f0dfe52e535c, type: 3}
+    - {fileID: -1597069732, guid: 6a6f25e903f18fd4db55f0dfe52e535c, type: 3}
+    - {fileID: -1597069732, guid: 6a6f25e903f18fd4db55f0dfe52e535c, type: 3}

@@ -14,8 +14,7 @@ namespace Runtime.Managers
         [SerializeField] private UIWindowData matchResultData;
         
         #endregion
-
-
+        
         #region Unity Events
 
         private void OnEnable()

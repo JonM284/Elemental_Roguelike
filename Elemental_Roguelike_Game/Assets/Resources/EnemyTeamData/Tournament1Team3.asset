@@ -15,6 +15,6 @@ MonoBehaviour:
   tournamentGuid: b9b19562-4cc4-4ea2-9720-94ea7ad40bef
   enemyCharacters:
   - {fileID: 11400000, guid: 0e5aeed3d574149438c1aafc09e03f3a, type: 2}
-  - {fileID: 11400000, guid: fc6cea0ee4912004fafd4eb01fb35671, type: 2}
-  - {fileID: 11400000, guid: 9a18f0881db336b4da00776de650275a, type: 2}
-  - {fileID: 11400000, guid: 973a40b48d294f94d967e9c8f60328ae, type: 2}
+  - {fileID: 11400000, guid: 66b6fb2135ebdce43ac5c28bd5d1f9ab, type: 2}
+  - {fileID: 11400000, guid: d88637ca622ba8b45a784d30dd33ad91, type: 2}
+  - {fileID: 11400000, guid: 8707119652df2954ebe792a0aa1111c3, type: 2}

@@ -62,6 +62,12 @@ namespace Runtime.Character
         
         #endregion
 
+        #region Read-Only
+
+        protected static readonly int EmisColor = Shader.PropertyToID("_EmisColor");
+
+        #endregion
+
         #region Serialized Fields
 
         [SerializeField] protected CharacterStatsBase m_characterStatsBase;
@@ -83,6 +89,8 @@ namespace Runtime.Character
         [SerializeField] protected GameObject activePlayerIndicator;
 
         [SerializeField] protected LineRenderer ballThrowIndicator;
+        
+        [SerializeField] private MeshRenderer characterClassMarker;
 
         [Header("Camera Shake on Damage")]
         [SerializeField] private float shakeDuration = 0.1f;
@@ -266,6 +274,8 @@ namespace Runtime.Character
 
         public float passStrength => (characterClassManager.currentMaxPassingScore / 100f) * shootSpeed;
 
+        public bool isSilenced => !m_canUseAbilities;
+
         #endregion
 
         #region Unity Events
@@ -299,6 +309,22 @@ namespace Runtime.Character
 
 
         protected abstract void OnBattleEnded();
+
+        protected void InitializeCharacterMarker()
+        {
+            if (characterClassMarker.IsNull())
+            {
+                return;
+            }
+
+            var _clonedMat = new Material(characterClassMarker.material);
+
+            var _color = SettingsController.Instance.GetSideColor(characterSideRef);
+
+            _clonedMat.SetColor(EmisColor ,_color);
+
+            characterClassMarker.material = _clonedMat;
+        }
         
         protected void CharacterDeath()
         {
@@ -368,6 +394,11 @@ namespace Runtime.Character
         protected void OnWalkActionEnded()
         {
             UseActionPoint();
+
+            if (!isAlive)
+            {
+                return;
+            }
             
             if(characterActionPoints != 0)
             {
@@ -379,7 +410,7 @@ namespace Runtime.Character
         {
             //Get the status to apply, deal damage
             OnDealDamage(null, ScriptableDataController.Instance.GetFenceDamage(), false, null, null, false);
-            ApplyEffect(ScriptableDataController.Instance.GetFenceAppliedStatus());
+            SetCharacterUsable(false);
         }
 
         public void CheckDeath()
@@ -411,7 +442,10 @@ namespace Runtime.Character
             
             characterWeaponManager.CancelWeaponUse();
 
-            isSetupThrowBall = false;
+            if (isSetupThrowBall)
+            {
+                CancelThrowAction();
+            }
         }
 
         private IEnumerator C_DoDeathAction()
@@ -576,10 +610,10 @@ namespace Runtime.Character
                 characterAbilityManager.CancelAbilityUse();
                 return;
             }
-            
+
             if (isSetupThrowBall)
             {
-                isSetupThrowBall = false;
+                CancelThrowAction();
             }
 
             if (characterMovement.isUsingMoveAction)
@@ -611,6 +645,7 @@ namespace Runtime.Character
             {
                 characterAnimations.AttackAnim(true);
             }
+            
             UseActionPoint();
         }
 
@@ -629,7 +664,7 @@ namespace Runtime.Character
 
             if (isSetupThrowBall)
             {
-                isSetupThrowBall = false;
+                CancelThrowAction();
             }
 
             if (characterAbilityManager.isUsingAbilityAction)
@@ -666,6 +701,16 @@ namespace Runtime.Character
                     characterAbilityManager.CancelAbilityUse();
                 }
             }
+            
+            if (!ballThrowIndicator.IsNull())
+            {
+                ballThrowIndicator.gameObject.SetActive(isSetupThrowBall);
+            }
+        }
+
+        public void CancelThrowAction()
+        {
+            isSetupThrowBall = false;
             
             if (!ballThrowIndicator.IsNull())
             {
@@ -850,6 +895,13 @@ namespace Runtime.Character
             ballThrowIndicator.SetPosition(1, new Vector3(furthestPoint.x, furthestPoint.z, 0));
         }
 
+        private void TransferBall(CharacterBase _ballHolder, CharacterBase _ballStealer)
+        {
+            var _ball = TurnController.Instance.ball;
+            _ballHolder.DetachBall();
+            _ballStealer.PickUpBall(_ball);
+        }
+
         private bool IsShot(Vector3 _endPos)
         {
             var _dir = _endPos - transform.position;
@@ -947,7 +999,26 @@ namespace Runtime.Character
                
                 if (!heldBall.IsNull())
                 {
-                    KnockBallAway(_attacker);
+                    _knockbackAttacker.TryGetComponent(out CharacterBase _character);
+
+                    if (!_character.IsNull() && _character != this && _character.characterClassManager.assignedClass.classType == CharacterClass.PLAYMAKER)
+                    {
+                        if (_character.characterClassManager.CheckStealBall(this))
+                        {
+                            //Succeeded
+                            TransferBall(this, _character);
+                        }
+                        else
+                        {
+                            //Failed
+                            KnockBallAway(_attacker);
+                        }
+                    }
+                    else
+                    {
+                        KnockBallAway(_attacker);
+                    }
+
                 }
                 else
                 {

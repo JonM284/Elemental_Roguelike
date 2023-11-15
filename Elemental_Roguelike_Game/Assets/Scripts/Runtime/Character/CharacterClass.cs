@@ -6,6 +6,7 @@
         DEFENDER,
         BRUISER,
         PLAYMAKER,
+        TANK,
         ALL,
     }
 }

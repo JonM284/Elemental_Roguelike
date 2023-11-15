@@ -621,8 +621,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   characterVisual: {fileID: 8668971941922561877}
-  highlightColor: {r: 1, g: 0.95224696, b: 0, a: 1}
+  highlightColor: {r: 1, g: 0.1462264, b: 0.1462264, a: 1}
   m_isMeeple: 0
+  m_isChangeColor: 0
   meepleSkinnedMeshRenderers: []
   meepleMeshRenderers: []
 --- !u!114 &5657833463934291898
@@ -639,6 +640,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_characterStatsBase: {fileID: 11400000, guid: 973a40b48d294f94d967e9c8f60328ae,
     type: 2}
+  m_maxActionPoints: 2
+  isGoalie: 0
   characterSideRef: 3809f259-b149-4697-aaef-86ef47e7b29e
   deathVFX: {fileID: 5269481490371825388, guid: a47c62049fca59048afe703c9e1ded0f,
     type: 3}
@@ -648,6 +651,7 @@ MonoBehaviour:
   ballOwnerIndicator: {fileID: 2435286916875952432}
   activePlayerIndicator: {fileID: 4302769482804244790}
   ballThrowIndicator: {fileID: 0}
+  characterClassMarker: {fileID: 7314438531724270552}
   shakeDuration: 0.5
   shakeStrength: 1.25
   shakeVibrationAmount: 6
@@ -978,7 +982,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 9edbfd80100e58b49b2918962d402204, type: 2}
+  - {fileID: 2100000, guid: f166c3bcbc65d9e43816a62f23e04ee1, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1116,7 +1120,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
-      objectReference: {fileID: 2100000, guid: 0bb37c681d2641b4ab8d0b4fbba894d6, type: 2}
+      objectReference: {fileID: 2100000, guid: 98b6d300b8c6ed54e99f1adb05451fc0, type: 2}
     - target: {fileID: -516098083770646512, guid: c842b168df65b0241891f2435e066bb0,
         type: 3}
       propertyPath: m_Name

@@ -49,14 +49,14 @@ namespace Runtime.UI.DataModels
             var currentEnemyTeam = tournamentController.GetCurrentEnemyTeam();
             var currentPlayerTeam = TeamController.Instance.GetTeam();
 
-            var playerCaptain = currentPlayerTeam.FirstOrDefault(csb => csb.isCaptain);
+            var playerCaptain = currentPlayerTeam.FirstOrDefault(csb => csb.m_characterStatsBase.isCaptain);
             var enemyCaptain = currentEnemyTeam.enemyCharacters.FirstOrDefault(csb => csb.isCaptain);
 
             if (!playerCaptain.IsNull())
             {
-                if (!playerCaptain.characterImage.IsNull())
+                if (!playerCaptain.m_characterStatsBase.characterImage.IsNull())
                 {
-                    playerTeamCaptain.sprite = playerCaptain.characterImage;
+                    playerTeamCaptain.sprite = playerCaptain.m_characterStatsBase.characterImage;
                 }
             }
 

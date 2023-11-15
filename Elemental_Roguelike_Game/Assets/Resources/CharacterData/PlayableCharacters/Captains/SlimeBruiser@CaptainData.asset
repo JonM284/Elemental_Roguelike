@@ -15,8 +15,8 @@ MonoBehaviour:
   isCaptain: 1
   characterName: PoisonCaptain
   baseSpeed: 10
-  baseHealth: 200
-  baseShields: 100
+  baseHealth: 100
+  baseShields: 50
   tackleDamageAmount: 25
   tackleScore: 90
   agilityScore: 50

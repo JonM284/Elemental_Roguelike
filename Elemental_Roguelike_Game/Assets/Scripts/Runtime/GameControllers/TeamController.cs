@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Data;
 using Data.CharacterData;
 using Data.DataSaving;
 using Project.Scripts.Utils;
@@ -16,7 +19,7 @@ namespace Runtime.GameControllers
         //The Purpose of this Controller is to manage everything related to player teams per run
 
         #endregion
-        
+
         #region Static
 
         public static TeamController Instance { get; private set; }
@@ -34,10 +37,8 @@ namespace Runtime.GameControllers
         #region Private Fields
 
         private int m_upgradePoints;
-        
-        private List<CharacterStatsBase> m_savedTeamMembers = new List<CharacterStatsBase>();
 
-        private List<string> m_savedGUIDs = new List<string>();
+        private List<SavedMemberData> m_savedTeamMembers = new List<SavedMemberData>();
 
         #endregion
 
@@ -82,7 +83,7 @@ namespace Runtime.GameControllers
 
         #region Class Implementation
         
-        private void OnTeamMembersConfirmed(List<CharacterStatsBase> _confirmedTeamMembers, bool _isFirstTime, bool _isRandomTeam)
+        private void OnTeamMembersConfirmed(List<SavedMemberData> _confirmedTeamMembers, bool _isFirstTime, bool _isRandomTeam)
         {
             if (!is_Initialized)
             {
@@ -99,11 +100,9 @@ namespace Runtime.GameControllers
             {
                 Debug.Log("Clearing Team Members");
                 m_savedTeamMembers.Clear();
-                m_savedGUIDs.Clear();
             }
 
             _confirmedTeamMembers.ForEach(csb => m_savedTeamMembers.Add(csb));
-            _confirmedTeamMembers.ForEach(csb => m_savedGUIDs.Add(csb.characterGUID));
             
             DataController.Instance.SaveGame();
         }
@@ -112,30 +111,51 @@ namespace Runtime.GameControllers
         public void RemoveAllTeamMembers()
         {
             m_savedTeamMembers.Clear();
-            m_savedGUIDs.Clear();
         }
 
-        public List<CharacterStatsBase> GetTeam()
+        public List<SavedMemberData> GetTeam()
         {
             if (m_savedTeamMembers.Count == 0)
             {
                 SearchForSavedTeam();
             }
+
+            if (Enumerable.FirstOrDefault(m_savedTeamMembers).m_characterStatsBase.IsNull())
+            {
+                SearchForSavedTeam();
+            }
             
-            var duplicate = m_savedTeamMembers.ToList();
+            var duplicate = CommonUtils.ToList(m_savedTeamMembers);
             return duplicate;
         }
 
         public void SearchForSavedTeam()
         {
-            List<CharacterStatsBase> references = new List<CharacterStatsBase>();
-            foreach (var searchGUID in m_savedGUIDs)
+            List<SavedMemberData> references = new List<SavedMemberData>();
+            foreach (var _teamMember in m_savedTeamMembers)
             {
-                var _character = CharacterGameController.Instance.GetCharacterByGUID(searchGUID);
-                references.Add(_character);
+                SavedMemberData _foundMember = new SavedMemberData();
+                
+                var _characterData = CharacterGameController.Instance.GetCharacterByGUID(_teamMember.m_characterGUID);
+
+                _foundMember.m_characterGUID = _teamMember.m_characterGUID;
+                _foundMember.m_characterStatsBase = _characterData;
+
+                if(_teamMember.m_perkGUIDs.Count > 0){
+
+                    foreach (var _perkGUID  in _teamMember.m_perkGUIDs)
+                    {
+                        var _foundPerk = PerkController.Instance.GetPerkByGUID(_perkGUID);
+                        
+                        _foundMember.perks.Add(_foundPerk);
+                    }
+                    
+                }
+                
+                references.Add(_foundMember);
             }
 
-            m_savedTeamMembers = references.ToList();
+            m_savedTeamMembers = CommonUtils.ToList(references);
         }
 
         public void UpdateTeamMemberStats(CharacterStatsData _character, CharacterStatsEnum _stat, int _amount)
@@ -191,14 +211,14 @@ namespace Runtime.GameControllers
 
         public void LoadData(SavedGameData _savedGameData)
         {
-            m_savedGUIDs = _savedGameData.savedTeamMembers;
+            m_savedTeamMembers = _savedGameData.savedTeamMembers;
             m_upgradePoints = _savedGameData.savedUpgradePoints;
             SearchForSavedTeam();
         }
 
         public void SaveData(ref SavedGameData _savedGameData)
         {
-            _savedGameData.savedTeamMembers = m_savedGUIDs;
+            _savedGameData.savedTeamMembers = m_savedTeamMembers;
             _savedGameData.savedUpgradePoints = m_upgradePoints;
         }
 

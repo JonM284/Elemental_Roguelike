@@ -37,8 +37,7 @@ namespace Runtime.Managers
             public List<Vector3> connectedLocationsAbove = new List<Vector3>();
         }
         
-        //ToDo: change this to data that can be saved 
-        //IE: instead of POILocation => VECTOR3 + Event
+        
         [Serializable]
         public class PointData
         {

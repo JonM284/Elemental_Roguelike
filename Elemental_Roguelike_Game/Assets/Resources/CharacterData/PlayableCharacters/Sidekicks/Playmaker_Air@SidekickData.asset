@@ -19,7 +19,7 @@ MonoBehaviour:
   baseShields: 60
   tackleDamageAmount: 10
   tackleScore: 40
-  agilityScore: 90
+  agilityScore: 70
   shootingScore: 40
   passingScore: 90
   characterColor: {r: 1, g: 1, b: 1, a: 1}
@@ -29,7 +29,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: f054dd5d6df69ec449a27ee9f549ca5d, type: 2}
   classTyping: {fileID: 11400000, guid: ba97e3930af5aa444b3fd0c1f9fd8381, type: 2}
   characterAssetRef:
-    m_AssetGUID: 8214c403d76305c43986943a2c13b094
+    m_AssetGUID: 8d4da1920423cc14fb6e9269a68fde13
     m_SubObjectName: 
     m_SubObjectType: 
     m_EditorAssetChanged: 0

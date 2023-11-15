@@ -4789,9 +4789,9 @@ MonoBehaviour:
   onProjectileEnd:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: Runtime.Weapons.ZoneCreator, Assembly-CSharp
-        m_MethodName: CreateZone
+      - m_Target: {fileID: 2931943123179290206}
+        m_TargetAssemblyTypeName: Runtime.VFX.VFXCreator, Assembly-CSharp
+        m_MethodName: CreateVFX
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -4801,6 +4801,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  m_debugRadius: 1
   zoneInfo: {fileID: 11400000, guid: 79e51916ba139044cb832a7d5e8b077e, type: 2}
 --- !u!114 &2931943123179290206
 MonoBehaviour:

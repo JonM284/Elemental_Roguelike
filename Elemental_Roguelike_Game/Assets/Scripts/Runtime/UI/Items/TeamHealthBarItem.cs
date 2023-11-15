@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using Data;
 using Data.Sides;
 using Project.Scripts.Utils;
 using Runtime.Character;
 using Runtime.GameControllers;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -96,13 +99,15 @@ namespace Runtime.UI.Items
 
             m_associatedCharacter = _character;
 
-            var _element = _character.characterLifeManager.characterElementType;
+            var _class = _character.characterClassManager.assignedClass;
 
-            m_elementIcon.sprite = _element.elementSprite;
+            var _colorBlindMode = SettingsController.Instance.GetCurrentColorblindOption();
 
-            m_characterImage.sprite = _element.meepleIcon;
+            m_elementIcon.sprite = _class._iconsByOption.FirstOrDefault(ico => ico._option == _colorBlindMode)._icons[(int)IconSizes.SMALL];
 
-            frame.color = _element.meepleColors[0];
+            m_characterImage.sprite = m_associatedCharacter.characterStatsBase.characterImage;
+
+            frame.color = _class.barColor;
             
             captainStar.SetActive(_character.characterStatsBase.isCaptain);
 

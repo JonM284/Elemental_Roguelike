@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Data.Elements;
 using Project.Scripts.Utils;
+using Runtime.GameControllers;
 using UnityEngine;
 
 namespace Runtime.Character
@@ -33,7 +34,7 @@ namespace Runtime.Character
         [SerializeField] private List<SkinnedMeshRenderer> meepleSkinnedMeshRenderers = new List<SkinnedMeshRenderer>();
 
         [SerializeField] private List<MeshRenderer> meepleMeshRenderers = new List<MeshRenderer>();
-
+        
         #endregion
 
         #region Private Fields
@@ -47,7 +48,7 @@ namespace Runtime.Character
         private Color m_originalHighlightColor;
 
         private Material m_highlightMaterial;
-
+        
         #endregion
 
         #region Accessors

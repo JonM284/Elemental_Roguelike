@@ -85,7 +85,7 @@ namespace Runtime.Character.AI
                             else
                             {
                                 //Is there a player blocking a shot to the goal?
-                                if (!HasPlayerBlockingRoute())
+                                if (!HasPlayerBlockingRoute() && !IsNearBruiserCharacter(enemyMovementRange))
                                 {
                                     yield return StartCoroutine(C_GoToGoal());
                                 }

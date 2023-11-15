@@ -19,7 +19,7 @@ MonoBehaviour:
   baseShields: 100
   tackleDamageAmount: 15
   tackleScore: 40
-  agilityScore: 90
+  agilityScore: 70
   shootingScore: 40
   passingScore: 90
   characterColor: {r: 0.5294118, g: 0.6313726, b: 0.9607843, a: 1}

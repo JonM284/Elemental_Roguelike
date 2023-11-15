@@ -17,7 +17,6 @@ MonoBehaviour:
   baseSpeed: 6
   baseHealth: 100
   baseShields: 100
-  movementDistance: 3.5
   tackleDamageAmount: 15
   tackleScore: 80
   agilityScore: 80
@@ -35,5 +34,5 @@ MonoBehaviour:
     m_SubObjectName: 
     m_SubObjectType: 
     m_EditorAssetChanged: 0
-  characterGUID: 667753fc-586f-409b-bce7-e040351a584a
+  characterGUID: f5153271-8eb6-490f-8e4d-c4ad75fd5522
   characterImage: {fileID: 21300000, guid: 72dbca6bb9ca30743b93b67dbda192d5, type: 3}

@@ -36,6 +36,9 @@ namespace Runtime.Status
                     case CharacterStatsEnum.AGILITY:
                         newAmount = _character.characterClassManager.currentMaxAgilityScore + amountToChangeBy;
                         break;
+                    case CharacterStatsEnum.PASSING:
+                        newAmount = _character.characterClassManager.currentMaxPassingScore + amountToChangeBy;
+                        break;
                     case CharacterStatsEnum.SHOOTING:
                         newAmount = _character.characterClassManager.currentMaxShootingScore + amountToChangeBy;
                         break;
@@ -52,12 +55,14 @@ namespace Runtime.Status
                     case CharacterStatsEnum.AGILITY:
                         newAmount = _character.characterClassManager.agilityScore + amountToChangeBy;
                         break;
+                    case CharacterStatsEnum.PASSING:
+                        newAmount = _character.characterClassManager.passingScore + amountToChangeBy;
+                        break;
                     case CharacterStatsEnum.SHOOTING:
                         newAmount = _character.characterClassManager.shootingScore + amountToChangeBy;
                         break;
                     case CharacterStatsEnum.TACKLE:
                         newAmount = _character.characterClassManager.tacklingScore + amountToChangeBy;
-                        _character.characterMovement.SetElementTackle(true);
                         break;
                 }
             }

@@ -543,6 +543,7 @@ MonoBehaviour:
   ballOwnerIndicator: {fileID: 3199967026562260413}
   activePlayerIndicator: {fileID: 302719602773049696}
   ballThrowIndicator: {fileID: 5365945035704515162}
+  characterClassMarker: {fileID: 5630697715762706063}
   shakeDuration: 0.5
   shakeStrength: 1.25
   shakeVibrationAmount: 6
@@ -578,7 +579,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   characterVisual: {fileID: 1772405574798676442}
-  highlightColor: {r: 1, g: 0.91517913, b: 0, a: 1}
+  highlightColor: {r: 0.17647058, g: 0.63362604, b: 1, a: 1}
   m_isMeeple: 1
   m_isChangeColor: 1
   meepleSkinnedMeshRenderers:
@@ -1696,7 +1697,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7990042921238052429}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.389, z: 0}
+  m_LocalPosition: {x: 0, y: 0.88900006, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1857,6 +1858,11 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 22100000, guid: 8f10547eec84ea345b2a88c9aaaebdac,
         type: 2}
+    - target: {fileID: 5866666021909216657, guid: c753a0c20aeb2514295eb195d84644e1,
+        type: 3}
+      propertyPath: m_ApplyRootMotion
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c753a0c20aeb2514295eb195d84644e1, type: 3}
 --- !u!137 &497802941364807904 stripped

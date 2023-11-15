@@ -105,6 +105,18 @@ MonoBehaviour:
     m_Address: DummyPlaymakerEnemy@EnemyPrefab
     m_ReadOnly: 0
     m_SerializedLabels: []
+  - m_GUID: 3357899e454e8f24cb7a285f1a25bf6a
+    m_Address: TankMeeple@Prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: af1c2337aabece541922d8f68264b2ae
+    m_Address: TankTestCaptain@EnemyPrefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 8d4da1920423cc14fb6e9269a68fde13
+    m_Address: PlaymakerMeeple@Prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: c51bc8bdb2bb6e5479c05b7cf9bc0f75, type: 2}
   m_SchemaSet:

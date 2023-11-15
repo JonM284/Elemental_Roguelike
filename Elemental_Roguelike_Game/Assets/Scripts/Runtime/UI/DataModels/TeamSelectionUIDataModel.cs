@@ -7,7 +7,6 @@ using Data.CharacterData;
 using Project.Scripts.Utils;
 using Runtime.GameControllers;
 using Runtime.UI.Items;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
@@ -25,7 +24,7 @@ namespace Runtime.UI.DataModels
         /// Is First time
         /// Is Random gamemode
         /// </summary>
-        public static event Action<List<CharacterStatsBase>, bool, bool> TeamConfirmed; 
+        public static event Action<List<SavedMemberData>, bool, bool> TeamConfirmed; 
 
         #endregion
 
@@ -71,7 +70,7 @@ namespace Runtime.UI.DataModels
 
         #region Private Fields
 
-        private List<CharacterStatsBase> m_selectedTeam = new List<CharacterStatsBase>();
+        private List<SavedMemberData> m_selectedTeam = new List<SavedMemberData>();
 
         private bool m_isLoadingCharacterItem;
         
@@ -257,7 +256,7 @@ namespace Runtime.UI.DataModels
                     if (csdi.TryGetComponent(out CharacterSelectDataItem _item))
                     {
                         bool _isCaptain = i == 0;
-                        Action<CharacterStatsBase> callback = _isCaptain ? OnDeleteCaptainData : OnDeleteSidekickData;
+                        Action<SavedMemberData> callback = _isCaptain ? OnDeleteCaptainData : OnDeleteSidekickData;
                         _item.Initialize(_isCaptain, callback);
                         m_characterDataItems.Add(_item);
                     }
@@ -286,13 +285,20 @@ namespace Runtime.UI.DataModels
         private void GenerateRandomSidekicksDisplay()
         {
             var randomSidekicks = CharacterGameController.Instance.GetRandomSidekicks(randomSidekickGenerateAmount);
-            
+
             foreach (var sidekick in randomSidekicks)
             {
                 AddCharacterItem(sidekick, false, randomSidekickParent);
-                if (!m_selectedTeam.Contains(sidekick))
+                
+                SavedMemberData _newMember = new SavedMemberData
                 {
-                    m_selectedTeam.Add(sidekick);
+                    m_characterGUID = sidekick.characterGUID,
+                    m_characterStatsBase = sidekick,
+                };
+                
+                if (!m_selectedTeam.Contains(_newMember))
+                {
+                    m_selectedTeam.Add(_newMember);
                 }
             }
             
@@ -343,21 +349,21 @@ namespace Runtime.UI.DataModels
             m_activeBasicItems.Clear();
         }
 
-        private void PressedCallback(CharacterStatsBase _character)
+        private void PressedCallback(SavedMemberData _memberData)
         {
-            if (_character.IsNull())
+            if (_memberData.IsNull())
             {
                 return;
             }
 
-            if (!m_selectedTeam.Contains(_character))
+            if (!m_selectedTeam.Contains(_memberData))
             {
-                m_selectedTeam.Add(_character);
+                m_selectedTeam.Add(_memberData);
             }
             
             m_activeCaptainItems.ForEach(tsci =>
             {
-                if (tsci.m_assignedStats != _character)
+                if (tsci.m_assignedData != _memberData)
                 {
                     CacheCaptain(tsci);
                 }
@@ -487,13 +493,20 @@ namespace Runtime.UI.DataModels
             
             
             newCharacter.TryGetComponent(out TeamSelectionCharacterItem item);
+
+            SavedMemberData _newMemberData = new SavedMemberData
+            {
+                m_characterGUID = _character.characterGUID,
+                m_characterStatsBase = _character,
+            };
+
             if (item)
             {
                 if (m_isRandomTeam)
                 {
-                    Action<CharacterStatsBase> _pressedAction = _isCaptain ? PressedCallback : null;
-                    Action<CharacterStatsBase, bool> _highlightAction = null;
-                    item.InitializeCharacterItem(_character, _pressedAction, _highlightAction);
+                    Action<SavedMemberData> _pressedAction = _isCaptain ? PressedCallback : null;
+                    Action<SavedMemberData, bool> _highlightAction = null;
+                    item.InitializeCharacterItem(_newMemberData, _pressedAction, _highlightAction);
                 
                     if (_isCaptain)
                     {
@@ -502,9 +515,9 @@ namespace Runtime.UI.DataModels
                 }
                 else
                 {
-                    Action<CharacterStatsBase> _pressedAction = _isCaptain ? UpdateCaptainData : UpdateSidekickData;
-                    Action<CharacterStatsBase, bool> _highlightAction = UpdateHighlightItem;
-                    item.InitializeCharacterItem(_character, _pressedAction, _highlightAction);
+                    Action<SavedMemberData> _pressedAction = _isCaptain ? UpdateCaptainData : UpdateSidekickData;
+                    Action<SavedMemberData, bool> _highlightAction = UpdateHighlightItem;
+                    item.InitializeCharacterItem(_newMemberData, _pressedAction, _highlightAction);
 
                     m_activeBasicItems.Add(item);
                 }
@@ -512,22 +525,22 @@ namespace Runtime.UI.DataModels
             }
         }
 
-        private void OnDeleteCaptainData(CharacterStatsBase _character)
+        private void OnDeleteCaptainData(SavedMemberData _memberData)
         {
-            if (m_selectedTeam.Contains(_character))
+            if (m_selectedTeam.Contains(_memberData))
             {
-                m_selectedTeam.Remove(_character);
+                m_selectedTeam.Remove(_memberData);
             }
             
             CheckTeamThreshold();
             GenerateAllCaptainSelect();
         }
 
-        private void OnDeleteSidekickData(CharacterStatsBase _character)
+        private void OnDeleteSidekickData(SavedMemberData _memberData)
         {
-            if (m_selectedTeam.Contains(_character))
+            if (m_selectedTeam.Contains(_memberData))
             {
-                m_selectedTeam.Remove(_character);
+                m_selectedTeam.Remove(_memberData);
             }
             
             CheckTeamThreshold();
@@ -541,7 +554,7 @@ namespace Runtime.UI.DataModels
             
         }
 
-        private void UpdateCaptainData(CharacterStatsBase _character)
+        private void UpdateCaptainData(SavedMemberData _character)
         {
             if (m_characterDataItems.Count == 0)
             {
@@ -565,7 +578,7 @@ namespace Runtime.UI.DataModels
             }
         }
 
-        private void UpdateSidekickData(CharacterStatsBase _character)
+        private void UpdateSidekickData(SavedMemberData _character)
         {
             if (_character.IsNull())
             {
@@ -587,9 +600,9 @@ namespace Runtime.UI.DataModels
             CheckTeamThreshold();
         }
 
-        private void UpdateHighlightItem(CharacterStatsBase _character, bool _isHighlight)
+        private void UpdateHighlightItem(SavedMemberData _memberData, bool _isHighlight)
         {
-            if (_character.IsNull())
+            if (_memberData.IsNull())
             {
                 return;
             }
@@ -603,7 +616,7 @@ namespace Runtime.UI.DataModels
 
             if (_isHighlight)
             {
-                displayToUpdate.AssignData(_character, false);
+                displayToUpdate.AssignData(_memberData, false);
             }
             else
             {

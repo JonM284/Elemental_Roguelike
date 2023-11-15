@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Bruiser
   m_EditorClassIdentifier: 
   classType: 2
-  radius: 1.25
+  radius: 1.5
   HealthMin: 100
   HealthMax: 180
   ShieldMin: 78
@@ -28,6 +28,38 @@ MonoBehaviour:
   DamageStatMax: 95
   passiveColor: {r: 1, g: 0.18396229, b: 0.18396229, a: 1}
   darkColor: {r: 0.8490566, g: 0.41251338, b: 0.41251338, a: 1}
+  barColor: {r: 1, g: 0.16509432, b: 0.16509432, a: 1}
   moveDistance: 4
   tackleDamageAmount: 25
   classGUID: f9c671df-37d9-4f0b-8e12-5574898f1a5a
+  _iconsByOption:
+  - _option: 0
+    _icons:
+    - {fileID: -653559470, guid: f8f8b5d1df2aab74f9e303be46b40790, type: 3}
+    - {fileID: -1039388754, guid: f8f8b5d1df2aab74f9e303be46b40790, type: 3}
+    - {fileID: -1776976056, guid: f8f8b5d1df2aab74f9e303be46b40790, type: 3}
+    - {fileID: -1990797185, guid: f8f8b5d1df2aab74f9e303be46b40790, type: 3}
+  - _option: 1
+    _icons:
+    - {fileID: -793714367, guid: d8f6f65872b6116409e3122932a04719, type: 3}
+    - {fileID: 753423688, guid: d8f6f65872b6116409e3122932a04719, type: 3}
+    - {fileID: 453016813, guid: d8f6f65872b6116409e3122932a04719, type: 3}
+    - {fileID: -1896432960, guid: d8f6f65872b6116409e3122932a04719, type: 3}
+  - _option: 2
+    _icons:
+    - {fileID: 231120218, guid: 7830c2159d865934a921c2c65c443146, type: 3}
+    - {fileID: 669758954, guid: 7830c2159d865934a921c2c65c443146, type: 3}
+    - {fileID: -301508145, guid: 7830c2159d865934a921c2c65c443146, type: 3}
+    - {fileID: 262243143, guid: 7830c2159d865934a921c2c65c443146, type: 3}
+  - _option: 3
+    _icons:
+    - {fileID: 1432213729, guid: 24c51a662933b4b4680ba5ad765edee7, type: 3}
+    - {fileID: 466097800, guid: 24c51a662933b4b4680ba5ad765edee7, type: 3}
+    - {fileID: 1812546694, guid: 24c51a662933b4b4680ba5ad765edee7, type: 3}
+    - {fileID: -820216280, guid: 24c51a662933b4b4680ba5ad765edee7, type: 3}
+  - _option: 4
+    _icons:
+    - {fileID: -123354709, guid: 35a08ba0eb231464ab6f999c5e2f7ce3, type: 3}
+    - {fileID: -863360176, guid: 35a08ba0eb231464ab6f999c5e2f7ce3, type: 3}
+    - {fileID: 1621526614, guid: 35a08ba0eb231464ab6f999c5e2f7ce3, type: 3}
+    - {fileID: 1774758939, guid: 35a08ba0eb231464ab6f999c5e2f7ce3, type: 3}

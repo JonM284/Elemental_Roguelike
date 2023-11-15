@@ -1,8 +1,23 @@
-﻿using Runtime.Character;
+﻿using System;
+using System.Collections.Generic;
+using Runtime.Character;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace Data.CharacterData
 {
+
+    #region Nested Classes
+
+    [Serializable]
+    public class IconByColorblindOption
+    {
+        public ColorblindOptions _option;
+        public List<Sprite> _icons = new List<Sprite>();
+    }
+
+    #endregion
+    
     [CreateAssetMenu(menuName = "Custom Data/Character Class Data")]
     public class CharacterClassData : ScriptableObject
     {
@@ -11,7 +26,7 @@ namespace Data.CharacterData
 
         [Header("Passive Base")] public float radius;
 
-        [Header("Vitality Stats")] 
+        [Header("Stats for Roguelike")] 
         [Range(30, 100)] [SerializeField] private int HealthMin = 30;
         [Range(30, 200)] [SerializeField] private int HealthMax = 100;
         
@@ -40,12 +55,16 @@ namespace Data.CharacterData
 
         public Color darkColor;
 
+        public Color barColor;
+
         [SerializeField] private float moveDistance;
 
         [SerializeField] private int tackleDamageAmount;
 
         public string classGUID;
 
+        public List<IconByColorblindOption> _iconsByOption = new List<IconByColorblindOption>();
+        
         #region Class Implementation
 
         [ContextMenu("Generate GUID")]

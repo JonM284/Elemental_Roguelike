@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using Project.Scripts.Utils;
 using UnityEngine;
@@ -31,6 +32,16 @@ namespace Runtime.GameControllers
         private void Awake()
         {
             Initialize();
+        }
+
+        private void OnDestroy()
+        {
+            CleanupControllers();
+        }
+
+        private void OnApplicationQuit()
+        {
+            CleanupControllers();
         }
 
         #endregion

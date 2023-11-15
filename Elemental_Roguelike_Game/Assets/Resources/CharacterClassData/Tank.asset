@@ -1,0 +1,65 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a3174c979e6e4c85960b7c354792b687, type: 3}
+  m_Name: Tank
+  m_EditorClassIdentifier: 
+  classType: 4
+  radius: 1.25
+  HealthMin: 100
+  HealthMax: 180
+  ShieldMin: 78
+  ShieldMax: 125
+  AgilityStatMin: 45
+  AgilityStatMax: 60
+  ShootingStatMin: 38
+  ShootingStatMax: 60
+  PassingStatMin: 34
+  PassingStatMax: 50
+  DamageStatMin: 78
+  DamageStatMax: 95
+  passiveColor: {r: 1, g: 0.6096738, b: 0.18431371, a: 1}
+  darkColor: {r: 0.8509804, g: 0.6327753, b: 0.4117647, a: 1}
+  barColor: {r: 1, g: 0.5687999, b: 0.16470587, a: 1}
+  moveDistance: 4
+  tackleDamageAmount: 10
+  classGUID: 35137993-179e-4b5c-9988-f6dc92a876c7
+  _iconsByOption:
+  - _option: 0
+    _icons:
+    - {fileID: -1184048688, guid: 480cfaed1a8561944a87afe0c88229c8, type: 3}
+    - {fileID: -1317019060, guid: 480cfaed1a8561944a87afe0c88229c8, type: 3}
+    - {fileID: 1142021304, guid: 480cfaed1a8561944a87afe0c88229c8, type: 3}
+    - {fileID: 1640692230, guid: 480cfaed1a8561944a87afe0c88229c8, type: 3}
+  - _option: 1
+    _icons:
+    - {fileID: 745304770, guid: d17b33475bf2058439022c43eb1aabf5, type: 3}
+    - {fileID: 1001201161, guid: d17b33475bf2058439022c43eb1aabf5, type: 3}
+    - {fileID: 1506205506, guid: d17b33475bf2058439022c43eb1aabf5, type: 3}
+    - {fileID: -1925243963, guid: d17b33475bf2058439022c43eb1aabf5, type: 3}
+  - _option: 2
+    _icons:
+    - {fileID: -771732524, guid: 8a040f992dd3eb844bad9585ada1076f, type: 3}
+    - {fileID: -712310822, guid: 8a040f992dd3eb844bad9585ada1076f, type: 3}
+    - {fileID: -1888864129, guid: 8a040f992dd3eb844bad9585ada1076f, type: 3}
+    - {fileID: -1238431387, guid: 8a040f992dd3eb844bad9585ada1076f, type: 3}
+  - _option: 3
+    _icons:
+    - {fileID: 1055314203, guid: 6e242b1564b18ec40b4add7d8bd17a4b, type: 3}
+    - {fileID: 1814854272, guid: 6e242b1564b18ec40b4add7d8bd17a4b, type: 3}
+    - {fileID: -1477220842, guid: 6e242b1564b18ec40b4add7d8bd17a4b, type: 3}
+    - {fileID: 1855512396, guid: 6e242b1564b18ec40b4add7d8bd17a4b, type: 3}
+  - _option: 4
+    _icons:
+    - {fileID: -1393270620, guid: 577ae233c3162eb498b62d89108012fa, type: 3}
+    - {fileID: -500195607, guid: 577ae233c3162eb498b62d89108012fa, type: 3}
+    - {fileID: -1605617212, guid: 577ae233c3162eb498b62d89108012fa, type: 3}
+    - {fileID: 11059654, guid: 577ae233c3162eb498b62d89108012fa, type: 3}

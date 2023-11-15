@@ -18,6 +18,8 @@ namespace Runtime.Character
             side = ScriptableDataController.Instance.GetSideByGuid(characterSideRef);
             m_characterStatsBase = _characterStats;
 
+            InitializeCharacterMarker();
+            
             if (characterVisuals.isMeeple)
             {
                 characterVisuals.InitializeMeepleCharacterVisuals(m_characterStatsBase.typing);

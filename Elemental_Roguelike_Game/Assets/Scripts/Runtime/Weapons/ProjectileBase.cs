@@ -158,10 +158,11 @@ namespace Runtime.Weapons
 
                     if (m_projectileRef.isStopReaction)
                     {
-                        collider.TryGetComponent(out CharacterClassManager classManager);
-                        if (!classManager.IsNull())
+                        collider.TryGetComponent(out CharacterBase _character);
+                        if (_character)
                         {
-                            classManager.SetAbleToReact(false);
+                            _character.SetCharacterUsable(false);
+                            _character.characterClassManager.SetAbleToReact(false);
                         }
                     }
 
@@ -224,7 +225,7 @@ namespace Runtime.Weapons
                         if(_character.characterMovement.isKnockedBack){
                             continue;
                         }
-                        
+
                         _character.characterMovement.ApplyKnockback(8f, _character.transform.position - transform.position, 0.5f);
                     }
                 }

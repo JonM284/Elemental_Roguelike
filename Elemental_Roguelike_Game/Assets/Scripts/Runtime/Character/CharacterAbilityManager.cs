@@ -22,7 +22,10 @@ namespace Runtime.Character
         {
             public float roundCooldownPercentage;
             public int roundCooldown;
+            public int maxRoundCooldown;
             public bool canUse;
+            public float abilityUseRange;
+            public float abilitySize;
             public Ability ability;
         }
         
@@ -145,6 +148,20 @@ namespace Runtime.Character
             return m_assignedAbilities;
         }
 
+        public void ChangeAbilityCooldown(float _percentReduce)
+        {
+            if (m_assignedAbilities.Count == 0)
+            {
+                return;
+            }
+
+            foreach (var _assignedAbility in m_assignedAbilities)
+            {
+                var _reduceAmount = Mathf.CeilToInt(_assignedAbility.ability.roundCooldownTimer * _percentReduce);
+                _assignedAbility.maxRoundCooldown -= _reduceAmount;
+            }
+        }
+
         public Ability GetAbilityAtIndex(int _index)
         {
             Mathf.Clamp(_index, 0, 1);
@@ -182,6 +199,7 @@ namespace Runtime.Character
                     ability = locatedAbility,
                     canUse = true,
                     roundCooldown = locatedAbility.roundCooldownTimer,
+                    maxRoundCooldown = locatedAbility.roundCooldownTimer,
                     roundCooldownPercentage = 1f
                 };
 
@@ -198,6 +216,9 @@ namespace Runtime.Character
                     ability = a,
                     canUse = true,
                     roundCooldown = a.roundCooldownTimer,
+                    maxRoundCooldown = a.roundCooldownTimer,
+                    abilityUseRange = a.range,
+                    abilitySize = a.abilitySize,
                     roundCooldownPercentage = 1f
                 };
 
@@ -246,7 +267,7 @@ namespace Runtime.Character
             m_assignedAbilities[_abilityIndex].ability.Initialize(this.gameObject);
             m_activeAbilityIndex = _abilityIndex;
             SetIndicators(true, m_assignedAbilities[_abilityIndex].ability.targetType == AbilityTargetType.DIRECTIONAL);
-            abilityRangeIndicator.transform.localScale = Vector3.one * (m_assignedAbilities[_abilityIndex].ability.range * 2);
+            abilityRangeIndicator.transform.localScale = Vector3.one * (m_assignedAbilities[_abilityIndex].abilityUseRange * 2);
 
             if (abilityUseCallback != null)
             {
@@ -282,7 +303,7 @@ namespace Runtime.Character
                     break;
                 case AbilityTargetType.LOCATION: case AbilityTargetType.FREE:
                     var direction = _position - transform.position;
-                    if (direction.magnitude > m_assignedAbilities[m_activeAbilityIndex].ability.range)
+                    if (direction.magnitude > m_assignedAbilities[m_activeAbilityIndex].abilityUseRange)
                     {
                         return;
                     }
@@ -290,7 +311,7 @@ namespace Runtime.Character
                     break;
                 case AbilityTargetType.DIRECTIONAL:
                     var localDirection = transform.InverseTransformDirection(_position - transform.position);
-                    var finalPoint = (localDirection.normalized * m_assignedAbilities[m_activeAbilityIndex].ability.range);
+                    var finalPoint = (localDirection.normalized * m_assignedAbilities[m_activeAbilityIndex].abilityUseRange);
                     
                     abilityDirectionIndicator.SetPosition(1, new Vector3(finalPoint.x, finalPoint.z, 0));
                     break;
@@ -433,11 +454,11 @@ namespace Runtime.Character
                 if (!aa.canUse)
                 {
                     aa.roundCooldown--;
-                    aa.roundCooldownPercentage = (float)aa.roundCooldown / aa.ability.roundCooldownTimer;
+                    aa.roundCooldownPercentage = (float)aa.roundCooldown / aa.maxRoundCooldown;
                     if (aa.roundCooldown <= 0)
                     {
                         aa.canUse = true;
-                        aa.roundCooldown = aa.ability.roundCooldownTimer;
+                        aa.roundCooldown = aa.maxRoundCooldown;
                     }
                 }
             });
@@ -476,7 +497,7 @@ namespace Runtime.Character
             var dir = _checkPos - transform.position;
             var magnitude = dir.magnitude;
 
-            if (magnitude <= m_assignedAbilities[m_activeAbilityIndex].ability.range)
+            if (magnitude <= m_assignedAbilities[m_activeAbilityIndex].abilityUseRange)
             {
                 return true;
             }

@@ -102,13 +102,27 @@ namespace Runtime.Character.AI
                             else
                             {
                                 //Is there a player blocking a shot to the goal?
-                                if (!HasPlayerBlockingRoute())
+                                if (!HasPlayerBlockingRoute() && !IsNearBruiserCharacter(enemyMovementRange))
                                 {
                                     Debug.Log("<color=orange>Striker has player blocking route</color>");
 
                                     yield return StartCoroutine(C_PositionToScore());
+                                }else if (!HasPlayerBlockingRoute() && IsNearBruiserCharacter(enemyMovementRange))
+                                {
+                                    if (HasPassableTeammate())
+                                    {
+                                        Debug.Log("<color=orange>Striker has passable teammates, trying to pass</color>");
+
+                                        yield return StartCoroutine(C_TryPass());
+                                    }
+                                    else //No Passible Teammate? Reposition
+                                    {
+                                        Debug.Log("<color=orange>Doesn't have passable teammates, positioning to score</color>");
+
+                                        yield return StartCoroutine(C_PositionToScore());
+                                    }
                                 }
-                                else //No player blocking shot
+                                else //Player blocking shot
                                 {
                                     //Check if there's a passable teammate
                                     if (HasPassableTeammate())

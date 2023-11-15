@@ -225,7 +225,7 @@ namespace Runtime.Character.Creations
 
             if (directionToBall.magnitude < m_detonationRadius)
             {
-                if (!ball.isThrown && ball.currentOwner.IsNull())
+                if (!ball.isControlled)
                 {
                     return true;
                 }

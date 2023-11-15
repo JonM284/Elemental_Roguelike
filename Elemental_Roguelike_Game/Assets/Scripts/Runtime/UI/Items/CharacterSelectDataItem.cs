@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using Data.CharacterData;
+using Data;
 using Project.Scripts.Utils;
 using TMPro;
 using UnityEngine;
@@ -27,9 +27,7 @@ namespace Runtime.UI.Items
         [SerializeField] private Image nameBackground;
         
         [SerializeField] private TMP_Text characterNameText;
-
-        [SerializeField] private TMP_Text classTypeText;
-
+        
         [SerializeField] private Color disabledColorLight;
 
         [SerializeField] private Color disabledColorDark;
@@ -49,7 +47,7 @@ namespace Runtime.UI.Items
 
         #region Private Fields
 
-        private Action<CharacterStatsBase> onDeleteCallback;
+        private Action<SavedMemberData> onDeleteCallback;
 
         private bool m_isCaptain;
 
@@ -57,7 +55,7 @@ namespace Runtime.UI.Items
 
         #region Accessor
 
-        public CharacterStatsBase assignedData { get; private set; }
+        public SavedMemberData assignedData { get; private set; }
 
         public bool isConfirmed { get; private set; }
 
@@ -65,7 +63,7 @@ namespace Runtime.UI.Items
 
         #region Class Implementation
 
-        public void Initialize(bool _isCaptain, Action<CharacterStatsBase> deleteCallback)
+        public void Initialize(bool _isCaptain, Action<SavedMemberData> deleteCallback)
         {
             activeInfoHolder.SetActive(false);
 
@@ -83,9 +81,9 @@ namespace Runtime.UI.Items
         }
         
         
-        public void AssignData(CharacterStatsBase _character, bool _isConfirmed)
+        public void AssignData(SavedMemberData _characterData, bool _isConfirmed)
         {
-            if (_character.IsNull())
+            if (_characterData.IsNull())
             {
                 return;
             }
@@ -94,30 +92,32 @@ namespace Runtime.UI.Items
             
             activeInfoHolder.SetActive(true);
 
-            assignedData = _character;
+            assignedData = _characterData;
 
-            frameBackground.color = assignedData.classTyping.darkColor;
+            frameBackground.color = assignedData.m_characterStatsBase.classTyping.darkColor;
 
-            nameBackground.color = assignedData.classTyping.passiveColor;
+            nameBackground.color = assignedData.m_characterStatsBase.classTyping.passiveColor;
             
-            if (!_character.characterImage.IsNull() && !_character.characterImage.IsNull())
+            if (!_characterData.m_characterStatsBase.characterImage.IsNull() && !_characterData.m_characterStatsBase.characterImage.IsNull())
             {
-                characterImage.sprite = _character.characterImage;
+                characterImage.sprite = _characterData.m_characterStatsBase.characterImage;
             }
             
-            characterNameText.text = _character.characterName;
+            characterNameText.text = _characterData.m_characterStatsBase.characterName;
             
-            classTypeText.text = $"<u>Class :</u> \n {_character.classTyping.classType}";
+            agilityBar.color = _characterData.m_characterStatsBase.classTyping.barColor;
+            shootingBar.color = _characterData.m_characterStatsBase.classTyping.barColor;
+            passingBar.color = _characterData.m_characterStatsBase.classTyping.barColor;
+            tackleBar.color = _characterData.m_characterStatsBase.classTyping.barColor;
 
-            
-            agilityBar.fillAmount = _character.agilityScore / 100f;
-            shootingBar.fillAmount = _character.shootingScore / 100f;
-            passingBar.fillAmount = _character.passingScore / 100f;
-            tackleBar.fillAmount = _character.tackleScore / 100f;
+            agilityBar.fillAmount = _characterData.m_characterStatsBase.agilityScore / 100f;
+            shootingBar.fillAmount = _characterData.m_characterStatsBase.shootingScore / 100f;
+            passingBar.fillAmount = _characterData.m_characterStatsBase.passingScore / 100f;
+            tackleBar.fillAmount = _characterData.m_characterStatsBase.tackleScore / 100f;
 
             abilities.ForEach(g => g.SetActive(false));
             
-            for (int i = 0; i < assignedData.abilities.Count; i++)
+            for (int i = 0; i < assignedData.m_characterStatsBase.abilities.Count; i++)
             {
                abilities[i].SetActive(true);
             }
@@ -147,7 +147,7 @@ namespace Runtime.UI.Items
 
         public void OnHighlightAbility(int abilityIndex)
         {
-            var highlightedAbility = assignedData.abilities[abilityIndex];
+            var highlightedAbility = assignedData.m_characterStatsBase.abilities[abilityIndex];
             abilityDescriptionDisplay.SetActive(true);
             abilityDescriptionText.text = $"{highlightedAbility.abilityName}: <br> {highlightedAbility.abilityDescription} <br> " +
                                                          $"Target Type: {highlightedAbility.targetType} <br> Cooldown: {highlightedAbility.roundCooldownTimer} Turn(s)";
@@ -172,7 +172,6 @@ namespace Runtime.UI.Items
             assignedData = null;
             characterImage.sprite = null;
             characterNameText.text = "???";
-            classTypeText.text = string.Empty;
             agilityBar.fillAmount = 0;
             shootingBar.fillAmount = 0;
             passingBar.fillAmount = 0;

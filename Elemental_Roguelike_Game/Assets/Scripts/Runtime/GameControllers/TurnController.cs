@@ -182,7 +182,7 @@ namespace Runtime.GameControllers
         private List<CharacterBase> GetAvailableTeamMembers()
         {
             var activeTeam = CommonUtils.ToList(GetActiveTeam());
-            return activeTeam.FindAll(cb => cb.characterActionPoints != 0);
+            return activeTeam.FindAll(cb => cb.characterActionPoints != 0 && cb.isAlive);
         }
 
         public void AddGoalieToTeam(CharacterBase _character)
@@ -359,7 +359,7 @@ namespace Runtime.GameControllers
             
             for (int i = 0; i < teamMembers.Count; i++)
             {
-                yield return StartCoroutine(CharacterGameController.Instance.C_CreateCharacter(teamMembers[i],
+                yield return StartCoroutine(CharacterGameController.Instance.C_CreateCharacter(teamMembers[i].m_characterStatsBase,
                     correctSide.startPositions[i].position, correctSide.startPositions[i].localEulerAngles));;
 
                 yield return null;
@@ -608,9 +608,9 @@ namespace Runtime.GameControllers
             m_isEndingTurn = true;
             yield return new WaitForSeconds(0.5f);
 
-            if (ball.isThrown)
+            if (ball.isMoving)
             {
-                yield return new WaitUntil(() => !ball.isThrown);
+                yield return new WaitUntil(() => !ball.isMoving);
             }
 
             if (m_hasScoredPoint)
@@ -685,6 +685,7 @@ namespace Runtime.GameControllers
                 EndTeamTurn();
             }
 
+            
 
             foreach (var currentMember in enemySide.teamMembers)
             {

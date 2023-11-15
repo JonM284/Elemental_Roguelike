@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d65853b8177c481cb924db1172ae6c32, type: 3}
   m_Name: Marked@Status
   m_EditorClassIdentifier: 
-  statusName: Marked
+  statusName: Vulnerable
   roundCooldownTimer: 2
   chanceToRemove: 15
   abilityElement: {fileID: 0}

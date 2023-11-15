@@ -652,7 +652,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   characterVisual: {fileID: 8668971941922561877}
-  highlightColor: {r: 1, g: 0.9529412, b: 0, a: 1}
+  highlightColor: {r: 1, g: 0.1462264, b: 0.1462264, a: 1}
   m_isMeeple: 0
   m_isChangeColor: 0
   meepleSkinnedMeshRenderers: []
@@ -682,6 +682,7 @@ MonoBehaviour:
   ballOwnerIndicator: {fileID: 2435286916875952432}
   activePlayerIndicator: {fileID: 4302769482804244790}
   ballThrowIndicator: {fileID: 0}
+  characterClassMarker: {fileID: 7314438531724270552}
   shakeDuration: 0.5
   shakeStrength: 1.25
   shakeVibrationAmount: 6
@@ -945,14 +946,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8832163117710542462}
-  m_LocalRotation: {x: -0.7071068, y: 0, z: 0, w: 0.7071068}
+  m_LocalRotation: {x: 0, y: 0.7071068, z: 0.7071068, w: 0}
   m_LocalPosition: {x: 0, y: -0.489, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2370821287291550995}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: -90, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: -90, y: 180, z: 0}
 --- !u!33 &3303483526067484016
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -981,7 +982,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 9edbfd80100e58b49b2918962d402204, type: 2}
+  - {fileID: 2100000, guid: 3c54ff595abf1f146a6b048892c32c6c, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1117,9 +1118,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -1526964690268444965, guid: c842b168df65b0241891f2435e066bb0,
         type: 3}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -1526964690268444965, guid: c842b168df65b0241891f2435e066bb0,
+        type: 3}
+      propertyPath: m_ReceiveShadows
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -1526964690268444965, guid: c842b168df65b0241891f2435e066bb0,
+        type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
-      objectReference: {fileID: 2100000, guid: 0bb37c681d2641b4ab8d0b4fbba894d6, type: 2}
+      objectReference: {fileID: 2100000, guid: 98b6d300b8c6ed54e99f1adb05451fc0, type: 2}
     - target: {fileID: -516098083770646512, guid: c842b168df65b0241891f2435e066bb0,
         type: 3}
       propertyPath: m_Name

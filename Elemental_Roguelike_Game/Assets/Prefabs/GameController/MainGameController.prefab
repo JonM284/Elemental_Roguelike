@@ -1681,7 +1681,52 @@ MonoBehaviour:
   m_statuses: []
   m_fenceAppliedStatus: {fileID: 11400000, guid: 46dd74a657dd63042846602feb04e751,
     type: 2}
-  m_fenceDamage: 60
+  m_fenceDamage: 10
+--- !u!1 &7249545998759017721
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3024691082341719043}
+  - component: {fileID: 8019584484958650787}
+  m_Layer: 0
+  m_Name: SettingsController
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3024691082341719043
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7249545998759017721}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7876103537793370367}
+  m_RootOrder: 20
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8019584484958650787
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7249545998759017721}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9eeddc5d5b4445a8bd817501b8e17ecf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _settingsData: {fileID: 11400000, guid: e113e21d7c8623440a2cd63b2e07f244, type: 2}
 --- !u!1 &7266917716780839065
 GameObject:
   m_ObjectHideFlags: 0
@@ -1869,6 +1914,7 @@ Transform:
   - {fileID: 5655869210350599245}
   - {fileID: 6555138947183235621}
   - {fileID: 7462031916866995229}
+  - {fileID: 3024691082341719043}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1905,6 +1951,7 @@ MonoBehaviour:
   - {fileID: 1830122648448762833}
   - {fileID: 5724040163436889605}
   - {fileID: 6437460423665869818}
+  - {fileID: 8019584484958650787}
 --- !u!1 &7876103538364230318
 GameObject:
   m_ObjectHideFlags: 0
