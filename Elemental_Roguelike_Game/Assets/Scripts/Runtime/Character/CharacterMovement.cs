@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Data.Elements;
 using Data.Sides;
 using Project.Scripts.Utils;
@@ -82,15 +83,15 @@ namespace Runtime.Character
         private Vector3 m_knockbackDir;
 
         private CharacterController m_characterController;
-    
-        private NavMeshPath m_navMeshPath;
-
+        
         private CharacterSide m_characterSide;
         
         private Transform m_goalPivotTransform;
 
         private CharacterBase m_characterBase;
-        
+
+        private List<Vector3> movementPath = new List<Vector3>();
+
         #endregion
     
         #region Accessors
@@ -205,25 +206,6 @@ namespace Runtime.Character
             }
         }
 
-        public void MarkMovementLocation(Vector3 _position)
-        {
-            if (movementPositionIndicator.IsNull())
-            {
-                return;
-            }
-
-            var pivotPos = m_isGoalie ? pivotTransform.position : transform.position;
-
-            var distanceToPos = _position - pivotPos;
-           
-            if (distanceToPos.magnitude >= battleMoveDistance)
-            {
-                return;
-            }
-            
-            movementPositionIndicator.transform.position = new Vector3(_position.x, m_floorOffset, _position.z);
-        }
-
         public void MoveCharacter(Vector3 _movePosition, bool _isTackle)
         {
             if (!m_canMove || isMoving)
@@ -232,35 +214,22 @@ namespace Runtime.Character
                 return;
             }
 
-            if (m_navMeshPath == null)
-            {
-                m_navMeshPath = new NavMeshPath();
-            }
-            
-            //Clear any previous paths
-            if (m_navMeshPath.corners.Length > 0)
-            {
-                m_navMeshPath.ClearCorners();
-            }
+            movementPath = GridController.Instance.GetPath(transform.position, _movePosition);
 
-            var adjustedEndPos = _movePosition;
-
-            NavMesh.SamplePosition(transform.position, out NavMeshHit playerPosition, 100, NavMesh.AllAreas);
-            var hasPath = NavMesh.CalculatePath(playerPosition.position, adjustedEndPos, NavMesh.AllAreas, m_navMeshPath);
-            if (!hasPath)
+            if (movementPath.IsNull())
             {
-                Debug.Log("<color=red>No Path</color>");
+                Debug.Log("DIDN'T CREATE PATH", gameObject);
                 return;
             }
 
             Debug.Log("Has Created Path", gameObject);
 
-            SetIndicators(false);
+            //SetIndicators(false);
             m_isPerformingMelee = _isTackle;
             m_currentMovePointIndex = 1;
-            m_currentMovePoint = m_navMeshPath.corners[m_currentMovePointIndex];
-            m_startPos = playerPosition.position;
-            m_finalPos = _movePosition;
+            m_currentMovePoint = movementPath[0];
+            m_startPos = transform.position;
+            m_finalPos = movementPath[^1]; //^1 = Length - 1
             m_isMovingOnPath = true;
 
             Debug.Log("Setting to moving on path");
@@ -284,7 +253,7 @@ namespace Runtime.Character
 
             if (m_isPerformingMelee)
             {
-                if (m_currentMovePointIndex == m_navMeshPath.corners.Length - 1)
+                if (m_currentMovePointIndex == movementPath.Count - 1)
                 {
                     var percentage = (transform.position - m_startPos).magnitude / (m_finalPos - m_startPos).magnitude;
 
@@ -308,10 +277,10 @@ namespace Runtime.Character
             } else
             {
                 m_currentMovePointIndex++;
-                if (m_currentMovePointIndex < m_navMeshPath.corners.Length)
+                if (m_currentMovePointIndex < movementPath.Count)
                 {
-                    m_currentMovePoint = m_navMeshPath.corners[m_currentMovePointIndex];
-                    m_startPos = m_navMeshPath.corners[m_currentMovePointIndex - 1];
+                    m_currentMovePoint = movementPath[m_currentMovePointIndex];
+                    m_startPos = movementPath[m_currentMovePointIndex - 1];
                 }
                 else
                 {
@@ -347,9 +316,9 @@ namespace Runtime.Character
         {
             isInReaction = _isInReaction;
             
-            if (!m_navMeshPath.IsNull() && m_navMeshPath.corners.Length > 0)
+            if (!movementPath.IsNull() && movementPath.Count > 0)
             {
-                m_navMeshPath.ClearCorners();
+                movementPath.Clear();
             }
 
             m_isMovingOnPath = false;
@@ -449,14 +418,14 @@ namespace Runtime.Character
             
             m_canMove = _canMove;
 
-            SetIndicators(_canMove);
+            //SetIndicators(_canMove);
 
             if (!_canMove)
             {
                 return;
             }
             
-            movementRangeIndicator.transform.localScale = Vector3.one * (battleMoveDistance * 2);
+            //movementRangeIndicator.transform.localScale = Vector3.one * (battleMoveDistance * 2);
             
             if (_beginningAction != null)
             {
@@ -476,9 +445,9 @@ namespace Runtime.Character
 
         public void TeleportCharacter(Vector3 teleportPosition)
         {
-            if (!m_navMeshPath.IsNull() && m_navMeshPath.corners.Length > 0)
+            if (!movementPath.IsNull() && movementPath.Count > 0)
             {
-                m_navMeshPath.ClearCorners();
+                movementPath.Clear();
             }
 
             if (m_isMovingOnPath)

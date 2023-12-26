@@ -478,25 +478,6 @@ namespace Runtime.Character
             EndTurn();
         }
 
-        public void MarkHighlightArea(Vector3 _selectedPosition)
-        {
-            if (!isActiveCharacter || !isDoingAction)
-            {
-                return;
-            }
-
-            if (characterMovement.isUsingMoveAction)
-            {
-                characterMovement.MarkMovementLocation(_selectedPosition);
-            }else if (characterAbilityManager.isUsingAbilityAction)
-            {
-                characterAbilityManager.MarkAbility(_selectedPosition);
-            }else if (isSetupThrowBall)
-            {
-                MarkThrowBall(_selectedPosition);
-            }
-        }
-
         public void CheckAllAction(Vector3 _selectedPosition, bool _isReaction)
         {
             if (!isActiveCharacter && !_isReaction)

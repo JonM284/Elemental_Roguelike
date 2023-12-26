@@ -102,7 +102,6 @@ namespace Runtime.Submodules
                 selectable.OnHover();
             }
             
-            activeCharacter.MarkHighlightArea(hit.point);
         }
 
         private void CheckHover()
