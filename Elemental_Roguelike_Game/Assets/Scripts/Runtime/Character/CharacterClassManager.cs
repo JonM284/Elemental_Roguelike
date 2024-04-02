@@ -191,6 +191,7 @@ namespace Runtime.Character
 
             //Radius is 1/2 scale, scale is diameter
             var doubleRadiusSize = passiveRadius * 2;
+            
             m_passiveIndicator.transform.localScale =
                 new Vector3(doubleRadiusSize, doubleRadiusSize, doubleRadiusSize);
             
@@ -1055,7 +1056,7 @@ namespace Runtime.Character
 
         public void ChangeMaxScore(CharacterStatsEnum _desiredStat, int newAmount)
         {
-            Mathf.Clamp(newAmount,0, 100);
+            Mathf.Clamp(newAmount,1, CharacterGameController.Instance.GetStatMax());
             switch (_desiredStat)
             {
                 case CharacterStatsEnum.AGILITY:

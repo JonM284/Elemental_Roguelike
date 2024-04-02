@@ -18,14 +18,14 @@ MonoBehaviour:
   HealthMax: 115
   ShieldMin: 50
   ShieldMax: 100
-  AgilityStatMin: 56
-  AgilityStatMax: 74
-  ShootingStatMin: 40
-  ShootingStatMax: 60
-  PassingStatMin: 71
-  PassingStatMax: 84
-  DamageStatMin: 50
-  DamageStatMax: 70
+  AgilityStatMin: 8
+  AgilityStatMax: 8
+  ShootingStatMin: 8
+  ShootingStatMax: 8
+  PassingStatMin: 8
+  PassingStatMax: 8
+  DamageStatMin: 8
+  DamageStatMax: 8
   passiveColor: {r: 0.30989075, g: 1, b: 0.23137254, a: 1}
   darkColor: {r: 0.45467556, g: 0.7830189, b: 0.41736382, a: 1}
   barColor: {r: 0.24143542, g: 0.9716981, b: 0.19708972, a: 1}

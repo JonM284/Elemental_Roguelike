@@ -18,10 +18,10 @@ MonoBehaviour:
   baseHealth: 100
   baseShields: 100
   tackleDamageAmount: 25
-  tackleScore: 40
-  agilityScore: 70
-  shootingScore: 40
-  passingScore: 90
+  tackleScore: 6
+  agilityScore: 6
+  shootingScore: 6
+  passingScore: 6
   characterColor: {r: 0.9607843, g: 0.30588236, b: 0.30588236, a: 1}
   characterColorDark: {r: 0.6698113, g: 0.21168563, b: 0.21168563, a: 1}
   typing: {fileID: 11400000, guid: c9878cd57e22d2f4294bb226cbe069b6, type: 2}

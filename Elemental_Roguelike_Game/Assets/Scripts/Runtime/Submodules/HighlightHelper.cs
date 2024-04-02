@@ -94,10 +94,7 @@ namespace Runtime.Submodules
             
             if (currentHovered != selectable)
             {
-                if (currentHovered != null)
-                {
-                    currentHovered.OnUnHover();
-                }
+                currentHovered?.OnUnHover();
                 currentHovered = selectable;
                 selectable.OnHover();
             }
@@ -134,6 +131,7 @@ namespace Runtime.Submodules
 
             if (currentHovered != selectable)
             {
+                Debug.Log($"Change Hover");
                 CheckHoveredObject();
                 currentHovered = selectable;
                 selectable.OnHover();

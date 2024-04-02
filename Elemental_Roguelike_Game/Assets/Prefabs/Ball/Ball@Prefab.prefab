@@ -259,11 +259,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 328a306bee0a4824a4b2b62448aaf013, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_dragSpeed: 4
   m_wallRayLegnth: 0.3
   wallLayers:
     serializedVersion: 2
     m_Bits: 640
+  m_fullDecelTime: 1.9
   playerCheckRadius: 0.25
   playerCheckLayer:
     serializedVersion: 2

@@ -26,8 +26,8 @@ namespace Project.Scripts.Utils
         }
         
         public static bool IsNull(this object obj) {
-            var isObjectNull = obj == null || obj.Equals(null);
-            if (isObjectNull) {
+
+            if (obj == null || obj.Equals(null)) {
                 return true;
             }
 

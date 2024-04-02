@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections;
-using Data;
 using Data.CharacterData;
 using Data.Elements;
 using Data.Sides;
@@ -8,11 +7,9 @@ using Project.Scripts.Utils;
 using Runtime.Damage;
 using Runtime.GameControllers;
 using Runtime.Gameplay;
-using Runtime.Managers;
 using Runtime.Selection;
 using Runtime.Status;
 using Runtime.VFX;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
 using Utils;
@@ -270,9 +267,9 @@ namespace Runtime.Character
 
         public bool canPickupBall => m_canPickupBall && !characterMovement.isKnockedBack;
 
-        public float shotStrength => (characterClassManager.currentMaxShootingScore/100f) * shootSpeed;
+        public float shotStrength => (characterClassManager.currentMaxShootingScore/(float)CharacterGameController.Instance.GetStatMax()) * shootSpeed;
 
-        public float passStrength => (characterClassManager.currentMaxPassingScore / 100f) * shootSpeed;
+        public float passStrength => (characterClassManager.currentMaxPassingScore / (float)CharacterGameController.Instance.GetStatMax()) * shootSpeed;
 
         public bool isSilenced => !m_canUseAbilities;
 
@@ -722,6 +719,7 @@ namespace Runtime.Character
         {
             characterActionPoints--;
             CharacterUsedActionPoint?.Invoke(this, characterActionPoints);
+            
             Debug.Log($"<color=yellow>Used action point // Action Points:{characterActionPoints} left</color>");
             
             if (characterActionPoints == 0)
@@ -986,7 +984,7 @@ namespace Runtime.Character
             {
                 var _direction = transform.position - _knockbackAttacker.position;
                 
-                var _knockbackForce = (characterClassManager.currentMaxTacklingScore / 100f) * 10;
+                var _knockbackForce = (characterClassManager.currentMaxTacklingScore / CharacterGameController.Instance.GetStatMax()) * 10;
 
                 if (isGoalie)
                 {

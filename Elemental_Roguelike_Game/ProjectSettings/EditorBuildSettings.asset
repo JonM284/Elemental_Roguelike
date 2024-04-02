@@ -17,6 +17,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/CaveArena1.unity
     guid: bd78beba8bea6bf4c9404d59cf2cbfd1
+  - enabled: 1
+    path: Assets/Scenes/MultiplayerScenes/MultiplayerMenu.unity
+    guid: 25f33dcbfb907c745ad6f766558bbee6
   m_configObjects:
     com.unity.addressableassets: {fileID: 11400000, guid: 40a9856b4e805c844915adb367850093,
       type: 2}

@@ -2914,25 +2914,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c8ebffe7556046caa93208fb8ef3d8ce, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  highlightObject: {fileID: 2844005431020382909}
   activeInfoHolder: {fileID: 3341043954000565301}
-  deleteCharacterDescription: {fileID: 712069292996444989}
-  captainStar: {fileID: 1754520017304888344}
   characterImage: {fileID: 1215907451109652885}
-  frameBackground: {fileID: 5339592913708492019}
   nameBackground: {fileID: 3627090605238895309}
   characterNameText: {fileID: 7494171702649581866}
-  disabledColorLight: {r: 0.5377358, g: 0.5377358, b: 0.5377358, a: 1}
   disabledColorDark: {r: 0.2735849, g: 0.2735849, b: 0.2735849, a: 1}
   abilities:
   - {fileID: 3682511357518250639}
   - {fileID: 5951389267896898286}
   abilityDescriptionDisplay: {fileID: 6133204972731993033}
   abilityDescriptionText: {fileID: 1087042932990934856}
-  agilityBar: {fileID: 992346991244787875}
-  shootingBar: {fileID: 6681686963433037715}
-  passingBar: {fileID: 3443508560630023230}
-  tackleBar: {fileID: 4762690742629549012}
+  m_agilityBarImages: []
+  m_shootingBarImages: []
+  m_passingBarImages: []
+  m_tackleBarImages: []
 --- !u!1 &2398839133314006288
 GameObject:
   m_ObjectHideFlags: 0

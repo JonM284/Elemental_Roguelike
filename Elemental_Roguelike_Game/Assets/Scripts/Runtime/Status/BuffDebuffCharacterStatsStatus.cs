@@ -12,7 +12,8 @@ namespace Runtime.Status
         public CharacterStatsEnum targetStat = CharacterStatsEnum.AGILITY;
 
         [Tooltip("Can be + or -, + = BUFF, - = DEBUFF")]
-        public int amountToChangeBy; 
+        [Range(-10,10)]
+        public int amountToChangeBy = 0; 
         
         [Tooltip("Does the stat continuously go up or down while the status is active?")]
         public bool isChangeOverTime;

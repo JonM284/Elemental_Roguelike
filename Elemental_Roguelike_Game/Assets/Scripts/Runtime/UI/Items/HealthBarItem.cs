@@ -86,17 +86,9 @@ namespace Runtime.UI.Items
 
         public UnityEngine.Camera cameraRef => CameraUtils.GetMainCamera();
 
-        private RectTransform rectTransform => CommonUtils.GetRequiredComponent(ref m_rect, () =>
-        {
-            var rt = GetComponent<RectTransform>();
-            return rt;
-        });
+        private RectTransform rectTransform => CommonUtils.GetRequiredComponent(ref m_rect, GetComponent<RectTransform>);
 
-        private Transform characterFollowTransform => CommonUtils.GetRequiredComponent(ref m_healthBarFollow, () =>
-        {
-            var t = m_associatedCharacter.characterLifeManager.healthBarFollowPos;
-            return t;
-        });
+        private Transform characterFollowTransform => CommonUtils.GetRequiredComponent(ref m_healthBarFollow, () => m_associatedCharacter.characterLifeManager.healthBarFollowPos);
 
         #endregion
 

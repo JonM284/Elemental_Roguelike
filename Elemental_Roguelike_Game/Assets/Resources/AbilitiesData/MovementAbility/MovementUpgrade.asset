@@ -16,12 +16,14 @@ MonoBehaviour:
   abilityDescription: Increse character range of movement by (0).
   abilityGUID: a0212110-8283-4653-b41b-b878a85eaa1d
   roundCooldownTimer: 3
+  abilityType: 0
   targetType: 4
   range: 1
+  abilitySize: 1
   abilityAnimationOverride: {fileID: 0}
   playVFXAtTransform: 0
   abilityIcon: {fileID: 0}
   abilityVFX: {fileID: 0}
   abilityParameters:
   - {fileID: 11400000, guid: 2eb259194d5e9ea4d8e45c3b81473bb1, type: 2}
-  statusEffect: {fileID: 0}
+  statusEffect: {fileID: 11400000, guid: d3b2df6c4cee3cc42b6f257ed516f14b, type: 2}

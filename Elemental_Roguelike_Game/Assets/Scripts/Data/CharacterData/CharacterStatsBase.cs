@@ -32,18 +32,22 @@ namespace Data.CharacterData
         public int tackleDamageAmount = 15;
         
         [Header("Stats")]
+        
         [Tooltip("tackle score and damage")]
-        [Range(30,100)]
-        public int tackleScore = 30;
+        [Range(1,10)]
+        public int tackleScore = 10;
+        
         [Tooltip("movement and dodge tackle reaction")]
-        [Range(30,100)]
-        public int agilityScore = 30;
+        [Range(1,10)]
+        public int agilityScore = 10;
+        
         [Tooltip("throw ball for shot distance")]
-        [Range(30,100)]
-        public int shootingScore = 30;
+        [Range(1,10)]
+        public int shootingScore = 10;
+       
         [Tooltip("throw ball for pass distance")]
-        [Range(30,100)]
-        public int passingScore = 30;
+        [Range(1,10)]
+        public int passingScore = 10;
 
         [Tooltip("Character associated color")]
         public Color characterColor = Color.white;

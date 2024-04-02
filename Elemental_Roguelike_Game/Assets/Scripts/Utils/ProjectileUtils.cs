@@ -1,6 +1,4 @@
-﻿using System;
-using Data;
-using Runtime.Character;
+﻿using Data;
 using Runtime.GameControllers;
 using Runtime.Weapons;
 using UnityEngine;

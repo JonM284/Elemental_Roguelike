@@ -18,17 +18,17 @@ MonoBehaviour:
   HealthMax: 80
   ShieldMin: 70
   ShieldMax: 100
-  AgilityStatMin: 63
-  AgilityStatMax: 79
-  ShootingStatMin: 28
-  ShootingStatMax: 49
-  PassingStatMin: 83
-  PassingStatMax: 96
-  DamageStatMin: 30
-  DamageStatMax: 48
-  passiveColor: {r: 1, g: 0.48584908, b: 0.97168773, a: 1}
-  darkColor: {r: 0.8207547, g: 0.56910825, b: 0.8073079, a: 1}
-  barColor: {r: 0.9811321, g: 0.22677112, b: 0.94082254, a: 1}
+  AgilityStatMin: 8
+  AgilityStatMax: 8
+  ShootingStatMin: 8
+  ShootingStatMax: 8
+  PassingStatMin: 8
+  PassingStatMax: 8
+  DamageStatMin: 8
+  DamageStatMax: 8
+  passiveColor: {r: 0.48627448, g: 0.7761725, b: 1, a: 1}
+  darkColor: {r: 0.28475437, g: 0.5213284, b: 0.745283, a: 1}
+  barColor: {r: 0.22745097, g: 0.6089584, b: 0.98039216, a: 1}
   moveDistance: 5
   tackleDamageAmount: 10
   classGUID: 9864fd0c-7f70-4f75-b387-3dce412f8e55

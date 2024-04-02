@@ -5,10 +5,8 @@ using Project.Scripts.Utils;
 using Runtime.Damage;
 using Runtime.GameControllers;
 using Runtime.VFX;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
-using UnityEngine.Events;
 
 namespace Runtime.Character
 {
@@ -105,29 +103,13 @@ namespace Runtime.Character
 
         public float maxGravity => gravity * 20f;
 
-        private CharacterController characterController => CommonUtils.GetRequiredComponent(ref m_characterController, () =>
-        {
-            var cc = GetComponent<CharacterController>();
-            return cc;
-        });
+        private CharacterController characterController => CommonUtils.GetRequiredComponent(ref m_characterController, GetComponent<CharacterController>);
 
-        private CharacterSide characterSide => CommonUtils.GetRequiredComponent(ref m_characterSide, () =>
-        {
-            var s = GetComponent<CharacterBase>().side;
-            return s;
-        });
+        private CharacterSide characterSide => CommonUtils.GetRequiredComponent(ref m_characterSide, () => GetComponent<CharacterBase>().side);
         
-        private CharacterBase characterBase => CommonUtils.GetRequiredComponent(ref m_characterBase, () =>
-        {
-            var s = GetComponent<CharacterBase>();
-            return s;
-        });
+        private CharacterBase characterBase => CommonUtils.GetRequiredComponent(ref m_characterBase, GetComponent<CharacterBase>);
         
-        public Transform pivotTransform => CommonUtils.GetRequiredComponent(ref m_goalPivotTransform, () =>
-        {
-            var t = TurnController.Instance.GetTeamManager(characterSide).goalPosition.transform;
-            return t;
-        });
+        public Transform pivotTransform => CommonUtils.GetRequiredComponent(ref m_goalPivotTransform, () => TurnController.Instance.GetTeamManager(characterSide).goalPosition.transform);
         
         public Vector3 velocity => _velocity;
     
@@ -232,7 +214,7 @@ namespace Runtime.Character
                 return;
             }
 
-            if (m_navMeshPath == null)
+            if(m_navMeshPath.IsNull())
             {
                 m_navMeshPath = new NavMeshPath();
             }
@@ -271,7 +253,7 @@ namespace Runtime.Character
         private void DoGravity()
         {
             _velocity.y -= gravity * Time.deltaTime;
-        
+            
             characterController.Move(Vector3.ClampMagnitude(_velocity, maxGravity) * Time.deltaTime);
         }
 
@@ -376,6 +358,8 @@ namespace Runtime.Character
                 m_isPerformingMelee = false;
                 m_hasPerformedMelee = false;
             }
+            
+            Debug.Log($"Move ended, character controller enabled?: {characterController.enabled}");
         }
 
         public void SetKnockbackable(float _newModifier)
@@ -560,7 +544,7 @@ namespace Runtime.Character
                     collider.TryGetComponent(out CharacterBase _character);
                     if (_character)
                     {
-                        if (_character.side == this.characterSide)
+                        if (_character.side.sideGUID == this.characterSide.sideGUID)
                         {
                             continue;
                         }

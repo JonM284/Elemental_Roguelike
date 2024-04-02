@@ -29,7 +29,7 @@ namespace Runtime.Character
                 characterVisuals.InitializeCharacterVisuals();
             }
             
-            var m_moveDistance = (m_characterStatsBase.agilityScore/100f) * maxMovementDistance;
+            var m_moveDistance = (m_characterStatsBase.agilityScore/(float)CharacterGameController.Instance.GetStatMax()) * maxMovementDistance;
             
             characterMovement.InitializeCharacterMovement(m_characterStatsBase.baseSpeed, m_moveDistance, m_characterStatsBase.tackleDamageAmount, m_characterStatsBase.typing, isGoalie);
             characterLifeManager.InitializeCharacterHealth(m_characterStatsBase.baseHealth, m_characterStatsBase.baseShields, m_characterStatsBase.baseHealth,

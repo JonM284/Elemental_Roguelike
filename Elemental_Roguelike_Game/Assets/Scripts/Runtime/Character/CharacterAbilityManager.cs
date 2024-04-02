@@ -85,24 +85,13 @@ namespace Runtime.Character
         public bool hasCanceledAbility { get; private set; }
 
         private Vector3 abilityPos => abilityUseTransform != null ? abilityUseTransform.position : transform.position;
+
+        private CharacterMovement characterMovement =>
+            CommonUtils.GetRequiredComponent(ref m_characterMovement, GetComponent<CharacterMovement>);
         
-        private CharacterMovement characterMovement => CommonUtils.GetRequiredComponent(ref m_characterMovement, () =>
-        {
-            var cm = this.GetComponent<CharacterMovement>();
-            return cm;
-        });
+        private CharacterRotation characterRotation => CommonUtils.GetRequiredComponent(ref m_characterRotation, GetComponent<CharacterRotation>);
         
-        private CharacterRotation characterRotation => CommonUtils.GetRequiredComponent(ref m_characterRotation, () =>
-        {
-            var cr = this.GetComponent<CharacterRotation>();
-            return cr;
-        });
-        
-        private CharacterBase characterBase => CommonUtils.GetRequiredComponent(ref m_characterBase, () =>
-        {
-            var cr = this.GetComponent<CharacterBase>();
-            return cr;
-        });
+        private CharacterBase characterBase => CommonUtils.GetRequiredComponent(ref m_characterBase, GetComponent<CharacterBase>);
         
         #endregion
 
@@ -157,8 +146,7 @@ namespace Runtime.Character
 
             foreach (var _assignedAbility in m_assignedAbilities)
             {
-                var _reduceAmount = Mathf.CeilToInt(_assignedAbility.ability.roundCooldownTimer * _percentReduce);
-                _assignedAbility.maxRoundCooldown -= _reduceAmount;
+                _assignedAbility.maxRoundCooldown -= Mathf.CeilToInt(_assignedAbility.ability.roundCooldownTimer * _percentReduce);
             }
         }
 

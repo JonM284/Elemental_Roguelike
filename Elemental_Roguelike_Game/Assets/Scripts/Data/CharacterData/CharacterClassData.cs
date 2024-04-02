@@ -34,20 +34,20 @@ namespace Data.CharacterData
         [Range(30, 200)] [SerializeField] private int ShieldMax = 100;
 
         [Header("Agility Stats")]
-        [Range(30, 100)] [SerializeField] private int AgilityStatMin = 30;
-        [Range(30, 100)] [SerializeField] private int AgilityStatMax = 100;
+        [Range(0, 10)] [SerializeField] private int AgilityStatMin = 1;
+        [Range(0, 10)] [SerializeField] private int AgilityStatMax = 10;
 
         [Header("Shooting Stats")]
-        [Range(30, 100)] [SerializeField] private int ShootingStatMin = 30;
-        [Range(30, 100)] [SerializeField] private int ShootingStatMax = 100;
+        [Range(0, 10)] [SerializeField] private int ShootingStatMin = 1;
+        [Range(0, 10)] [SerializeField] private int ShootingStatMax = 10;
         
         [Header("Passing Stats")]
-        [Range(30, 100)] [SerializeField] private int PassingStatMin = 30;
-        [Range(30, 100)] [SerializeField] private int PassingStatMax = 100;
+        [Range(0, 10)] [SerializeField] private int PassingStatMin = 1;
+        [Range(0, 10)] [SerializeField] private int PassingStatMax = 10;
 
         [Header("Damage Stats")]
-        [Range(30, 100)] [SerializeField] private int DamageStatMin = 30;
-        [Range(30, 100)] [SerializeField] private int DamageStatMax = 100;
+        [Range(0, 10)] [SerializeField] private int DamageStatMin = 1;
+        [Range(0, 10)] [SerializeField] private int DamageStatMax = 10;
         
         [Space(20)]
         [Header("Class Specific")]

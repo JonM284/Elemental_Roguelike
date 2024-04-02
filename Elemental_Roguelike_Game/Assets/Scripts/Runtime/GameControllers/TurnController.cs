@@ -110,7 +110,7 @@ namespace Runtime.GameControllers
 
         public CharacterBase activeCharacter { get; private set; }
 
-        public bool isPlayerTurn => battlersBySides[activeTeamID].teamSide == playerSide;
+        public bool isPlayerTurn => battlersBySides[activeTeamID].teamSide.sideGUID == playerSide.sideGUID;
         
         public Transform knockedOutPlayerPool =>
             CommonUtils.GetRequiredComponent(ref m_knockedPlayerPool, ()=>

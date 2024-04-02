@@ -28,13 +28,13 @@ namespace Runtime.GameControllers
 
         #region Serialized Fields
         
-        [SerializeField] private List<CharacterStatsBase> allCaptains = new List<CharacterStatsBase>();
-
-        [SerializeField] private List<CharacterStatsBase> allSidekicks = new List<CharacterStatsBase>();
+        [SerializeField] private List<CharacterStatsBase> m_allCharacters = new List<CharacterStatsBase>();
         
         [SerializeField] private Color m_shotColor = Color.red;
 
         [SerializeField] private Color m_passColor = Color.green;
+
+        [SerializeField] private int m_characterStatMax = 10;
 
         #endregion
         
@@ -81,66 +81,24 @@ namespace Runtime.GameControllers
 
         #region Class Implementation
 
+        public int GetStatMax()
+        {
+            return m_characterStatMax;
+        }
+
+        public int GetMaxCharacterAmount()
+        {
+            return m_allCharacters.Count;
+        }
+
+        public List<CharacterStatsBase> GetAllCharacters()
+        {
+            return m_allCharacters;
+        }
+        
         public CharacterStatsBase GetCharacterByGUID(string _searchGUID)
         {
-            var captain = GetCaptainByGUID(_searchGUID);
-            if (!captain.IsNull())
-            {
-                return captain;
-            }
-
-            var sidekick = GetSidekickByGUID(_searchGUID);
-            return sidekick;
-        }
-        
-        public CharacterStatsBase GetCaptainByGUID(string _searchGUID)
-        {
-            return allCaptains.FirstOrDefault(csb => csb.characterGUID == _searchGUID);
-        }
-        
-        public CharacterStatsBase GetSidekickByGUID(string _searchGUID)
-        {
-            return allSidekicks.FirstOrDefault(csb => csb.characterGUID == _searchGUID);
-        }
-
-        public List<CharacterStatsBase> GetRandomCaptains(int _amount)
-        {
-            List<CharacterStatsBase> availableCaptains = CommonUtils.ToList(allCaptains);
-            List<CharacterStatsBase> returnedCaptains = new List<CharacterStatsBase>();
-
-            for (int i = 0; i < _amount; i++)
-            {
-                var randomCaptain = availableCaptains[Random.Range(0,availableCaptains.Count)];
-                availableCaptains.Remove(randomCaptain);
-                returnedCaptains.Add(randomCaptain);
-            }
-
-            return returnedCaptains;
-        }
-
-        public List<CharacterStatsBase> GetALLCaptains()
-        {
-            return CommonUtils.ToList(allCaptains);
-        }
-
-        public List<CharacterStatsBase> GetRandomSidekicks(int _amount)
-        {
-            List<CharacterStatsBase> availableSidekicks = CommonUtils.ToList(allSidekicks);
-            List<CharacterStatsBase> returnedSidekicks = new List<CharacterStatsBase>();
-
-            for (int i = 0; i < _amount; i++)
-            {
-                var randomCaptain = availableSidekicks[Random.Range(0,availableSidekicks.Count)];
-                availableSidekicks.Remove(randomCaptain);
-                returnedSidekicks.Add(randomCaptain);
-            }
-
-            return returnedSidekicks;
-        }
-
-        public List<CharacterStatsBase> GetALLSidekicks()
-        {
-            return CommonUtils.ToList(allSidekicks);
+            return m_allCharacters.FirstOrDefault(csb => csb.characterGUID == _searchGUID);
         }
 
         private CharacterBase GetCachedCharacter(CharacterStatsBase _stats)
