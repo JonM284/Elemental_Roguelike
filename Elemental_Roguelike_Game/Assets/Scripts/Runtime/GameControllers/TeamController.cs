@@ -83,7 +83,7 @@ namespace Runtime.GameControllers
 
         #region Class Implementation
         
-        private void OnTeamMembersConfirmed(List<SavedMemberData> _confirmedTeamMembers, bool _isFirstTime, bool _isRandomTeam)
+        private void OnTeamMembersConfirmed(List<SavedMemberData> _confirmedTeamMembers, bool _isFirstTime)
         {
             if (!is_Initialized)
             {

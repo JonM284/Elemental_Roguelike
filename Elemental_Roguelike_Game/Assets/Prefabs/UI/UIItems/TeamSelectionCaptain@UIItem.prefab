@@ -2139,23 +2139,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   characterImage: {fileID: 3198378349105573394}
-  title: {fileID: 3610564391366463761}
-  m_isCaptain: 1
   m_isDisplayItem: 1
   characterStatsHighlight: {fileID: 3610564392522926873}
-  agilityStatText: {fileID: 3610564392036716453}
-  shootingStatText: {fileID: 1257273402653472873}
-  passingStatText: {fileID: 1159670765905608147}
-  tackleStatText: {fileID: 1943868716346114636}
-  classTypeText: {fileID: 3865044312547171948}
-  agilityBar: {fileID: 7546137894621818053}
-  shootingBar: {fileID: 3321449926426204089}
-  passingBar: {fileID: 112417824880242831}
-  tackleBar: {fileID: 8937244555167105204}
-  abilityDisplays:
-  - {fileID: 3845496803826842056}
-  - {fileID: 7779068528994640184}
-  - {fileID: 5298679844531775286}
+  characterSelectedHighlight: {fileID: 0}
 --- !u!222 &3610564392110805691
 CanvasRenderer:
   m_ObjectHideFlags: 0

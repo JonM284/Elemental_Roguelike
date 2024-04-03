@@ -191,13 +191,8 @@ namespace Runtime.GameplayEvents
         }
         
         //--------- Team Selection Update ---------
-        private void OnTeamMembersConfirmed(List<SavedMemberData> _characters, bool _isFirstTime, bool _isRandomTeam)
+        private void OnTeamMembersConfirmed(List<SavedMemberData> _characters, bool _isFirstTime)
         {
-            if (!_isRandomTeam)
-            {
-                return;
-            }
-            
             if (_isFirstTime)
             {
                 DisplayMap?.Invoke();

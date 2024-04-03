@@ -17,6 +17,17 @@ namespace Runtime.UI.DataModels
     public class TeamSelectionUIDataModel: MonoBehaviour
     {
 
+       #region Nested Classes
+
+        [Serializable]
+        public class RowByClass
+        {
+            public CharacterClassData classData;
+            public Transform rowParentTransform;
+        }
+
+        #endregion
+
         #region Actions
 
         /// <summary>
@@ -24,7 +35,7 @@ namespace Runtime.UI.DataModels
         /// Is First time
         /// Is Random gamemode
         /// </summary>
-        public static event Action<List<SavedMemberData>, bool, bool> TeamConfirmed; 
+        public static event Action<List<SavedMemberData>, bool> TeamConfirmed; 
 
         #endregion
 
@@ -36,35 +47,20 @@ namespace Runtime.UI.DataModels
 
         [SerializeField] private UIWindowData matchDisplayData;
         
-        [Header("Team Selection - Random")]
-        
-        [SerializeField] private AssetReference captainUIItem;
-
-        [SerializeField] private AssetReference sidekickUIItem;
-        
-        [SerializeField] private Transform randomCaptainParent;
-        
-        [SerializeField] private Transform randomSidekickParent;
-
-        [SerializeField] private Transform selectedCaptainParent;
-
-        [SerializeField] private int randomCaptainSelectAmount = 3;
-
-        [SerializeField] private int randomSidekickGenerateAmount = 3;
-
-        [SerializeField] private bool m_isRandomTeam;
+        [Header("Shared")]
         
         [SerializeField] private GameObject confirmButton;
         
         [Header("Team Selection - Basic")]
 
         [SerializeField] private AssetReference characterSelectItem;
-
-        [SerializeField] private AssetReference characterDataDisplayItem;
         
-        [SerializeField] private Transform itemParent;
+        [SerializeField]
+        private List<CharacterSelectDataItem> m_characterSelectDataItems = new List<CharacterSelectDataItem>();
 
-        [SerializeField] private Transform characterDataParent;
+        [SerializeField] private List<RowByClass> m_rowsByClass = new List<RowByClass>();
+
+        [SerializeField] private RectTransform m_itemPool;
         
         #endregion
 
@@ -96,21 +92,6 @@ namespace Runtime.UI.DataModels
 
         private List<TeamSelectionCharacterItem> m_activeBasicItems = new List<TeamSelectionCharacterItem>();
         
-        [SerializeField]
-        private List<CharacterSelectDataItem> m_characterDataItems = new List<CharacterSelectDataItem>();
-
-        private Transform m_itemPool;
-
-        #endregion
-
-        #region Accessors
-
-        private Transform itemPool => CommonUtils.GetRequiredComponent(ref m_itemPool, () =>
-        {
-            var t = TransformUtils.CreatePool(this.transform, false);
-            return t;
-        }); 
-
         #endregion
 
         #region Unity Events
@@ -119,95 +100,19 @@ namespace Runtime.UI.DataModels
         {
             confirmButton.SetActive(false);
 
-            if (m_isRandomTeam)
-            {
-                if (m_loadedCaptainItemGO.IsNull())
-                {
-                    yield return StartCoroutine(C_LoadCaptainItem());
-                }
-
-                if (m_loadedSidekickItemGO.IsNull())
-                {
-                    StartCoroutine(C_LoadSidekickItem());
-                }
+            m_characterSelectDataItems.ForEach(csdi => csdi.Initialize());
                 
-                GenerateRandomCaptainSelect();
-
-            }
-            else
+            if (m_loadedBasicItemGO.IsNull())
             {
-                StartCoroutine(C_LoadCharacterDataDisplays());
-                
-                if (m_loadedBasicItemGO.IsNull())
-                {
-                    yield return StartCoroutine(C_LoadBasicCharacterItem());
-                }
-
-                GenerateAllCaptainSelect();
+                yield return StartCoroutine(C_LoadBasicCharacterItem());
             }
+
+            GenerateAllCharacters();
         }
 
         #endregion
         
         #region Class Implementation
-        
-        private IEnumerator C_LoadCaptainItem()
-        {
-            m_isLoadingCharacterItem = true;
-
-            var handle = Addressables.LoadAssetAsync<GameObject>(captainUIItem);
-            
-            Debug.Log("<color=#00FF00>Loading GameObject</color>");
-
-            if (!handle.IsDone)
-            {
-                yield return handle;
-            }
-            
-            if (handle.Status == AsyncOperationStatus.Succeeded)
-            {
-                m_loadedCaptainItemGO = handle.Result;
-                for (int i = 0; i < 3; i++)
-                {
-                    var cdi= m_loadedCaptainItemGO.Clone(itemPool);
-                    cdi.SetActive(false);
-                    m_cachedCaptainItems.Add(cdi);
-                }
-            }else{
-                Addressables.Release(handle);
-            }
-
-            m_isLoadingCharacterItem = false;
-        }
-        
-        private IEnumerator C_LoadSidekickItem()
-        {
-            m_isLoadingSidekickItem = true;
-
-            var handle = Addressables.LoadAssetAsync<GameObject>(sidekickUIItem);
-            
-            Debug.Log("<color=#00FF00>Loading GameObject</color>");
-
-            if (!handle.IsDone)
-            {
-                yield return handle;
-            }
-            
-            if (handle.Status == AsyncOperationStatus.Succeeded)
-            {
-                m_loadedSidekickItemGO = handle.Result;
-                for (int i = 0; i < 3; i++)
-                {
-                    var cdi= m_loadedSidekickItemGO.Clone(itemPool);
-                    cdi.SetActive(false);
-                    m_cachedSidekickItems.Add(cdi);
-                }
-            }else{
-                Addressables.Release(handle);
-            }
-
-            m_isLoadingSidekickItem = false;
-        }
         
         private IEnumerator C_LoadBasicCharacterItem()
         {
@@ -225,9 +130,9 @@ namespace Runtime.UI.DataModels
             if (handle.Status == AsyncOperationStatus.Succeeded)
             {
                 m_loadedBasicItemGO = handle.Result;
-                for (int i = 0; i < 20; i++)
+                for (int i = 0; i < CharacterGameController.Instance.GetMaxCharacterAmount(); i++)
                 {
-                    var cdi= m_loadedBasicItemGO.Clone(itemPool);
+                    var cdi= m_loadedBasicItemGO.Clone(m_itemPool);
                     cdi.SetActive(false);
                     m_cachedBasicItems.Add(cdi);
                 }
@@ -238,102 +143,16 @@ namespace Runtime.UI.DataModels
             m_isLoadingBasicItem = false;
         }
 
-        private IEnumerator C_LoadCharacterDataDisplays()
-        {
-            var handle = Addressables.LoadAssetAsync<GameObject>(characterDataDisplayItem);
-            
-            if (!handle.IsDone)
-            {
-                yield return handle;
-            }
-            
-            if (handle.Status == AsyncOperationStatus.Succeeded)
-            {
-                m_loadedCharacterDataItemGO = handle.Result;
-                for (int i = 0; i < 4; i++)
-                {
-                    var csdi= m_loadedCharacterDataItemGO.Clone(characterDataParent);
-                    if (csdi.TryGetComponent(out CharacterSelectDataItem _item))
-                    {
-                        bool _isCaptain = i == 0;
-                        Action<SavedMemberData> callback = _isCaptain ? OnDeleteCaptainData : OnDeleteSidekickData;
-                        _item.Initialize(_isCaptain, callback);
-                        m_characterDataItems.Add(_item);
-                    }
-                }
-            }else{
-                Addressables.Release(handle);
-            }
-        }
-
-        /// <summary>
-        /// Random Captains are picked for the beginning of a run, 
-        /// </summary>
-        public void GenerateRandomCaptainSelect()
-        {
-            var randomCaptains = CharacterGameController.Instance.GetRandomCaptains(randomCaptainSelectAmount);
-            
-            foreach (var captain in randomCaptains)
-            {
-                AddCharacterItem(captain, true, randomCaptainParent);
-            }
-        }
-
-        /// <summary>
-        /// Random sidekicks are chosen for the player, they only need to be able to see what abilities and stats each sidekick has
-        /// </summary>
-        private void GenerateRandomSidekicksDisplay()
-        {
-            var randomSidekicks = CharacterGameController.Instance.GetRandomSidekicks(randomSidekickGenerateAmount);
-
-            foreach (var sidekick in randomSidekicks)
-            {
-                AddCharacterItem(sidekick, false, randomSidekickParent);
-                
-                SavedMemberData _newMember = new SavedMemberData
-                {
-                    m_characterGUID = sidekick.characterGUID,
-                    m_characterStatsBase = sidekick,
-                };
-                
-                if (!m_selectedTeam.Contains(_newMember))
-                {
-                    m_selectedTeam.Add(_newMember);
-                }
-            }
-            
-            confirmButton.SetActive(true);
-        }
-
         /// <summary>
         /// Player gets to choose out of all available captains
         /// </summary>
-        private void GenerateAllCaptainSelect()
+        private void GenerateAllCharacters()
         {
             ClearSelectionItems();
             
-            var allCaptains = CharacterGameController.Instance.GetALLCaptains();
-            
-            foreach (var captain in allCaptains)
+            foreach (CharacterStatsBase _character in CharacterGameController.Instance.GetAllCharacters())
             {
-                AddCharacterItem(captain, true, itemParent);
-            }
-        }
-
-        /// <summary>
-        /// Player gets to choose out of all availabale sidekicks
-        /// </summary>
-        private void GenerateAllSidekickSelect()
-        {
-            ClearSelectionItems();
-            
-            Debug.Log("GENERATING all sidekicks");
-            
-            var allSidekicks = CharacterGameController.Instance.GetALLSidekicks();
-
-            foreach (var sidekick in allSidekicks)
-            {
-                AddCharacterItem(sidekick, false, itemParent);
+                AddCharacterItem(_character, m_rowsByClass.FirstOrDefault(rbc => rbc.classData.classGUID == _character.classTyping.classGUID)?.rowParentTransform);
             }
         }
 
@@ -349,150 +168,45 @@ namespace Runtime.UI.DataModels
             m_activeBasicItems.Clear();
         }
 
-        private void PressedCallback(SavedMemberData _memberData)
+        private void AddCharacterItem(CharacterStatsBase _character, Transform parent)
         {
-            if (_memberData.IsNull())
-            {
-                return;
-            }
-
-            if (!m_selectedTeam.Contains(_memberData))
-            {
-                m_selectedTeam.Add(_memberData);
-            }
-            
-            m_activeCaptainItems.ForEach(tsci =>
-            {
-                if (tsci.m_assignedData != _memberData)
-                {
-                    CacheCaptain(tsci);
-                }
-                else
-                {
-                    tsci.transform.parent = selectedCaptainParent;
-                    tsci.gameObject.TryGetComponent(out RectTransform _rectTransform);
-                    if (_rectTransform)
-                    {
-                        _rectTransform.anchoredPosition = Vector2.zero;
-                    }
-                }
-            });
-
-            if (m_isRandomTeam)
-            {
-                GenerateRandomSidekicksDisplay();
-            }
-            else
-            {
-                GenerateAllSidekickSelect();
-            }
-            
-            Debug.Log("Clicked");
+            StartCoroutine(C_AddCharacterItem(_character, parent));
         }
 
-        private void AddCharacterItem(CharacterStatsBase _character, bool _isCaptain, Transform parent)
+        private IEnumerator C_AddCharacterItem(CharacterStatsBase _character, Transform parent)
         {
-            StartCoroutine(C_AddCharacterItem(_character, _isCaptain, parent));
-        }
-
-        private IEnumerator C_AddCharacterItem(CharacterStatsBase _character, bool _isCaptain, Transform parent)
-        {
-            if (m_isRandomTeam)
+            if (m_loadedBasicItemGO.IsNull())
             {
-                if (_isCaptain)
-                {
-                    if (m_loadedCaptainItemGO.IsNull())
-                    {
-                        Debug.Log("<color=blue>Waiting</color>");
-                        yield return new WaitUntil(() => m_isLoadingCharacterItem == false);
-                        Debug.Log("<color=blue>WAITING FINISHED</color>");
-                    }
-                }
-                else
-                {
-                    if (m_loadedSidekickItemGO.IsNull())
-                    {
-                        Debug.Log("<color=blue>Waiting</color>");
-                        yield return new WaitUntil(() => m_isLoadingSidekickItem == false);
-                        Debug.Log("<color=blue>WAITING FINISHED</color>");
-                    }
-                }    
-            }
-            else
-            {
-                if (m_loadedBasicItemGO.IsNull())
-                {
-                    Debug.Log("<color=blue>Waiting</color>");
-                    yield return new WaitUntil(() => m_isLoadingBasicItem == false);
-                    Debug.Log("<color=blue>WAITING FINISHED</color>");
-                }
+                Debug.Log("<color=blue>Waiting</color>");
+                yield return new WaitUntil(() => m_isLoadingBasicItem == false);
+                Debug.Log("<color=blue>WAITING FINISHED</color>");
             }
             
             
-            GameObject newCharacter;
-
-            if (m_isRandomTeam)
-            {
-                if (_isCaptain)
-                {
-                    newCharacter = m_cachedCaptainItems.Count > 0 
-                        ? m_cachedCaptainItems.FirstOrDefault()
-                        : m_loadedCaptainItemGO.Clone(parent);
-                }
-                else
-                {
-                    newCharacter = m_cachedSidekickItems.Count > 0
-                        ? m_cachedSidekickItems.FirstOrDefault()
-                        : m_loadedSidekickItemGO.Clone(parent);
-                }
-            }
-            else
-            {
-                newCharacter = m_cachedBasicItems.Count > 0
-                    ? m_cachedBasicItems.FirstOrDefault()
-                    : m_loadedBasicItemGO.Clone(parent);
-            }
+            GameObject _newCharacterItem = m_cachedBasicItems.Count > 0
+                ? m_cachedBasicItems.FirstOrDefault()
+                : m_loadedBasicItemGO.Clone(parent);
             
            
-            if (newCharacter.IsNull())
+            if (_newCharacterItem.IsNull())
             {
                 Debug.Log("Character null");
             }
 
-            if (newCharacter.transform.parent != parent)
+            if (_newCharacterItem.transform.parent != parent)
             {
-                newCharacter.transform.parent = parent;
+                _newCharacterItem.transform.parent = parent;
             }
             
-            newCharacter.SetActive(true);
+            _newCharacterItem.SetActive(true);
 
-            if (m_isRandomTeam)
+            if (m_cachedBasicItems.Contains(_newCharacterItem))
             {
-                if (_isCaptain)
-                {
-                    if (m_cachedCaptainItems.Contains(newCharacter))
-                    {
-                        m_cachedCaptainItems.Remove(newCharacter);
-                    }    
-                }
-                else
-                {
-                    if (m_cachedSidekickItems.Contains(newCharacter))
-                    {
-                        m_cachedSidekickItems.Remove(newCharacter);
-                    }
-                }
-            }
-            else
-            {
-                if (m_cachedBasicItems.Contains(newCharacter))
-                {
-                    m_cachedBasicItems.Remove(newCharacter);
-                }
+                m_cachedBasicItems.Remove(_newCharacterItem);
             }
             
             
-            newCharacter.TryGetComponent(out TeamSelectionCharacterItem item);
+            _newCharacterItem.TryGetComponent(out TeamSelectionCharacterItem item);
 
             SavedMemberData _newMemberData = new SavedMemberData
             {
@@ -502,61 +216,15 @@ namespace Runtime.UI.DataModels
 
             if (item)
             {
-                if (m_isRandomTeam)
-                {
-                    Action<SavedMemberData> _pressedAction = _isCaptain ? PressedCallback : null;
-                    Action<SavedMemberData, bool> _highlightAction = null;
-                    item.InitializeCharacterItem(_newMemberData, _pressedAction, _highlightAction);
-                
-                    if (_isCaptain)
-                    {
-                        m_activeCaptainItems.Add(item);
-                    }    
-                }
-                else
-                {
-                    Action<SavedMemberData> _pressedAction = _isCaptain ? UpdateCaptainData : UpdateSidekickData;
-                    Action<SavedMemberData, bool> _highlightAction = UpdateHighlightItem;
-                    item.InitializeCharacterItem(_newMemberData, _pressedAction, _highlightAction);
+                item.InitializeCharacterItem(_newMemberData, OnCharacterItemPressed, UpdateHighlightItem);
 
-                    m_activeBasicItems.Add(item);
-                }
-                
+                m_activeBasicItems.Add(item);
             }
         }
 
-        private void OnDeleteCaptainData(SavedMemberData _memberData)
+        private void OnCharacterItemPressed(SavedMemberData _character)
         {
-            if (m_selectedTeam.Contains(_memberData))
-            {
-                m_selectedTeam.Remove(_memberData);
-            }
-            
-            CheckTeamThreshold();
-            GenerateAllCaptainSelect();
-        }
-
-        private void OnDeleteSidekickData(SavedMemberData _memberData)
-        {
-            if (m_selectedTeam.Contains(_memberData))
-            {
-                m_selectedTeam.Remove(_memberData);
-            }
-            
-            CheckTeamThreshold();
-            
-            //check what is currently shown
-
-            if (m_activeBasicItems.Count == 0)
-            {
-                GenerateAllSidekickSelect();
-            }
-            
-        }
-
-        private void UpdateCaptainData(SavedMemberData _character)
-        {
-            if (m_characterDataItems.Count == 0)
+            if (m_characterSelectDataItems.Count == 0)
             {
                 return;
             }
@@ -565,39 +233,42 @@ namespace Runtime.UI.DataModels
             {
                 return;
             }
+
+            if (m_selectedTeam.Contains(_character))
+            {
+                m_selectedTeam.Remove(_character);
+                UpdateDisplays();
+                return;
+            }
+
+            if (m_characterSelectDataItems.TrueForAll(cd => cd.isConfirmed))
+            {
+                return;
+            }
             
-            m_characterDataItems[0].AssignData(_character, true);
-
-            m_selectedTeam.Add(_character);
-
-            CheckTeamThreshold();   
-                
-            if (m_selectedTeam.Count < TeamController.Instance.teamSize)
-            {
-                GenerateAllSidekickSelect();
-            }
-        }
-
-        private void UpdateSidekickData(SavedMemberData _character)
-        {
-            if (_character.IsNull())
-            {
-                return;
-            }
-
-            var displayToUpdate = m_characterDataItems.FirstOrDefault(cd => !cd.isConfirmed);
-
-            if (displayToUpdate.IsNull())
-            {
-                Debug.LogError("CANT FIND UNASSIGNED SIDEKICK");
-                return;
-            }
+            CharacterSelectDataItem displayToUpdate = m_characterSelectDataItems.FirstOrDefault(cd => !cd.isConfirmed);
 
             displayToUpdate.AssignData(_character, true);
 
             m_selectedTeam.Add(_character);
 
             CheckTeamThreshold();
+            
+        }
+
+        private void UpdateDisplays()
+        {
+            for (int i = 0; i < m_characterSelectDataItems.Count; i++)
+            {
+                if (i < m_selectedTeam.Count)
+                {
+                    m_characterSelectDataItems[i].AssignData(m_selectedTeam[i], true);
+                }
+                else
+                {
+                    m_characterSelectDataItems[i].ClearData();
+                }
+            }
         }
 
         private void UpdateHighlightItem(SavedMemberData _memberData, bool _isHighlight)
@@ -607,7 +278,12 @@ namespace Runtime.UI.DataModels
                 return;
             }
 
-            var displayToUpdate = m_characterDataItems.FirstOrDefault(cd => !cd.isConfirmed);
+            if (m_selectedTeam.Contains(_memberData))
+            {
+                return;
+            }
+
+            var displayToUpdate = m_characterSelectDataItems.FirstOrDefault(cd => !cd.isConfirmed);
 
             if (displayToUpdate.IsNull())
             {
@@ -631,23 +307,9 @@ namespace Runtime.UI.DataModels
                 confirmButton.SetActive(false);
                 return;
             }
-
-            ClearSelectionItems();
             
             confirmButton.SetActive(true);
 
-        }
-        
-        private void CacheCaptain(TeamSelectionCharacterItem _item)
-        {
-            if (_item.IsNull())
-            {
-                return;
-            }
-            
-            _item.CleanUpItem();
-            _item.gameObject.SetActive(false);
-            _item.transform.parent = itemPool;
         }
 
         private void CacheSelectionItem(TeamSelectionCharacterItem _item)
@@ -659,7 +321,7 @@ namespace Runtime.UI.DataModels
 
             _item.CleanUpItem();
             _item.gameObject.SetActive(false);
-            _item.transform.parent = itemPool;
+            _item.transform.parent = m_itemPool;
             m_cachedBasicItems.Add(_item.gameObject);
         }
 
@@ -668,7 +330,7 @@ namespace Runtime.UI.DataModels
         /// </summary>
         public void ConfirmTeam()
         {
-            TeamConfirmed?.Invoke(m_selectedTeam, true, m_isRandomTeam);
+            TeamConfirmed?.Invoke(m_selectedTeam, true);
             UIUtils.OpenUI(matchDisplayData);
             uiWindow.Close();
         }

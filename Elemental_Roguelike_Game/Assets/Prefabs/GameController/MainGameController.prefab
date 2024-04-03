@@ -2133,25 +2133,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a6bf82a2c8de43dc829dbae82300a2cd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  allCaptains:
+  m_allCharacters:
+  - {fileID: 11400000, guid: 9d134952e14a8a04bbfb7b5179401d95, type: 2}
   - {fileID: 11400000, guid: 9e6d2e0fc76c6c94fb7a38189d8d561d, type: 2}
   - {fileID: 11400000, guid: 14b168b4158267b41add8bd988259592, type: 2}
-  - {fileID: 11400000, guid: d4281fbe1d62cc9458242624c2066332, type: 2}
-  - {fileID: 11400000, guid: 9d134952e14a8a04bbfb7b5179401d95, type: 2}
+  - {fileID: 11400000, guid: 29c55c7d18d0bf24889d7bc19b0dc576, type: 2}
+  - {fileID: 11400000, guid: 73ee701868cac3b419037e3df0b257b0, type: 2}
+  - {fileID: 11400000, guid: 74733a38e9f88af48bee19152a4b1b97, type: 2}
   - {fileID: 11400000, guid: cee91135fc1e24347ae952fbcc2d005d, type: 2}
   - {fileID: 11400000, guid: b6ff19f1eb3e1a247ac602b079d20c6e, type: 2}
-  - {fileID: 11400000, guid: 74733a38e9f88af48bee19152a4b1b97, type: 2}
   - {fileID: 11400000, guid: ca9c3f4dcd95268459c2c3c6be4e4180, type: 2}
-  - {fileID: 11400000, guid: 29c55c7d18d0bf24889d7bc19b0dc576, type: 2}
-  allSidekicks:
-  - {fileID: 11400000, guid: c6001d400cc60f443972b37756c47a69, type: 2}
-  - {fileID: 11400000, guid: 907d102f77e074645bdf202175636ca3, type: 2}
+  - {fileID: 11400000, guid: d4281fbe1d62cc9458242624c2066332, type: 2}
+  - {fileID: 11400000, guid: ce99f6e74eaa0ea4dad55c9b52191fc5, type: 2}
+  - {fileID: 11400000, guid: 578782e9e1e5f9e4192f7285b67a1200, type: 2}
   - {fileID: 11400000, guid: a5967722c66562645a8b88a3d170501d, type: 2}
   - {fileID: 11400000, guid: b18933c6183ffa840b57cc8c3751b159, type: 2}
   - {fileID: 11400000, guid: 89be65e2f5250d64eb5e558b7af02175, type: 2}
-  - {fileID: 11400000, guid: ce99f6e74eaa0ea4dad55c9b52191fc5, type: 2}
-  - {fileID: 11400000, guid: 578782e9e1e5f9e4192f7285b67a1200, type: 2}
-  - {fileID: 11400000, guid: 50d2d858ae9ba5c43b667a35d142b280, type: 2}
   - {fileID: 11400000, guid: 30393c9adad1a0647a4e4a4cbd471be2, type: 2}
+  - {fileID: 11400000, guid: 50d2d858ae9ba5c43b667a35d142b280, type: 2}
+  - {fileID: 11400000, guid: c6001d400cc60f443972b37756c47a69, type: 2}
+  - {fileID: 11400000, guid: 907d102f77e074645bdf202175636ca3, type: 2}
   m_shotColor: {r: 1, g: 0, b: 0, a: 1}
   m_passColor: {r: 1, g: 0.5764706, b: 0.1254902, a: 1}
+  m_characterStatMax: 10
