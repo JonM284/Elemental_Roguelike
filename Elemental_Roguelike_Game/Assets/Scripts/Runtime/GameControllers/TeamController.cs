@@ -125,7 +125,7 @@ namespace Runtime.GameControllers
                 SearchForSavedTeam();
             }
             
-            var duplicate = CommonUtils.ToList(m_savedTeamMembers);
+            var duplicate = CommonUtils.ToNewList(m_savedTeamMembers);
             return duplicate;
         }
 
@@ -155,7 +155,7 @@ namespace Runtime.GameControllers
                 references.Add(_foundMember);
             }
 
-            m_savedTeamMembers = CommonUtils.ToList(references);
+            m_savedTeamMembers = CommonUtils.ToNewList(references);
         }
 
         public void UpdateTeamMemberStats(CharacterStatsData _character, CharacterStatsEnum _stat, int _amount)

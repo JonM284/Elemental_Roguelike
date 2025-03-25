@@ -18,5 +18,5 @@ MonoBehaviour:
   possibleArenaPools: 020000000200000002000000
   tournamentTeams:
   - {fileID: 11400000, guid: ebd25dada9ef6ce42be402ff9f02e4c6, type: 2}
-  - {fileID: 11400000, guid: 654e1c9fcbe48f94eb07719988c355ba, type: 2}
   - {fileID: 11400000, guid: e16313b8f022de043a72a778fcfc46de, type: 2}
+  - {fileID: 11400000, guid: 654e1c9fcbe48f94eb07719988c355ba, type: 2}

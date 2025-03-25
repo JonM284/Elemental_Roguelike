@@ -23,6 +23,10 @@ namespace Runtime.UI.Items
         
         [SerializeField] private Color disabledColorDark;
 
+        [SerializeField] private TMP_Text healthText;
+        
+        [SerializeField] private TMP_Text shieldText;
+
         [SerializeField] private List<GameObject> abilities = new List<GameObject>();
 
         [SerializeField] private GameObject abilityDescriptionDisplay;
@@ -100,6 +104,10 @@ namespace Runtime.UI.Items
             }
             
             characterNameText.text = _characterData.m_characterStatsBase.characterName;
+
+            healthText.text = $"{_characterData.m_characterStatsBase.baseHealth} HP";
+            
+            shieldText.text = _characterData.m_characterStatsBase.baseShields.ToString();
             
             m_agilityBarImages.ForEach(img =>
             {
@@ -120,10 +128,10 @@ namespace Runtime.UI.Items
 
             for (int i = 0; i < CharacterGameController.Instance.GetStatMax(); i++)
             {
-                m_agilityBarImages[i].gameObject.SetActive(i < _characterData.m_characterStatsBase.agilityScore);
-                m_shootingBarImages[i].gameObject.SetActive(i < _characterData.m_characterStatsBase.shootingScore);
-                m_passingBarImages[i].gameObject.SetActive(i < _characterData.m_characterStatsBase.passingScore);
-                m_tackleBarImages[i].gameObject.SetActive(i < _characterData.m_characterStatsBase.tackleScore);
+                m_agilityBarImages[i].gameObject.SetActive(i < _characterData.m_characterStatsBase.agilityScore/10);
+                m_shootingBarImages[i].gameObject.SetActive(i < _characterData.m_characterStatsBase.shootingScore/10);
+                m_passingBarImages[i].gameObject.SetActive(i < _characterData.m_characterStatsBase.passingScore/10);
+                m_tackleBarImages[i].gameObject.SetActive(i < _characterData.m_characterStatsBase.tackleScore/10);
             }
 
             abilities.ForEach(g => g.SetActive(false));

@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Data.CharacterData;
 using Data.Sides;
 using Project.Scripts.Utils;
 using Runtime.Character;
@@ -61,6 +60,8 @@ namespace Runtime.UI.DataModels
         [SerializeField] private List<GameObject> abilityButtons = new List<GameObject>();
 
         [SerializeField] private List<AbilityCooldowns> m_abilityCooldownImages = new List<AbilityCooldowns>();
+
+        [SerializeField] private AbilityCooldowns m_overwatchCooldown;
         
         [Header("Timer")]
         
@@ -439,6 +440,27 @@ namespace Runtime.UI.DataModels
                                $"Target Type: {highlightedAbility.targetType} <br> Cooldown: {highlightedAbility.roundCooldownTimer} Turn(s)";
         }
 
+        public void SetOverwatch()
+        {
+            if (!canDoAction)
+            {
+                return;
+            }
+
+            activePlayer.SetOverwatch();
+        }
+
+        public void DescribeOverwatch()
+        {
+            if (!canDoAction)
+            {
+                return;
+            }
+            
+            tooltipMenu.SetActive(true);
+            tooltipText.text = $"Class: {activePlayer.characterClassManager.assignedClass.name} <br> {activePlayer.characterClassManager.assignedClass.GetOverwatchDescription()}";
+        }
+
         public void CloseToolTipMenu()
         {
             tooltipMenu.SetActive(false);
@@ -532,7 +554,18 @@ namespace Runtime.UI.DataModels
                         activePlayerAbilities[i].roundCooldownPercentage;
                 }
             }
+
+            m_overwatchCooldown.cooldownImage.SetActive(activePlayer.characterClassManager.overwatchCoolDown > 0);
+
+            if (activePlayer.characterClassManager.overwatchCoolDown <= 0)
+            {
+                return;
+            }
             
+            m_overwatchCooldown.countdownText.text = $"{activePlayer.characterClassManager.overwatchCoolDown}";
+            m_overwatchCooldown.radialCountdownImage.fillAmount =
+                activePlayer.characterClassManager.overwatchCooldownPrct;
+
         }
 
         private void ResetTimer()

@@ -117,6 +117,10 @@ MonoBehaviour:
     m_Address: PlaymakerMeeple@Prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
+  - m_GUID: 054c6c078382ab74daecaf9bbed4b7b8
+    m_Address: BehaveTreeAI@Prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: c51bc8bdb2bb6e5479c05b7cf9bc0f75, type: 2}
   m_SchemaSet:

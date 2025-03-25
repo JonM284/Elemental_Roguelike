@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Data.CharacterData;
 using Data.Elements;
 using Project.Scripts.Utils;
@@ -83,6 +84,8 @@ namespace Runtime.Character
         public bool isUsingAbilityAction => m_activeAbilityIndex != -1;
 
         public bool hasCanceledAbility { get; private set; }
+
+        public bool hasAvailableAbility => m_assignedAbilities.Any(aa => aa.canUse);
 
         private Vector3 abilityPos => abilityUseTransform != null ? abilityUseTransform.position : transform.position;
         
@@ -451,16 +454,18 @@ namespace Runtime.Character
         {
             m_assignedAbilities.ForEach(aa =>
             {
-                if (!aa.canUse)
+                if (aa.canUse)
                 {
-                    aa.roundCooldown--;
-                    aa.roundCooldownPercentage = (float)aa.roundCooldown / aa.maxRoundCooldown;
-                    if (aa.roundCooldown <= 0)
-                    {
-                        aa.canUse = true;
-                        aa.roundCooldown = aa.maxRoundCooldown;
-                    }
+                    return;
                 }
+                aa.roundCooldown--;
+                aa.roundCooldownPercentage = (float)aa.roundCooldown / aa.maxRoundCooldown;
+                if (aa.roundCooldown > 0)
+                {
+                    return;
+                }
+                aa.canUse = true;
+                aa.roundCooldown = aa.maxRoundCooldown;
             });
         }
 
@@ -475,16 +480,10 @@ namespace Runtime.Character
             var dirMagnitude = dir.magnitude;
             var dirNormalized = dir.normalized;
             Debug.DrawRay(_checkPos, dirNormalized, Color.red, 10f);
-            if (Physics.Raycast(_checkPos, dirNormalized, out RaycastHit hit, dirMagnitude, abilityUsageMask))
-            {
-                var _obstacle = hit.transform.GetComponent<CoverObstacles>();
-                if (_obstacle != null && _obstacle.type == ObstacleType.FULL)
-                {
-                    return false;
-                }
-            }
-
-            return true;
+            if (!Physics.Raycast(_checkPos, dirNormalized, out RaycastHit hit, dirMagnitude, abilityUsageMask))
+                return true;
+            var _obstacle = hit.transform.GetComponent<CoverObstacles>();
+            return _obstacle == null || _obstacle.type != ObstacleType.FULL;
         }
 
         private bool IsInRange(Vector3 _checkPos)
@@ -495,14 +494,8 @@ namespace Runtime.Character
             }
             
             var dir = _checkPos - transform.position;
-            var magnitude = dir.magnitude;
 
-            if (magnitude <= m_assignedAbilities[m_activeAbilityIndex].abilityUseRange)
-            {
-                return true;
-            }
-
-            return false;
+            return dir.magnitude <= m_assignedAbilities[m_activeAbilityIndex].abilityUseRange + 0.08f;
         }
 
         #endregion

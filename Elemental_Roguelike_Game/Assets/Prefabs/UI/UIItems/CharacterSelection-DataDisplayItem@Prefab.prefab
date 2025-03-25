@@ -203,7 +203,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 45.69, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4472957337912334710
@@ -1283,10 +1283,10 @@ RectTransform:
   m_Father: {fileID: 4623872630112629461}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 48.97, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 2, y: -6.75}
+  m_SizeDelta: {x: 0, y: 13.5}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8298805577220328847
 CanvasRenderer:
@@ -2919,6 +2919,8 @@ MonoBehaviour:
   nameBackground: {fileID: 3627090605238895309}
   characterNameText: {fileID: 7494171702649581866}
   disabledColorDark: {r: 0.2735849, g: 0.2735849, b: 0.2735849, a: 1}
+  healthText: {fileID: 0}
+  shieldText: {fileID: 0}
   abilities:
   - {fileID: 3682511357518250639}
   - {fileID: 5951389267896898286}
@@ -4548,7 +4550,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 59.635, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1550418819641648445
@@ -6099,10 +6101,10 @@ RectTransform:
   m_Father: {fileID: 8195198929263434928}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 42.105, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 2, y: -6.75}
+  m_SizeDelta: {x: 0, y: 13.5}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1854455482284318392
 CanvasRenderer:

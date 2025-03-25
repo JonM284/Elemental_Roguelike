@@ -33,9 +33,7 @@ namespace Runtime.Character
         #region Private Fields
 
         private CharacterBase m_characterBase;
-
-        private bool isCheckingPassive;
-
+        
         private CharacterClassData m_assignedClass;
         
         private BallBehavior m_ballRef;
@@ -57,6 +55,8 @@ namespace Runtime.Character
         private int successfulMeleeReactionCounter = 1;
 
         private float bottomRangeMod = 0.2f;
+
+        private int m_maxOverwatchCooldown = 1;
         
         #endregion
 
@@ -105,6 +105,12 @@ namespace Runtime.Character
         public int currentMaxTacklingScore { get; private set; }
 
         public float passiveRadius { get; private set; }
+
+        public bool isCheckingPassive { get; private set; }
+
+        public int overwatchCoolDown { get; private set; }
+
+        public float overwatchCooldownPrct => overwatchCoolDown / (float)m_maxOverwatchCooldown;
 
         public int bottomRange => assignedClass.classType == CharacterClass.ALL ? 100 : 1;
 
@@ -195,7 +201,7 @@ namespace Runtime.Character
             var indicatorMat = meshRend.materials[0];
             
             indicatorMat.SetColor(m_colorVarName, _data.passiveColor);
-
+            
             DisplayIndicator(false);
         }
 
@@ -207,47 +213,64 @@ namespace Runtime.Character
             m_passiveIndicator.transform.localScale =
                 new Vector3(doubleRadiusSize, doubleRadiusSize, doubleRadiusSize);
         }
-
-        public void SetCharacterPassive(CharacterSide _side)
+        
+        
+        //Overwatch is only active on other teams turn
+        /// <summary>
+        /// Automatically deactivate character passives when it gets back to the character's team's turn
+        /// </summary>
+        /// <param name="_side"></param>
+        private void SetCharacterPassive(CharacterSide _side)
         {
-            var _isActiveTeam = characterBase.side == _side;
+            if (!m_canPerformReaction)
+            {
+                DisplayIndicator(false);
+                return;
+            }
+            
+            if (characterBase.side != _side)
+            {
+                return;
+            }
 
+            m_isPerformingReaction = false;
+            m_hasPerformedReaction = false;
+            isCheckingPassive = false;
+
+            if (!m_passiveIndicator.IsNull())
+            {
+                DisplayIndicator(false);
+            }
+
+            if (overwatchCoolDown > 0)
+            {
+                overwatchCoolDown--;
+            }
+        }
+        
+        public void ActivateCharacterOverwatch()
+        {
+            if (overwatchCoolDown > 0)
+            {
+                return;
+            }
+            
             if (!m_canPerformReaction)
             {
                 DisplayIndicator(false);
                 return;
             }
 
+            m_isPerformingReaction = false;
+            m_hasPerformedReaction = false;
+            isCheckingPassive = true;
 
-            switch (assignedClass.classType)
+            if (!m_passiveIndicator.IsNull())
             {
-                case CharacterClass.STRIKER: case CharacterClass.PLAYMAKER:
-                    //Striker passive, active on team turn
-                    if (_isActiveTeam)
-                    {
-                        m_isPerformingReaction = false;
-                        m_hasPerformedReaction = false;   
-                    }
-                    if (!m_passiveIndicator.IsNull())
-                    {
-                        DisplayIndicator(_isActiveTeam);
-                    }   
-                    break;
-                default:
-                    isCheckingPassive = !_isActiveTeam;
-                    if (!_isActiveTeam)
-                    {
-                        m_isPerformingReaction = false;
-                        m_hasPerformedReaction = false;
-                    }
-                    if (!m_passiveIndicator.IsNull())
-                    {
-                        DisplayIndicator(!_isActiveTeam);
-                    }
-                    
-                    break;
+                DisplayIndicator(true);
             }
 
+            overwatchCoolDown = m_maxOverwatchCooldown;
         }
 
         private void Check()

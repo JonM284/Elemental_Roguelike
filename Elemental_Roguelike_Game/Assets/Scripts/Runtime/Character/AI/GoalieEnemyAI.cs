@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using Project.Scripts.Utils;
-using Runtime.GameControllers;
 using UnityEngine;
 
 namespace Runtime.Character.AI
@@ -15,74 +14,6 @@ namespace Runtime.Character.AI
 
         #endregion
         
-        #region EnemyAIBase Inherited Methods
-        
-        public override IEnumerator C_PerformEnemyAction()
-        {
-            yield return new WaitForSeconds(m_standardWaitTime);
-
-            if (!characterBase.isAlive)
-            {
-                yield break;
-            }
-
-            yield return new WaitForSeconds(m_standardWaitTime);
-
-            if (ballReference.isMoving)
-            {
-                yield return new WaitUntil(() => !ballReference.isMoving);
-            }
-
-            if (JuiceController.Instance.isDoingActionAnimation)
-            {
-                yield return new WaitUntil(() => !JuiceController.Instance.isDoingActionAnimation);
-            }
-            
-            if (ReactionQueueController.Instance.isDoingReactions)
-            {
-                yield return new WaitUntil(() => !ReactionQueueController.Instance.isDoingReactions);
-            }
-            
-            while (characterBase.characterActionPoints > 0 && characterBase.isAlive)
-            {
-                if (characterBase.characterActionPoints == 0 || !characterBase.isAlive)
-                {
-                    yield break;
-                }
-
-                m_isPerformingAction = true;
-                
-                if(characterBase.heldBall.IsNull()){
-                    yield return StartCoroutine(C_PositionTowardsBallInGoal());
-                }
-                else
-                {
-                    yield return StartCoroutine(C_TryPass());
-                }
-                
-                yield return new WaitUntil(() => !m_isPerformingAction);
-                
-                yield return new WaitForSeconds(m_standardWaitTime);
-                
-                if (ballReference.isMoving)
-                {
-                    yield return new WaitUntil(() => !ballReference.isMoving);
-                }
-
-                if (JuiceController.Instance.isDoingActionAnimation)
-                {
-                    yield return new WaitUntil(() => !JuiceController.Instance.isDoingActionAnimation);
-                }
-            
-                if (ReactionQueueController.Instance.isDoingReactions)
-                {
-                    yield return new WaitUntil(() => !ReactionQueueController.Instance.isDoingReactions);
-                }
-            }
-        }
-
-        #endregion
-
         #region Class Implementation
 
         private IEnumerator C_PositionTowardsBallInGoal()

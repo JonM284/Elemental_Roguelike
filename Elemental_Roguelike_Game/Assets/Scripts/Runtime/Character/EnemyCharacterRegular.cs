@@ -1,6 +1,7 @@
 ﻿using Data.CharacterData;
 using Project.Scripts.Data;
 using Project.Scripts.Utils;
+using Runtime.Character.AI;
 using Runtime.GameControllers;
 using UnityEngine;
 using Utils;
@@ -46,6 +47,14 @@ namespace Runtime.Character
             
             characterClassManager.InitializedCharacterPassive(m_characterStatsBase.classTyping, m_characterStatsBase.agilityScore,
             m_characterStatsBase.shootingScore, m_characterStatsBase.passingScore ,m_characterStatsBase.tackleScore);
+
+            TryGetComponent(out EnemyAIBase _enemyAI);
+
+            if (!_enemyAI.IsNull())
+            {
+                _enemyAI.SetupBehaviorTrees();
+            }
+            
         }
 
         public override float GetBaseSpeed()

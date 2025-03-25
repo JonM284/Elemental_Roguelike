@@ -624,8 +624,8 @@ GameObject:
   - component: {fileID: 5657833463934291840}
   - component: {fileID: 5657833463934291898}
   - component: {fileID: 3095108148420025173}
-  - component: {fileID: 5324420469994936742}
   - component: {fileID: 2448602353249043161}
+  - component: {fileID: 5626168921642278252}
   m_Layer: 8
   m_Name: StrikerTestCaptain@EnemyPrefab
   m_TagString: Untagged
@@ -805,24 +805,6 @@ MonoBehaviour:
   weaponCheckLayers:
     serializedVersion: 2
     m_Bits: 256
---- !u!114 &5324420469994936742
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5657833463934291900}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 32cdbdc7a0fd44659dad82bf1dd4cffb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  characterCheckMask:
-    serializedVersion: 2
-    m_Bits: 256
-  obstacleCheckMask:
-    serializedVersion: 2
-    m_Bits: 512
 --- !u!114 &2448602353249043161
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -837,6 +819,32 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_passiveIndicator: {fileID: 5298688229833575121}
   m_reactionCameraPoint: {fileID: 9184181094999514208}
+--- !u!114 &5626168921642278252
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5657833463934291900}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4ef0785d053f44bf84c5709f93f99487, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  characterCheckMask:
+    serializedVersion: 2
+    m_Bits: 256
+  obstacleCheckMask:
+    serializedVersion: 2
+    m_Bits: 512
+  m_getBallPriority: 100
+  m_attackForBallPriority: 75
+  m_scoreGoalPriority: 1000
+  m_runBallInPriority: 500
+  m_passBallPriority: 250
+  m_repositionPriority: 150
+  m_considerAbilityPriority: 50
+  m_randomAttackPriority: 25
 --- !u!1 &5657833464208694324
 GameObject:
   m_ObjectHideFlags: 0

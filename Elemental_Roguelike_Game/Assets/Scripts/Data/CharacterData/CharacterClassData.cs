@@ -61,6 +61,8 @@ namespace Data.CharacterData
 
         [SerializeField] private int tackleDamageAmount;
 
+        [SerializeField] private string overwatchDescription;
+
         public string classGUID;
 
         public List<IconByColorblindOption> _iconsByOption = new List<IconByColorblindOption>();
@@ -116,6 +118,11 @@ namespace Data.CharacterData
         public int GetRandomDamageScore()
         {
             return Random.Range(DamageStatMin, DamageStatMax);
+        }
+
+        public string GetOverwatchDescription()
+        {
+            return overwatchDescription;
         }
 
         #endregion

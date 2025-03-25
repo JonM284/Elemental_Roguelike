@@ -337,7 +337,7 @@ namespace Runtime.GameControllers
                 return;
             }
 
-            var newPopuplist = CommonUtils.ToList(m_activePopups);
+            var newPopuplist = CommonUtils.ToNewList(m_activePopups);
 
             newPopuplist.ForEach(upd => upd.Close());
         }

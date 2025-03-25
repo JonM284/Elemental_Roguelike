@@ -11,9 +11,6 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/MainMenu.unity
     guid: 681ec444e56747a40a4ae6e0a9f1c8c3
-  - enabled: 0
-    path: Assets/Scenes/RealWorldScene.unity
-    guid: 1350da6d6e95d2e43809d62bb4267eef
   - enabled: 1
     path: Assets/Scenes/CaveArena1.unity
     guid: bd78beba8bea6bf4c9404d59cf2cbfd1

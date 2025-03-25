@@ -81,15 +81,9 @@ namespace Runtime.UI.DataModels
         private GameObject m_loadedBasicItemGO;
 
         private GameObject m_loadedCharacterDataItemGO;
-        
-        private List<GameObject> m_cachedCaptainItems = new List<GameObject>();
-
-        private List<GameObject> m_cachedSidekickItems = new List<GameObject>();
-        
+                
         private List<GameObject> m_cachedBasicItems = new List<GameObject>();
-
-        private List<TeamSelectionCharacterItem> m_activeCaptainItems = new List<TeamSelectionCharacterItem>();
-
+        
         private List<TeamSelectionCharacterItem> m_activeBasicItems = new List<TeamSelectionCharacterItem>();
         
         #endregion
@@ -222,7 +216,7 @@ namespace Runtime.UI.DataModels
             }
         }
 
-        private void OnCharacterItemPressed(SavedMemberData _character)
+        private void OnCharacterItemPressed(SavedMemberData _character, TeamSelectionCharacterItem _item)
         {
             if (m_characterSelectDataItems.Count == 0)
             {
@@ -237,6 +231,7 @@ namespace Runtime.UI.DataModels
             if (m_selectedTeam.Contains(_character))
             {
                 m_selectedTeam.Remove(_character);
+                _item.OnUpdateSelectedIcon(false);
                 UpdateDisplays();
                 return;
             }
@@ -251,6 +246,7 @@ namespace Runtime.UI.DataModels
             displayToUpdate.AssignData(_character, true);
 
             m_selectedTeam.Add(_character);
+            _item.OnUpdateSelectedIcon(true);
 
             CheckTeamThreshold();
             
@@ -323,6 +319,14 @@ namespace Runtime.UI.DataModels
             _item.gameObject.SetActive(false);
             _item.transform.parent = m_itemPool;
             m_cachedBasicItems.Add(_item.gameObject);
+        }
+
+        public void CancelTeamConfirm()
+        {
+            var lastTeammate = m_selectedTeam.LastOrDefault();
+            m_selectedTeam.Remove(lastTeammate);
+            UpdateDisplays();
+            CheckTeamThreshold();
         }
 
         /// <summary>

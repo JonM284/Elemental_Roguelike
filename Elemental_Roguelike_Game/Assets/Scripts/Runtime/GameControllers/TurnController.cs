@@ -171,17 +171,17 @@ namespace Runtime.GameControllers
 
         public ArenaTeamManager GetTeamManager(CharacterSide _side)
         {
-            return teamManagers.FirstOrDefault(atm => atm.characterSide == _side);
+            return teamManagers.FirstOrDefault(atm => atm.characterSide.sideGUID == _side.sideGUID);
         }
 
         public ArenaTeamManager GetPlayerManager()
         {
-            return teamManagers.FirstOrDefault(atm => atm.characterSide == playerSide);
+            return teamManagers.FirstOrDefault(atm => atm.characterSide.sideGUID == playerSide.sideGUID);
         }
 
         private List<CharacterBase> GetAvailableTeamMembers()
         {
-            var activeTeam = CommonUtils.ToList(GetActiveTeam());
+            var activeTeam = CommonUtils.ToNewList(GetActiveTeam());
             return activeTeam.FindAll(cb => cb.characterActionPoints != 0 && cb.isAlive);
         }
 

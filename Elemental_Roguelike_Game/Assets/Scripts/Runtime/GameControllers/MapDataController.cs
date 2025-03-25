@@ -86,7 +86,7 @@ namespace Runtime.GameControllers
 
         public List<MapController.RowData> GetGeneratedLevel()
         {
-            return allRowsByLevel.ToList();
+            return allRowsByLevel.ToNewList();
         }
 
         public void SetLevelChanges(List<MapController.RowData> _newMap)

@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 752069945650165124}
   - component: {fileID: 752069945650165125}
   m_Layer: 5
-  m_Name: VersusButton
+  m_Name: MultiplayerButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -743,7 +743,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Versus
+  m_text: Multiplayer
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: ce9aba5019d9c594b8ec7b0c589cc29a, type: 2}
   m_sharedMaterial: {fileID: -3431233370848070874, guid: ce9aba5019d9c594b8ec7b0c589cc29a,

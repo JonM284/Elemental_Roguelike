@@ -116,13 +116,13 @@ namespace Runtime.GameControllers
 
         public List<TournamentData> GetAllAvailableTournaments()
         {
-            var returnedList = CommonUtils.ToList(allTournaments.Where(td => td.isUnlocked));
+            var returnedList = CommonUtils.ToNewList(allTournaments.Where(td => td.isUnlocked));
             return returnedList;
         }
 
         public List<TournamentData> GetAllTournaments()
         {
-            return CommonUtils.ToList(allTournaments);
+            return CommonUtils.ToNewList(allTournaments);
         }
 
         public void SetSelectedTournament(TournamentData _data)
@@ -148,7 +148,7 @@ namespace Runtime.GameControllers
 
             currentMatchIndex = 0;
 
-            tournamentEnemyTeams = CommonUtils.ToList(selectedTournament.tournamentTeams);
+            tournamentEnemyTeams = CommonUtils.ToNewList(selectedTournament.tournamentTeams);
 
             if (m_tournamentParticipants.Count > 0)
             {
@@ -171,7 +171,7 @@ namespace Runtime.GameControllers
 
         public List<TournamentParticipant> GetAllTeams()
         {
-            return CommonUtils.ToList(m_tournamentParticipants);
+            return CommonUtils.ToNewList(m_tournamentParticipants);
         }
 
         public EnemyAITeamData GetCurrentEnemyTeam()

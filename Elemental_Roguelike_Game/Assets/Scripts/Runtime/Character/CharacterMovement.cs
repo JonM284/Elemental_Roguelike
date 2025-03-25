@@ -232,10 +232,7 @@ namespace Runtime.Character
                 return;
             }
 
-            if (m_navMeshPath == null)
-            {
-                m_navMeshPath = new NavMeshPath();
-            }
+            m_navMeshPath ??= new NavMeshPath();
             
             //Clear any previous paths
             if (m_navMeshPath.corners.Length > 0)
@@ -574,6 +571,8 @@ namespace Runtime.Character
                     }
                 }
             }
+            
+            ForceStopMovement(false);
 
             m_hasPerformedMelee = true;
         }

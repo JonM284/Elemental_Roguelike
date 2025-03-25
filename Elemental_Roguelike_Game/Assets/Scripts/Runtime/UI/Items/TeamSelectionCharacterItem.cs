@@ -14,7 +14,7 @@ namespace Runtime.UI.Items
 
          #region Actions
 
-        private Action<SavedMemberData> ItemPressedCallback;
+        private Action<SavedMemberData, TeamSelectionCharacterItem> ItemPressedCallback;
         
         private Action<SavedMemberData, bool> ItemHighlightedCallback;
         
@@ -34,12 +34,6 @@ namespace Runtime.UI.Items
 
         #endregion
 
-        #region Private Fields
-
-        private bool m_isSelected = false;
-
-        #endregion
-
         #region Accessors
         
         public SavedMemberData m_assignedData { get; private set; }
@@ -48,7 +42,7 @@ namespace Runtime.UI.Items
 
         #region Class Implementation
 
-        public void InitializeCharacterItem(SavedMemberData _memberData, Action<SavedMemberData> pressedCallback, Action<SavedMemberData, bool> highlightCallback = null)
+        public void InitializeCharacterItem(SavedMemberData _memberData, Action<SavedMemberData, TeamSelectionCharacterItem> pressedCallback, Action<SavedMemberData, bool> highlightCallback = null)
         {
             if (_memberData.IsNull())
             {
@@ -99,9 +93,12 @@ namespace Runtime.UI.Items
 
         public void OnPress()
         {
-            m_isSelected = !m_isSelected;
-            ItemPressedCallback?.Invoke(m_assignedData);
-            characterSelectedHighlight.SetActive(m_isSelected);
+            ItemPressedCallback?.Invoke(m_assignedData, this);
+        }
+
+        public void OnUpdateSelectedIcon(bool _isSelected)
+        {
+            characterSelectedHighlight.SetActive(_isSelected);
         }
 
         public void MarkHighlight(bool _active)

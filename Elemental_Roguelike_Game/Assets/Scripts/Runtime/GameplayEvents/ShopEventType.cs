@@ -21,7 +21,7 @@ namespace Runtime.GameplayEvents
                 currentPossibleItems.Clear();
             }
             
-            currentPossibleItems = allPossibleItems.ToList();
+            currentPossibleItems = allPossibleItems.ToNewList();
 
             var returnedItems = new List<GameplayItemData>();
 

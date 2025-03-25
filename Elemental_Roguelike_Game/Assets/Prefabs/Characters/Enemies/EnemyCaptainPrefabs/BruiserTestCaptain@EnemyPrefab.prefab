@@ -656,7 +656,7 @@ GameObject:
   - component: {fileID: 5657833463934291898}
   - component: {fileID: 3095108148420025173}
   - component: {fileID: 2448602353249043161}
-  - component: {fileID: 7829222223332373624}
+  - component: {fileID: -5328054391274190607}
   m_Layer: 8
   m_Name: BruiserTestCaptain@EnemyPrefab
   m_TagString: Untagged
@@ -848,7 +848,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_passiveIndicator: {fileID: 5298688229833575121}
   m_reactionCameraPoint: {fileID: 9184181094999514208}
---- !u!114 &7829222223332373624
+--- !u!114 &-5328054391274190607
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -857,7 +857,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 5657833463934291900}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fa54d94a97f94756bafa229bcf57270b, type: 3}
+  m_Script: {fileID: 11500000, guid: 4ef0785d053f44bf84c5709f93f99487, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   characterCheckMask:
@@ -866,6 +866,14 @@ MonoBehaviour:
   obstacleCheckMask:
     serializedVersion: 2
     m_Bits: 512
+  m_getBallPriority: 100
+  m_attackForBallPriority: 75
+  m_scoreGoalPriority: 1000
+  m_runBallInPriority: 500
+  m_passBallPriority: 250
+  m_repositionPriority: 150
+  m_considerAbilityPriority: 50
+  m_randomAttackPriority: 25
 --- !u!1 &5657833464208694324
 GameObject:
   m_ObjectHideFlags: 0

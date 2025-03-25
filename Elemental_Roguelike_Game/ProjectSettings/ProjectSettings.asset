@@ -807,7 +807,7 @@ PlayerSettings:
   webGLThreadsSupport: 0
   webGLDecompressionFallback: 0
   scriptingDefineSymbols:
-    Standalone: AMPLIFY_SHADER_EDITOR;FISHNET;FISHNET_V3
+    Standalone: AMPLIFY_SHADER_EDITOR;FISHNET;FISHNET_V3;STEAMWORKS_NET
   additionalCompilerArguments: {}
   platformArchitecture: {}
   scriptingBackend: {}

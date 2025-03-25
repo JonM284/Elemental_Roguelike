@@ -501,6 +501,7 @@ namespace Runtime.Character
         {
             if (!isActiveCharacter && !_isReaction)
             {
+                Debug.Log("Not active character AND not in reaction");
                 return;
             }
 
@@ -512,6 +513,7 @@ namespace Runtime.Character
 
                 if (dirToTarget.magnitude > characterMovement.battleMoveDistance)
                 {
+                    Debug.Log("Too Far");
                     return;
                 }
                 
@@ -622,6 +624,12 @@ namespace Runtime.Character
             }
 
             characterAbilityManager.UseAssignedAbility(_abilityIndex, OnAbilityUsed);
+        }
+
+        public void SetOverwatch()
+        {
+            characterClassManager.ActivateCharacterOverwatch();
+            EndTurn();
         }
 
         private void OnAbilityUsed()
@@ -1185,6 +1193,7 @@ namespace Runtime.Character
             {
                 ballThrowIndicator.gameObject.SetActive(false);
             }
+            
             UseActionPoint();
         }
 
