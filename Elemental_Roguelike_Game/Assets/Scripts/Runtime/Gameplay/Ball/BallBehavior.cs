@@ -217,7 +217,7 @@ namespace Runtime.Gameplay
         {
             float displacement = m_initialY - transform.position.y;
             float springForce = springConstant * displacement;
-            float dampingForce = -damping * rb.velocity.y;
+            float dampingForce = -damping * rb.linearVelocity.y;
             float totalForce = springForce + dampingForce;
         
             rb.AddForce(Vector3.up * totalForce, ForceMode.Force);
@@ -291,13 +291,13 @@ namespace Runtime.Gameplay
         public void SetBallPause(bool _isPaused)
         {
             m_isBallPaused = _isPaused;
-            rb.velocity = Vector3.zero;
+            rb.linearVelocity = Vector3.zero;
         }
 
         public void ForceStopBall()
         {
             m_currentBallForce = 0;
-            rb.velocity = Vector3.zero;
+            rb.linearVelocity = Vector3.zero;
         }
 
         public void ReduceForce(int _reductionAmount)
