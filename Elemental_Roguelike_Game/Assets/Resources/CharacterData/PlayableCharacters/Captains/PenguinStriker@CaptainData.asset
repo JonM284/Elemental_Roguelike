@@ -30,9 +30,12 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 8cc64695f6a01284bbb2f157264d0939, type: 2}
   classTyping: {fileID: 11400000, guid: b4466eb0195bc9f4596847e268136c87, type: 2}
   characterAssetRef:
-    m_AssetGUID: 022d3e6dff7bcc54e8a33a2b3452fd8d
+    m_AssetGUID: 41eee8d6051c6fb45a13a184f20fa7ff
     m_SubObjectName: 
+    m_SubObjectGUID: 
     m_SubObjectType: 
     m_EditorAssetChanged: 0
+  characterModelAssetRef: {fileID: 5629235671921288476, guid: f773281945616db4b9a3414a0f6503fe,
+    type: 3}
   characterGUID: 1588433c-0866-4815-9abe-509e5e54d4e9
   characterImage: {fileID: 21300000, guid: 9c017c5641bd2b644997206c3fd5710a, type: 3}

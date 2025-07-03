@@ -17,9 +17,9 @@ namespace Runtime.Status
             _character.characterMovement.ChangeMovementRange(0);
             _character.characterClassManager.SetAbleToReact(false);
             
-            if (!_character.heldBall.IsNull())
+            if (!_character.characterBallManager.hasBall)
             {
-                _character.KnockBallAway();
+                _character.characterBallManager.KnockBallAway();
             }
         }
 

@@ -13,114 +13,143 @@ MonoBehaviour:
   m_Name: Characters
   m_EditorClassIdentifier: 
   m_GroupName: Characters
-  m_Data:
-    m_SerializedData: []
   m_GUID: 123cab9b39a868e4ea3ffd5a6b46c2c1
   m_SerializeEntries:
-  - m_GUID: 8214c403d76305c43986943a2c13b094
-    m_Address: StrikerMeeple@Prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 1c746b542452d464eb2218f0132b29e0
-    m_Address: EnemyMeeple
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 28fa5f7e988678a4288888f1f74b901f
-    m_Address: EnemyRegular
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 2218a12dda0cddb4eb51e9fd7363f3ac
-    m_Address: TestEnemy1@Enemy
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 04828a46895975041a11ddfd8adfec61
-    m_Address: TestEnemy2@Enemy
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 7d1b484c198848749923dbd53bcf7f19
-    m_Address: DummyStrikerEnemy@Enemy
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: bf3ff5bde6d13c74f81c699356691840
-    m_Address: DisplayMeeple
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 1a99046e5ff561246ac6f06794a8e1bc
-    m_Address: DummyBruiserEnemy@Enemy
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 025833770be343149b0bc011b785969e
-    m_Address: DummyDefenderEnemy@Enemy
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: dda94c9ad737c084bb4fbe7d6e1f91fa
-    m_Address: DefenderMeeple@Prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 3bd2647e0e8e39c47b9c0f4eb87446df
-    m_Address: BruiserMeeple@Prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: f7df39e50747f2145a94b5c89fd04aee
-    m_Address: EnemyGoalie@Enemy
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 336ea0ec529030a44ab8794a5dbe5a26
-    m_Address: TestGoalieMeeple@Prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
   - m_GUID: 022d3e6dff7bcc54e8a33a2b3452fd8d
     m_Address: PenguinCap@Prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
-  - m_GUID: 767d335de3f5ca348b23b0dc9d95ab17
-    m_Address: PottedPlant@Prefab
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 025833770be343149b0bc011b785969e
+    m_Address: DummyDefenderEnemy@Enemy
     m_ReadOnly: 0
     m_SerializedLabels: []
-  - m_GUID: 5b9598c1945477d41b9a6b231b02b8d0
-    m_Address: BruiserTestCaptain@EnemyPrefab
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 04828a46895975041a11ddfd8adfec61
+    m_Address: TestEnemy2@Enemy
     m_ReadOnly: 0
     m_SerializedLabels: []
-  - m_GUID: ab44b9000b5f28645885dac788d11070
-    m_Address: DefenderTestCaptain@EnemyPrefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: d54c2e600582da1449af3c7e6b230fcc
-    m_Address: Captain1@EnemyPrefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 856022386712d6045ad315526530c70a
-    m_Address: StrikerTestCaptain@EnemyPrefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 2701782d9ee14cb448fb5035f51463ed
-    m_Address: Captain3@EnemyPrefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: cbde7471cb9882a4aa3300a67c823809
-    m_Address: PlaymakerTestCaptain@EnemyPrefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 9bdf0b4d55c642346b91ff14b57da4ab
-    m_Address: DummyPlaymakerEnemy@EnemyPrefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 3357899e454e8f24cb7a285f1a25bf6a
-    m_Address: TankMeeple@Prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: af1c2337aabece541922d8f68264b2ae
-    m_Address: TankTestCaptain@EnemyPrefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 8d4da1920423cc14fb6e9269a68fde13
-    m_Address: PlaymakerMeeple@Prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 054c6c078382ab74daecaf9bbed4b7b8
     m_Address: BehaveTreeAI@Prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1a99046e5ff561246ac6f06794a8e1bc
+    m_Address: DummyBruiserEnemy@Enemy
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1c746b542452d464eb2218f0132b29e0
+    m_Address: EnemyMeeple
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2218a12dda0cddb4eb51e9fd7363f3ac
+    m_Address: TestEnemy1@Enemy
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2701782d9ee14cb448fb5035f51463ed
+    m_Address: Captain3@EnemyPrefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 28fa5f7e988678a4288888f1f74b901f
+    m_Address: EnemyRegular
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3357899e454e8f24cb7a285f1a25bf6a
+    m_Address: TankMeeple@Prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 336ea0ec529030a44ab8794a5dbe5a26
+    m_Address: TestGoalieMeeple@Prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3bd2647e0e8e39c47b9c0f4eb87446df
+    m_Address: BruiserMeeple@Prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 41eee8d6051c6fb45a13a184f20fa7ff
+    m_Address: PlayableCharacter@Prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5b9598c1945477d41b9a6b231b02b8d0
+    m_Address: BruiserTestCaptain@EnemyPrefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 767d335de3f5ca348b23b0dc9d95ab17
+    m_Address: PottedPlant@Prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7d1b484c198848749923dbd53bcf7f19
+    m_Address: DummyStrikerEnemy@Enemy
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8214c403d76305c43986943a2c13b094
+    m_Address: StrikerMeeple@Prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 856022386712d6045ad315526530c70a
+    m_Address: StrikerTestCaptain@EnemyPrefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8d4da1920423cc14fb6e9269a68fde13
+    m_Address: PlaymakerMeeple@Prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9bdf0b4d55c642346b91ff14b57da4ab
+    m_Address: DummyPlaymakerEnemy@EnemyPrefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ab44b9000b5f28645885dac788d11070
+    m_Address: DefenderTestCaptain@EnemyPrefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: af1c2337aabece541922d8f68264b2ae
+    m_Address: TankTestCaptain@EnemyPrefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: bf3ff5bde6d13c74f81c699356691840
+    m_Address: DisplayMeeple
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: cbde7471cb9882a4aa3300a67c823809
+    m_Address: PlaymakerTestCaptain@EnemyPrefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d54c2e600582da1449af3c7e6b230fcc
+    m_Address: Captain1@EnemyPrefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: dda94c9ad737c084bb4fbe7d6e1f91fa
+    m_Address: DefenderMeeple@Prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f7df39e50747f2145a94b5c89fd04aee
+    m_Address: EnemyGoalie@Enemy
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: c51bc8bdb2bb6e5479c05b7cf9bc0f75, type: 2}
   m_SchemaSet:

@@ -101,9 +101,27 @@ namespace Runtime.UI.Items
 
             var _class = _character.characterClassManager.assignedClass;
 
+            if (_class.IsNull())
+            {
+                Debug.Log("Class Null");
+            }
+            
             var _colorBlindMode = SettingsController.Instance.GetCurrentColorblindOption();
 
-            m_elementIcon.sprite = _class._iconsByOption.FirstOrDefault(ico => ico._option == _colorBlindMode)._icons[(int)IconSizes.SMALL];
+            if (_colorBlindMode.IsNull())
+            {
+                Debug.Log("Colorblind mode null");
+            }
+            
+            var _iconByColorblindOption = _class._iconsByOption.FirstOrDefault(ico => ico._option == _colorBlindMode);
+
+            if (_iconByColorblindOption.IsNull())
+            {
+                Debug.Log("Color by colorblind option null");
+            }
+            
+            
+            m_elementIcon.sprite = _iconByColorblindOption._icons[(int)IconSizes.SMALL];
 
             m_characterImage.sprite = m_associatedCharacter.characterStatsBase.characterImage;
 

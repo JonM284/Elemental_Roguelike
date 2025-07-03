@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6e30cf3dd6a8ee349ac5bc304a59fcb7, type: 3}
-  m_Name: EarthBugBruiser@ENEMYCaptainData
+  m_Name: Tank_EarthBug@ENEMYCaptainData
   m_EditorClassIdentifier: 
   isCaptain: 1
   characterName: Earth Captain
@@ -32,7 +32,10 @@ MonoBehaviour:
   characterAssetRef:
     m_AssetGUID: af1c2337aabece541922d8f68264b2ae
     m_SubObjectName: 
+    m_SubObjectGUID: 
     m_SubObjectType: 
     m_EditorAssetChanged: 0
+  characterModelAssetRef: {fileID: 4160400739936445368, guid: 17047df3575171c4bbf2b2b2f804d97b,
+    type: 3}
   characterGUID: 869b5b2b-67ac-415d-a1a9-0ff662f4267e
   characterImage: {fileID: 1093948756, guid: 6a6f25e903f18fd4db55f0dfe52e535c, type: 3}

@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections;
+using Cysharp.Threading.Tasks;
 using Data;
 using Data.CharacterData;
 using Data.Elements;
 using Data.Sides;
 using Project.Scripts.Utils;
+using Runtime.Character.StateMachines;
 using Runtime.Damage;
 using Runtime.GameControllers;
 using Runtime.Gameplay;
@@ -29,7 +31,9 @@ namespace Runtime.Character
     [RequireComponent(typeof(CharacterVisuals))]
     [RequireComponent(typeof(CharacterWeaponManager))]
     [RequireComponent(typeof(CharacterClassManager))]
-    public abstract class CharacterBase: MonoBehaviour, ISelectable, IDamageable, IEffectable, IBallInteractable, IReactor
+    [RequireComponent(typeof(StateManager))]
+    [RequireComponent(typeof(CharacterBallManager))]
+    public abstract class CharacterBase: MonoBehaviour, ISelectable, IDamageable, IEffectable, IReactor
     {
 
         #region Nested Classes
@@ -50,8 +54,6 @@ namespace Runtime.Character
         
         public static event Action<bool, CharacterBase> CharacterHovered;
         
-        public static event Action<CharacterBase> BallPickedUp;
-
         public static event Action<CharacterBase> StatusAdded;
 
         public static event Action<CharacterBase> StatusRemoved;
@@ -83,14 +85,12 @@ namespace Runtime.Character
         [SerializeField] private VFXPlayer damageVFX;
 
         [SerializeField] private VFXPlayer healVFX;
-
-        [SerializeField] protected GameObject ballOwnerIndicator;
-
+        
         [SerializeField] protected GameObject activePlayerIndicator;
-
-        [SerializeField] protected LineRenderer ballThrowIndicator;
         
         [SerializeField] private MeshRenderer characterClassMarker;
+
+        [SerializeField] protected Transform m_ballHoldPosition;
 
         [Header("Camera Shake on Damage")]
         [SerializeField] private float shakeDuration = 0.1f;
@@ -101,9 +101,7 @@ namespace Runtime.Character
 
         [Range(0,90)]
         [SerializeField] private float shakeRandomness = 90f;
-
-        [SerializeField] private LayerMask goalLayer;
-
+        
         #endregion
 
         #region Unity Public Events
@@ -129,15 +127,15 @@ namespace Runtime.Character
         protected CharacterWeaponManager m_characterWeaponManager;
         
         protected CharacterClassManager m_characterClassManager;
+        
+        protected CharacterBallManager m_characterBallManager;
 
         protected CharacterRotation m_characterRotation;
+
+        protected StateManager m_stateManager;
         
         protected Transform m_statusEffectTransform;
         
-        protected float shootSpeed = 8f;
-
-        protected bool m_canPickupBall = true;
-
         protected bool m_canUseAbilities = true;
 
         protected Color m_passColor;
@@ -145,9 +143,7 @@ namespace Runtime.Character
         protected Color m_shotColor;
         
         private bool isPerformingReaction1;
-
-        protected float maxMovementDistance = 6f;
-
+        
         public int maxActionPoints => m_maxActionPoints;
 
         private LayerMask displayLayerVal => LayerMask.NameToLayer("DISPLAY");
@@ -179,6 +175,9 @@ namespace Runtime.Character
                 return cm;
             });
 
+        public StateManager stateManager => CommonUtils.GetRequiredComponent(ref m_stateManager,
+            GetComponent<StateManager>);
+        
         public CharacterVisuals characterVisuals => CommonUtils.GetRequiredComponent(ref m_characterVisuals,
             () =>
             {
@@ -215,6 +214,10 @@ namespace Runtime.Character
             var ccm = GetComponent<CharacterClassManager>();
             return ccm;
         });
+        
+        public CharacterBallManager characterBallManager => CommonUtils.GetRequiredComponent(
+            ref m_characterBallManager,
+            GetComponent<CharacterBallManager>);
     
         public CharacterRotation characterRotation => CommonUtils.GetRequiredComponent(
         ref m_characterRotation,
@@ -254,27 +257,17 @@ namespace Runtime.Character
 
         public bool isBusy => characterMovement.isMoving;
 
-        public bool isDoingAction =>
-            characterAbilityManager.isUsingAbilityAction || characterMovement.isUsingMoveAction 
-            || isSetupThrowBall;
+        public bool isDoingAction => !stateManager.currentState.IsNull() && stateManager.GetCurrentStateEnum() != ECharacterStates.Idle ;
 
         public AppliedStatus appliedStatus { get; private set; }
 
         public CharacterStatsBase characterStatsBase => m_characterStatsBase;
-
-        public BallBehavior heldBall { get; private set; }
-
-        public bool isSetupThrowBall { get; private set; }
-
+        
         public bool isTargetable { get; private set; } = true;
 
-        public bool canPickupBall => m_canPickupBall && !characterMovement.isKnockedBack;
-
-        public float shotStrength => (characterClassManager.currentMaxShootingScore/100f) * shootSpeed;
-
-        public float passStrength => (characterClassManager.currentMaxPassingScore / 100f) * shootSpeed;
-
         public bool isSilenced => !m_canUseAbilities;
+
+        public bool isInitialized { get; protected set; }
 
         #endregion
 
@@ -303,10 +296,37 @@ namespace Runtime.Character
         #region Class Implementation
 
 
-        public abstract void InitializeCharacter(CharacterStatsBase _characterStatsBase);
+        public virtual async UniTask InitializeCharacter(CharacterStatsBase _characterStatsBase)
+        {
+            side = ScriptableDataController.Instance.GetSideByGuid(characterSideRef);
+            m_characterStatsBase = _characterStatsBase;
+            
+            if (characterVisuals.isMeeple)
+            {
+                await characterVisuals.InitializeMeepleCharacterVisuals(m_characterStatsBase ,
+                    m_characterStatsBase.typing, m_ballHoldPosition.transform);
+            }
+            else
+            {
+                await characterVisuals.InitializeCharacterVisuals(m_characterStatsBase, m_ballHoldPosition.transform);
+            }
+            
+            await characterLifeManager.InitializeCharacterHealth(m_characterStatsBase.baseHealth, m_characterStatsBase.baseShields, m_characterStatsBase.baseHealth,
+                m_characterStatsBase.baseShields, m_characterStatsBase.typing, m_characterStatsBase.healthBarOffset);
+            
+            await characterClassManager.InitializedCharacterPassive(m_characterStatsBase.classTyping, m_characterStatsBase.agilityScore,
+                m_characterStatsBase.shootingScore, m_characterStatsBase.passingScore ,m_characterStatsBase.tackleScore);
+
+            await characterBallManager.Initialize(m_characterStatsBase, m_ballHoldPosition.transform);
+
+            InitializeCharacterMarker();
+            
+            await stateManager.InitStateMachine(ECharacterStates.Idle, this);
+            
+            isInitialized = true;
+        }
 
         public abstract float GetBaseSpeed();
-
 
         protected abstract void OnBattleEnded();
 
@@ -317,7 +337,7 @@ namespace Runtime.Character
                 return;
             }
 
-            var _clonedMat = new Material(characterClassMarker.material);
+            var _clonedMat = new Material(characterClassManager.assignedClass.characterClassGroundMarker);
 
             var _color = SettingsController.Instance.GetSideColor(characterSideRef);
 
@@ -357,53 +377,20 @@ namespace Runtime.Character
                 
                 if (characterMovement.isUsingMoveAction)
                 {
-                    var correctPivot = !isGoalie ? transform.position : characterMovement.pivotTransform.position.FlattenVector3Y();
-                    var _dir = _character.transform.position.FlattenVector3Y() - correctPivot;
-                    
-                    if (_dir.magnitude > characterMovement.battleMoveDistance)
-                    {
-                        return;
-                    }
-                    
-                    characterMovement.MoveCharacter(_character.transform.position, true);
-                    return;
+                    stateManager.currentState.stateBehavior.SelectTarget(_character.transform.position);
                 }   
             } else if (_character.side.sideGUID == this.side.sideGUID)
             {
-                if (isSetupThrowBall)
+                if (characterMovement.isUsingMoveAction)
                 {
-                    ThrowBall(_character.transform.position - transform.position, false);
+                    stateManager.ChangeState(ECharacterStates.Idle);
+                    _character.OnSelect();
                     return;
                 }
                 
-                if (characterMovement.isUsingMoveAction)
-                {
-                    characterMovement.SetCharacterMovable(false);
-                    _character.OnSelect();
-                }
-            }
-
-
-        }
-
-        protected virtual void OnBeginWalkAction()
-        {
-            
-        }
-
-        protected void OnWalkActionEnded()
-        {
-            UseActionPoint();
-
-            if (!isAlive)
-            {
-                return;
+                stateManager.currentState.stateBehavior.SelectTarget(_character.transform.position);
             }
             
-            if(characterActionPoints != 0)
-            {
-                SetCharacterWalkAction();
-            }
         }
 
         public void HitFence()
@@ -430,22 +417,7 @@ namespace Runtime.Character
 
         public void StopAllActions()
         {
-            if (characterMovement.isUsingMoveAction)
-            {
-                characterMovement.SetCharacterMovable(false);
-            }
-
-            if (characterAbilityManager.isUsingAbilityAction)
-            {
-                characterAbilityManager.CancelAbilityUse();
-            }
-            
-            characterWeaponManager.CancelWeaponUse();
-
-            if (isSetupThrowBall)
-            {
-                CancelThrowAction();
-            }
+            stateManager.ChangeState(ECharacterStates.Idle);
         }
 
         private IEnumerator C_DoDeathAction()
@@ -454,9 +426,9 @@ namespace Runtime.Character
             
             yield return StartCoroutine(JuiceController.Instance.C_DoDeathAnimation(this.characterClassManager.reactionCameraPoint));
             
-            if (!heldBall.IsNull())
+            if (!characterBallManager.hasBall)
             {
-                KnockBallAway();
+                characterBallManager.KnockBallAway();
             }
             
             CheckActiveAfterDeath();
@@ -485,16 +457,7 @@ namespace Runtime.Character
                 return;
             }
 
-            if (characterMovement.isUsingMoveAction)
-            {
-                characterMovement.MarkMovementLocation(_selectedPosition);
-            }else if (characterAbilityManager.isUsingAbilityAction)
-            {
-                characterAbilityManager.MarkAbility(_selectedPosition);
-            }else if (isSetupThrowBall)
-            {
-                MarkThrowBall(_selectedPosition);
-            }
+            stateManager.currentState.stateBehavior.MarkHighlight(_selectedPosition);
         }
 
         public void CheckAllAction(Vector3 _selectedPosition, bool _isReaction)
@@ -505,54 +468,13 @@ namespace Runtime.Character
                 return;
             }
 
-            if (characterMovement.isUsingMoveAction)
+            if (stateManager.currentState.IsNull())
             {
-                //check if this will be a tackle
-                var _correctPivot = !isGoalie ? transform.position : !_isReaction ? characterMovement.pivotTransform.position.FlattenVector3Y() : transform.position;
-                var dirToTarget = _selectedPosition - _correctPivot;
-
-                if (dirToTarget.magnitude > characterMovement.battleMoveDistance)
-                {
-                    Debug.Log("Too Far");
-                    return;
-                }
-                
-                RaycastHit[] hits = Physics.CapsuleCastAll(transform.position, _selectedPosition, 0.2f, dirToTarget, dirToTarget.magnitude);
-
-                bool _isTackle = false;
-                var _adjustedFinalPosition = _selectedPosition;
-                
-                foreach (RaycastHit hit in hits)
-                {
-                    
-                    //if they are running into an enemy character, make them stop at that character and perform melee
-                    if (hit.collider.TryGetComponent(out CharacterBase otherCharacter))
-                    {
-                        if (!otherCharacter.isTargetable)
-                        {
-                            continue;
-                        }
-                        
-                        if (otherCharacter.side != side && otherCharacter != this)
-                        {
-                            _adjustedFinalPosition = otherCharacter.transform.position;
-                            _isTackle = true;
-                            break;
-                        }
-                    }
-                }
-
-                characterMovement.MoveCharacter(_adjustedFinalPosition, _isTackle);
-            }else if (characterAbilityManager.isUsingAbilityAction)
-            {
-                characterAbilityManager.SelectAbilityTarget(_selectedPosition);
-            }else if (characterWeaponManager.isUsingWeapon)
-            {
-                characterWeaponManager.SelectWeaponTarget(_selectedPosition);
-            }else if (isSetupThrowBall)
-            {
-                ThrowBall(_selectedPosition - transform.position, IsShot(_selectedPosition));
+                Debug.LogError("NULL STATE");
+                return;
             }
+
+            stateManager.currentState.stateBehavior.SelectTarget(_selectedPosition);
             
             CameraUtils.SetCameraTrackPos(transform, true);
 
@@ -560,7 +482,7 @@ namespace Runtime.Character
 
         private void PlayDamageVFX()
         {
-            if (damageVFX == null)
+            if (damageVFX.IsNull())
             {
                 return;
             }
@@ -607,23 +529,11 @@ namespace Runtime.Character
                 return;
             }
 
-            if (characterAbilityManager.isUsingAbilityAction)
-            {
-                characterAbilityManager.CancelAbilityUse();
-                return;
-            }
-
-            if (isSetupThrowBall)
-            {
-                CancelThrowAction();
-            }
-
-            if (characterMovement.isUsingMoveAction)
-            {
-                characterMovement.SetCharacterMovable(false);
-            }
-
-            characterAbilityManager.UseAssignedAbility(_abilityIndex, OnAbilityUsed);
+            
+            stateManager.ChangeState(ECharacterStates.Ability);
+            
+            object[] _arg = {_abilityIndex};
+            stateManager.currentState.stateBehavior.AssignArgument(_arg);
         }
 
         public void SetOverwatch()
@@ -649,7 +559,7 @@ namespace Runtime.Character
 
         private void OnAttackUsed()
         {
-            if (characterAnimations != null)
+            if (!characterAnimations.IsNull())
             {
                 characterAnimations.AttackAnim(true);
             }
@@ -664,23 +574,7 @@ namespace Runtime.Character
                 return;
             }
 
-            if (characterMovement.isUsingMoveAction)
-            {
-                characterMovement.SetCharacterMovable(false);
-                return;
-            }
-
-            if (isSetupThrowBall)
-            {
-                CancelThrowAction();
-            }
-
-            if (characterAbilityManager.isUsingAbilityAction)
-            {
-                characterAbilityManager.CancelAbilityUse();
-            }
-
-            characterMovement.SetCharacterMovable(true, OnBeginWalkAction, OnWalkActionEnded);
+            stateManager.ChangeState(ECharacterStates.Movement);
         }
 
         public void SetCharacterThrowAction()
@@ -690,40 +584,17 @@ namespace Runtime.Character
                 return;
             }
 
-            if (heldBall.IsNull())
+            if (!characterBallManager.hasBall)
             {
                 return;
             }
 
-            isSetupThrowBall = !isSetupThrowBall;
-
-            if (isSetupThrowBall)
-            {
-                if (characterMovement.isUsingMoveAction)
-                {
-                    characterMovement.SetCharacterMovable(false);
-                }
-
-                if (characterAbilityManager.isUsingAbilityAction)
-                {
-                    characterAbilityManager.CancelAbilityUse();
-                }
-            }
-            
-            if (!ballThrowIndicator.IsNull())
-            {
-                ballThrowIndicator.gameObject.SetActive(isSetupThrowBall);
-            }
+            stateManager.ChangeState(ECharacterStates.ThrowBall);
         }
 
         public void CancelThrowAction()
         {
-            isSetupThrowBall = false;
-            
-            if (!ballThrowIndicator.IsNull())
-            {
-                ballThrowIndicator.gameObject.SetActive(isSetupThrowBall);
-            }
+           stateManager.ChangeState(ECharacterStates.Idle);
         }
 
         public void UseActionPoint()
@@ -731,13 +602,14 @@ namespace Runtime.Character
             characterActionPoints--;
             CharacterUsedActionPoint?.Invoke(this, characterActionPoints);
             Debug.Log($"<color=yellow>Used action point // Action Points:{characterActionPoints} left</color>");
-            
-            if (characterActionPoints == 0)
+
+            if (characterActionPoints != 0)
             {
-                Debug.Log($"character finished turn");
-                EndTurn();
+                return;
             }
             
+            Debug.Log($"character finished turn");
+            EndTurn();
         }
 
 
@@ -821,18 +693,23 @@ namespace Runtime.Character
 
             if (!isTargetable)
             {
-                SetCanPickupBall(isTargetable);
+                characterBallManager.SetCanPickupBall(isTargetable);
                 
-                if (!heldBall.IsNull())
+                if (characterBallManager.hasBall)
                 {
-                    ThrowBall(Vector3.zero, true);
+                    characterBallManager.ThrowBall(Vector3.zero, true);
                 }
             }
         }
 
-        private void SetCanPickupBall(bool _canPickupBall)
+        public void DetachBall()
         {
-            m_canPickupBall = _canPickupBall;
+            characterBallManager.DetachBall();
+        }
+
+        public void PickUpBall(BallBehavior _ball)
+        {
+            characterBallManager.PickUpBall(_ball);
         }
 
         public void SetCharacterCanUseAbilities(bool _canUse)
@@ -881,52 +758,6 @@ namespace Runtime.Character
             characterActionPoints = 0;
             StopAllActions();
             CharacterEndedTurn?.Invoke(this);
-        }
-
-        private void MarkThrowBall(Vector3 _position)
-        {
-            if (ballThrowIndicator.IsNull())
-            {
-                return;
-            }
-            //ToDo: update points if the player is aiming at a wall
-
-            bool _isShot = IsShot(_position);
-            var _throwingStrength = _isShot ? shotStrength : passStrength;
-            
-            var dir = transform.InverseTransformDirection(_position - transform.position);
-            var _decelTime = 1.9f;
-            var _decel = (_throwingStrength)/_decelTime;
-            var _dist = (0.5f * _decel) * (_decelTime * _decelTime);
-            var furthestPoint = (dir.normalized * _dist);
-
-            ballThrowIndicator.SetPosition(1, new Vector3(furthestPoint.x, furthestPoint.z, 0));
-        }
-
-        private void TransferBall(CharacterBase _ballHolder, CharacterBase _ballStealer)
-        {
-            var _ball = TurnController.Instance.ball;
-            _ballHolder.DetachBall();
-            _ballStealer.PickUpBall(_ball);
-        }
-
-        private bool IsShot(Vector3 _endPos)
-        {
-            var _dir = _endPos - transform.position;
-            var strongerStrength = shotStrength > passStrength ? shotStrength : passStrength;
-            var _furthestPoint = transform.position + (_dir.normalized * strongerStrength);
-            var _mag = _furthestPoint - transform.position;
-            RaycastHit[] hits = Physics.RaycastAll(transform.position, _dir, _mag.magnitude, goalLayer, QueryTriggerInteraction.Collide);
-
-            if (hits.Length == 0)
-            {
-                Debug.DrawLine(transform.position, _furthestPoint, Color.red);
-                return false;
-            }
-            
-            Debug.DrawLine(transform.position, _furthestPoint, Color.green);
-            return true;
-            
         }
 
         #endregion
@@ -981,7 +812,8 @@ namespace Runtime.Character
             PlayHealEffect();
         }
 
-        public void OnDealDamage(Transform _attacker, int _damageAmount, bool _armorPiercing ,ElementTyping _damageElementType, Transform _knockbackAttacker ,bool _hasKnockback)
+        public void OnDealDamage(Transform _attacker, int _damageAmount, bool _armorPiercing ,
+            ElementTyping _damageElementType, Transform _knockbackAttacker ,bool _hasKnockback)
         {
             characterLifeManager.DealDamage(_attacker, _damageAmount, _armorPiercing, _damageElementType);
             
@@ -1004,33 +836,35 @@ namespace Runtime.Character
                 characterMovement.ApplyKnockback(_knockbackForce, _direction.FlattenVector3Y(), 0.5f);
                
                 JuiceController.Instance.DoCameraShake(shakeDuration, shakeStrength, shakeVibrationAmount, shakeRandomness);
-               
-                if (!heldBall.IsNull())
-                {
-                    _knockbackAttacker.TryGetComponent(out CharacterBase _character);
 
-                    if (!_character.IsNull() && _character != this && _character.characterClassManager.assignedClass.classType == CharacterClass.PLAYMAKER)
+                _knockbackAttacker.TryGetComponent(out CharacterBase _character);
+                
+                if (characterBallManager.hasBall)
+                {
+
+                    if (!_character.IsNull() && _character != this &&
+                        _character.characterClassManager.assignedClass.classType == CharacterClass.PLAYMAKER)
                     {
                         if (_character.characterClassManager.CheckStealBall(this))
                         {
                             //Succeeded
-                            TransferBall(this, _character);
+                            characterBallManager.TransferBall(this, _character);
                         }
                         else
                         {
                             //Failed
-                            KnockBallAway(_attacker);
+                            characterBallManager.KnockBallAway(_attacker);
                         }
                     }
                     else
                     {
-                        KnockBallAway(_attacker);
+                        characterBallManager.KnockBallAway(_attacker);
                     }
 
                 }
                 else
                 {
-                    _knockbackAttacker.TryGetComponent(out CharacterBase _character);
+                    
                     if (!_character.IsNull() && _character != this)
                     {
                         characterAbilityManager.CheckAbilityCooldown();
@@ -1045,13 +879,15 @@ namespace Runtime.Character
                     JuiceController.Instance.DoCameraShake(shakeDuration, shakeStrength/2, shakeVibrationAmount, shakeRandomness);
                 }
             }
-            
-            if (!characterAnimations.IsNull())
+
+            if (characterAnimations.IsNull())
             {
-                if (_damageAmount > 0)
-                {
-                    characterAnimations.DamageAnim(true);
-                }
+                return;
+            }
+            
+            if (_damageAmount > 0)
+            {
+                characterAnimations.DamageAnim(true);
             }
         }
 
@@ -1073,6 +909,7 @@ namespace Runtime.Character
             }
             
             Debug.Log($"<color=cyan>Applied {_newStatus.statusName} to {this.transform.name}</color>");
+            
             if (!appliedStatus.IsNull())
             {
                 RemoveEffect();
@@ -1122,79 +959,6 @@ namespace Runtime.Character
             appliedStatus = null;
             
             StatusRemoved?.Invoke(this);
-        }
-
-        #endregion
-
-        #region IBallInteractalbe Inherited Methods
-
-        public void PickUpBall(BallBehavior ball)
-        {
-            if (!canPickupBall)
-            {
-                return;
-            }
-            
-            if(isGoalie)
-            {
-                characterActionPoints++;
-            }
-            
-            heldBall = ball;
-            heldBall.SetFollowTransform(characterWeaponManager.handPos, this);
-            ballOwnerIndicator.SetActive(true);
-            BallPickedUp?.Invoke(this);
-        }
-
-        public void DetachBall()
-        {
-            heldBall = null;
-            ballOwnerIndicator.SetActive(false);
-        }
-
-        public void KnockBallAway(Transform attacker = null)
-        {
-            if (heldBall.IsNull())
-            {
-                return;
-            }
-
-            var randomPos = Random.insideUnitCircle;
-            var direction = attacker.IsNull() ? (transform.position + new Vector3(randomPos.x, 0 , randomPos.y) - transform.position) : attacker.position - transform.position;
-            Debug.Log(shotStrength);
-            heldBall.ThrowBall(direction, shotStrength, false, this, 0);
-            heldBall = null;
-            ballOwnerIndicator.SetActive(false);
-        }
-
-        public void ThrowBall(Vector3 direction, bool _isShot)
-        {
-            if (heldBall.IsNull())
-            {
-                return;
-            }
-
-            if (!isSetupThrowBall)
-            {
-                return;
-            }
-
-            
-            var _ballThrowSpeed = _isShot ? shotStrength : passStrength;
-            var _attachedStat = _isShot
-                ? characterClassManager.GetRandomShootStat()
-                : characterClassManager.GetRandomPassingStat();
-            
-            heldBall.ThrowBall(direction, _ballThrowSpeed, true, this, _attachedStat);
-            heldBall = null;
-            isSetupThrowBall = false;
-            ballOwnerIndicator.SetActive(false);
-            if (!ballThrowIndicator.IsNull())
-            {
-                ballThrowIndicator.gameObject.SetActive(false);
-            }
-            
-            UseActionPoint();
         }
 
         #endregion

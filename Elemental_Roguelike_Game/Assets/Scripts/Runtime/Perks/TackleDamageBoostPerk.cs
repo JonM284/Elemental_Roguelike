@@ -28,14 +28,14 @@ namespace Runtime.Perks
                 return;
             }
 
-            if (isUsePercent)
+            /*if (isUsePercent)
             {
                 var _amountChange = Mathf.RoundToInt(_character.characterMovement.tackleDamage * percentChange);
                 _character.characterMovement.UpdateTackleDamage(_character.characterMovement.tackleDamage + _amountChange);
                 return;
             }
             
-            _character.characterMovement.UpdateTackleDamage(_character.characterMovement.tackleDamage + amountChange);
+            _character.characterMovement.UpdateTackleDamage(_character.characterMovement.tackleDamage + amountChange);*/
             
         }
 

@@ -18,6 +18,8 @@ namespace Data.CharacterData
 
         public string characterName;
 
+        public float healthBarOffset = 1f;
+
         [Tooltip("Speed character will normally move at")]
         public float baseSpeed = 1;
 
@@ -58,6 +60,8 @@ namespace Data.CharacterData
         public CharacterClassData classTyping;
 
         public AssetReference characterAssetRef;
+
+        public GameObject characterModelAssetRef;
 
         public string characterGUID;
 

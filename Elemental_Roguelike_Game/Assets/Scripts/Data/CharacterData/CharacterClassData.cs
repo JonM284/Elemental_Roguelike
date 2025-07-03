@@ -65,6 +65,8 @@ namespace Data.CharacterData
 
         public string classGUID;
 
+        public Material characterClassGroundMarker;
+
         public List<IconByColorblindOption> _iconsByOption = new List<IconByColorblindOption>();
         
         #region Class Implementation

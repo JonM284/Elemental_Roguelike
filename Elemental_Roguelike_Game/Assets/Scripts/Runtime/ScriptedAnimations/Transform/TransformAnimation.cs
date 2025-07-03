@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Project.Scripts.Utils;
+using UnityEngine;
 
 namespace Runtime.ScriptedAnimations.Transform
 {
@@ -19,6 +20,20 @@ namespace Runtime.ScriptedAnimations.Transform
         #region AnimationBase Inherited Methods
 
         
+
+        #endregion
+
+        #region Class Implementation
+
+        public void AssignNewTarget(UnityEngine.Transform _newTarget)
+        {
+            if (_newTarget.IsNull())
+            {
+                return;
+            }
+
+            _target = _newTarget;
+        }
 
         #endregion
     }

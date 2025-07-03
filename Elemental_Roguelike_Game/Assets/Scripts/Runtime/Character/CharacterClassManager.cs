@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using Cysharp.Threading.Tasks;
 using Data.CharacterData;
 using Data.Sides;
 using Project.Scripts.Utils;
@@ -162,7 +163,7 @@ namespace Runtime.Character
 
         #region Class Implementation
 
-        public void InitializedCharacterPassive(CharacterClassData _data, int agilityScore, int shootingScore, int passingScore ,int tacklingScore)
+        public async UniTask InitializedCharacterPassive(CharacterClassData _data, int agilityScore, int shootingScore, int passingScore ,int tacklingScore)
         {
             if (_data.IsNull())
             {
@@ -203,6 +204,10 @@ namespace Runtime.Character
             indicatorMat.SetColor(m_colorVarName, _data.passiveColor);
             
             DisplayIndicator(false);
+            
+            await UniTask.WaitForEndOfFrame();
+            
+            Debug.Log("Class Initialized");
         }
 
         public void UpdateCharacterPassiveRadius(float newAmount)

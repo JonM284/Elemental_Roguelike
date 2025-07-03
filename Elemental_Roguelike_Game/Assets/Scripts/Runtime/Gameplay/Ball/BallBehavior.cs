@@ -238,40 +238,47 @@ namespace Runtime.Gameplay
 
         private void CheckForPlayer()
         {
+            
             Collider[] colliders = Physics.OverlapSphere(transform.position, playerCheckRadius, playerCheckLayer);
 
-            if (colliders.Length > 0)
+            if (colliders.Length == 0)
             {
-                foreach (var collider in colliders)
+                return;
+            }
+            
+            foreach (var collider in colliders)
+            {
+                collider.TryGetComponent(out CharacterBase _character);
+                    
+                if (_character.IsNull())
                 {
-                    var interactable = collider.GetComponent<IBallInteractable>();
-                    if (!interactable.IsNull())
-                    {
-                        if (interactable is CharacterBase characterBase)
-                        {
-                            if (!characterBase.canPickupBall)
-                            {
-                                return;
-                            }
-
-                            if (!lastThrownCharacter.IsNull() && characterBase == lastThrownCharacter)
-                            {
-                                return;
-                            }
-                            
-                            isControlled = true;
-                            m_currentBallForce = 0;
-                            if (isThrown)
-                            {
-                                isThrown = false;
-                                lastThrownCharacter = null;
-                            }
-                            controlledCharacterSide = characterBase.side;
-                            interactable?.PickUpBall(this);
-                            groundIndicator.SetActive(!isControlled);
-                        }
-                    }
+                    continue;
                 }
+                    
+                if (!_character.characterBallManager.canPickupBall)
+                {
+                    continue;
+                }
+
+                if (!lastThrownCharacter.IsNull() && _character == lastThrownCharacter)
+                {
+                    continue;
+                }
+                    
+                isControlled = true;
+                m_currentBallForce = 0;
+                    
+                if (isThrown)
+                {
+                    isThrown = false;
+                    lastThrownCharacter = null;
+                }
+                    
+                controlledCharacterSide = _character.side;
+                    
+                _character.PickUpBall(this);
+                    
+                groundIndicator.SetActive(!isControlled);
             }
         }
 

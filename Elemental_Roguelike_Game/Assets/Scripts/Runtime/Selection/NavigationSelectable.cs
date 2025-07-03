@@ -27,10 +27,7 @@ namespace Runtime.Selection
 
         public CharacterBase activeCharacter => TurnUtils.GetActiveCharacter();
 
-        private bool activeCharacterDoingAction => activeCharacter.characterMovement.isUsingMoveAction ||
-                                                   activeCharacter.characterWeaponManager.isUsingWeapon
-                                                   || activeCharacter.characterAbilityManager.isUsingAbilityAction ||
-                                                   activeCharacter.isSetupThrowBall;
+        private bool activeCharacterDoingAction => activeCharacter.isDoingAction;
 
         public bool isInBattle => TurnUtils.isInBattle();
 
@@ -55,7 +52,7 @@ namespace Runtime.Selection
             var setDistance = 100f;
             if (activeCharacter.characterMovement.isUsingMoveAction)
             {
-                setDistance = activeCharacter.characterMovement.battleMoveDistance;
+                setDistance = activeCharacter.characterMovement.currentMoveDistance;
             }
             
             var _correctPivot = !activeCharacter.isGoalieCharacter ? activeCharacter.transform.position.FlattenVector3Y() : activeCharacter.characterMovement.pivotTransform.position.FlattenVector3Y();

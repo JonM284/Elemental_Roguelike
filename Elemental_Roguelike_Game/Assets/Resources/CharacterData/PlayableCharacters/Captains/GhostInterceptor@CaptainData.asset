@@ -28,9 +28,12 @@ MonoBehaviour:
   abilities: []
   classTyping: {fileID: 11400000, guid: c187bfa56bf1fa8458a541f355280f7f, type: 2}
   characterAssetRef:
-    m_AssetGUID: dda94c9ad737c084bb4fbe7d6e1f91fa
+    m_AssetGUID: 41eee8d6051c6fb45a13a184f20fa7ff
     m_SubObjectName: 
+    m_SubObjectGUID: 
     m_SubObjectType: 
     m_EditorAssetChanged: 0
+  characterModelAssetRef: {fileID: 5908929120333207427, guid: 23fa45d0d2751904a8412d87c4a1d1a1,
+    type: 3}
   characterGUID: 60ad8f0e-57f8-48ad-8e21-c082ed4b024d
   characterImage: {fileID: 88800889, guid: 6a6f25e903f18fd4db55f0dfe52e535c, type: 3}

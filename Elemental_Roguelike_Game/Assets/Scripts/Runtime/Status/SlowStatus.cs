@@ -22,7 +22,7 @@ namespace Runtime.Status
                 return;
             }
 
-            var amountToChange = _character.characterMovement.battleMoveDistance * slowPercentage;
+            var amountToChange = _character.characterMovement.currentMoveDistance * slowPercentage;
             _character.characterMovement.ChangeMovementRange(amountToChange);
             
         }

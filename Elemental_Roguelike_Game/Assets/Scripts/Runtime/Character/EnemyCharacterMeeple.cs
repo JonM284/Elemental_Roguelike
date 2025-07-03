@@ -1,4 +1,5 @@
-﻿using Data;
+﻿using Cysharp.Threading.Tasks;
+using Data;
 using Data.CharacterData;
 using Project.Scripts.Data;
 using Runtime.GameControllers;
@@ -21,7 +22,7 @@ namespace Runtime.Character
         /// Initialize all components of character
         /// Also, check for upgrade items and such, then apply here
         /// </summary>
-        public override void InitializeCharacter(CharacterStatsBase _characterStats)
+        public override async UniTask InitializeCharacter(CharacterStatsBase _characterStats)
         {
            /* side = ScriptableDataController.Instance.GetSideByGuid(characterSideRef);
 

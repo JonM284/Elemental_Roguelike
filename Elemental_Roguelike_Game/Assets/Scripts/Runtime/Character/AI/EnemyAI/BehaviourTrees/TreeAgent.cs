@@ -54,7 +54,7 @@ namespace Runtime.Character.AI.EnemyAI.BehaviourTrees
 
         public bool isMeepleEnemy => characterBase is EnemyCharacterMeeple;
 
-        public float enemyMovementRange => characterBase.characterMovement.battleMoveDistance - 0.07f;
+        public float enemyMovementRange => characterBase.characterMovement.currentMoveDistance - 0.07f;
         
         protected Transform playerTeamGoal => TurnController.Instance.GetPlayerManager().goalPosition;
 
@@ -210,7 +210,7 @@ namespace Runtime.Character.AI.EnemyAI.BehaviourTrees
             PrioritySelector _scoreGoal = new PrioritySelector("Score Goal", 1);
 
             Sequence _shootBall = new Sequence("ShootBall", 600);
-            _shootBall.AddChild(new Leaf("isCanDoAction?", new Condition(() => canPerformNextAction && !characterBase.heldBall.IsNull())));
+            _shootBall.AddChild(new Leaf("isCanDoAction?", new Condition(() => canPerformNextAction && characterBase.characterBallManager.hasBall)));
             _shootBall.AddChild(new Leaf("CanShoot?", new Condition(IsInShootRange)));
             _shootBall.AddChild(new Leaf("ShootBall", new TreeAction(() =>
             {
@@ -221,7 +221,7 @@ namespace Runtime.Character.AI.EnemyAI.BehaviourTrees
             _scoreGoal.AddChild(_shootBall);
             
             Sequence _runBallIn = new Sequence("RunBall", 500);
-            _runBallIn.AddChild(new Leaf("isCanDoAction?", new Condition(() => canPerformNextAction && !characterBase.heldBall.IsNull())));
+            _runBallIn.AddChild(new Leaf("isCanDoAction?", new Condition(() => canPerformNextAction && characterBase.characterBallManager.hasBall)));
             _runBallIn.AddChild(new Leaf("CanRunBallIn?", new Condition(() => !HasPlayerBlockingRoute() && !IsNearBruiserCharacter(enemyMovementRange))));
             _runBallIn.AddChild(new Leaf("RunBallIn", new TreeAction(() =>
             {
@@ -232,7 +232,7 @@ namespace Runtime.Character.AI.EnemyAI.BehaviourTrees
             _scoreGoal.AddChild(_runBallIn);
             
             Sequence _passBall = new Sequence("PassBall", 100);
-            _passBall.AddChild(new Leaf("isCanDoAction?", new Condition(() => canPerformNextAction && !characterBase.heldBall.IsNull())));
+            _passBall.AddChild(new Leaf("isCanDoAction?", new Condition(() => canPerformNextAction && characterBase.characterBallManager.hasBall)));
             _passBall.AddChild(new Leaf("CanPass?", new Condition(() => (HasPlayerBlockingRoute() || IsNearBruiserCharacter(enemyMovementRange)) && HasPassableTeammate())));
             _passBall.AddChild(new Leaf("PassBall", new TreeAction(() =>
             {
@@ -243,7 +243,7 @@ namespace Runtime.Character.AI.EnemyAI.BehaviourTrees
             _scoreGoal.AddChild(_passBall);
             
             Sequence _repositionToScore = new Sequence("Reposition", 50);
-            _repositionToScore.AddChild(new Leaf("isCanDoAction?", new Condition(() => canPerformNextAction && !characterBase.heldBall.IsNull())));
+            _repositionToScore.AddChild(new Leaf("isCanDoAction?", new Condition(() => canPerformNextAction && characterBase.characterBallManager.hasBall)));
             _repositionToScore.AddChild(new Leaf("CanReposition?", new Condition(() => HasPlayerBlockingRoute() && !IsNearBruiserCharacter(enemyMovementRange) && !HasPassableTeammate())));
             _repositionToScore.AddChild(new Leaf("RepositionToScore", new TreeAction(() =>
             {
@@ -401,7 +401,7 @@ namespace Runtime.Character.AI.EnemyAI.BehaviourTrees
 
         protected IEnumerator C_TryPass()
         {
-            var allAlliesInRange = GetAllTargets(false, characterBase.passStrength);
+            var allAlliesInRange = GetAllTargets(false, characterBase.characterBallManager.passStrength);
             List<CharacterBase> passableAllies = new List<CharacterBase>();
 
             foreach (var ally in allAlliesInRange)
@@ -451,7 +451,7 @@ namespace Runtime.Character.AI.EnemyAI.BehaviourTrees
 
             characterBase.CheckAllAction(bestPossiblePass.transform.position , false);
 
-            yield return new WaitUntil(() => characterBase.isSetupThrowBall == false);
+            yield return new WaitUntil(() => characterBase.isDoingAction == false);
 
             yield return new WaitForSeconds(m_standardWaitTime);
             
@@ -496,7 +496,7 @@ namespace Runtime.Character.AI.EnemyAI.BehaviourTrees
                             if (TurnController.Instance.ball.controlledCharacterSide.sideGUID != characterBase.side.sideGUID)
                             {
                                 //other team has ball
-                                bestTarget = availableTargets.TrueForAll(cb => cb.heldBall.IsNull()) ? availableTargets.FirstOrDefault() : availableTargets.FirstOrDefault(cb => !cb.heldBall.IsNull());
+                                bestTarget = availableTargets.TrueForAll(cb => !cb.characterBallManager.hasBall) ? availableTargets.FirstOrDefault() : availableTargets.FirstOrDefault(cb => cb.characterBallManager.hasBall);
                             }
                             else
                             {
@@ -618,7 +618,7 @@ namespace Runtime.Character.AI.EnemyAI.BehaviourTrees
                     }
                     break;
                 case AbilityType.Teleport:
-                    if (TurnController.Instance.ball.isControlled && characterBase.heldBall.IsNull())
+                    if (TurnController.Instance.ball.isControlled && !characterBase.characterBallManager.hasBall)
                     {
                         //If I don't have the ball, ignore use
                         break;
@@ -654,7 +654,7 @@ namespace Runtime.Character.AI.EnemyAI.BehaviourTrees
                                 }
                                 else
                                 {
-                                    if (!characterBase.heldBall.IsNull())
+                                    if (characterBase.characterBallManager.hasBall)
                                     {
                                         var dirToGoal = TurnController.Instance.GetPlayerManager().goalPosition.position.FlattenVector3Y() -
                                                         transform.position.FlattenVector3Y();
@@ -791,7 +791,7 @@ namespace Runtime.Character.AI.EnemyAI.BehaviourTrees
             
             yield return new WaitForSeconds(m_abilityWaitTime);
 
-            var randomPosition = Random.insideUnitCircle * characterBase.shotStrength;
+            var randomPosition = Random.insideUnitCircle * characterBase.characterBallManager.shotStrength;
             var adjustedRandomPos = new Vector2(Mathf.Abs(randomPosition.x), randomPosition.y);
             var randomPointInShotRange = new Vector3(playerTeamGoal.position.x + adjustedRandomPos.x, playerTeamGoal.position.y, playerTeamGoal.position.z + adjustedRandomPos.y);
             var closestPossiblePoint = randomPointInShotRange;
@@ -902,7 +902,7 @@ namespace Runtime.Character.AI.EnemyAI.BehaviourTrees
 
         protected bool HasPassableTeammate()
         {
-            return GetAllTargets(false, characterBase.shotStrength).Count > 0;
+            return GetAllTargets(false, characterBase.characterBallManager.shotStrength).Count > 0;
         }
         
         protected bool IsPlayerInDirection(Vector3 direction)
@@ -1035,7 +1035,7 @@ namespace Runtime.Character.AI.EnemyAI.BehaviourTrees
             var directionToGoal = playerTeamGoal.position - transform.position;
             var distanceToGoal = directionToGoal.magnitude;
             var enemyMovementThreshold = enemyMovementRange * characterBase.characterActionPoints;
-            return enemyMovementThreshold >= distanceToGoal || characterBase.shotStrength >= distanceToGoal;
+            return enemyMovementThreshold >= distanceToGoal || characterBase.characterBallManager.shotStrength >= distanceToGoal;
         }
         
         protected CharacterAbilityManager.AssignedAbilities GetBestAbility()
@@ -1164,7 +1164,7 @@ namespace Runtime.Character.AI.EnemyAI.BehaviourTrees
             switch (_testAbility.abilityType)
             {
                 case AbilityType.Teleport: case AbilityType.Dash:
-                    if (characterBase.heldBall.IsNull())
+                    if (!characterBase.characterBallManager.hasBall)
                     {
                         break;
                     }

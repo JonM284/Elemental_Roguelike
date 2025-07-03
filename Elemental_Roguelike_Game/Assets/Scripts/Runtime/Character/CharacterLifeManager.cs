@@ -1,4 +1,5 @@
 ﻿using System;
+using Cysharp.Threading.Tasks;
 using Data.Elements;
 using Project.Scripts.Utils;
 using Runtime.GameControllers;
@@ -62,13 +63,16 @@ namespace Runtime.Character
 
         #region Class Implementation
 
-        public void InitializeCharacterHealth(int _maxHealth, int _maxShields, int _currentHealth, int _currentShield, ElementTyping _typing)
+        public async UniTask InitializeCharacterHealth(int _maxHealth, int _maxShields, int _currentHealth, int _currentShield, 
+            ElementTyping _typing, float _healthBaryOffset = 1f)
         {
             maxHealthPoints = _maxHealth;
             maxShieldPoints = _maxShields;
             currentHealthPoints = _currentHealth;
             currentShieldPoints = _currentShield;
             characterElementType = _typing;
+            healthBarPos.transform.localPosition = new Vector3(0, _healthBaryOffset, 0);
+            await UniTask.WaitForEndOfFrame();
         }
 
         public void ChangeMaxShield(int _newShieldsAmount)

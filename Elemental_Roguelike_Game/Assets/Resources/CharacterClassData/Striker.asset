@@ -31,7 +31,10 @@ MonoBehaviour:
   barColor: {r: 1, g: 0.916964, b: 0.031372547, a: 1}
   moveDistance: 5.8
   tackleDamageAmount: 10
+  overwatchDescription: 
   classGUID: 9f1bfb9b-bd5c-4e49-b319-75fea0cb1b51
+  characterClassGroundMarker: {fileID: 2100000, guid: f166c3bcbc65d9e43816a62f23e04ee1,
+    type: 2}
   _iconsByOption:
   - _option: 0
     _icons:

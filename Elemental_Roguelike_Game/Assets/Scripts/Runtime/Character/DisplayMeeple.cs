@@ -39,7 +39,7 @@ namespace Runtime.Character
             }
             
             var elementType = ElementUtils.GetElementTypeByGUID(_data.meepleElementTypeRef);
-            characterVisuals.InitializeMeepleCharacterVisuals(elementType);
+            //characterVisuals.InitializeMeepleCharacterVisuals(_data ,elementType);
 
             assignedData = _data;
         }

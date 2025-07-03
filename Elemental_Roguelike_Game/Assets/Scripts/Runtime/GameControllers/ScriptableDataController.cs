@@ -47,7 +47,7 @@ namespace Runtime.GameControllers
         public CharacterSide GetSideByGuid(string _searchGUID)
         {
             var side = m_characterSides.FirstOrDefault(cs => cs.sideGUID == _searchGUID);
-            Debug.Log(side);
+            Debug.Log(side.name);
             return side;
         }
 

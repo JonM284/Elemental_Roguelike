@@ -327,7 +327,7 @@ namespace Runtime.Character
 
         public void CancelAbilityUse()
         {
-            if (m_assignedAbilities[m_activeAbilityIndex] == null)
+            if (m_assignedAbilities[m_activeAbilityIndex].IsNull())
             {
                 return;
             }
@@ -381,6 +381,11 @@ namespace Runtime.Character
 
         public void UseActiveAbility()
         {
+            if (m_activeAbilityIndex >= m_assignedAbilities.Count && m_activeAbilityIndex < 0)
+            {
+                return;
+            }
+            
             m_assignedAbilities[m_activeAbilityIndex].ability.UseAbility(abilityPos);
             m_assignedAbilities[m_activeAbilityIndex].canUse = false;
             m_previousActiveAbilityIndex = m_activeAbilityIndex;

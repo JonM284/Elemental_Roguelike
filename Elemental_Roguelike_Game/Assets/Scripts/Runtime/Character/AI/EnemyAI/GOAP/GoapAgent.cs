@@ -60,7 +60,7 @@ namespace Runtime.Character.AI.EnemyAI
         public CharacterBase characterBase =>
             CommonUtils.GetRequiredComponent(ref m_characterBase, GetComponent<CharacterBase>);
         
-        public float enemyMovementRange => characterBase.characterMovement.battleMoveDistance - 0.07f;
+        public float enemyMovementRange => characterBase.characterMovement.currentMoveDistance - 0.07f;
         
         protected Transform playerTeamGoal => TurnController.Instance.GetPlayerManager().goalPosition;
 
@@ -94,10 +94,10 @@ namespace Runtime.Character.AI.EnemyAI
             _factory.AddBelief("OpponentHasBall", () => TurnController.Instance.ball.isControlled && 
                                                           TurnController.Instance.ball.controlledCharacterSide.sideGUID != this.characterBase.side.sideGUID);
             _factory.AddBelief("TeamHasBall", () => TurnController.Instance.ball.isControlled && 
-                                                      TurnController.Instance.ball.controlledCharacterSide.sideGUID == this.characterBase.side.sideGUID && characterBase.heldBall.IsNull());
+                                                      TurnController.Instance.ball.controlledCharacterSide.sideGUID == this.characterBase.side.sideGUID && !characterBase.characterBallManager.hasBall);
             _factory.AddBelief("HasAvailableAbilities", () => characterBase.characterAbilityManager.hasAvailableAbility);
             _factory.AddBelief("BallDropped", () => !TurnController.Instance.ball.isControlled);
-            _factory.AddBelief("HasBall", () => TurnController.Instance.ball.isControlled && !characterBase.heldBall.IsNull());
+            _factory.AddBelief("HasBall", () => TurnController.Instance.ball.isControlled && characterBase.characterBallManager.hasBall);
             _factory.AddBelief("IsWaitingPassive", () => characterBase.characterClassManager.isCheckingPassive);
             
             _factory.AddLocationBelief("IsNearPlayerGoal", enemyMovementRange * 2, playerTeamGoal);
@@ -287,7 +287,7 @@ namespace Runtime.Character.AI.EnemyAI
             var directionToGoal = playerTeamGoal.position - transform.position;
             var distanceToGoal = directionToGoal.magnitude;
             var enemyMovementThreshold = enemyMovementRange * characterBase.characterActionPoints;
-            if (enemyMovementThreshold >= distanceToGoal || characterBase.shotStrength >= distanceToGoal)
+            if (enemyMovementThreshold >= distanceToGoal || characterBase.characterBallManager.shotStrength >= distanceToGoal)
             {
                 inRange = true;
             }
@@ -387,7 +387,7 @@ namespace Runtime.Character.AI.EnemyAI
 
         protected bool HasPassableTeammate()
         {
-            var allAlliesInRange = GetAllTargets(false, characterBase.shotStrength);
+            var allAlliesInRange = GetAllTargets(false, characterBase.characterBallManager.passStrength);
             return allAlliesInRange.Count > 0;
         }
 

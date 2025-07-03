@@ -28,6 +28,8 @@ namespace Runtime.Character
         #region SerializedFields
     
         [SerializeField] private float gravity;
+
+        [SerializeField] private float moveDistanceBase = 1.5f, maxMoveDistance = 4f;
         
         [SerializeField] private GameObject movementRangeIndicator;
 
@@ -97,7 +99,7 @@ namespace Runtime.Character
 
         public float speed { get; private set; }
 
-        public float battleMoveDistance { get; private set; }
+        public float currentMoveDistance { get; private set; }
 
         public int tackleDamage { get; private set; }
 
@@ -188,11 +190,11 @@ namespace Runtime.Character
     
         #region Class Implementation
 
-        public void InitializeCharacterMovement(float _speed, float _moveDistance, int _tackleDamage, ElementTyping _damageType, bool _isGoalie)
+        public void InitializeCharacterMovement(float _speed, float _agilityScore, int _tackleDamage, ElementTyping _damageType, bool _isGoalie)
         {
             speed = _speed;
-            battleMoveDistance = _moveDistance;
-            m_originalMoveDistance = _moveDistance;
+            currentMoveDistance = moveDistanceBase + ((_agilityScore/100) * maxMoveDistance);
+            m_originalMoveDistance = currentMoveDistance;
             tackleDamage = _tackleDamage;
             tackleDamageType = _damageType;
             m_isGoalie = _isGoalie;
@@ -216,7 +218,7 @@ namespace Runtime.Character
 
             var distanceToPos = _position - pivotPos;
            
-            if (distanceToPos.magnitude >= battleMoveDistance)
+            if (distanceToPos.magnitude >= currentMoveDistance)
             {
                 return;
             }
@@ -244,6 +246,7 @@ namespace Runtime.Character
 
             NavMesh.SamplePosition(transform.position, out NavMeshHit playerPosition, 100, NavMesh.AllAreas);
             var hasPath = NavMesh.CalculatePath(playerPosition.position, adjustedEndPos, NavMesh.AllAreas, m_navMeshPath);
+            
             if (!hasPath)
             {
                 Debug.Log("<color=red>No Path</color>");
@@ -453,7 +456,7 @@ namespace Runtime.Character
                 return;
             }
             
-            movementRangeIndicator.transform.localScale = Vector3.one * (battleMoveDistance * 2);
+            movementRangeIndicator.transform.localScale = Vector3.one * (currentMoveDistance * 2);
             
             if (_beginningAction != null)
             {
@@ -499,12 +502,12 @@ namespace Runtime.Character
 
         public void ChangeMovementRange(float _newRange)
         {
-            battleMoveDistance = _newRange;
+            currentMoveDistance = _newRange;
         }
 
         public void ResetOriginalMoveDistance()
         {
-            battleMoveDistance = m_originalMoveDistance;
+            currentMoveDistance = m_originalMoveDistance;
         }
 
         private void SetIndicators(bool _isActive)

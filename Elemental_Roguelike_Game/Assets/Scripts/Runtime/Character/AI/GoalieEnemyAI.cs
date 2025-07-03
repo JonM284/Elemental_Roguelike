@@ -51,7 +51,7 @@ namespace Runtime.Character.AI
 
             if (allAlliesInRange.Count == 0)
             {
-                var posAwayFromGoal = (transform.position - enemyTeamGoal.position).normalized * characterBase.shotStrength;
+                var posAwayFromGoal = (transform.position - enemyTeamGoal.position).normalized * characterBase.characterBallManager.shotStrength;
                 characterBase.SetCharacterThrowAction();
                 characterBase.CheckAllAction(posAwayFromGoal , false);
                 yield break;
@@ -109,7 +109,7 @@ namespace Runtime.Character.AI
             characterBase.SetCharacterThrowAction();
             characterBase.CheckAllAction(bestPossiblePass.transform.position , false);
 
-            yield return new WaitUntil(() => characterBase.isSetupThrowBall == false);
+            yield return new WaitUntil(() => characterBase.isDoingAction == false);
 
             yield return new WaitForSeconds(m_standardWaitTime);
 

@@ -29,9 +29,9 @@ namespace Runtime.Status
             
             _character.OnDealDamage(_character.transform, damageOverTime, isArmorPiercing, abilityElement, _character.transform ,false);
             
-            if (!_character.heldBall.IsNull())
+            if (!_character.characterBallManager.hasBall)
             {
-                _character.KnockBallAway();
+                _character.characterBallManager.KnockBallAway();
             }
         }
 

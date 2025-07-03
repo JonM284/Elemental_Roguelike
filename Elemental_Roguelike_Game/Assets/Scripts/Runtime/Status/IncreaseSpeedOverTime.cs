@@ -23,7 +23,7 @@ namespace Runtime.Status
                 return;
             }
 
-            var newRange = _character.characterMovement.battleMoveDistance + amountToAdd;
+            var newRange = _character.characterMovement.currentMoveDistance + amountToAdd;
             _character.characterMovement.ChangeMovementRange(newRange);
         }
 

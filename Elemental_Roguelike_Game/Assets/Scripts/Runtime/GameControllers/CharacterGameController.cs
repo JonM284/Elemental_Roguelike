@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Cysharp.Threading.Tasks;
 using Data.CharacterData;
 using Project.Scripts.Utils;
 using Runtime.Character;
@@ -27,6 +28,8 @@ namespace Runtime.GameControllers
         #endregion
 
         #region Serialized Fields
+
+        [SerializeField] private AssetReference m_playableCharacter, m_aiCharacter;
         
         [SerializeField] private List<CharacterStatsBase> m_allCharacters = new List<CharacterStatsBase>();
         
@@ -121,11 +124,12 @@ namespace Runtime.GameControllers
             return m_cachedLoadedCharacters.FirstOrDefault(cb => cb.characterStatsBase == _stats);
         }
 
-        public IEnumerator C_CreateCharacter(CharacterStatsBase _characterStats, Vector3 _spawnPos, Vector3 spawnRotation, Action<CharacterBase> callback = null)
+        public async UniTask C_CreateCharacter(CharacterStatsBase _characterStats, Vector3 _spawnPos, 
+            Vector3 spawnRotation, Action<CharacterBase> callback = null)
         {
-            if (_characterStats == null)
+            if (_characterStats.IsNull())
             {
-                yield break;
+                return;
             }
             
             var adjustedSpawnLocation = _spawnPos != Vector3.zero ? _spawnPos : Vector3.zero;
@@ -140,13 +144,16 @@ namespace Runtime.GameControllers
                 foundCharacter.transform.parent = null;
                 foundCharacter.transform.position = adjustedSpawnLocation;
                 foundCharacter.transform.rotation = Quaternion.Euler(adjustedSpawnRotation);
-                foundCharacter.InitializeCharacter(_characterStats);
+                await foundCharacter.InitializeCharacter(_characterStats);
+                await UniTask.WaitUntil(() => foundCharacter.isInitialized);
+                
                 if (!callback.IsNull())
                 {
                     callback?.Invoke(foundCharacter);
                 }
+                
                 CharacterCreated?.Invoke(foundCharacter);
-                yield break;
+                return;
             }
 
             //Check if enemy was previously loaded
@@ -156,30 +163,42 @@ namespace Runtime.GameControllers
             {
                 var _newCharacterGO = Instantiate(foundLoadedCharacter.gameObject, adjustedSpawnLocation, Quaternion.Euler(adjustedSpawnRotation));
                 var _characterComp = _newCharacterGO.GetComponent<CharacterBase>();
-                _characterComp.InitializeCharacter(_characterStats);
+                await _characterComp.InitializeCharacter(_characterStats);
+                await UniTask.WaitUntil(() => _characterComp.isInitialized);
+                
+                if (!callback.IsNull())
+                {
+                    callback?.Invoke(foundCharacter);
+                }
+                
                 CharacterCreated?.Invoke(_characterComp);
-                yield break;
+                
+                return;
             }
             
-            //Load new Enemy
+            //Load new character
             
             var handle = Addressables.LoadAssetAsync<GameObject>(_characterStats.characterAssetRef);
-            yield return handle;
-            
-            if (!handle.IsDone)
-            {
-                yield return handle;
-            }
+
+            await UniTask.WaitUntil(() => handle.IsDone);
             
             if (handle.Status == AsyncOperationStatus.Succeeded)
             {
                 var _newCharacterObject = Instantiate(handle.Result, adjustedSpawnLocation, Quaternion.Euler(adjustedSpawnRotation));
                 var _newCharacter = _newCharacterObject.GetComponent<CharacterBase>();
                 m_cachedLoadedCharacters.Add(handle.Result.GetComponent<CharacterBase>());
-                if (_newCharacter != null)
+                
+                if (!_newCharacter.IsNull())
                 {
-                    _newCharacter.InitializeCharacter(_characterStats);
+                    await _newCharacter.InitializeCharacter(_characterStats);
+                    await UniTask.WaitUntil(() => _newCharacter.isInitialized);
                 }
+                
+                if (!callback.IsNull())
+                {
+                    callback?.Invoke(foundCharacter);
+                }
+                
                 CharacterCreated?.Invoke(_newCharacter);
             }
             else

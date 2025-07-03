@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Cysharp.Threading.Tasks;
 using Data;
 using Data.CharacterData;
 using Data.EnemyData;
@@ -273,19 +274,19 @@ namespace Runtime.GameControllers
                 return;
             }
             
-            StartCoroutine(C_MatchSetup());
+            T_MatchSetup();
         }
         
         //Setup Match
         //Spawn all characters in correct position
         //flip coin to decided starting team
-        private IEnumerator C_MatchSetup()
+        private async UniTask T_MatchSetup()
         {
             m_isSettingUpMatch = true;
             
             UIUtils.OpenUI(battleUIData);
 
-            yield return new WaitForSeconds(0.3f);
+            await UniTask.WaitForSeconds(0.3f);
             
             //Find both team arena managers
 
@@ -298,7 +299,6 @@ namespace Runtime.GameControllers
 
             foreach (var manager in allTeamSides)
             {
-                yield return null;
                 teamManagers.Add(manager);
             }
             
@@ -319,18 +319,17 @@ namespace Runtime.GameControllers
 
             //Spawn Enemy Team
 
-            yield return StartCoroutine(C_LoadEnemyTeam());
-            
-            yield return null;
+            //await T_LoadEnemyTeam()();
+            //yield return StartCoroutine(C_LoadEnemyTeam());
             
             //Spawn Player Team
 
-            yield return StartCoroutine(C_LoadPlayerTeam());
+            await T_LoadPlayerTeam();
             
             StartBattle();
         }
 
-        private IEnumerator C_LoadPlayerTeam()
+        private async UniTask T_LoadPlayerTeam()
         {
             
             Debug.Log("<color=#00FF00>Loading Team</color>");
@@ -359,14 +358,12 @@ namespace Runtime.GameControllers
             
             for (int i = 0; i < teamMembers.Count; i++)
             {
-                yield return StartCoroutine(CharacterGameController.Instance.C_CreateCharacter(teamMembers[i].m_characterStatsBase,
-                    correctSide.startPositions[i].position, correctSide.startPositions[i].localEulerAngles));;
-
-                yield return null;
+                await CharacterGameController.Instance.C_CreateCharacter(teamMembers[i].m_characterStatsBase,
+                    correctSide.startPositions[i].position, correctSide.startPositions[i].localEulerAngles);
             }
-            
-            yield return StartCoroutine(correctSide.C_SpawnGoalie());
 
+
+            //await correctSide.T_SpawnGoalie();
         }
         
         private void OnCharacterCreated(CharacterBase _character)
@@ -408,13 +405,13 @@ namespace Runtime.GameControllers
             
         }
 
-        private IEnumerator C_LoadEnemyTeam()
+        private async UniTask T_LoadEnemyTeam()
         {
             var teamData = TournamentController.Instance.GetCurrentEnemyTeam();
+            
             if (teamData.IsNull())
             {
-                yield return new WaitForSeconds(1f);
-                yield break;
+                return;
             }
             
             Debug.Log("<color=#00FF00>Loading ENEMY TEAM</color>");
@@ -436,13 +433,11 @@ namespace Runtime.GameControllers
             
             for (int i = 0; i < teamMembers.Count; i++)
             {
-                yield return StartCoroutine(CharacterGameController.Instance.C_CreateCharacter(teamMembers[i],
-                    correctSide.startPositions[i].position, correctSide.startPositions[i].localEulerAngles));;
-
-                yield return null;
+                await CharacterGameController.Instance.C_CreateCharacter(teamMembers[i],
+                    correctSide.startPositions[i].position, correctSide.startPositions[i].localEulerAngles);
             }
 
-            yield return StartCoroutine(correctSide.C_SpawnGoalie());
+            await correctSide.T_SpawnGoalie();
         }
 
         public void StartBattle()
@@ -677,6 +672,7 @@ namespace Runtime.GameControllers
             if (enemySide.teamMembers.Count == 0)
             {
                 Debug.Log("ENEMY TEAM EMPTY");
+                EndTeamTurn();
                 yield break;
             }
 
@@ -684,8 +680,6 @@ namespace Runtime.GameControllers
             {
                 EndTeamTurn();
             }
-
-            
 
             foreach (var currentMember in enemySide.teamMembers)
             {

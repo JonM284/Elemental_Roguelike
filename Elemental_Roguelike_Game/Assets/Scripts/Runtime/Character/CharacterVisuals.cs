@@ -1,7 +1,10 @@
 ﻿using System.Collections.Generic;
+using Cysharp.Threading.Tasks;
+using Data.CharacterData;
 using Data.Elements;
 using Project.Scripts.Utils;
 using Runtime.GameControllers;
+using Runtime.ScriptedAnimations.Transform;
 using UnityEngine;
 
 namespace Runtime.Character
@@ -23,16 +26,23 @@ namespace Runtime.Character
         
         #region Serialized Fields
 
-        [SerializeField] private GameObject characterVisual;
-
+        [SerializeField] private TransformScaleAnimation m_highlightAnimation;
+        
+        [SerializeField] private Transform modelParent;
+        
         [SerializeField] private Color highlightColor;
 
         [SerializeField] private bool m_isMeeple;
 
         [SerializeField] private bool m_isChangeColor;
 
+        [Header("Normal")]
+        [SerializeField] private SkinnedMeshRenderer m_skinnedMeshRenderer;
+        [SerializeField] private MeshRenderer m_meshRenderer;
+        
+        
+        [Header("Meeple")]
         [SerializeField] private List<SkinnedMeshRenderer> meepleSkinnedMeshRenderers = new List<SkinnedMeshRenderer>();
-
         [SerializeField] private List<MeshRenderer> meepleMeshRenderers = new List<MeshRenderer>();
         
         #endregion
@@ -57,30 +67,29 @@ namespace Runtime.Character
 
         public bool isMeeple => m_isMeeple;
 
+        public Transform ballHandPos { get; private set; }
+
         #endregion
 
         #region Class Implementation
 
-        public void InitializeCharacterVisuals()
+        public async UniTask InitializeCharacterVisuals(CharacterStatsBase _data, Transform _ballHoldPos)
         {
-            if (characterVisual != null)
+            //Instantiate character model and attach to model parent
+            if (modelParent.IsNull())
             {
-                characterModel = characterVisual;
+                return;
             }
-
-            Material _mat;
             
-            characterModel.TryGetComponent(out SkinnedMeshRenderer skinnedMeshRenderer);
-
-            if (skinnedMeshRenderer.IsNull())
-            {
-                characterModel.TryGetComponent(out MeshRenderer meshRenderer);
-                _mat = meshRenderer.materials[0];
-            }
-            else
-            {
-                _mat = skinnedMeshRenderer.materials[0];
-            }
+            characterModel = Instantiate(_data.characterModelAssetRef, modelParent.transform.position, modelParent.rotation);
+            characterModel.transform.SetParent(modelParent);
+            characterModel.transform.localPosition = Vector3.zero;
+            
+            //Get material attached to mesh
+            m_skinnedMeshRenderer = characterModel.GetComponentInChildren<SkinnedMeshRenderer>();
+            m_meshRenderer = characterModel.GetComponentInChildren<MeshRenderer>();
+            
+            Material _mat = GetMat();
             
             if (_mat.IsNull())
             {
@@ -91,15 +100,24 @@ namespace Runtime.Character
             InitializeHighlightVariables(_mat);
         }
 
-        public void InitializeMeepleCharacterVisuals(ElementTyping _type)
+        public async UniTask InitializeMeepleCharacterVisuals(CharacterStatsBase _data,
+            ElementTyping _type, Transform _ballHoldPos)
         {
-            if (meepleSkinnedMeshRenderers.Count == 0)
+            
+            characterModel = Instantiate(_data.characterModelAssetRef, modelParent.transform.position, modelParent.rotation);
+            characterModel.transform.SetParent(modelParent);
+            characterModel.transform.localPosition = Vector3.zero;
+            
+            meepleSkinnedMeshRenderers = characterModel.GetComponentsInChildren<SkinnedMeshRenderer>().ToNewList();
+            meepleMeshRenderers = characterModel.GetComponentsInChildren<MeshRenderer>().ToNewList();
+
+            if (meepleSkinnedMeshRenderers.Count == 0 && meepleMeshRenderers.Count == 0)
             {
-                Debug.LogError("No Character Visuals");
                 return;
             }
 
-            m_clonedMaterial = new Material(meepleSkinnedMeshRenderers[0].material);
+            m_clonedMaterial = new Material(meepleSkinnedMeshRenderers.Count > 0 ? meepleSkinnedMeshRenderers[0].materials[0]
+                : meepleMeshRenderers.Count > 0 ? meepleMeshRenderers[0].materials[0] : default);
 
             meepleSkinnedMeshRenderers.ForEach(smr =>
             {
@@ -120,8 +138,25 @@ namespace Runtime.Character
             InitializeHighlightVariables(m_clonedMaterial);
         }
 
+        private Material GetMat()
+        {
+            if (m_skinnedMeshRenderer.IsNull() && m_meshRenderer.IsNull())
+            {
+                return default;
+            }
+            
+            if (!m_skinnedMeshRenderer.IsNull())
+            {
+                return m_skinnedMeshRenderer.materials[0];
+            }
+            
+            return m_meshRenderer.materials[0];
+        }
+
         private void InitializeHighlightVariables(Material _associatedMaterial)
         {
+            m_highlightAnimation.AssignNewTarget(characterModel.transform);
+            
             m_highlightMaterial = _associatedMaterial;
 
             m_originalHighlightThickness = m_highlightMaterial.GetFloat(OutlineThickness);
@@ -149,7 +184,7 @@ namespace Runtime.Character
             }
             else
             {
-                characterVisual.layer = _preferredLayer;
+                characterModel.layer = _preferredLayer;
             }
             
             Debug.Log($"Changed to {_preferredLayer.value}");

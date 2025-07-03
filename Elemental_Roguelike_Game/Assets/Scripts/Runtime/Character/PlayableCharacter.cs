@@ -1,5 +1,7 @@
-﻿using Data.CharacterData;
+﻿using Cysharp.Threading.Tasks;
+using Data.CharacterData;
 using Project.Scripts.Utils;
+using Runtime.Character.StateMachines;
 using Runtime.GameControllers;
 
 namespace Runtime.Character
@@ -13,35 +15,9 @@ namespace Runtime.Character
         /// Initialize all components of character
         /// Also, check for upgrade items and such, then apply here
         /// </summary>
-        public override void InitializeCharacter(CharacterStatsBase _characterStats)
+        public override async UniTask InitializeCharacter(CharacterStatsBase _characterStats)
         {
-            side = ScriptableDataController.Instance.GetSideByGuid(characterSideRef);
-            m_characterStatsBase = _characterStats;
-
-            InitializeCharacterMarker();
-            
-            if (characterVisuals.isMeeple)
-            {
-                characterVisuals.InitializeMeepleCharacterVisuals(m_characterStatsBase.typing);
-            }
-            else
-            {
-                characterVisuals.InitializeCharacterVisuals();
-            }
-            
-            var m_moveDistance = (m_characterStatsBase.agilityScore/100f) * maxMovementDistance;
-            
-            characterMovement.InitializeCharacterMovement(m_characterStatsBase.baseSpeed, m_moveDistance, m_characterStatsBase.tackleDamageAmount, m_characterStatsBase.typing, isGoalie);
-            characterLifeManager.InitializeCharacterHealth(m_characterStatsBase.baseHealth, m_characterStatsBase.baseShields, m_characterStatsBase.baseHealth,
-                m_characterStatsBase.baseShields, m_characterStatsBase.typing);
-            
-            if (m_characterStatsBase.abilities.Count > 0)
-            {
-                characterAbilityManager.InitializeCharacterAbilityList(m_characterStatsBase.abilities);
-            }
-            
-            characterClassManager.InitializedCharacterPassive(m_characterStatsBase.classTyping, m_characterStatsBase.agilityScore,
-                m_characterStatsBase.shootingScore, m_characterStatsBase.passingScore ,m_characterStatsBase.tackleScore);
+            base.InitializeCharacter(_characterStats);
         }
 
         public override float GetBaseSpeed()
@@ -62,7 +38,8 @@ namespace Runtime.Character
         {
             //Undecided
         }
-
+        
+        
         #endregion
 
 

@@ -10,6 +10,14 @@ namespace Runtime.Submodules
 {
     public class HighlightHelper: MonoBehaviour
     {
+
+        #region Actions
+
+        public static event Action<ISelectable> onHoverChanged;
+
+        public static event Action<Vector3> onPositionHover; 
+        
+        #endregion
         
         #region Serialized Fields
 
@@ -75,7 +83,7 @@ namespace Runtime.Submodules
                 return;
             }
             
-            if (mainCamera == null)
+            if (mainCamera.IsNull())
             {
                 return;
             }
@@ -103,6 +111,9 @@ namespace Runtime.Submodules
             }
             
             activeCharacter.MarkHighlightArea(hit.point);
+            
+            //Set Action on State
+            onPositionHover?.Invoke(hit.point);
         }
 
         private void CheckHover()
@@ -113,7 +124,7 @@ namespace Runtime.Submodules
                 return;
             }
             
-            if (mainCamera == null)
+            if (mainCamera.IsNull())
             {
                 return;
             }
@@ -137,6 +148,9 @@ namespace Runtime.Submodules
                 CheckHoveredObject();
                 currentHovered = selectable;
                 selectable.OnHover();
+                
+                //Set action on player
+                onHoverChanged?.Invoke(selectable);
             }
 
         }

@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Cysharp.Threading.Tasks;
 using Data.CharacterData;
 using Data.Sides;
 using Project.Scripts.Utils;
@@ -105,10 +106,10 @@ namespace Runtime.Managers
             }
         }
 
-        public IEnumerator C_SpawnGoalie()
+        public async UniTask T_SpawnGoalie()
         {
-            yield return StartCoroutine(CharacterGameController.Instance.C_CreateCharacter(m_goalieRef,
-                goalPosition.position, goalPosition.localEulerAngles));
+            await CharacterGameController.Instance.C_CreateCharacter(m_goalieRef,
+                goalPosition.position, goalPosition.localEulerAngles);
         }
 
         #endregion

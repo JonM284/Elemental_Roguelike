@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Cysharp.Threading.Tasks;
 using Data.Sides;
 using Project.Scripts.Utils;
 using Runtime.Character;
@@ -130,12 +131,12 @@ namespace Runtime.UI.DataModels
         {
             if (loadedHealthBarGO.IsNull())
             {
-                StartCoroutine(C_LoadHealthBar());
+                T_LoadHealthBar();
             }
 
             if (loadedDisplayBarGO.IsNull())
             {
-                StartCoroutine(C_LoadDisplayBar());
+                T_LoadDisplayBar();
             }
         }
 
@@ -174,7 +175,7 @@ namespace Runtime.UI.DataModels
             TurnController.OnBattleEnded += OnBattleEnded;
             TurnController.OnChangeActiveCharacter += OnChangeCharacterTurn;
             TurnController.OnChangeActiveTeam += OnChangeActiveTeam;
-            CharacterBase.BallPickedUp += OnBallPickedUp;
+            CharacterBallManager.BallPickedUp += OnBallPickedUp;
             CharacterAbilityManager.ActionUsed += OnAbilityUsed;
             WinConditionController.PointScored += OnPointScored;
             WinConditionController.TurnCounterChanged += OnTurnCounterChanged;
@@ -186,7 +187,7 @@ namespace Runtime.UI.DataModels
             TurnController.OnBattleEnded -= OnBattleEnded;   
             TurnController.OnChangeActiveCharacter -= OnChangeCharacterTurn;
             TurnController.OnChangeActiveTeam -= OnChangeActiveTeam;
-            CharacterBase.BallPickedUp -= OnBallPickedUp;
+            CharacterBallManager.BallPickedUp -= OnBallPickedUp;
             CharacterAbilityManager.ActionUsed -= OnAbilityUsed;
             WinConditionController.PointScored -= OnPointScored;
             WinConditionController.TurnCounterChanged -= OnTurnCounterChanged;
@@ -208,20 +209,20 @@ namespace Runtime.UI.DataModels
 
         private void AddHealthBar(CharacterBase _character)
         {
-            StartCoroutine(C_AddHealthBar(_character));
+            T_AddHealthBar(_character);
         }
 
         private void AddDisplayBar(CharacterBase _character)
         {
-            StartCoroutine(C_AddDisplayBar(_character));
+            T_AddDisplayBar(_character);
         }
 
-        private IEnumerator C_AddHealthBar(CharacterBase _character)
+        private async UniTask T_AddHealthBar(CharacterBase _character)
         {
             if (loadedHealthBarGO.IsNull())
             {
                 Debug.Log("<color=blue>Waiting</color>");
-                yield return new WaitUntil(() => m_isLoadingHealthBar == false);
+                await UniTask.WaitUntil(() => m_isLoadingHealthBar == false);
                 Debug.Log("<color=blue>WAITING FINISHED</color>");
             }
             
@@ -240,16 +241,16 @@ namespace Runtime.UI.DataModels
             }
             
             newHealthBar.TryGetComponent(out HealthBarItem item);
+            
             if (item)
             {
                 item.Initialize(_character);
             }
             
             m_activeHealthbars.Add(newHealthBar);
-
         }
 
-        private IEnumerator C_LoadHealthBar()
+        private async UniTask T_LoadHealthBar()
         {
             m_isLoadingHealthBar = true;
 
@@ -257,10 +258,7 @@ namespace Runtime.UI.DataModels
             
             Debug.Log("<color=#00FF00>Loading GameObject</color>");
 
-            if (!handle.IsDone)
-            {
-                yield return handle;
-            }
+            await UniTask.WaitUntil(() => handle.IsDone);
             
             if (handle.Status == AsyncOperationStatus.Succeeded)
             {
@@ -279,11 +277,11 @@ namespace Runtime.UI.DataModels
             m_isLoadingHealthBar = false;
         }
 
-        private IEnumerator C_AddDisplayBar(CharacterBase _character)
+        private async UniTask T_AddDisplayBar(CharacterBase _character)
         {
             if (loadedDisplayBarGO.IsNull())
             {
-                yield return new WaitUntil(() => m_isLoadingDisplayBar == false);
+                UniTask.WaitUntil(() => m_isLoadingDisplayBar == false);
             }
             
             var newDisplayBar = m_cachedTeamHealthBars.Count > 0 ? m_cachedTeamHealthBars.FirstOrDefault() : loadedDisplayBarGO.Clone(displayBarParent);
@@ -301,6 +299,7 @@ namespace Runtime.UI.DataModels
             }
             
             newDisplayBar.TryGetComponent(out TeamHealthBarItem item);
+            
             if (item)
             {
                 item.Initialize(_character);
@@ -309,16 +308,13 @@ namespace Runtime.UI.DataModels
             m_activeTeamHealthBars.Add(newDisplayBar);
         }
 
-        private IEnumerator C_LoadDisplayBar()
+        private async UniTask T_LoadDisplayBar()
         {
             var handle = Addressables.LoadAssetAsync<GameObject>(displaybarUI);
             
             Debug.Log("<color=#00FF00>Loading GameObject</color>");
 
-            if (!handle.IsDone)
-            {
-                yield return handle;
-            }
+            await UniTask.WaitUntil(() => handle.IsDone);
             
             if (handle.Status == AsyncOperationStatus.Succeeded)
             {
@@ -375,26 +371,29 @@ namespace Runtime.UI.DataModels
             var _isPlayerTurn = _character.side == playerSide;
             
             selectedCharacterVisuals.SetActive(_isPlayerTurn);
-            
-            if (_isPlayerTurn)
-            {
-                shootButton.SetActive(!_character.heldBall.IsNull());
-            }
 
             if (!_isPlayerTurn)
             {
                 return;
             }
-
+            
+            shootButton.SetActive(_character.characterBallManager.hasBall);
             CheckAbilities();
         }
         
         private void OnBallPickedUp(CharacterBase _character)
         {
-            if (_character == activePlayer)
+            if (_character.IsNull() || activePlayer.IsNull())
             {
-                shootButton.SetActive(!_character.heldBall.IsNull());
+                return;
             }
+            
+            if (_character != activePlayer)
+            {
+                return;
+            }
+            
+            shootButton.SetActive(_character.characterBallManager.hasBall);
         }
 
         public void OnMoveClicked()

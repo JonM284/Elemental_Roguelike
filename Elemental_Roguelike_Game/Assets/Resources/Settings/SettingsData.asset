@@ -15,4 +15,4 @@ MonoBehaviour:
   colorblindOptions: 0
   playerSideColor: {r: 0, g: 0.5019822, b: 1, a: 1}
   enemySideColor: {r: 1, g: 0, b: 0, a: 1}
-  neutralSideColor: {r: 0, g: 0, b: 0, a: 1}
+  neutralSideColor: {r: 0.52675426, g: 0.9547169, b: 0.42331788, a: 1}
