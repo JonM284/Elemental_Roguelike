@@ -8,8 +8,6 @@ Shader "Custom/ToonLighting"
         _LightInt ("Light Instensity", Range(0,1)) = 1
         _OutlineColor ("Outline Color", Color) = (1,1,1,1)
         _OutlineThickness ("Outline Thickness", Range(0.001, 0.05)) = 0.1
-        _Flash ("Flash", Range(0,1)) = 0
-        _FlashColor ("Flash Color", Color) = (1,1,1,1)
     }
     SubShader
     {
@@ -61,8 +59,6 @@ Shader "Custom/ToonLighting"
             float4 _RampTex_ST;
             half _LightInt;
             half4 _LightColor0;
-            half4 _FlashColor;
-            half _Flash;
 
             float3 LambertShading(float3 colorRefl, float lightInt, float3 normal, float3 lightDir)
 			{
@@ -83,13 +79,6 @@ Shader "Custom/ToonLighting"
             {
                 
                 fixed4 col = tex2D(_MainTex, i.uv);
-                if(_Flash > 0)
-                {
-                    col.r = col.a;
-                    col.g = col.a;
-                    col.b = col.a;
-                }
-                
                 float3 normal = i.normal_world;
                 //float3 viewDir = normalize(_WorldSpaceCameraPos - i.vertex_world);
 				//Direction of Directional environmental lighting
@@ -99,8 +88,8 @@ Shader "Custom/ToonLighting"
 				float3 diffuse = LambertShading(colorRefl, _LightInt, normal, lightDir);
                 float2 diffuseUV = diffuse.xy;
                 fixed4 ramp = tex2D(_RampTex, diffuseUV);
-                col.rgb *= _Flash == 0 ?  _MainColor : _FlashColor;
-                return _Flash == 0 ? col * ramp : col;
+                col.rgb *= _MainColor;
+                return col * ramp;
             }
             ENDCG
         }
