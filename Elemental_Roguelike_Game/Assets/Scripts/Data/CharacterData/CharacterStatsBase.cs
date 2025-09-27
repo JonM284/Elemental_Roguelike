@@ -35,18 +35,16 @@ namespace Data.CharacterData
         
         [Header("Stats")]
         [Tooltip("tackle score and damage")]
-        [Range(30,100)]
-        public int tackleScore = 30;
+        [Range(0,100)] public int tackleScore = 30;
         [Tooltip("movement and dodge tackle reaction")]
-        [Range(30,100)]
-        public int agilityScore = 30;
-        [Tooltip("throw ball for shot distance")]
-        [Range(30,100)]
-        public int shootingScore = 30;
-        [Tooltip("throw ball for pass distance")]
-        [Range(30,100)]
-        public int passingScore = 30;
-
+        [Range(0,100)] public int agilityScore = 30;
+        [Tooltip("throw ball")]
+        [Range(0, 100)] public int throwScore = 30;
+        [Tooltip("passive influence range")]
+        [Range(0, 100)] public int influenceRange = 30;
+        [Tooltip("gravity pull")]
+        [Range(0, 100)] public int gravityScore = 30;
+        
         [Tooltip("Character associated color")]
         public Color characterColor = Color.white;
         
@@ -58,15 +56,19 @@ namespace Data.CharacterData
         public List<Ability> abilities;
 
         public CharacterClassData classTyping;
-
-        public AssetReference characterAssetRef;
-
+        
         public GameObject characterModelAssetRef;
 
         public string characterGUID;
 
         public Sprite characterImage;
         
+        #endregion
+
+        #region Private Read-Only
+
+        private readonly int maxDamage = 100;
+
         #endregion
         
         
@@ -81,6 +83,11 @@ namespace Data.CharacterData
             }
             
             characterGUID = System.Guid.NewGuid().ToString();
+        }
+
+        public int GetTackleDamage()
+        {
+            return Mathf.CeilToInt(maxDamage * (tackleScore / 100f));
         }
         
         #endregion

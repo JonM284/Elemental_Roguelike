@@ -10,6 +10,7 @@ using Runtime.UI.Items;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
+using UnityEngine.UI;
 using Utils;
 
 namespace Runtime.UI.DataModels
@@ -24,6 +25,8 @@ namespace Runtime.UI.DataModels
         {
             public CharacterClassData classData;
             public Transform rowParentTransform;
+            public Image titleImage;
+            public Image barImage;
         }
 
         #endregion
@@ -101,6 +104,8 @@ namespace Runtime.UI.DataModels
                 yield return StartCoroutine(C_LoadBasicCharacterItem());
             }
 
+            RecolorAllRows();
+            
             GenerateAllCharacters();
         }
 
@@ -147,6 +152,15 @@ namespace Runtime.UI.DataModels
             foreach (CharacterStatsBase _character in CharacterGameController.Instance.GetAllCharacters())
             {
                 AddCharacterItem(_character, m_rowsByClass.FirstOrDefault(rbc => rbc.classData.classGUID == _character.classTyping.classGUID)?.rowParentTransform);
+            }
+        }
+
+        private void RecolorAllRows()
+        {
+            foreach (var rowByClass in m_rowsByClass)
+            {
+                rowByClass.titleImage.color = rowByClass.classData.barColor;   
+                rowByClass.barImage.color = rowByClass.classData.darkColor;   
             }
         }
 

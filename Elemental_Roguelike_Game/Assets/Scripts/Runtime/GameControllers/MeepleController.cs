@@ -2,15 +2,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Data;
 using Data.CharacterData;
-using Data.DataSaving;
-using Project.Scripts.Data;
-using Project.Scripts.Runtime.LevelGeneration;
 using Project.Scripts.Utils;
-using Runtime.Abilities;
 using Runtime.Character;
-using Runtime.UI;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
@@ -133,12 +127,12 @@ namespace Runtime.GameControllers
             _character.meepleElementTypeRef = ElementUtils.GetRandomElement().elementGUID;
             var randomClass = GetRandomClassType();
             _character.classReferenceType = randomClass.classGUID;
-            _character.baseHealth = randomClass.GetRandomHealth();
+            _character.baseHealth = 100;
             _character.currentHealth = _character.baseHealth;
-            _character.baseShields = randomClass.GetRandomShield();
+            _character.baseShields = 10;
             _character.currentShield = _character.baseShields;
             _character.baseSpeed = 10f;
-            _character.movementDistance = randomClass.GetMoveDistance();
+            _character.movementDistance = 10f;
             
             for (int i = 0; i < 2; i++)
             {
@@ -147,10 +141,10 @@ namespace Runtime.GameControllers
             }
 
             var foundClass = GetClassByGUID(_character.classReferenceType);
-            _character.agilityScore = foundClass.GetRandomAgilityScore();
-            _character.shootingScore = foundClass.GetRandomShootingScore();
-            _character.damageScore = foundClass.GetRandomDamageScore();
-            _character.passingScore = foundClass.GetRandomPassingScore();
+            _character.agilityScore = Random.Range(30,100);
+            _character.shootingScore = Random.Range(30,100);
+            _character.damageScore = Random.Range(30,100);
+            _character.passingScore = Random.Range(30,100);
         }
 
         public IEnumerator InstantiatePremadeMeeple(CharacterStatsData _meepleCharacter, Vector3 spawnLocation, Vector3 spawnRotation)

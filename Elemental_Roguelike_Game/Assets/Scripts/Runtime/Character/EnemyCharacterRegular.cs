@@ -24,7 +24,7 @@ namespace Runtime.Character
 
             if (!_enemyAI.IsNull())
             {
-                _enemyAI.SetupBehaviorTrees();
+               _enemyAI.SetupBehaviorTrees();
             }
 
         }

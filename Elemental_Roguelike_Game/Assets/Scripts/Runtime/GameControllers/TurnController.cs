@@ -318,12 +318,9 @@ namespace Runtime.GameControllers
             ball = ballRef;
 
             //Spawn Enemy Team
-
-            //await T_LoadEnemyTeam()();
-            //yield return StartCoroutine(C_LoadEnemyTeam());
+            await T_LoadEnemyTeam();
             
             //Spawn Player Team
-
             await T_LoadPlayerTeam();
             
             StartBattle();
@@ -347,7 +344,7 @@ namespace Runtime.GameControllers
             
             Debug.Log($"Team Members = {teamMembers.Count}");
             
-            var correctSide = teamManagers.FirstOrDefault(atm => atm.characterSide == playerSide);
+            var correctSide = teamManagers.FirstOrDefault(atm => atm.characterSide.sideGUID == playerSide.sideGUID);
 
             if (correctSide.IsNull())
             {
@@ -359,11 +356,11 @@ namespace Runtime.GameControllers
             for (int i = 0; i < teamMembers.Count; i++)
             {
                 await CharacterGameController.Instance.C_CreateCharacter(teamMembers[i].m_characterStatsBase,
-                    correctSide.startPositions[i].position, correctSide.startPositions[i].localEulerAngles);
+                    correctSide.startPositions[i].position, correctSide.startPositions[i].localEulerAngles, true);
             }
 
 
-            //await correctSide.T_SpawnGoalie();
+            await correctSide.T_SpawnGoalie();
         }
         
         private void OnCharacterCreated(CharacterBase _character)
@@ -429,12 +426,12 @@ namespace Runtime.GameControllers
             
             Debug.Log($"Team Members = {teamMembers.Count}");
             
-            var correctSide = teamManagers.FirstOrDefault(atm => atm.characterSide == enemySide);
+            var correctSide = teamManagers.FirstOrDefault(atm => atm.characterSide.sideGUID == enemySide.sideGUID);
             
             for (int i = 0; i < teamMembers.Count; i++)
             {
                 await CharacterGameController.Instance.C_CreateCharacter(teamMembers[i],
-                    correctSide.startPositions[i].position, correctSide.startPositions[i].localEulerAngles);
+                    correctSide.startPositions[i].position, correctSide.startPositions[i].localEulerAngles, false);
             }
 
             await correctSide.T_SpawnGoalie();

@@ -19,9 +19,11 @@ MonoBehaviour:
   abilityType: 11
   targetType: 1
   range: 3
+  abilitySize: 1
   abilityAnimationOverride: {fileID: 0}
   playVFXAtTransform: 0
   abilityIcon: {fileID: 0}
   abilityVFX: {fileID: 0}
-  abilityParameters: []
+  abilityParameters:
+  - {fileID: 11400000, guid: 5b6fc067b8321bc498559d3b79998499, type: 2}
   m_creationData: {fileID: 11400000, guid: e352b891b48f6a44a9dba6d541d0f7cd, type: 2}

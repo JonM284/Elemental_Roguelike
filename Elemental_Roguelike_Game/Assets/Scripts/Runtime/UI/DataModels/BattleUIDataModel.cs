@@ -378,7 +378,7 @@ namespace Runtime.UI.DataModels
             }
             
             shootButton.SetActive(_character.characterBallManager.hasBall);
-            CheckAbilities();
+            CheckActions();
         }
         
         private void OnBallPickedUp(CharacterBase _character)
@@ -394,6 +394,7 @@ namespace Runtime.UI.DataModels
             }
             
             shootButton.SetActive(_character.characterBallManager.hasBall);
+            CheckActions();
         }
 
         public void OnMoveClicked()
@@ -532,14 +533,20 @@ namespace Runtime.UI.DataModels
                 return;
             }   
             
-            CheckAbilities();
+            CheckActions();
         }
 
-        private void CheckAbilities()
+        private void CheckActions()
         {
             var activePlayerAbilities = activePlayer.characterAbilityManager.GetAssignedAbilities();
 
             abilityButtons.ForEach(g => g.SetActive(false));
+
+            if (activePlayer.characterBallManager.hasBall)
+            {
+                //If the player has the ball, they can only throw the ball
+                return;
+            }
             
             for (int i = 0; i < activePlayerAbilities.Count; i++)
             {

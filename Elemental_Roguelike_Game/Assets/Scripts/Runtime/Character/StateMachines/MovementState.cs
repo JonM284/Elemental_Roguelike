@@ -1,5 +1,6 @@
 ﻿using Project.Scripts.Utils;
 using UnityEngine;
+using Utils;
 
 namespace Runtime.Character.StateMachines
 {
@@ -101,7 +102,8 @@ namespace Runtime.Character.StateMachines
             }
 
             characterMovement.MoveCharacter(_adjustedFinalPosition, _isTackle);
-
+            
+            CameraUtils.SetCameraTrackPos(characterMovement.transform, true);
         }
 
         public override void ExitState()

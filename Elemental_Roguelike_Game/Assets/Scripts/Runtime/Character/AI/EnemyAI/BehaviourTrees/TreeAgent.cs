@@ -637,7 +637,7 @@ namespace Runtime.Character.AI.EnemyAI.BehaviourTrees
                             if (_target.characterClassManager.assignedClass.classType == CharacterClass.BRUISER)
                             {
                                 var dirToBruiser = _target.transform.position - transform.position;
-                                if (!(dirToBruiser.magnitude <= _target.characterClassManager.assignedClass.radius))
+                                if (!(dirToBruiser.magnitude <= _target.characterClassManager.assignedClass.overwatchRadius))
                                 {
                                     continue;
                                 }
@@ -823,7 +823,7 @@ namespace Runtime.Character.AI.EnemyAI.BehaviourTrees
             yield return new WaitForSeconds(m_abilityWaitTime);
 
             var randomPosition = ballReference.currentOwner.transform.position + 
-                                 (Random.insideUnitSphere.FlattenVector3Y() * (characterBase.characterClassManager.assignedClass.radius/0.5f));
+                                 (Random.insideUnitSphere.FlattenVector3Y() * (characterBase.characterClassManager.assignedClass.overwatchRadius/0.5f));
             
             var dirToPosition = randomPosition - transform.position;
             var finalPos = Vector3.zero;
@@ -1122,7 +1122,7 @@ namespace Runtime.Character.AI.EnemyAI.BehaviourTrees
                                 
                                 var dirToBruiser = _target.transform.position - transform.position;
                                 
-                                return dirToBruiser.magnitude <= _target.characterClassManager.assignedClass.radius;
+                                return dirToBruiser.magnitude <= _target.characterClassManager.assignedClass.overwatchRadius;
                             }
                         }
                         break;
@@ -1190,7 +1190,7 @@ namespace Runtime.Character.AI.EnemyAI.BehaviourTrees
                             }
                             
                             var dirToBruiser = _target.transform.position - transform.position;
-                            return dirToBruiser.magnitude <= _target.characterClassManager.assignedClass.radius;
+                            return dirToBruiser.magnitude <= _target.characterClassManager.assignedClass.overwatchRadius;
                         }
                     }
                     break;

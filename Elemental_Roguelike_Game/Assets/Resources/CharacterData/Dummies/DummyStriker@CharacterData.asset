@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6e30cf3dd6a8ee349ac5bc304a59fcb7, type: 3}
+  m_Name: DummyStriker@CharacterData
+  m_EditorClassIdentifier: 
+  isCaptain: 0
+  characterName: Dummy Striker
+  healthBarOffset: 1
+  baseSpeed: 10
+  baseHealth: 100
+  baseShields: 60
+  tackleDamageAmount: 10
+  tackleScore: 40
+  agilityScore: 75
+  throwScore: 30
+  influenceRange: 30
+  gravityScore: 30
+  characterColor: {r: 0.45817015, g: 0.9811321, b: 0.9760642, a: 1}
+  characterColorDark: {r: 0.04743683, g: 0.73805606, b: 0.7735849, a: 1}
+  typing: {fileID: 11400000, guid: b6a3358631c8026478f44a1bcf5d24f7, type: 2}
+  abilities: []
+  classTyping: {fileID: 11400000, guid: b4466eb0195bc9f4596847e268136c87, type: 2}
+  characterModelAssetRef: {fileID: 1155631098118984018, guid: 3a98f2f9119119b49b55a42f6cfb4749,
+    type: 3}
+  characterGUID: 161ec85b-4d73-459a-bf41-5e477b8c26f7
+  characterImage: {fileID: 21300000, guid: 72dbca6bb9ca30743b93b67dbda192d5, type: 3}

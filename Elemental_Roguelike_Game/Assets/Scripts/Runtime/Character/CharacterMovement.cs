@@ -5,10 +5,8 @@ using Project.Scripts.Utils;
 using Runtime.Damage;
 using Runtime.GameControllers;
 using Runtime.VFX;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
-using UnityEngine.Events;
 
 namespace Runtime.Character
 {

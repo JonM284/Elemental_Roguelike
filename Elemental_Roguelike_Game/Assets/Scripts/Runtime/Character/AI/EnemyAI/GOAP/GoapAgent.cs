@@ -98,7 +98,7 @@ namespace Runtime.Character.AI.EnemyAI
             _factory.AddBelief("HasAvailableAbilities", () => characterBase.characterAbilityManager.hasAvailableAbility);
             _factory.AddBelief("BallDropped", () => !TurnController.Instance.ball.isControlled);
             _factory.AddBelief("HasBall", () => TurnController.Instance.ball.isControlled && characterBase.characterBallManager.hasBall);
-            _factory.AddBelief("IsWaitingPassive", () => characterBase.characterClassManager.isCheckingPassive);
+            _factory.AddBelief("IsOverwatch", () => characterBase.characterClassManager.isOverwatch);
             
             _factory.AddLocationBelief("IsNearPlayerGoal", enemyMovementRange * 2, playerTeamGoal);
             _factory.AddLocationBelief("IsNearBallCarrier", enemyMovementRange * 2, TurnController.Instance.ball.currentOwner.transform);

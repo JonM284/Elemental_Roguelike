@@ -1,3 +1,15 @@
-﻿fileFormatVersion: 2
+fileFormatVersion: 2
 guid: ad22221f257d4cf2895c946d27321398
-timeCreated: 1691685971
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - abilityAnimationOverride: {instanceID: 0}
+  - abilityIcon: {instanceID: 0}
+  - abilityVFX: {instanceID: 0}
+  - m_creationData: {instanceID: 0}
+  executionOrder: 0
+  icon: {fileID: 2800000, guid: 34f0424f759695c41b02703953b69704, type: 3}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

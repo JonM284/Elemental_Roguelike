@@ -26,6 +26,12 @@ namespace Runtime.GameControllers
         public static event Action<CharacterBase> EnemyCreated;
 
         #endregion
+
+        #region Serialized Fields
+
+        [SerializeField] private AssetReference _enemyStats;
+
+        #endregion
         
         #region Private Fields
 
@@ -125,7 +131,7 @@ namespace Runtime.GameControllers
             
             //Load new Enemy
             
-            var handle = Addressables.LoadAssetAsync<GameObject>(_enemyStats.characterAssetRef);
+            var handle = Addressables.LoadAssetAsync<GameObject>(_enemyStats);
             yield return handle;
             
             if (!handle.IsDone)

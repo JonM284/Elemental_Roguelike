@@ -32,11 +32,8 @@ namespace Runtime.Character
 
         #region Accessor
 
-        private CharacterMovement characterMovement => CommonUtils.GetRequiredComponent(ref m_characterMovement, () =>
-        {
-           var cm = this.GetComponent<CharacterMovement>();
-           return cm;
-        });
+        private CharacterMovement characterMovement => CommonUtils.GetRequiredComponent(ref m_characterMovement,
+            GetComponent<CharacterMovement>);
 
         private CharacterController characterController => CommonUtils.GetRequiredComponent(ref m_characterController, () =>
         {
@@ -46,6 +43,7 @@ namespace Runtime.Character
 
         #endregion
 
+        //ToDo: move to custom update called from parent class
         // Update is called once per frame
         void Update()
         {

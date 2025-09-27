@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tournamentGuid: 7de7aa76-8dd0-46b7-9465-bacf21c3c5c1
   enemyCharacters:
-  - {fileID: 11400000, guid: e14737df6be61e649a3a119dffcfd050, type: 2}
-  - {fileID: 11400000, guid: 9b49f43a64a3ddc44a491ecb010bbd93, type: 2}
-  - {fileID: 11400000, guid: d88637ca622ba8b45a784d30dd33ad91, type: 2}
-  - {fileID: 11400000, guid: 0e5aeed3d574149438c1aafc09e03f3a, type: 2}
+  - {fileID: 11400000, guid: 0ea36946a58e5d741a14e713338c5af7, type: 2}
+  - {fileID: 11400000, guid: dd472913832b7dc42997be6c346e5057, type: 2}
+  - {fileID: 11400000, guid: bedd68fa11e90c34a9816efa0010805c, type: 2}
+  - {fileID: 11400000, guid: bedd68fa11e90c34a9816efa0010805c, type: 2}

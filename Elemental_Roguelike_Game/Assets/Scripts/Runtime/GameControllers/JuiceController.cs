@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Cysharp.Threading.Tasks;
 using Data;
 using DG.Tweening;
 using Project.Scripts.Utils;
@@ -290,6 +291,16 @@ namespace Runtime.GameControllers
             
             cachedDamageTexts.Add(_item);
             _item.transform.parent = textPool;
+        }
+
+        public async UniTask DoHitStopAsync(float duration)
+        {
+            var originalTimeScale = Time.timeScale;
+            Time.timeScale = 0;
+
+            await UniTask.WaitForSeconds(duration);
+
+            Time.timeScale = originalTimeScale;
         }
 
         #endregion

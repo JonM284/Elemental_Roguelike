@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Cysharp.Threading.Tasks;
@@ -9,7 +8,6 @@ using Runtime.Character;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
-using Random = UnityEngine.Random;
 
 namespace Runtime.GameControllers
 {
@@ -125,7 +123,7 @@ namespace Runtime.GameControllers
         }
 
         public async UniTask C_CreateCharacter(CharacterStatsBase _characterStats, Vector3 _spawnPos, 
-            Vector3 spawnRotation, Action<CharacterBase> callback = null)
+            Vector3 spawnRotation, bool isPlayable ,Action<CharacterBase> callback = null)
         {
             if (_characterStats.IsNull())
             {
@@ -178,7 +176,7 @@ namespace Runtime.GameControllers
             
             //Load new character
             
-            var handle = Addressables.LoadAssetAsync<GameObject>(_characterStats.characterAssetRef);
+            var handle = Addressables.LoadAssetAsync<GameObject>(isPlayable ? m_playableCharacter : m_aiCharacter);
 
             await UniTask.WaitUntil(() => handle.IsDone);
             

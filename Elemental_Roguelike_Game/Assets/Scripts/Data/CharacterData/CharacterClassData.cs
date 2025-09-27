@@ -24,30 +24,14 @@ namespace Data.CharacterData
 
         [Header("Enum")] public CharacterClass classType;
 
-        [Header("Passive Base")] public float radius;
+        [Header("Passive Base")]
+        public float overwatchRadius = 1f;
+        public float damageReduction = 1f;
+        public float knockbackReduction = 1f;
 
-        [Header("Stats for Roguelike")] 
-        [Range(30, 100)] [SerializeField] private int HealthMin = 30;
-        [Range(30, 200)] [SerializeField] private int HealthMax = 100;
+        [Header("Ball Influence Stats")] 
+        [Range(1, 10)] [SerializeField] private int BallThrowVelocityChange = 10;
         
-        [Range(30, 100)] [SerializeField] private int ShieldMin = 30;
-        [Range(30, 200)] [SerializeField] private int ShieldMax = 100;
-
-        [Header("Agility Stats")]
-        [Range(30, 100)] [SerializeField] private int AgilityStatMin = 30;
-        [Range(30, 100)] [SerializeField] private int AgilityStatMax = 100;
-
-        [Header("Shooting Stats")]
-        [Range(30, 100)] [SerializeField] private int ShootingStatMin = 30;
-        [Range(30, 100)] [SerializeField] private int ShootingStatMax = 100;
-        
-        [Header("Passing Stats")]
-        [Range(30, 100)] [SerializeField] private int PassingStatMin = 30;
-        [Range(30, 100)] [SerializeField] private int PassingStatMax = 100;
-
-        [Header("Damage Stats")]
-        [Range(30, 100)] [SerializeField] private int DamageStatMin = 30;
-        [Range(30, 100)] [SerializeField] private int DamageStatMax = 100;
         
         [Space(20)]
         [Header("Class Specific")]
@@ -56,10 +40,6 @@ namespace Data.CharacterData
         public Color darkColor;
 
         public Color barColor;
-
-        [SerializeField] private float moveDistance;
-
-        [SerializeField] private int tackleDamageAmount;
 
         [SerializeField] private string overwatchDescription;
 
@@ -82,44 +62,9 @@ namespace Data.CharacterData
             classGUID = System.Guid.NewGuid().ToString();
         }
 
-        public float GetMoveDistance()
+        public int GetBallVelocityChangeAmount()
         {
-            return moveDistance;
-        }
-
-        public int GetTackleDamage()
-        {
-            return tackleDamageAmount;
-        }
-
-        public int GetRandomHealth()
-        {
-            return Random.Range(HealthMin, HealthMax);
-        }
-
-        public int GetRandomShield()
-        {
-            return Random.Range(ShieldMin, ShieldMax);
-        }
-
-        public int GetRandomAgilityScore()
-        {
-            return Random.Range(AgilityStatMin, AgilityStatMax);
-        }
-
-        public int GetRandomShootingScore()
-        {
-            return Random.Range(ShootingStatMin, ShootingStatMax);
-        }
-        
-        public int GetRandomPassingScore()
-        {
-            return Random.Range(PassingStatMin, PassingStatMax);
-        }
-        
-        public int GetRandomDamageScore()
-        {
-            return Random.Range(DamageStatMin, DamageStatMax);
+            return BallThrowVelocityChange;
         }
 
         public string GetOverwatchDescription()

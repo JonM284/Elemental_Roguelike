@@ -155,35 +155,19 @@ namespace Runtime.Character
         #region Accessors
 
         public CharacterAbilityManager characterAbilityManager => CommonUtils.GetRequiredComponent(ref m_characterAbilityManager,
-            () =>
-            {
-                var cam = GetComponent<CharacterAbilityManager>();
-                return cam;
-            });
+            GetComponent<CharacterAbilityManager>);
         
         public CharacterLifeManager characterLifeManager => CommonUtils.GetRequiredComponent(ref m_characterLifeManager,
-            () =>
-            {
-                var clm = GetComponent<CharacterLifeManager>();
-                return clm;
-            });
+            GetComponent<CharacterLifeManager>);
         
-        public CharacterMovement characterMovement => CommonUtils.GetRequiredComponent(ref m_characterMovement,
-            () =>
-            {
-                var cm = GetComponent<CharacterMovement>();
-                return cm;
-            });
+        public CharacterMovement characterMovement => CommonUtils.GetRequiredComponent(ref m_characterMovement, 
+            GetComponent<CharacterMovement>);
 
         public StateManager stateManager => CommonUtils.GetRequiredComponent(ref m_stateManager,
             GetComponent<StateManager>);
         
         public CharacterVisuals characterVisuals => CommonUtils.GetRequiredComponent(ref m_characterVisuals,
-            () =>
-            {
-                var cv = GetComponent<CharacterVisuals>();
-                return cv;
-            });
+            GetComponent<CharacterVisuals>);
 
         public Transform statusEffectTransform => CommonUtils.GetRequiredComponent(ref m_statusEffectTransform, () =>
         {
@@ -193,27 +177,15 @@ namespace Runtime.Character
         });
 
         public CharacterAnimations characterAnimations => CommonUtils.GetRequiredComponent(ref m_characterAnimations,
-            () =>
-            {
-                var cam = GetComponentInChildren<CharacterAnimations>();
-                return cam;
-            });
+            GetComponentInChildren<CharacterAnimations>);
 
         public CharacterWeaponManager characterWeaponManager => CommonUtils.GetRequiredComponent(
             ref m_characterWeaponManager,
-            () =>
-            {
-                var cwm = GetComponent<CharacterWeaponManager>();
-                return cwm;
-            });
+            GetComponent<CharacterWeaponManager>);
         
         public CharacterClassManager characterClassManager => CommonUtils.GetRequiredComponent(
         ref m_characterClassManager,
-        () =>
-        {
-            var ccm = GetComponent<CharacterClassManager>();
-            return ccm;
-        });
+        GetComponent<CharacterClassManager>);
         
         public CharacterBallManager characterBallManager => CommonUtils.GetRequiredComponent(
             ref m_characterBallManager,
@@ -221,23 +193,13 @@ namespace Runtime.Character
     
         public CharacterRotation characterRotation => CommonUtils.GetRequiredComponent(
         ref m_characterRotation,
-        () =>
-        {
-            var cr = GetComponent<CharacterRotation>();
-            return cr;
-        });
+        GetComponent<CharacterRotation>);
 
         public Color shotColor => CommonUtils.GetRequiredComponent(ref m_shotColor, () =>
-        {
-            var c = CharacterGameController.Instance.shotColor;
-            return c;
-        });
+            CharacterGameController.Instance.shotColor);
         
         public Color passColor => CommonUtils.GetRequiredComponent(ref m_passColor, () =>
-        {
-            var c = CharacterGameController.Instance.passColor;
-            return c;
-        });
+            CharacterGameController.Instance.passColor);
 
         public bool isAlive => characterLifeManager.isAlive;
 
@@ -314,8 +276,7 @@ namespace Runtime.Character
             await characterLifeManager.InitializeCharacterHealth(m_characterStatsBase.baseHealth, m_characterStatsBase.baseShields, m_characterStatsBase.baseHealth,
                 m_characterStatsBase.baseShields, m_characterStatsBase.typing, m_characterStatsBase.healthBarOffset);
             
-            await characterClassManager.InitializedCharacterPassive(m_characterStatsBase.classTyping, m_characterStatsBase.agilityScore,
-                m_characterStatsBase.shootingScore, m_characterStatsBase.passingScore ,m_characterStatsBase.tackleScore);
+            await characterClassManager.InitializedCharacterPassive(m_characterStatsBase, m_characterStatsBase.classTyping);
 
             await characterBallManager.Initialize(m_characterStatsBase, m_ballHoldPosition.transform);
 
@@ -426,7 +387,7 @@ namespace Runtime.Character
             
             yield return StartCoroutine(JuiceController.Instance.C_DoDeathAnimation(this.characterClassManager.reactionCameraPoint));
             
-            if (!characterBallManager.hasBall)
+            if (characterBallManager.hasBall)
             {
                 characterBallManager.KnockBallAway();
             }
@@ -475,9 +436,6 @@ namespace Runtime.Character
             }
 
             stateManager.currentState.stateBehavior.SelectTarget(_selectedPosition);
-            
-            CameraUtils.SetCameraTrackPos(transform, true);
-
         }
 
         private void PlayDamageVFX()
@@ -538,7 +496,7 @@ namespace Runtime.Character
 
         public void SetOverwatch()
         {
-            characterClassManager.ActivateCharacterOverwatch();
+            stateManager.ChangeState(ECharacterStates.OverWatch);
             EndTurn();
         }
 

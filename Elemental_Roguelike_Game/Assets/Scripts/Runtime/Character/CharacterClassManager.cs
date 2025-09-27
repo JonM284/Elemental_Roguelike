@@ -29,13 +29,21 @@ namespace Runtime.Character
 
         [SerializeField] private Transform m_reactionCameraPoint;
 
+        [SerializeField] private LayerMask characterLayers;
+
+        [SerializeField] private float passiveBaseDistance = 1f, maxPassiveBonusDistance = 10f;
+
+        [SerializeField] private float gravityBaseAmount = 1f, maxGravity = 10f;
+
         #endregion
 
         #region Private Fields
 
         private CharacterBase m_characterBase;
         
-        private CharacterClassData m_assignedClass;
+        private CharacterClassData assignedClassRef;
+
+        private CharacterStatsBase assignedCharacterStatsRef;
         
         private BallBehavior m_ballRef;
 
@@ -45,9 +53,9 @@ namespace Runtime.Character
 
         private CharacterBase m_inRangeCharacter;
 
-        private bool m_canPerformReaction = true;
+        private bool m_canPerformReaction = true, m_isWaitingForReactionQueue;
 
-        private bool m_isWaitingForReactionQueue;
+        private bool hasAddedToBallThrowVelocity, ballHasEnteredPassiveRange;
 
         private ArenaTeamManager m_teamManager;
 
@@ -58,30 +66,30 @@ namespace Runtime.Character
         private float bottomRangeMod = 0.2f;
 
         private int m_maxOverwatchCooldown = 1;
+
+        private Collider[] charactersInRange = new Collider[10];
+        private int characterInRangeAmount;
+
+        private bool ballHasExitedRange;
+        private int ballChangeVelocityAmount;
+        private float ballInfluenceIntensity;
         
         #endregion
 
         #region Accessors
 
-        public CharacterBase characterBase => CommonUtils.GetRequiredComponent(ref m_characterBase, () =>
-        {
-            var cb = GetComponent<CharacterBase>();
-            return cb;
-        });
+        public CharacterBase characterBase => CommonUtils.GetRequiredComponent(ref m_characterBase,
+            GetComponent<CharacterBase>);
 
-        public CharacterClassData assignedClass => m_assignedClass;
+        public CharacterClassData assignedClass => assignedClassRef;
+
+        public CharacterStatsBase assignedCharacterStats => assignedCharacterStatsRef;
 
         public BallBehavior ball => CommonUtils.GetRequiredComponent(ref m_ballRef, () =>
-        {
-            var bb = TurnController.Instance.ball;
-            return bb;
-        });
+            TurnController.Instance.ball);
 
         private ArenaTeamManager teamManager => CommonUtils.GetRequiredComponent(ref m_teamManager, () =>
-        {
-            var atm = TurnController.Instance.GetTeamManager(characterBase.side);
-            return atm;
-        });
+            TurnController.Instance.GetTeamManager(characterBase.side));
 
         bool IReactor.isPerformingReaction
         {
@@ -107,7 +115,9 @@ namespace Runtime.Character
 
         public float passiveRadius { get; private set; }
 
-        public bool isCheckingPassive { get; private set; }
+        public float overwatchRadius { get; private set; }
+
+        public bool isOverwatch { get; private set; }
 
         public int overwatchCoolDown { get; private set; }
 
@@ -135,17 +145,27 @@ namespace Runtime.Character
 
         private void OnEnable()
         {
-            TurnController.OnChangeActiveTeam += SetCharacterPassive;
+            TurnController.OnChangeActiveTeam += OnSwapSides;
         }
 
         private void OnDisable()
         {
-            TurnController.OnChangeActiveTeam -= SetCharacterPassive;
+            TurnController.OnChangeActiveTeam -= OnSwapSides;
         }
 
-        private void Update()
+        public void InfluenceUpdate()
         {
-            if (!isCheckingPassive)
+            if (isOverwatch)
+            {
+                return;
+            }
+
+            CheckInfluence();
+        }
+        
+        public void OverwatchUpdate()
+        {
+            if (!isOverwatch)
             {
                 return;
             }
@@ -155,7 +175,7 @@ namespace Runtime.Character
                 return;
             }
             
-            Check();
+            CheckOverwatch();
             
         }
 
@@ -163,19 +183,22 @@ namespace Runtime.Character
 
         #region Class Implementation
 
-        public async UniTask InitializedCharacterPassive(CharacterClassData _data, int agilityScore, int shootingScore, int passingScore ,int tacklingScore)
+        public async UniTask InitializedCharacterPassive(CharacterStatsBase characterStatsData, CharacterClassData classData)
         {
-            if (_data.IsNull())
+            if (classData.IsNull() || characterStatsData.IsNull())
             {
-                Debug.LogError("Data null");
+                Debug.LogError($"Character Stats NULL: {characterStatsData.IsNull()} //// Class Data: {classData.IsNull()}");
                 return;
             }
             
-            m_assignedClass = _data;
+            assignedClassRef = classData;
+            assignedCharacterStatsRef = characterStatsData;
 
-            passiveRadius = assignedClass.radius;
-
-            m_characterBase = this.GetComponent<CharacterBase>();
+            //Formula = Base + (Influence Range Score [0-100] / 100)[Percentage] * Max Range for Passive
+            passiveRadius = passiveBaseDistance + 
+                            ((assignedCharacterStats.influenceRange/100f) * maxPassiveBonusDistance);
+            
+            overwatchRadius = assignedClass.overwatchRadius;
             
             this.agilityScore = agilityScore;
             this.shootingScore = shootingScore;
@@ -187,21 +210,25 @@ namespace Runtime.Character
             currentMaxPassingScore = this.passingScore;
             currentMaxTacklingScore = this.tacklingScore;
             
+            ballChangeVelocityAmount = assignedClass.GetBallVelocityChangeAmount();
+            ballInfluenceIntensity = gravityBaseAmount + 
+                                     ((assignedCharacterStats.gravityScore/100f) * maxGravity);
+            
             if (m_passiveIndicator.IsNull())
             {
                 return;
             }
 
+            //ToDo: overwatch and passive
             //Radius is 1/2 scale, scale is diameter
             var doubleRadiusSize = passiveRadius * 2;
-            m_passiveIndicator.transform.localScale =
-                new Vector3(doubleRadiusSize, doubleRadiusSize, doubleRadiusSize);
+            Debug.Log($"Passive Size: {passiveRadius} ::: Double:{doubleRadiusSize}", this.gameObject);
+            m_passiveIndicator.transform.localScale = Vector3.one * doubleRadiusSize;
             
+            //ToDo: make an overwatch range indicator
             var meshRend = m_passiveIndicator.GetComponent<MeshRenderer>();
-            
             var indicatorMat = meshRend.materials[0];
-            
-            indicatorMat.SetColor(m_colorVarName, _data.passiveColor);
+            indicatorMat.SetColor(m_colorVarName, classData.passiveColor);
             
             DisplayIndicator(false);
             
@@ -225,7 +252,7 @@ namespace Runtime.Character
         /// Automatically deactivate character passives when it gets back to the character's team's turn
         /// </summary>
         /// <param name="_side"></param>
-        private void SetCharacterPassive(CharacterSide _side)
+        private void OnSwapSides(CharacterSide _side)
         {
             if (!m_canPerformReaction)
             {
@@ -233,14 +260,16 @@ namespace Runtime.Character
                 return;
             }
             
-            if (characterBase.side != _side)
+            //Enemy turn
+            if (characterBase.side.sideGUID != _side.sideGUID)
             {
                 return;
             }
 
+            //Team turn
             m_isPerformingReaction = false;
             m_hasPerformedReaction = false;
-            isCheckingPassive = false;
+            isOverwatch = false;
 
             if (!m_passiveIndicator.IsNull())
             {
@@ -268,7 +297,7 @@ namespace Runtime.Character
 
             m_isPerformingReaction = false;
             m_hasPerformedReaction = false;
-            isCheckingPassive = true;
+            isOverwatch = true;
 
             if (!m_passiveIndicator.IsNull())
             {
@@ -278,7 +307,7 @@ namespace Runtime.Character
             overwatchCoolDown = m_maxOverwatchCooldown;
         }
 
-        private void Check()
+        private void CheckOverwatch()
         {
             if (m_isPerformingReaction || m_hasPerformedReaction)
             {
@@ -300,10 +329,10 @@ namespace Runtime.Character
                 return;
             }
             
-            switch (m_assignedClass.classType)
+            switch (assignedClass.classType)
             {
                 case CharacterClass.DEFENDER:
-                    if (IsBallThrownInRange())
+                    if (IsBallInRange(overwatchRadius))
                     {
                         m_isWaitingForReactionQueue = true;
                         ReactionQueueController.Instance.QueueReaction(this, PerformDefenderAction);
@@ -328,11 +357,11 @@ namespace Runtime.Character
                     {
                         m_isWaitingForReactionQueue = true;
                         ReactionQueueController.Instance.QueueReaction(this, PerformTankAction);
-                    }else if (IsBallThrownInRange())
+                    }else if (IsBallInRangeWithThrowCondition(overwatchRadius,true))
                     {
                         m_isWaitingForReactionQueue = true;
                         ReactionQueueController.Instance.QueueReaction(this, PerformDefenderAction);
-                    }else if (IsBallDroppedInRange())
+                    }else if (IsBallInRangeWithThrowCondition(overwatchRadius,false))
                     {
                         m_isWaitingForReactionQueue = true;
                         ReactionQueueController.Instance.QueueReaction(this, PerformPlaymakerAction);
@@ -352,7 +381,7 @@ namespace Runtime.Character
             m_isPerformingReaction = true;
             m_isWaitingForReactionQueue = false;
 
-            if (!IsBallThrownInRange())
+            if (!IsBallInRangeWithThrowCondition(overwatchRadius, true))
             {
                 m_isPerformingReaction = false;
                 return;
@@ -366,7 +395,7 @@ namespace Runtime.Character
             m_isPerformingReaction = true;
             m_isWaitingForReactionQueue = false;
 
-            if (!IsBallDroppedInRange())
+            if (!IsBallInRangeWithThrowCondition(overwatchRadius,false))
             {
                 m_isPerformingReaction = false;
                 return;
@@ -595,7 +624,7 @@ namespace Runtime.Character
 
             yield return new WaitForSeconds(0.5f);
             
-            m_inRangeCharacter.OnDealDamage(this.transform, assignedClass.GetTackleDamage(), false, null, null, false);
+            m_inRangeCharacter.OnDealDamage(this.transform, assignedCharacterStats.GetTackleDamage(), false, null, null, false);
             
             m_inRangeCharacter.characterMovement.PauseMovement(false);
 
@@ -641,7 +670,8 @@ namespace Runtime.Character
             //Missed Attack
             if (enemyAttackRoll > rollToAttack)
             {
-                Debug.Log($"<color=orange>BIG MISS ON ATTACK /// Other: {enemyAttackRoll} // Self: {rollToAttack}</color>", this);
+                Debug.Log($"<color=orange>BIG MISS ON ATTACK /// Other: {enemyAttackRoll} // " +
+                          $"Self: {rollToAttack}</color>", this);
                 m_inRangeCharacter.characterMovement.PauseMovement(false);
                 m_inRangeCharacter.characterClassManager.OnPassedReaction();
 
@@ -719,19 +749,63 @@ namespace Runtime.Character
 
             OnSuccessfulMeleeReaction();
 
-            if (characterBase.isGoalieCharacter)
+            if (!characterBase.isGoalieCharacter)
             {
-                yield return new WaitForSeconds(0.3f);
-
-                characterBase.characterMovement.SetCharacterMovable(true, null, null);
-                characterBase.characterMovement.MoveCharacter(originalPosition, true);
-
-                yield return new WaitUntil(() => characterBase.characterMovement.isUsingMoveAction == false);
+                yield break;
             }
+            
+            yield return new WaitForSeconds(0.3f);
+
+            characterBase.characterMovement.SetCharacterMovable(true, null, null);
+            characterBase.characterMovement.MoveCharacter(originalPosition, true);
+
+            yield return new WaitUntil(() => characterBase.characterMovement.isUsingMoveAction == false);
 
         }
 
-        private bool IsBallDroppedInRange()
+        public void ResetInfluence()
+        {
+            hasAddedToBallThrowVelocity = false;
+            ballHasExitedRange = false;
+            DisplayIndicator(true);
+        }
+
+        private void CheckInfluence()
+        {
+            if (characterBase.characterMovement.isKnockedBack)
+            {
+                return;
+            }
+
+            if (!IsBallInRange(passiveRadius))
+            {
+                if (!ballHasEnteredPassiveRange || ballHasExitedRange) return;
+                ball.RemoveInfluence(characterBase);
+                ballHasExitedRange = true;
+                ballHasEnteredPassiveRange = false;
+                return;
+            }
+
+            if (!hasAddedToBallThrowVelocity)
+            {
+                ChangeBallVelocity();
+            }
+
+            var directionOffset = ball.lastThrownCharacter.side.sideGUID == characterBase.side.sideGUID ? -1 : 1;
+            var directionToBall = (ball.transform.position - transform.position);
+            var influenceVector = 
+                directionToBall.normalized / directionToBall.sqrMagnitude * (ballInfluenceIntensity * directionOffset); 
+            ball.AddInfluence(characterBase, influenceVector);
+        }
+
+        private void ChangeBallVelocity()
+        {
+            ball.ChangeBallIntensity(characterBase.side, ballChangeVelocityAmount).Forget();
+            hasAddedToBallThrowVelocity = true;
+            ballHasEnteredPassiveRange = true;
+        }
+
+        private bool IsBallInRange(float checkRange)
         {
             if (characterBase.isBusy)
             {
@@ -744,11 +818,6 @@ namespace Runtime.Character
             }
 
             if (!ball.isMoving)
-            {
-                return false;
-            }
-
-            if (ball.isThrown)
             {
                 return false;
             }
@@ -766,55 +835,12 @@ namespace Runtime.Character
             var directionToBall = ball.transform.position - transform.position;
             directionToBall.FlattenVector3Y();
 
-            if (directionToBall.magnitude <= passiveRadius)
-            {
-                return true;
-            }
-            
-            return false;
+            return directionToBall.magnitude <= checkRange;
         }
-
-        private bool IsBallThrownInRange()
+        
+        private bool IsBallInRangeWithThrowCondition(float checkRange, bool ballThrownCondition)
         {
-            if (characterBase.isBusy)
-            {
-                return false;
-            }
-
-            if (!ball.canBeCaught)
-            {
-                return false;
-            }
-
-            if (!ball.isMoving)
-            {
-                return false;
-            }
-
-            if (!ball.isThrown)
-            {
-                return false;
-            }
-
-            if (ball.lastHeldCharacter == this.characterBase)
-            {
-                return false;
-            }
-
-            if (!ball.currentOwner.IsNull())
-            {
-                return false;
-            }
-            
-            var directionToBall = ball.transform.position - transform.position;
-            directionToBall.FlattenVector3Y();
-
-            if (directionToBall.magnitude <= passiveRadius)
-            {
-                return true;
-            }
-            
-            return false;
+            return IsBallInRange(checkRange) && ball.isThrown == ballThrownCondition;
         }
 
         private bool IsEnemyWalkInRange()
@@ -824,36 +850,41 @@ namespace Runtime.Character
                 return false;
             }
             
-            Collider[] colliders = Physics.OverlapSphere(transform.position, passiveRadius);
+            characterInRangeAmount = Physics.OverlapSphereNonAlloc(transform.position, overwatchRadius, charactersInRange, characterLayers);
 
-            if (colliders.Length > 0)
+            if (characterInRangeAmount <= 0)
             {
-                foreach (var col in colliders)
-                {
-                    col.TryGetComponent(out CharacterBase character);
-                    if (!character)
-                    {
-                        continue;
-                    }
-
-                    if (!character.characterMovement.isMoving)
-                    {
-                        continue;
-                    }
-
-                    if (character.side == this.characterBase.side)
-                    {
-                        continue;
-                    }
-                    
-                    if (character != this.characterBase)
-                    {
-                        m_inRangeCharacter = character;
-                        return true;
-                    }
-                }
+                return false;
             }
             
+            foreach (var col in charactersInRange)
+            {
+                col.TryGetComponent(out CharacterBase character);
+                
+                if (!character)
+                {
+                    continue;
+                }
+
+                if (character.side == this.characterBase.side)
+                {
+                    continue;
+                }
+                
+                if (!character.characterMovement.isMoving)
+                {
+                    continue;
+                }
+
+                if (character == this.characterBase)
+                {
+                    continue;
+                }
+                
+                m_inRangeCharacter = character;
+                return true;
+            }
+
             return false;
         }
         
@@ -933,12 +964,12 @@ namespace Runtime.Character
             }
         }
 
-        public void OnFailedReaction()
+        private void OnFailedReaction()
         {
             failedReactionCounter++;
         }
 
-        public void OnPassedReaction()
+        private void OnPassedReaction()
         {
             failedReactionCounter = 0;
         }

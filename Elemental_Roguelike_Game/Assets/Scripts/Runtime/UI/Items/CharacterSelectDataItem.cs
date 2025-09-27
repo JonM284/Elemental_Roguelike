@@ -5,6 +5,7 @@ using Project.Scripts.Utils;
 using Runtime.GameControllers;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace Runtime.UI.Items
@@ -33,10 +34,11 @@ namespace Runtime.UI.Items
         
         [SerializeField] private TMP_Text abilityDescriptionText;
 
-        [SerializeField] private List<Image> m_agilityBarImages = new List<Image>();
-        [SerializeField] private List<Image> m_shootingBarImages = new List<Image>();
-        [SerializeField] private List<Image> m_passingBarImages = new List<Image>();
-        [SerializeField] private List<Image> m_tackleBarImages = new List<Image>();
+        [SerializeField] private List<Image> agilityBarImages = new List<Image>();
+        [SerializeField] private List<Image> throwingBarImages = new List<Image>();
+        [SerializeField] private List<Image> tackleBarImages = new List<Image>();
+        [SerializeField] private List<Image> influenceRangeImages = new List<Image>();
+        [SerializeField] private List<Image> gravityBarImages = new List<Image>();
 
         #endregion
 
@@ -62,22 +64,27 @@ namespace Runtime.UI.Items
             
             characterNameText.text = "???";
             
-            m_agilityBarImages.ForEach(img =>
+            agilityBarImages.ForEach(img =>
             {
                 img.gameObject.SetActive(false);
             });
-            m_shootingBarImages.ForEach(img => 
+            throwingBarImages.ForEach(img => 
             {
                 img.gameObject.SetActive(false);
             });
-            m_passingBarImages.ForEach(img => 
+            tackleBarImages.ForEach(img => 
             {
                 img.gameObject.SetActive(false);
             });
-            m_tackleBarImages.ForEach(img => 
+            influenceRangeImages.ForEach(img => 
             {
                 img.gameObject.SetActive(false);
             });
+            gravityBarImages.ForEach(img => 
+            {
+                img.gameObject.SetActive(false);
+            });
+            
             
             nameBackground.color = disabledColorDark;
         }
@@ -109,29 +116,34 @@ namespace Runtime.UI.Items
             
             shieldText.text = _characterData.m_characterStatsBase.baseShields.ToString();
             
-            m_agilityBarImages.ForEach(img =>
+            agilityBarImages.ForEach(img =>
             {
                 img.color = _characterData.m_characterStatsBase.classTyping.barColor;
             });
-            m_shootingBarImages.ForEach(img => 
+            throwingBarImages.ForEach(img => 
             {
                 img.color = _characterData.m_characterStatsBase.classTyping.barColor;
             });
-            m_passingBarImages.ForEach(img => 
+            tackleBarImages.ForEach(img => 
             {
                 img.color = _characterData.m_characterStatsBase.classTyping.barColor;
             });
-            m_tackleBarImages.ForEach(img => 
+            influenceRangeImages.ForEach(img => 
+            {
+                img.color = _characterData.m_characterStatsBase.classTyping.barColor;
+            });
+            gravityBarImages.ForEach(img => 
             {
                 img.color = _characterData.m_characterStatsBase.classTyping.barColor;
             });
 
             for (int i = 0; i < CharacterGameController.Instance.GetStatMax(); i++)
             {
-                m_agilityBarImages[i].gameObject.SetActive(i < _characterData.m_characterStatsBase.agilityScore/10);
-                m_shootingBarImages[i].gameObject.SetActive(i < _characterData.m_characterStatsBase.shootingScore/10);
-                m_passingBarImages[i].gameObject.SetActive(i < _characterData.m_characterStatsBase.passingScore/10);
-                m_tackleBarImages[i].gameObject.SetActive(i < _characterData.m_characterStatsBase.tackleScore/10);
+                agilityBarImages[i].gameObject.SetActive(i < _characterData.m_characterStatsBase.agilityScore/10);
+                throwingBarImages[i].gameObject.SetActive(i < _characterData.m_characterStatsBase.throwScore/10);
+                tackleBarImages[i].gameObject.SetActive(i < _characterData.m_characterStatsBase.tackleScore/10);
+                influenceRangeImages[i].gameObject.SetActive(i < _characterData.m_characterStatsBase.influenceRange/10);
+                gravityBarImages[i].gameObject.SetActive(i < _characterData.m_characterStatsBase.gravityScore/10);
             }
 
             abilities.ForEach(g => g.SetActive(false));
@@ -162,11 +174,12 @@ namespace Runtime.UI.Items
             
             characterNameText.text = "???";
             
-            m_agilityBarImages.ForEach(img => img.gameObject.SetActive(false));
-            m_shootingBarImages.ForEach(img => img.gameObject.SetActive(false));
-            m_passingBarImages.ForEach(img => img.gameObject.SetActive(false));
-            m_tackleBarImages.ForEach(img => img.gameObject.SetActive(false));
-
+            agilityBarImages.ForEach(img => img.gameObject.SetActive(false));
+            throwingBarImages.ForEach(img => img.gameObject.SetActive(false));
+            tackleBarImages.ForEach(img => img.gameObject.SetActive(false));
+            influenceRangeImages.ForEach(img => img.gameObject.SetActive(false));
+            gravityBarImages.ForEach(img => img.gameObject.SetActive(false));
+            
             isConfirmed = false;
             
             nameBackground.color = disabledColorDark;

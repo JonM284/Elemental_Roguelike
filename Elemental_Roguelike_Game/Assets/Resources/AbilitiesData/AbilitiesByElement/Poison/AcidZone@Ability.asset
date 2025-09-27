@@ -19,6 +19,7 @@ MonoBehaviour:
   abilityType: 6
   targetType: 1
   range: 5
+  abilitySize: 1
   abilityAnimationOverride: {fileID: -184410558708688335, guid: c753a0c20aeb2514295eb195d84644e1,
     type: 3}
   playVFXAtTransform: 0

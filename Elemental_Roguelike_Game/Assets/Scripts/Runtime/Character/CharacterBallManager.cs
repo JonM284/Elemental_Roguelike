@@ -164,9 +164,9 @@ namespace Runtime.Character
                 return;   
             }
 
-            shootingScoreOriginal = _characterStats.shootingScore;
+            shootingScoreOriginal = _characterStats.throwScore;
             shootingScore = shootingScoreOriginal;
-            passingScoreOriginal = _characterStats.passingScore;
+            passingScoreOriginal = _characterStats.throwScore;
             passingScore = passingScoreOriginal;
             
             m_handPos = ballHandPos;
@@ -184,12 +184,9 @@ namespace Runtime.Character
             }
             
             //ToDo: update points if the player is aiming at a wall
-            bool _isShot = IsShot(_position);
-            var _throwingStrength = _isShot ? shotStrength : passStrength;
-            
             var dir = transform.InverseTransformDirection(_position - transform.position);
             var _decelTime = 1.9f;
-            var _decel = (_throwingStrength)/_decelTime;
+            var _decel = (shotStrength)/_decelTime;
             var _dist = (0.5f * _decel) * (_decelTime * _decelTime);
             var furthestPoint = (dir.normalized * _dist);
 

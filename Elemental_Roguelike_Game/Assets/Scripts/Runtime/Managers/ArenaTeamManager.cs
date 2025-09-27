@@ -58,17 +58,22 @@ namespace Runtime.Managers
 
         private void OnTriggerEnter(Collider other)
         {
-            if (other.CompareTag(ballTag))
+            if (!other.CompareTag(ballTag))
             {   
-                other.TryGetComponent(out BallBehavior ballBehavior);
-                ballBehavior.ForceStopBall();
-                ballBehavior.gameObject.SetActive(false);
-                if (!m_isScoring)
-                {
-                    m_isScoring = true;
-                    StartCoroutine(C_ScoreGoal(ballBehavior));
-                }
+                return;
             }
+            
+            other.TryGetComponent(out BallBehavior ballBehavior);
+            ballBehavior.ForceStopBall();
+            ballBehavior.gameObject.SetActive(false);
+            
+            if (m_isScoring)
+            {
+                return;
+            }
+            
+            m_isScoring = true;
+            StartCoroutine(C_ScoreGoal(ballBehavior));
         }
 
         #endregion
@@ -106,10 +111,14 @@ namespace Runtime.Managers
             }
         }
 
+        /// <summary>
+        /// Spawn AI Goalie
+        /// </summary>
         public async UniTask T_SpawnGoalie()
         {
+            //Goalie always performs the same actions
             await CharacterGameController.Instance.C_CreateCharacter(m_goalieRef,
-                goalPosition.position, goalPosition.localEulerAngles);
+                goalPosition.position, goalPosition.localEulerAngles, false);
         }
 
         #endregion

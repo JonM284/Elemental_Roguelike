@@ -13,24 +13,13 @@ MonoBehaviour:
   m_Name: Tank
   m_EditorClassIdentifier: 
   classType: 4
-  radius: 1.25
-  HealthMin: 100
-  HealthMax: 180
-  ShieldMin: 78
-  ShieldMax: 125
-  AgilityStatMin: 45
-  AgilityStatMax: 60
-  ShootingStatMin: 38
-  ShootingStatMax: 60
-  PassingStatMin: 34
-  PassingStatMax: 50
-  DamageStatMin: 78
-  DamageStatMax: 95
+  overwatchRadius: 1
+  damageReduction: 1
+  knockbackReduction: 1
+  BallThrowVelocityChange: 4
   passiveColor: {r: 1, g: 0.6096738, b: 0.18431371, a: 1}
   darkColor: {r: 0.8509804, g: 0.6327753, b: 0.4117647, a: 1}
   barColor: {r: 1, g: 0.5687999, b: 0.16470587, a: 1}
-  moveDistance: 4
-  tackleDamageAmount: 10
   overwatchDescription: 
   classGUID: 35137993-179e-4b5c-9988-f6dc92a876c7
   characterClassGroundMarker: {fileID: 2100000, guid: e90f776246a106d4f9ea26da59588782,

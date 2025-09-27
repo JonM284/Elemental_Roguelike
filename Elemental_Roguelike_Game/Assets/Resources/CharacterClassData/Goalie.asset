@@ -12,26 +12,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3174c979e6e4c85960b7c354792b687, type: 3}
   m_Name: Goalie
   m_EditorClassIdentifier: 
-  classType: 4
-  radius: 1.25
-  HealthMin: 60
-  HealthMax: 80
-  ShieldMin: 70
-  ShieldMax: 100
-  AgilityStatMin: 78
-  AgilityStatMax: 95
-  ShootingStatMin: 78
-  ShootingStatMax: 95
-  PassingStatMin: 78
-  PassingStatMax: 95
-  DamageStatMin: 78
-  DamageStatMax: 95
+  classType: 5
+  overwatchRadius: 1
+  damageReduction: 1
+  knockbackReduction: 1
+  BallThrowVelocityChange: 1
   passiveColor: {r: 0.5993017, g: 0.31011927, b: 0.9528302, a: 1}
   darkColor: {r: 0.51220816, g: 0.37486652, b: 0.6792453, a: 1}
   barColor: {r: 0.4299481, g: 0.062077243, b: 0.8773585, a: 1}
-  moveDistance: 2
-  tackleDamageAmount: 30
+  overwatchDescription: 
   classGUID: 900a6d6c-5b05-41de-b289-ed91937cbe75
+  characterClassGroundMarker: {fileID: 2100000, guid: f166c3bcbc65d9e43816a62f23e04ee1,
+    type: 2}
   _iconsByOption:
   - _option: 0
     _icons:

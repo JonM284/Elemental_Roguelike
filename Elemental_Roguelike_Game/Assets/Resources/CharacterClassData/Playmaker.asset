@@ -13,24 +13,13 @@ MonoBehaviour:
   m_Name: Playmaker
   m_EditorClassIdentifier: 
   classType: 3
-  radius: 1
-  HealthMin: 60
-  HealthMax: 80
-  ShieldMin: 70
-  ShieldMax: 100
-  AgilityStatMin: 63
-  AgilityStatMax: 79
-  ShootingStatMin: 28
-  ShootingStatMax: 49
-  PassingStatMin: 83
-  PassingStatMax: 96
-  DamageStatMin: 30
-  DamageStatMax: 48
+  overwatchRadius: 1
+  damageReduction: 1
+  knockbackReduction: 1
+  BallThrowVelocityChange: 6
   passiveColor: {r: 1, g: 0.48584908, b: 0.97168773, a: 1}
   darkColor: {r: 0.8207547, g: 0.56910825, b: 0.8073079, a: 1}
   barColor: {r: 0.9811321, g: 0.22677112, b: 0.94082254, a: 1}
-  moveDistance: 5
-  tackleDamageAmount: 10
   overwatchDescription: 
   classGUID: 9864fd0c-7f70-4f75-b387-3dce412f8e55
   characterClassGroundMarker: {fileID: 2100000, guid: f7d928fdd2f3b7144818150d83540abe,

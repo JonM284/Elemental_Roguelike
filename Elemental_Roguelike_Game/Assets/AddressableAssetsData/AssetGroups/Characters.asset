@@ -60,6 +60,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3060d7c5e3940a142bf4bd99d4f72aab
+    m_Address: EnemyAI@Prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 3357899e454e8f24cb7a285f1a25bf6a
     m_Address: TankMeeple@Prefab
     m_ReadOnly: 0
@@ -67,6 +72,11 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 336ea0ec529030a44ab8794a5dbe5a26
     m_Address: TestGoalieMeeple@Prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3a98f2f9119119b49b55a42f6cfb4749
+    m_Address: DummyBaseModel@Prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0

@@ -18,6 +18,11 @@ namespace Project.Scripts.Utils
             return float.IsNaN(vector3.x) || float.IsNaN(vector3.y) || float.IsNaN(vector3.z);
         }
 
+        public static Vector3 NormalizeTo(this Vector3 vector3, float multipliedValue)
+        {
+            return vector3.normalized * multipliedValue;
+        }
+
         #endregion
         
     }

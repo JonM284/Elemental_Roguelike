@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6e30cf3dd6a8ee349ac5bc304a59fcb7, type: 3}
+  m_Name: Interceptor_NatureInterceptorr@CharacterData
+  m_EditorClassIdentifier: 
+  isCaptain: 0
+  characterName: Nature Interceptor
+  healthBarOffset: 1
+  baseSpeed: 10
+  baseHealth: 100
+  baseShields: 100
+  tackleDamageAmount: 15
+  tackleScore: 60
+  agilityScore: 60
+  throwScore: 30
+  influenceRange: 44
+  gravityScore: 30
+  characterColor: {r: 0.43529412, g: 0.93333334, b: 0.4503918, a: 1}
+  characterColorDark: {r: 0.2662805, g: 0.6313726, b: 0.2352941, a: 1}
+  typing: {fileID: 11400000, guid: 3c9c561ec5c01714b84d55420dbb7e71, type: 2}
+  abilities:
+  - {fileID: 11400000, guid: b0fe0a8bb1df9c3429c95bc235541af7, type: 2}
+  classTyping: {fileID: 11400000, guid: c187bfa56bf1fa8458a541f355280f7f, type: 2}
+  characterModelAssetRef: {fileID: 5908929120333207427, guid: 23fa45d0d2751904a8412d87c4a1d1a1,
+    type: 3}
+  characterGUID: 361bb5ab-07f7-462a-a7bb-0f877e6a5e18
+  characterImage: {fileID: 21300000, guid: 517fe249a3e6cd242909b6b3e178c8e7, type: 3}

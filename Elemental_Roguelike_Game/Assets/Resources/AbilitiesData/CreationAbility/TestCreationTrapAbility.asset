@@ -16,8 +16,10 @@ MonoBehaviour:
   abilityDescription: Trap character that walks over this
   abilityGUID: bbf08866-2f88-4a6f-95c7-2701eb4a399f
   roundCooldownTimer: 4
+  abilityType: 0
   targetType: 1
   range: 4
+  abilitySize: 1
   abilityAnimationOverride: {fileID: -184410558708688335, guid: c753a0c20aeb2514295eb195d84644e1,
     type: 3}
   playVFXAtTransform: 0

@@ -1,10 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using Cysharp.Threading.Tasks;
 using Data.Sides;
 using Project.Scripts.Utils;
 using Runtime.Character;
+using TMPro;
 using UnityEngine;
-using UnityEngine.UIElements;
+using UnityEngine.UI;
+using Utils;
 
 namespace Runtime.Gameplay
 {
@@ -20,10 +24,10 @@ namespace Runtime.Gameplay
 
         [SerializeField] private float m_fullDecelTime = 1.9f;
 
-        [Space(15)] [Header("Player Check")] [SerializeField]
-        private float playerCheckRadius;
+        [Space(15)] 
+        [Header("Player Check")] [SerializeField] private float playerCheckRadius;
 
-        [SerializeField] private LayerMask playerCheckLayer;
+        [SerializeField] private LayerMask playerCheckLayer, outsideInfluenceLayers;
 
         [Space(15)] [Header("Spring")] [SerializeField]
         private float springConstant;
@@ -39,6 +43,12 @@ namespace Runtime.Gameplay
 
         [Space(15)] [Header("Visuals")] [SerializeField]
         private List<GameObject> visualGOs = new List<GameObject>();
+
+        [SerializeField] private Canvas ballLevelCanvas;
+        [SerializeField] private GameObject ballThrowVisuals;
+        [SerializeField] private Image ballThrowIntensityImage;
+        [SerializeField] private TMP_Text ballThrowIntensityText;
+        [SerializeField] private float countFPS = 30f, textDuration = 0.2f;
 
         #endregion
 
@@ -58,13 +68,20 @@ namespace Runtime.Gameplay
 
         private float m_currentThrowTime;
 
-        private float m_currentBallForce;
+        private float currentBallForce;
 
-        private Vector3 m_ballThrownDirection;
+        private Vector3 ballThrownDirection, ballOutsideInfluence;
 
         private bool m_isBallPaused;
 
         private Vector3 m_ballStartPosition;
+
+        private float maxIntensity = 30f;
+
+        private Collider[] foundPlayers = new Collider[15];
+        private int foundPlayersAmount;
+
+        private Dictionary<CharacterBase, Vector3> currentInfluences = new Dictionary<CharacterBase, Vector3>();
 
         #endregion
 
@@ -94,7 +111,7 @@ namespace Runtime.Gameplay
 
         public bool canBeCaught { get; private set; }
 
-        public bool isMoving => m_currentBallForce > 0;
+        public bool isMoving => currentBallForce > 0;
         
         public float thrownBallStat { get; private set; }
 
@@ -114,6 +131,7 @@ namespace Runtime.Gameplay
         {
             m_initialY = transform.position.y;
             m_ballStartPosition = transform.position;
+            ballLevelCanvas.worldCamera = CameraUtils.GetMainCamera();
         }
 
         private void Update()
@@ -142,6 +160,7 @@ namespace Runtime.Gameplay
             thrownBallStat = _thrownBallStat;
             m_currentThrowTime = 0;
             isThrown = _isThrown;
+            
             if (isThrown && !_character.IsNull())
             {
                 lastThrownCharacter = _character;
@@ -153,9 +172,12 @@ namespace Runtime.Gameplay
             followerTransform = null;
 
             currentOwner = null;
-            m_ballThrownDirection = direction;
-            m_currentBallForce = throwForce;
+            ballThrownDirection = direction;
+            currentBallForce = throwForce;
             m_tempDragSpeed = (throwForce)/m_fullDecelTime;
+            
+            CameraUtils.SetCameraTrackPos(transform, true);
+            ballThrowVisuals.SetActive(true);
         }
 
         private void FollowTransform()
@@ -173,24 +195,31 @@ namespace Runtime.Gameplay
             BouncyFloat();
             MarkGround();
 
-            if (m_currentBallForce > 0)
+            if (currentBallForce > 0)
             {
-                if (Physics.Raycast(transform.position, m_ballThrownDirection, out RaycastHit hit, m_wallRayLegnth, wallLayers))
+                if (Physics.Raycast(transform.position, ballThrownDirection, out RaycastHit hit, m_wallRayLegnth, wallLayers))
                 {
-                    m_ballThrownDirection = Vector3.Reflect(m_ballThrownDirection, hit.normal);
+                    ballThrownDirection = Vector3.Reflect(ballThrownDirection, hit.normal);
                 }
                 
-                m_currentBallForce -= m_tempDragSpeed * Time.deltaTime;
+                currentBallForce -= m_tempDragSpeed * Time.deltaTime;
                 thrownBallStat -= m_tempDragSpeed * Time.deltaTime;
-                var ballVelocity = m_ballThrownDirection.normalized * (m_currentBallForce * Time.deltaTime);
+                var ballVelocity = GetCurrentInfluenceDirection().normalized * (currentBallForce * Time.deltaTime);
+                Debug.DrawRay(transform.position, ballThrownDirection, Color.green, 30f);
+                //Debug.DrawRay(transform.position, ballVelocity, Color.green, 30f);
+                UpdateThrowIntensityVisuals();
                 rb.MovePosition(rb.position + ballVelocity);
-            }else if (m_currentBallForce <= 0)
+                ballThrownDirection = ballVelocity.normalized * currentBallForce;
+                Debug.DrawRay(transform.position, ballThrownDirection, Color.red, 30f);
+            }else
             {
                 if (isThrown)
                 {
                     isThrown = false;
                     thrownBallStat = 0;
                     lastThrownCharacter = null;
+                    ballThrowVisuals.SetActive(false);
+                    currentInfluences.Clear();
                 }   
             }
             
@@ -238,15 +267,14 @@ namespace Runtime.Gameplay
 
         private void CheckForPlayer()
         {
-            
-            Collider[] colliders = Physics.OverlapSphere(transform.position, playerCheckRadius, playerCheckLayer);
+            foundPlayersAmount = Physics.OverlapSphereNonAlloc(transform.position, playerCheckRadius, foundPlayers ,playerCheckLayer);
 
-            if (colliders.Length == 0)
+            if (foundPlayersAmount == 0)
             {
                 return;
             }
             
-            foreach (var collider in colliders)
+            foreach (var collider in foundPlayers)
             {
                 collider.TryGetComponent(out CharacterBase _character);
                     
@@ -266,7 +294,7 @@ namespace Runtime.Gameplay
                 }
                     
                 isControlled = true;
-                m_currentBallForce = 0;
+                currentBallForce = 0;
                     
                 if (isThrown)
                 {
@@ -279,13 +307,129 @@ namespace Runtime.Gameplay
                 _character.PickUpBall(this);
                     
                 groundIndicator.SetActive(!isControlled);
+                break;
             }
         }
 
+        public async UniTask ChangeBallIntensity(CharacterSide side, float amountChange)
+        {
+            CancellationTokenSource cts = new CancellationTokenSource();
+            cts.Token.ThrowIfCancellationRequested();
+
+            if (side.sideGUID != lastThrownCharacter.side.sideGUID)
+            {
+                return;
+            }
+            
+            SetBallPause(true);
+            var ballForce = Mathf.Clamp(currentBallForce + (amountChange), 0, maxIntensity);
+            await CountToNumberAsync(ballForce, cts.Token);
+
+            SetBallPause(false);
+        }
+        
+        private async UniTask CountToNumberAsync(float _newValue, CancellationToken token)
+        {
+            token.ThrowIfCancellationRequested();
+            float _previousValue = currentBallForce;
+            int _stepAmount;
+            float _waitTime = 1 / countFPS;
+
+            _stepAmount = _newValue - _previousValue  < 0 ? 
+                Mathf.FloorToInt((_newValue - _previousValue) / (countFPS * textDuration)) 
+                : Mathf.CeilToInt((_newValue - _previousValue) / (countFPS * textDuration));
+
+            _stepAmount = Mathf.Abs(_stepAmount);
+            
+            //Going up
+            if (_previousValue < _newValue)
+            {
+                while (_previousValue < _newValue)
+                {
+                    _previousValue += _stepAmount;
+                    if (_previousValue > _newValue)
+                    {
+                        _previousValue = _newValue;
+                    }
+                    
+                    ballThrowIntensityText.text = _previousValue.ToString();
+                    ballThrowIntensityImage.fillAmount = _previousValue / maxIntensity;
+                    await UniTask.WaitForSeconds(_waitTime, cancellationToken:token);
+                }
+            }
+            else //Going down
+            {
+                while (_previousValue > _newValue)
+                {
+                    _previousValue -= _stepAmount;
+                    if (_previousValue < _newValue)
+                    {
+                        _previousValue = _newValue;
+                    }
+                    
+                    ballThrowIntensityText.text = _previousValue.ToString();
+                    ballThrowIntensityImage.fillAmount = _previousValue / maxIntensity;
+                    await UniTask.WaitForSeconds(_waitTime, cancellationToken:token);
+                }
+            }
+
+            currentBallForce = _newValue;
+        }
+        
+        public void AddInfluence(CharacterBase influencingCharacter, Vector3 newInfluenceDirection)
+        {
+            if (!isThrown)
+            {
+                return;
+            }
+
+            if (influencingCharacter == lastThrownCharacter)
+            {
+                return;
+            }
+
+            if (currentInfluences.TryAdd(influencingCharacter, newInfluenceDirection)) return;
+            currentInfluences[influencingCharacter] = newInfluenceDirection;
+        }
+        
+        public void RemoveInfluence(CharacterBase removingCharacter)
+        {
+            if (!currentInfluences.ContainsKey(removingCharacter))
+            {
+                return;
+            }
+            Debug.Log("<color=orange>Removing Influence</color>");
+            currentInfluences.Remove(removingCharacter);
+        }
+
+        private void UpdateThrowIntensityVisuals()
+        {
+            ballThrowIntensityImage.fillAmount = currentBallForce / maxIntensity;
+            ballThrowIntensityText.text = Mathf.CeilToInt(currentBallForce).ToString();
+        }
+        
+        private Vector3 GetCurrentInfluenceDirection()
+        {
+            if (currentInfluences.Count == 0)
+            {
+                return ballThrownDirection;
+            }
+            
+            return new Vector3(ballThrownDirection.x + currentInfluences.Values.Sum(vec => vec.x),
+                0,
+                ballThrownDirection.z + currentInfluences.Values.Sum(vec => vec.z));
+        }
+
+        /// <summary>
+        /// AKA, pickup ball
+        /// </summary>
         public void SetFollowTransform(Transform _follower, CharacterBase _ownerCharacter)
         {
             followerTransform = _follower.transform;
             currentOwner = _ownerCharacter;
+            
+            ballThrowVisuals.SetActive(false);
+            currentInfluences.Clear();
             
             if (m_lastContactedCharacters.Count >= 5)
             {
@@ -303,13 +447,13 @@ namespace Runtime.Gameplay
 
         public void ForceStopBall()
         {
-            m_currentBallForce = 0;
+            currentBallForce = 0;
             rb.linearVelocity = Vector3.zero;
         }
 
         public void ReduceForce(int _reductionAmount)
         {
-            m_currentBallForce -= _reductionAmount;
+            currentBallForce -= _reductionAmount;
         }
 
         public void ResetBall()
@@ -324,6 +468,7 @@ namespace Runtime.Gameplay
             isControlled = false;
             followerTransform = null;
             transform.position = m_ballStartPosition;
+            currentInfluences.Clear();
         }
 
         public void SetVisualsToLayer(LayerMask _layer)

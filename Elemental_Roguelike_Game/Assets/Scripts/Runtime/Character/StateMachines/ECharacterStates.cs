@@ -8,6 +8,7 @@
         Movement,
         ThrowBall,
         Damaged,
+        KnockedBack,
         OverWatch,
         Death,
     }

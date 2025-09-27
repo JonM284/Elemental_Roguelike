@@ -327,7 +327,7 @@ namespace Runtime.Character
 
         public void CancelAbilityUse()
         {
-            if (m_assignedAbilities[m_activeAbilityIndex].IsNull())
+            if (m_assignedAbilities.Count == 0 || m_activeAbilityIndex >= m_assignedAbilities.Count || m_assignedAbilities[m_activeAbilityIndex].IsNull())
             {
                 return;
             }
