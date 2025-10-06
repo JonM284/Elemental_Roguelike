@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using Data;
 using Data.CharacterData;
 using Data.Elements;
 using Project.Scripts.Utils;
@@ -9,7 +7,6 @@ using Runtime.GameControllers;
 using Runtime.Selection;
 using Runtime.UI.Items;
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine.UI;
 using UnityEngine;
 using Utils;
@@ -139,9 +136,9 @@ namespace Runtime.Cards
 
             _data.abilityReferences.ForEach(abilityGUID =>
             {
-                var ability = AbilityController.Instance.GetAbility(_elementTyping.elementGUID, _data.classReferenceType, abilityGUID) ;
+                /*var ability = AbilityController.Instance.GetAbilityData((ElementTyping)_elementTyping.elementGUID, (CharacterClassData)_data.classReferenceType, abilityGUID) ;
                 var temp = $"{ability.abilityName}: {ability.abilityDescription}\r\n";
-                combinedstring += temp;
+                combinedstring += temp;*/
             });
 
             abilityDescriptionText.text = combinedstring;

@@ -1,11 +1,14 @@
-﻿using Data.Elements;
+﻿using System;
+using Data.Elements;
 using Runtime.Status;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
+using UnityEngine.Serialization;
 
 namespace Data
 {
     [CreateAssetMenu(menuName = "Custom Data/Projectile")]
+    [Obsolete]
     public class ProjectileInfo: ScriptableObject
     {
 
@@ -30,7 +33,7 @@ namespace Data
 
         public ElementTyping projectileType;
 
-        public Status statusEffect;
+        [FormerlySerializedAs("statusBaseEffect")] [FormerlySerializedAs("statusEffect")] public StatusEntityBase statusEntityBaseEffect;
 
         public LayerMask projectileCollisionLayers;
 

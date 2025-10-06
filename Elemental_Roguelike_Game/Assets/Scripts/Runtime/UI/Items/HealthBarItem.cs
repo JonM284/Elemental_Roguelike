@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Data.Sides;
+using Data.StatusDatas;
 using Project.Scripts.Utils;
 using Runtime.Character;
 using Runtime.GameControllers;
@@ -28,7 +29,7 @@ namespace Runtime.UI.Items
         
         [SerializeField] private TMP_Text shieldText;
 
-        [SerializeField] private Image highStatusIcon;
+        [SerializeField] private List<Image> highStatusIcon = new List<Image>();
 
         [Header("Low Detail Bar")]
 
@@ -36,7 +37,7 @@ namespace Runtime.UI.Items
 
         [SerializeField] private Slider healthBarLow;
 
-        [SerializeField] private Image lowStatusIcon;
+        [SerializeField] private List<Image> lowStatusIcon = new List<Image>();
         
         [SerializeField] private Image healthBarLowImage;
 
@@ -69,6 +70,8 @@ namespace Runtime.UI.Items
         //ToDo: Using this, make a nice animation of losing health
         private float m_previousHealth;
         private bool m_hasTakenDamage;
+        
+        private List<StatusData> appliedStatuses = new List<StatusData>();
         
         #endregion
 
@@ -127,8 +130,8 @@ namespace Runtime.UI.Items
             CharacterLifeManager.OnCharacterDied += OnCharacterDied;
             CharacterBase.CharacterUsedActionPoint += OnCharacterUsedActionPoint;
             CharacterBase.CharacterReset += OnCharacterReset;
-            CharacterBase.StatusAdded += CharacterBaseOnStatusAdded;
-            CharacterBase.StatusRemoved += CharacterBaseOnStatusRemoved;
+            CharacterBase.StatusAdded += OnStatusApplied;
+            CharacterBase.StatusRemoved += OnStatusRemoved;
             CharacterBase.CharacterEndedTurn += OnCharacterEndedTurn;
             TurnController.OnChangeActiveTeam += OnChangeActiveTeam;
         }
@@ -140,8 +143,8 @@ namespace Runtime.UI.Items
             CharacterLifeManager.OnCharacterDied -= OnCharacterDied;
             CharacterBase.CharacterUsedActionPoint -= OnCharacterUsedActionPoint;
             CharacterBase.CharacterReset -= OnCharacterReset;
-            CharacterBase.StatusAdded -= CharacterBaseOnStatusAdded;
-            CharacterBase.StatusRemoved -= CharacterBaseOnStatusRemoved;
+            CharacterBase.StatusAdded -= OnStatusApplied;
+            CharacterBase.StatusRemoved -= OnStatusRemoved;
             CharacterBase.CharacterEndedTurn -= OnCharacterEndedTurn;
             TurnController.OnChangeActiveTeam -= OnChangeActiveTeam;
 
@@ -310,51 +313,55 @@ namespace Runtime.UI.Items
             
         }
         
-        private void CharacterBaseOnStatusAdded(CharacterBase _character)
+        private void OnStatusApplied(CharacterBase characterBase, StatusData _status)
         {
-            if (_character != m_associatedCharacter)
-            {
-                return;
-            }
-
-            if (_character.appliedStatus.IsNull())
-            {
-                return;
-            }
-
-            if (_character.appliedStatus.status.statusIcon.IsNull())
-            {
-                return;
-            }
-
-            if (_character.appliedStatus.status.statusIconLow.IsNull())
-            {
-                return;
-            }
-
-            highStatusIcon.sprite = _character.appliedStatus.status.statusIcon;
-
-            lowStatusIcon.sprite = _character.appliedStatus.status.statusIconLow;
-
-        }
-        
-        private void CharacterBaseOnStatusRemoved(CharacterBase _character)
-        {
-            if (_character.IsNull())
+            if (characterBase != m_associatedCharacter)
             {
                 return;
             }
             
-            if (_character != m_associatedCharacter)
+            appliedStatuses.Add(_status);
+            UpdateStatusList();
+        }
+
+        private void OnStatusRemoved(CharacterBase characterBase, StatusData _status)
+        {
+            if (characterBase != m_associatedCharacter)
             {
                 return;
             }
 
-            highStatusIcon.sprite = null;
-
-            lowStatusIcon.sprite = null;
+            if (!appliedStatuses.Contains(_status))
+            {
+                return;
+            }
+            
+            appliedStatuses.Remove(_status);
+            UpdateStatusList();
         }
 
+        private void UpdateStatusList()
+        {
+            //ToDo: check if necessary. Health bar might be removed
+            /*for (int i = 0; i < m_followStatusIcons.Count; i++)
+            {
+                m_followStatusIcons[i].gameObject.SetActive(i < m_appliedStatuses.Count);
+
+                if (i >= m_appliedStatuses.Count)
+                {
+                    continue;
+                }
+
+                m_followStatusIcons[i].sprite = m_appliedStatuses[i].statusIconRef;
+            }*/
+        }
+
+        private void ClearAllStatuses()
+        {
+            appliedStatuses.Clear();
+        }
+        
+        
         private void ChangeHealthBarDisplay(bool _isHighlighted)
         {
             lowDetail.SetActive(!_isHighlighted);

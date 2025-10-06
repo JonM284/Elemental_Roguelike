@@ -155,7 +155,8 @@ namespace Runtime.Character.Creations
             SetCreationDiscovered();
             
             isDoingAction = true;
-            proximityCreationData.GetZoneInfo().PlayAt(transform.position, owner);
+            //ProjectileController.Instance.GetZoneAt(proximityCreationData, transform.position, owner);
+
             hasDoneAction = true;
             isDoingAction = false;
             DestroyCreation();

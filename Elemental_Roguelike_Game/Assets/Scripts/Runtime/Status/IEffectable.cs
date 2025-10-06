@@ -1,10 +1,14 @@
-﻿namespace Runtime.Status
+﻿using System;
+using Data.StatusDatas;
+
+namespace Runtime.Status
 {
+    [Obsolete("Effects are in a list on the character")]
     public interface IEffectable
     {
-        public Status currentStatus { get; protected set; }
+        public StatusEntityBase CurrentStatusEntityBase { get; protected set; }
 
-        public void ApplyEffect(Status _newStatus);
+        public void ApplyEffect(StatusData newStatus);
         
         public void RemoveEffect();
     }

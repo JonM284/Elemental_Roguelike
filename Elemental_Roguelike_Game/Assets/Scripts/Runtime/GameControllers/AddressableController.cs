@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using Cysharp.Threading.Tasks;
 using Project.Scripts.Utils;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -35,6 +36,11 @@ namespace Runtime.GameControllers
         #endregion
         
         #region Class Implementation
+        
+        public async UniTask<GameObject> T_LoadGameObject(AssetReference _assetReference, Action<GameObject> callback, Transform parent)
+        {
+            return await Addressables.LoadAssetAsync<GameObject>(_assetReference);
+        }
 
         /// <summary>
         /// Load Asset reference, return GameObject. UniTask

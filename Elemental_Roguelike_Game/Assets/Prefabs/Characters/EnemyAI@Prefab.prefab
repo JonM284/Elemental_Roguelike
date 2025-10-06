@@ -130,6 +130,37 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!1 &1650842845018113815
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8317464073318403461}
+  m_Layer: 8
+  m_Name: StatusHolder
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8317464073318403461
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1650842845018113815}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7281974412632547786}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1738873391626983205
 GameObject:
   m_ObjectHideFlags: 0
@@ -332,6 +363,8 @@ Transform:
   - {fileID: 8566242789093470444}
   - {fileID: 7721190229518209900}
   - {fileID: 2718524363994740187}
+  - {fileID: 8317464073318403461}
+  - {fileID: 1229345547343278801}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &6368071206970679803
@@ -350,10 +383,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 512
   abilityUseTransform: {fileID: 0}
-  m_assignedAbilities: []
-  abilityRangeIndicator: {fileID: 6565185708785119811}
-  abilityPositionIndicator: {fileID: 0}
-  abilityDirectionIndicator: {fileID: 0}
+  abilityParent: {fileID: 1229345547343278801}
 --- !u!114 &6941653753232291006
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -471,6 +501,7 @@ MonoBehaviour:
   activePlayerIndicator: {fileID: 3562585190508619549}
   characterClassMarker: {fileID: 6492553450350576600}
   m_ballHoldPosition: {fileID: 9113065631478212690}
+  m_statusHolder: {fileID: 8317464073318403461}
   shakeDuration: 0.5
   shakeStrength: 1.25
   shakeVibrationAmount: 6
@@ -586,6 +617,37 @@ MonoBehaviour:
   goalLayer:
     serializedVersion: 2
     m_Bits: 16384
+--- !u!1 &3517100083593519218
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1229345547343278801}
+  m_Layer: 8
+  m_Name: AbilityHolder
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1229345547343278801
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3517100083593519218}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7281974412632547786}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &3562585190508619549
 GameObject:
   m_ObjectHideFlags: 0

@@ -1,38 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Data.CharacterData;
-using Data.Elements;
+using Cysharp.Threading.Tasks;
+using Data.AbilityDatas;
 using Project.Scripts.Utils;
 using Runtime.Abilities;
 using Runtime.Environment;
 using Runtime.GameControllers;
-using Runtime.Selection;
 using UnityEngine;
-using Utils;
 
 namespace Runtime.Character
 {
     public class CharacterAbilityManager: MonoBehaviour
     {
-
-        #region Nested Classes
-
-        [Serializable]
-        public class AssignedAbilities
-        {
-            public float roundCooldownPercentage;
-            public int roundCooldown;
-            public int maxRoundCooldown;
-            public bool canUse;
-            public float abilityUseRange;
-            public float abilitySize;
-            public Ability ability;
-        }
         
-        
-        #endregion
-
         #region Events
 
         private Action OnAbilityUsed;
@@ -47,13 +28,7 @@ namespace Runtime.Character
 
         [SerializeField] private Transform abilityUseTransform;
         
-        [SerializeField] private List<AssignedAbilities> m_assignedAbilities = new List<AssignedAbilities>();
-
-        [SerializeField] private GameObject abilityRangeIndicator;
-
-        [SerializeField] private GameObject abilityPositionIndicator;
-
-        [SerializeField] private LineRenderer abilityDirectionIndicator;
+        [SerializeField] private Transform abilityParent;
 
         #endregion
 
@@ -76,6 +51,8 @@ namespace Runtime.Character
         private bool m_isAbilityDisallowed;
 
         private AbilityTargetType m_allowedType;
+
+        private List<AbilityEntityBase> assignedAbilities = new List<AbilityEntityBase>();
         
         #endregion
 
@@ -85,7 +62,7 @@ namespace Runtime.Character
 
         public bool hasCanceledAbility { get; private set; }
 
-        public bool hasAvailableAbility => m_assignedAbilities.Any(aa => aa.canUse);
+        public bool hasAvailableAbility => assignedAbilities.Any(a => a.canUseAbility);
 
         private Vector3 abilityPos => abilityUseTransform != null ? abilityUseTransform.position : transform.position;
         
@@ -146,40 +123,41 @@ namespace Runtime.Character
             SelectAbilityTarget(_selectedCharacter.transform);
         }
 
-        public List<AssignedAbilities> GetAssignedAbilities()
+        public List<AbilityEntityBase> GetAssignedAbilities()
         {
-            return m_assignedAbilities;
+            return assignedAbilities;
+        }
+        
+        public List<AbilityEntityBase> GetAssignedAbilitiesNewList()
+        {
+            return assignedAbilities.ToList();
         }
 
         public void ChangeAbilityCooldown(float _percentReduce)
         {
-            if (m_assignedAbilities.Count == 0)
+            if (assignedAbilities.Count == 0)
             {
                 return;
             }
 
-            foreach (var _assignedAbility in m_assignedAbilities)
+            foreach (var _assignedAbility in assignedAbilities)
             {
-                var _reduceAmount = Mathf.CeilToInt(_assignedAbility.ability.roundCooldownTimer * _percentReduce);
-                _assignedAbility.maxRoundCooldown -= _reduceAmount;
+                var _reduceAmount = Mathf.CeilToInt(_assignedAbility.abilityCooldownMax * _percentReduce);
+                _assignedAbility.abilityCooldownMax -= _reduceAmount;
             }
         }
 
-        public Ability GetAbilityAtIndex(int _index)
+        public AbilityEntityBase GetAbilityAtIndex(int _index)
         {
-            Mathf.Clamp(_index, 0, 1);
+            _index %= assignedAbilities.Count;
 
-            return m_assignedAbilities[_index].ability;
+            return assignedAbilities[_index];
 
         }
 
-        public Ability GetActiveAbility()
+        public AbilityEntityBase GetActiveAbility()
         {
-            if (m_activeAbilityIndex == m_defaultInactiveAbilityIndex)
-            {
-                return default;
-            }
-            return m_assignedAbilities[m_activeAbilityIndex].ability;
+            return m_activeAbilityIndex == m_defaultInactiveAbilityIndex ? default : assignedAbilities[m_activeAbilityIndex];
         }
 
         public int GetActiveAbilityIndex()
@@ -192,41 +170,25 @@ namespace Runtime.Character
             return m_previousActiveAbilityIndex;
         }
         
-        public void InitializeCharacterAbilityList(List<string> _abilities, ElementTyping _elementTyping, CharacterClassData _characterClass)
+        public async UniTask InitializeCharacterAbilityList(List<AbilityData> abilityDatas)
         {
-            _abilities.ForEach(a =>
+            if (abilityDatas.Count == 0)
             {
-                var locatedAbility = AbilityController.Instance.GetAbility(_elementTyping, _characterClass, a);
-                var _newAssign = new AssignedAbilities
-                {
-                    ability = locatedAbility,
-                    canUse = true,
-                    roundCooldown = locatedAbility.roundCooldownTimer,
-                    maxRoundCooldown = locatedAbility.roundCooldownTimer,
-                    roundCooldownPercentage = 1f
-                };
+                return;
+            }
 
-                m_assignedAbilities.Add(_newAssign);
-            });
-        }
-        
-        public void InitializeCharacterAbilityList(List<Ability> _abilities)
-        {
-            _abilities.ForEach(a =>
+            foreach (var abilityData in abilityDatas)
             {
-                var _newAssign = new AssignedAbilities
+                if (abilityData.IsNull())
                 {
-                    ability = a,
-                    canUse = true,
-                    roundCooldown = a.roundCooldownTimer,
-                    maxRoundCooldown = a.roundCooldownTimer,
-                    abilityUseRange = a.range,
-                    abilitySize = a.abilitySize,
-                    roundCooldownPercentage = 1f
-                };
-
-                m_assignedAbilities.Add(_newAssign);
-            });
+                    continue;
+                }
+                
+                var _currentAbilityPrefab = Instantiate(abilityData.abilityGameObject, abilityParent);
+                _currentAbilityPrefab.TryGetComponent(out AbilityEntityBase abilityComponent);
+                assignedAbilities.Add(abilityComponent);
+                abilityComponent.InitializeAbility(this.characterBase, abilityData).Forget();
+            }
         }
 
         public void SetAbilityTypeAllowed(AbilityTargetType _targetType)
@@ -244,22 +206,22 @@ namespace Runtime.Character
         /// Use abilities usable by this character. [ONLY TWO]
         /// </summary>
         /// <param name="_abilityIndex">First ability = 0, Second Ability = 1</param>
-        public void UseAssignedAbility(int _abilityIndex, Action abilityUseCallback)
+        public void ActivateAssignedAbilityAtIndex(int abilityIndex, Action abilityUseCallback)
         {
-            if (m_assignedAbilities[_abilityIndex] == null)
+            if (abilityIndex >= assignedAbilities.Count || assignedAbilities[abilityIndex].IsNull())
             {
-                Debug.Log($"Ability doesn't exist {this.gameObject.name} /// Ability:{_abilityIndex}", this.gameObject);
+                Debug.Log($"Ability doesn't exist {this.gameObject.name} /// Ability:{abilityIndex}", this.gameObject);
                 return;
             }
 
-            if (m_isAbilityDisallowed && m_assignedAbilities[_abilityIndex].ability.targetType != m_allowedType)
+            if (m_isAbilityDisallowed && assignedAbilities[abilityIndex].abilityData.targetType != m_allowedType)
             {
                 Debug.Log("This ability type isn't allowed");
                 UIController.Instance.CreateFloatingTextAtCursor("Ability can't be used", Color.red);
                 return;
             }
 
-            if (!m_assignedAbilities[_abilityIndex].canUse)
+            if (!assignedAbilities[abilityIndex].canUseAbility)
             {
                 Debug.LogError("Ability on cooldown");
                 UIController.Instance.CreateFloatingTextAtCursor("Ability on Cooldown", Color.red);
@@ -267,74 +229,51 @@ namespace Runtime.Character
             }
 
             hasCanceledAbility = false;
-            m_assignedAbilities[_abilityIndex].ability.Initialize(this.gameObject);
-            m_activeAbilityIndex = _abilityIndex;
-            SetIndicators(true, m_assignedAbilities[_abilityIndex].ability.targetType == AbilityTargetType.DIRECTIONAL);
-            abilityRangeIndicator.transform.localScale = Vector3.one * (m_assignedAbilities[_abilityIndex].abilityUseRange * 2);
+            assignedAbilities[abilityIndex].ShowAttackIndicator(true);
+            m_activeAbilityIndex = abilityIndex;
+            //SetIndicators(true, m_assignedAbilities[_abilityIndex].ability.targetType == AbilityTargetType.DIRECTIONAL);
+            //abilityRangeIndicator.transform.localScale = Vector3.one * (assignedAbilities[abilityIndex].currentRange * 2);
 
             if (abilityUseCallback != null)
             {
                 OnAbilityUsed = abilityUseCallback;
             }
 
-            if (m_assignedAbilities[m_activeAbilityIndex].ability.targetType == AbilityTargetType.SELF)
+            if (assignedAbilities[m_activeAbilityIndex].abilityData.targetType == AbilityTargetType.SELF)
             {
                 SelectAbilityTarget(this.transform);
             }
             
         }
 
-        public void MarkAbility(Vector3 _position)
+        public void MarkAbility(Vector3 position)
         {
             if (m_activeAbilityIndex == -1)
             {
                 return;
             }
             
-            if (m_assignedAbilities[m_activeAbilityIndex].IsNull())
+            if (assignedAbilities[m_activeAbilityIndex].IsNull())
             {
                 return;
             }
 
-            switch (m_assignedAbilities[m_activeAbilityIndex].ability.targetType)
-            {
-                case AbilityTargetType.CHARACTER_TRANSFORM:
-                    if (abilityPositionIndicator.activeInHierarchy)
-                    {
-                        abilityPositionIndicator.SetActive(false);
-                    }
-                    break;
-                case AbilityTargetType.LOCATION: case AbilityTargetType.FREE:
-                    var direction = _position - transform.position;
-                    if (direction.magnitude > m_assignedAbilities[m_activeAbilityIndex].abilityUseRange)
-                    {
-                        return;
-                    }
-                    abilityPositionIndicator.transform.position = new Vector3(_position.x, m_floorOffset, _position.z);
-                    break;
-                case AbilityTargetType.DIRECTIONAL:
-                    var localDirection = transform.InverseTransformDirection(_position - transform.position);
-                    var finalPoint = (localDirection.normalized * m_assignedAbilities[m_activeAbilityIndex].abilityUseRange);
-                    
-                    abilityDirectionIndicator.SetPosition(1, new Vector3(finalPoint.x, finalPoint.z, 0));
-                    break;
-                case AbilityTargetType.SELF:
-                    abilityPositionIndicator.transform.position = new Vector3(_position.x, m_floorOffset, _position.z);
-                    break;
-            }
-            
+            assignedAbilities[m_activeAbilityIndex].MarkHighlight(position);
         }
 
         public void CancelAbilityUse()
         {
-            if (m_assignedAbilities.Count == 0 || m_activeAbilityIndex >= m_assignedAbilities.Count || m_assignedAbilities[m_activeAbilityIndex].IsNull())
+            if (m_activeAbilityIndex == -1 || 
+                assignedAbilities.Count == 0 ||
+                m_activeAbilityIndex >= assignedAbilities.Count ||
+                assignedAbilities[m_activeAbilityIndex].IsNull())
             {
                 return;
             }
 
-            SetIndicators(false,false);
+            //SetIndicators(false,false);
             
-            m_assignedAbilities[m_activeAbilityIndex].ability.CancelAbilityUse();
+            assignedAbilities[m_activeAbilityIndex].ShowAttackIndicator(false);
             m_activeAbilityIndex = m_defaultInactiveAbilityIndex;
             hasCanceledAbility = true;
             OnAbilityUsed = null;
@@ -342,14 +281,14 @@ namespace Runtime.Character
         
         public void SelectAbilityTarget(Transform _targetTransform)
         {
-            if (m_assignedAbilities[m_activeAbilityIndex] == null)
+            if (assignedAbilities[m_activeAbilityIndex] == null)
             {
                 return;
             }
 
-            if (m_assignedAbilities[m_activeAbilityIndex].ability.targetType　== AbilityTargetType.LOCATION)
+            if (assignedAbilities[m_activeAbilityIndex].abilityData.targetType　== AbilityTargetType.LOCATION)
             {
-                Debug.Log($"<color=red>Target Type:{m_assignedAbilities[m_activeAbilityIndex].ability.targetType}</color>");
+                Debug.Log($"<color=red>Target Type:{assignedAbilities[m_activeAbilityIndex].abilityData.targetType}</color>");
                 UIController.Instance.CreateFloatingTextAtCursor("Select Location", Color.red);
                 return;
             }
@@ -369,25 +308,27 @@ namespace Runtime.Character
                 return;
             }
             
-            m_assignedAbilities[m_activeAbilityIndex].ability.SelectTarget(_targetTransform);
+            assignedAbilities[m_activeAbilityIndex].SelectTarget(_targetTransform);
+            
             if (_targetTransform != this.transform)
             {
                 characterRotation.SetRotationTarget(_targetTransform.position);
             }
             
-            SetIndicators(false, false);
+            assignedAbilities[m_activeAbilityIndex].ShowAttackIndicator(false);
+            
+            //SetIndicators(false, false);
             OnAbilityUsed?.Invoke();
         }
 
-        public void UseActiveAbility()
+        public async UniTask UseActiveAbility()
         {
-            if (m_activeAbilityIndex >= m_assignedAbilities.Count && m_activeAbilityIndex < 0)
+            if (m_activeAbilityIndex >= assignedAbilities.Count && m_activeAbilityIndex < 0)
             {
                 return;
             }
             
-            m_assignedAbilities[m_activeAbilityIndex].ability.UseAbility(abilityPos);
-            m_assignedAbilities[m_activeAbilityIndex].canUse = false;
+            await assignedAbilities[m_activeAbilityIndex].UseAbility();
             m_previousActiveAbilityIndex = m_activeAbilityIndex;
             m_activeAbilityIndex = m_defaultInactiveAbilityIndex;
             ActionUsed?.Invoke(characterBase);
@@ -400,17 +341,8 @@ namespace Runtime.Character
                 return;
             }
             
-            if (m_assignedAbilities[m_activeAbilityIndex] == null)
+            if (assignedAbilities[m_activeAbilityIndex] == null)
             {
-                return;
-            }
-
-            if (m_assignedAbilities[m_activeAbilityIndex].ability.targetType　== AbilityTargetType.CHARACTER_TRANSFORM)
-            {
-                Debug.Log($"<color=red>Target Type:{m_assignedAbilities[m_activeAbilityIndex].ability.targetType}</color>");
-                UIController.Instance.CreateFloatingTextAtCursor("Select Character", Color.red);
-
-                CancelAbilityUse();
                 return;
             }
 
@@ -422,55 +354,29 @@ namespace Runtime.Character
                 return;
             }
             
-            m_assignedAbilities[m_activeAbilityIndex].ability.SelectPosition(_targetPos);
+            assignedAbilities[m_activeAbilityIndex].SelectPosition(_targetPos);
             characterRotation.SetRotationTarget(_targetPos);
-            SetIndicators(false,false);
+            //SetIndicators(false,false);
             OnAbilityUsed?.Invoke();
-        }
-
-        private void SetIndicators(bool _active, bool isDir)
-        {
-            if (abilityDirectionIndicator.IsNull() || abilityPositionIndicator.IsNull() || abilityRangeIndicator.IsNull())
-            {
-                return;
-            }
-
-            if (_active)
-            {
-                if (isDir)
-                {
-                    abilityDirectionIndicator.gameObject.SetActive(_active);
-                }
-                else
-                {
-                    abilityPositionIndicator.SetActive(_active);
-                }
-            }
-            else
-            {
-                abilityDirectionIndicator.gameObject.SetActive(_active);
-                abilityPositionIndicator.SetActive(_active);
-            }
-            
-            abilityRangeIndicator.SetActive(_active);
         }
 
         public void CheckAbilityCooldown()
         {
-            m_assignedAbilities.ForEach(aa =>
+            assignedAbilities.ForEach(aa =>
             {
-                if (aa.canUse)
+                if (aa.canUseAbility)
                 {
                     return;
                 }
-                aa.roundCooldown--;
-                aa.roundCooldownPercentage = (float)aa.roundCooldown / aa.maxRoundCooldown;
-                if (aa.roundCooldown > 0)
+                aa.abilityCooldownCurrent++;
+                //aa.roundCooldownPercentage = (float)aa.roundCooldown / aa.maxRoundCooldown;
+                
+                if (aa.abilityCooldownCurrent < aa.abilityCooldownMax)
                 {
                     return;
                 }
-                aa.canUse = true;
-                aa.roundCooldown = aa.maxRoundCooldown;
+                
+                aa.abilityCooldownCurrent = aa.abilityCooldownMax;
             });
         }
 
@@ -493,14 +399,14 @@ namespace Runtime.Character
 
         private bool IsInRange(Vector3 _checkPos)
         {
-            if (m_assignedAbilities[m_activeAbilityIndex].IsNull())
+            if (assignedAbilities[m_activeAbilityIndex].IsNull())
             {
                 return false;
             }
             
             var dir = _checkPos - transform.position;
 
-            return dir.magnitude <= m_assignedAbilities[m_activeAbilityIndex].abilityUseRange + 0.08f;
+            return dir.magnitude <= assignedAbilities[m_activeAbilityIndex].currentRange - 0.08f;
         }
 
         #endregion

@@ -25,14 +25,9 @@ namespace Runtime.Character.StateMachines
             //IDLE only checks for throw influence
         }
 
-        public override void EnterState()
+        public override void EnterState(params object[] _arguments)
         {
             classManager.ResetInfluence();
-        }
-        
-        public override void AssignArgument(params object[] _arguments)
-        {
-            
         }
 
         public override void UpdateState()

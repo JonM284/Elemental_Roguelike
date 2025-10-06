@@ -34,14 +34,9 @@ namespace Runtime.Character.StateMachines
                 _manager.characterBase.characterStatsBase.typing, false);
         }
 
-        public override void EnterState()
+        public override void EnterState(params object[] _arguments)
         {
             characterMovement.SetCharacterMovable(true, OnBeginWalkAction, OnWalkActionEnded);
-        }
-        
-        public override void AssignArgument(params object[] _arguments)
-        {
-            
         }
 
         public override void UpdateState()

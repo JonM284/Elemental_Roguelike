@@ -118,8 +118,8 @@ namespace Runtime.Character.Creations
                     
                     transform.forward = directionToTarget;
                     
-                    m_projectileInfo.PlayAt(owner ,projectileFirePos.position, transform.forward,
-                        targetPosition);
+                    /*m_projectileInfo.PlayAt(owner ,projectileFirePos.position, transform.forward,
+                        targetPosition);*/
                     
                     yield return new WaitForSeconds(0.5f);
                 }

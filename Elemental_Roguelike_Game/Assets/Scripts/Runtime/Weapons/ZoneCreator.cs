@@ -1,5 +1,7 @@
 ﻿using Data;
+using Data.AbilityDatas;
 using UnityEngine;
+using UnityEngine.Serialization;
 using Utils;
 
 namespace Runtime.Weapons
@@ -9,7 +11,7 @@ namespace Runtime.Weapons
         
         #region Serialized Fields
 
-        [SerializeField] private ZoneInfo zoneToCreate;
+        [FormerlySerializedAs("zoneToCreate")] [SerializeField] private AoeZoneData aoeZoneToCreate;
 
         #endregion
 
@@ -17,7 +19,7 @@ namespace Runtime.Weapons
 
         public void CreateZone()
         {
-            zoneToCreate.PlayAt(transform.position, transform);
+            //aoeZoneToCreate.PlayAt(transform.position, transform);
         }
         
 

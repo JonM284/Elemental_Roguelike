@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Cysharp.Threading.Tasks;
 using Project.Scripts.Utils;
 using Runtime.VFX;
 using UnityEngine;
@@ -64,7 +65,7 @@ namespace Runtime.Character
 
         public void UseAbility()
         {
-            characterAbilityManager.UseActiveAbility();
+            characterAbilityManager.UseActiveAbility().Forget();
         }
 
         public void OnAbilityEnded()
@@ -104,7 +105,7 @@ namespace Runtime.Character
                 return;
             }
             
-            var abilityVFX = ability.abilityVFX;
+            var abilityVFX = ability.abilityData.abilityVFX;
             
             if (abilityVFX.IsNull())
             {
@@ -124,7 +125,7 @@ namespace Runtime.Character
 
             if (!ability.IsNull())
             {
-                if (!ability.playVFXAtTransform)
+                if (!ability.abilityData.playVFXAtTransform)
                 {
                     return;
                 }    
@@ -138,7 +139,7 @@ namespace Runtime.Character
             }
             else
             {
-                abilityVFX = ability.abilityVFX;
+                abilityVFX = ability.abilityData.abilityVFX;
                 m_savedPlayer = abilityVFX;
             }
             

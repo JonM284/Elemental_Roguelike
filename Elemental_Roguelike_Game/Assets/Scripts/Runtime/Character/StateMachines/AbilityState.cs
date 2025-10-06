@@ -42,13 +42,10 @@ namespace Runtime.Character.StateMachines
             characterAbilityManager.InitializeCharacterAbilityList(stateManager.characterBase.characterStatsBase.abilities);
         }
 
-        public override void EnterState()
+        public override void EnterState(params object[] _arguments)
         {
             characterAbilityManager.CancelAbilityUse();
-        }
-        
-        public override void AssignArgument(params object[] _arguments)
-        {
+            
             if (_arguments.Length == 0)
             {
                 return;
@@ -61,7 +58,7 @@ namespace Runtime.Character.StateMachines
             
             currentAbilityIndex = (int)_arguments[0];
             
-            characterAbilityManager.UseAssignedAbility(currentAbilityIndex, OnAbilityUsed);
+            characterAbilityManager.ActivateAssignedAbilityAtIndex(currentAbilityIndex, OnAbilityUsed);
         }
 
         public override void UpdateState()

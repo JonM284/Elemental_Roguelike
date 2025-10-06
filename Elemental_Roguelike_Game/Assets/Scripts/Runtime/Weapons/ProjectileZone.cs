@@ -1,6 +1,8 @@
 ﻿using Data;
+using Data.AbilityDatas;
 using Project.Scripts.Utils;
 using UnityEngine;
+using UnityEngine.Serialization;
 using Utils;
 
 namespace Runtime.Weapons
@@ -10,7 +12,7 @@ namespace Runtime.Weapons
 
         #region Serialized Fields
 
-        [SerializeField] private ZoneInfo zoneInfo;
+        [FormerlySerializedAs("zoneInfo")] [SerializeField] private AoeZoneData aoeZoneData;
 
         #endregion
 
@@ -18,7 +20,7 @@ namespace Runtime.Weapons
 
         protected override void OnEndMovement()
         {
-            zoneInfo.PlayAt(transform.position.FlattenVector3Y(), m_user);
+            //aoeZoneData.PlayAt(transform.position.FlattenVector3Y(), m_user);
             base.OnEndMovement();
         }
 

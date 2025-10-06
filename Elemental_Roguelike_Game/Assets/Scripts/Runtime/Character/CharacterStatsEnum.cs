@@ -3,8 +3,9 @@
     public enum CharacterStatsEnum
     {
         AGILITY,
-        SHOOTING,
+        THROW,
         TACKLE,
-        PASSING,
+        GRAVITY,
+        GRAVITY_RANGE,
     }
 }

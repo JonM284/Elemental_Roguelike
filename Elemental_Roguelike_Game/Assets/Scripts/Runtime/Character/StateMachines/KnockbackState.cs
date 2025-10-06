@@ -26,13 +26,17 @@ namespace Runtime.Character.StateMachines
             base.InitState(_manager, eCharacterStates);
         }
 
-        public override void EnterState()
+        public override void EnterState(params object[] _arguments)
         {
-        }
-        
-        public override void AssignArgument(params object[] _arguments)
-        {
+            if (_arguments.IsNull() || _arguments.Length == 0)
+            {
+                OnKnockbackEnded();
+                return;
+            }
             
+            var knockbackForce = _arguments.Length >= 1 && !_arguments[0].IsNull() ? (float)_arguments[0] : 1f;
+            var direction = _arguments.Length >= 2 && !_arguments[1].IsNull() ? (Vector3)_arguments[1] : transform.forward;
+            characterMovement.ApplyKnockback(knockbackForce, direction,0.5f, OnKnockbackEnded);
         }
 
         public override void UpdateState()

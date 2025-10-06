@@ -5,7 +5,6 @@ using Project.Scripts.Utils;
 using Runtime.GameControllers;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace Runtime.UI.Items
@@ -159,7 +158,8 @@ namespace Runtime.UI.Items
             var highlightedAbility = assignedData.m_characterStatsBase.abilities[abilityIndex];
             abilityDescriptionDisplay.SetActive(true);
             abilityDescriptionText.text = $"{highlightedAbility.abilityName}: <br> {highlightedAbility.abilityDescription} <br> " +
-                                                         $"Target Type: {highlightedAbility.targetType} <br> Cooldown: {highlightedAbility.roundCooldownTimer} Turn(s)";
+                                                         $"Target Type: {highlightedAbility.targetType} " +
+                                                         $"<br> Cooldown: {highlightedAbility.abilityTurnCooldownTimer} Turn(s)";
         }
 
         public void OnUnhighlightAbility(int abilityIndex)

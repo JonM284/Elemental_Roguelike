@@ -1,24 +1,24 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using Cysharp.Threading.Tasks;
-using Data;
 using Data.CharacterData;
 using Data.Elements;
 using Data.Sides;
+using Data.StatusDatas;
+using GameControllers;
 using Project.Scripts.Utils;
 using Runtime.Character.StateMachines;
 using Runtime.Damage;
 using Runtime.GameControllers;
 using Runtime.Gameplay;
-using Runtime.Managers;
 using Runtime.Selection;
 using Runtime.Status;
 using Runtime.VFX;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
 using Utils;
-using Random = UnityEngine.Random;
 using TransformUtils = Project.Scripts.Utils.TransformUtils;
 
 namespace Runtime.Character
@@ -33,14 +33,14 @@ namespace Runtime.Character
     [RequireComponent(typeof(CharacterClassManager))]
     [RequireComponent(typeof(StateManager))]
     [RequireComponent(typeof(CharacterBallManager))]
-    public abstract class CharacterBase: MonoBehaviour, ISelectable, IDamageable, IEffectable, IReactor
+    public abstract class CharacterBase: MonoBehaviour, ISelectable, IDamageable, IReactor
     {
 
         #region Nested Classes
 
         public class AppliedStatus
         {
-            public Status.Status status;
+            public StatusEntityBase StatusEntityBase;
             public int roundTimer;
         }
 
@@ -54,9 +54,9 @@ namespace Runtime.Character
         
         public static event Action<bool, CharacterBase> CharacterHovered;
         
-        public static event Action<CharacterBase> StatusAdded;
+        public static event Action<CharacterBase, StatusData> StatusAdded;
 
-        public static event Action<CharacterBase> StatusRemoved;
+        public static event Action<CharacterBase, StatusData> StatusRemoved;
 
         public static event Action<CharacterBase> CharacterReset;
 
@@ -90,7 +90,7 @@ namespace Runtime.Character
         
         [SerializeField] private MeshRenderer characterClassMarker;
 
-        [SerializeField] protected Transform m_ballHoldPosition;
+        [SerializeField] protected Transform m_ballHoldPosition, m_statusHolder;
 
         [Header("Camera Shake on Damage")]
         [SerializeField] private float shakeDuration = 0.1f;
@@ -149,6 +149,12 @@ namespace Runtime.Character
         private LayerMask displayLayerVal => LayerMask.NameToLayer("DISPLAY");
 
         private LayerMask charLayerVal => LayerMask.NameToLayer("CHARACTER");
+        
+        private List<StatusEntityBase> m_currentStatuses = new List<StatusEntityBase>();
+        
+        private List<string> m_currentStatusGUIDs = new List<string>();
+        
+        private List<StatusEntityBase> m_removableStatuses = new List<StatusEntityBase>();
 
         #endregion
 
@@ -220,9 +226,7 @@ namespace Runtime.Character
         public bool isBusy => characterMovement.isMoving;
 
         public bool isDoingAction => !stateManager.currentState.IsNull() && stateManager.GetCurrentStateEnum() != ECharacterStates.Idle ;
-
-        public AppliedStatus appliedStatus { get; private set; }
-
+        
         public CharacterStatsBase characterStatsBase => m_characterStatsBase;
         
         public bool isTargetable { get; private set; } = true;
@@ -381,6 +385,7 @@ namespace Runtime.Character
             stateManager.ChangeState(ECharacterStates.Idle);
         }
 
+        //ToDo: use Unitask
         private IEnumerator C_DoDeathAction()
         {
             characterVisuals.SetNewLayer(displayLayerVal);
@@ -394,7 +399,7 @@ namespace Runtime.Character
             
             CheckActiveAfterDeath();
             PlayDeathEffect();
-            RemoveEffect();
+            RemoveAllStatuses();
             CharacterDeath();
             characterVisuals.SetNewLayer(charLayerVal);
             Debug.Log($"<color=red>{this} has died</color>");
@@ -488,10 +493,9 @@ namespace Runtime.Character
             }
 
             
-            stateManager.ChangeState(ECharacterStates.Ability);
             
             object[] _arg = {_abilityIndex};
-            stateManager.currentState.stateBehavior.AssignArgument(_arg);
+            stateManager.ChangeState(ECharacterStates.Ability, _arg);
         }
 
         public void SetOverwatch()
@@ -628,13 +632,13 @@ namespace Runtime.Character
             m_finishedTurn = false;
             characterActionPoints = maxActionPoints;
             characterAbilityManager.CheckAbilityCooldown();
-            CheckStatus();
+            CheckStatusCooldown();
         }
 
         public void ResetCharacter(Vector3 _position)
         {
             characterLifeManager.FullReviveCharacter();
-            RemoveEffect();
+            RemoveAllStatuses();
             characterMovement.ResetCharacter(_position);
             StopAllActions();
             CharacterReset?.Invoke(this);
@@ -673,34 +677,6 @@ namespace Runtime.Character
         public void SetCharacterCanUseAbilities(bool _canUse)
         {
             m_canUseAbilities = _canUse;
-        }
-        
-        private void CheckStatus()
-        {
-            if (appliedStatus.IsNull())
-            {
-                return;
-            }
-            
-            if (appliedStatus.roundTimer <= 0)
-            {
-                RemoveEffect();
-                return;
-            }
-
-            if (appliedStatus.status.playVFXOnTrigger)
-            {
-                appliedStatus.status.statusOneTimeVFX.PlayAt(transform.position, Quaternion.identity, statusEffectTransform);
-            }
-            
-            appliedStatus.status.TriggerStatusEffect(this);
-
-            if (!isAlive)
-            {
-                return;
-            }
-            
-            appliedStatus.roundTimer--;
         }
 
         [ContextMenu("Skip Turn")]
@@ -791,7 +767,9 @@ namespace Runtime.Character
                     _knockbackForce /= 2;
                 }
                 
-                characterMovement.ApplyKnockback(_knockbackForce, _direction.FlattenVector3Y(), 0.5f);
+                object[] _args = {_knockbackForce, _direction.FlattenVector3Y()};
+                stateManager.ChangeState(ECharacterStates.KnockedBack, _args);
+                //characterMovement.ApplyKnockback(_knockbackForce, _direction.FlattenVector3Y(), 0.5f);
                
                 JuiceController.Instance.DoCameraShake(shakeDuration, shakeStrength, shakeVibrationAmount, shakeRandomness);
 
@@ -851,74 +829,117 @@ namespace Runtime.Character
 
         #endregion
 
-        #region IEffectable Inherited Methods
-
-        Status.Status IEffectable.currentStatus
+        #region Status Related --------------
+        
+        public async UniTask ApplyStatus(StatusData _statusData)
         {
-            get => appliedStatus.status;
-            set => appliedStatus.status = value;
-        }
-
-        public void ApplyEffect(Status.Status _newStatus)
-        {
-            if (_newStatus.IsNull())
+            if (_statusData.IsNull())
             {
                 return;
             }
             
-            Debug.Log($"<color=cyan>Applied {_newStatus.statusName} to {this.transform.name}</color>");
-            
-            if (!appliedStatus.IsNull())
-            {
-                RemoveEffect();
-            }
+            var _currentStatusPrefab = await ObjectPoolController.Instance.T_CreateParentedObject(_statusData.name,
+                _statusData.statusGameObject, m_statusHolder);
 
-            appliedStatus = new AppliedStatus
-            {
-                status = _newStatus,
-                roundTimer = _newStatus.roundCooldownTimer
-            };
-
-            if (!_newStatus.statusOneTimeVFX.IsNull())
-            {
-                _newStatus.statusOneTimeVFX.PlayAt(transform.position, Quaternion.identity, statusEffectTransform);    
-            }
-
-            if (!_newStatus.statusStayVFX.IsNull())
-            {
-                _newStatus.statusStayVFX.PlayAt(transform.position, Quaternion.identity, statusEffectTransform);
-            }
+            VFXController.Instance.PlayBuffDebuff(_statusData.statusType == StatusType.Positive , transform.position, Quaternion.identity);
             
-            StatusAdded?.Invoke(this);
-            
+            _currentStatusPrefab.TryGetComponent(out StatusEntityBase _status);
+
+            if (_status.IsNull())
+            {
+                ObjectPoolController.Instance.ReturnToPool(_statusData.name, _currentStatusPrefab);
+                return;
+            }
+                
+            m_currentStatuses.Add(_status);
+            m_currentStatusGUIDs.Add(_statusData.statusIdentifierGUID);
+            _status.OnApply(this);
+            StatusAdded?.Invoke(this, _statusData);
         }
 
-        public void RemoveEffect()
+        public void RemoveAllStatuses()
         {
-            if (appliedStatus.IsNull())
+            if (m_currentStatuses.Count == 0)
             {
                 return;
             }
             
-            Debug.Log($"<color=red>Removed {appliedStatus.status.statusName} to {this.transform.name}</color>");
-            
-            appliedStatus.status.ResetStatusEffect(this);
-
-            for (int i = 0; i < statusEffectTransform.childCount; i++)
+            m_currentStatuses.ForEach(seb =>
             {
-                Debug.Log("Getting Child Transform");
-                statusEffectTransform.GetChild(i).TryGetComponent(out VFXPlayer vfx);
-                if (!vfx.IsNull())
+                seb.OnEnd();
+                StatusRemoved?.Invoke(this, seb.GetStatusData());
+                ObjectPoolController.Instance.ReturnToPool(seb.GetStatusData().name,
+                    seb.gameObject);
+            });
+            
+            m_currentStatusGUIDs.Clear();
+            m_currentStatuses.Clear();
+        }
+
+        protected void CheckStatusCooldown()
+        {
+            if (m_currentStatuses.Count <= 0)
+            {
+                return;
+            }
+
+            foreach (var _status in m_currentStatuses)
+            {
+                if (!_status.isInitialized)
                 {
-                    vfx.Stop();
+                    continue;
                 }
+                
+                _status.statusTimeCurrent--;
+
+                if (_status.statusTimeCurrent > 0)
+                {
+                    continue;
+                }
+                
+                _status.OnEnd();
+                m_removableStatuses.Add(_status);
             }
 
-            appliedStatus = null;
+            if (m_removableStatuses.Count <= 0)
+            {
+                return;
+            }
+
+            foreach (var _removableAbility in m_removableStatuses)
+            {
+                m_currentStatusGUIDs.Remove(_removableAbility.GetGUID());
+                m_currentStatuses.Remove(_removableAbility);
+                StatusRemoved?.Invoke(this, _removableAbility.GetStatusData());
+                ObjectPoolController.Instance.ReturnToPool(_removableAbility.GetStatusData().name,
+                    _removableAbility.gameObject);
+            }
             
-            StatusRemoved?.Invoke(this);
+            //If all the statuses are able to be removed, might as well clear
+            m_removableStatuses.Clear();
         }
 
+        public bool ContainsStatus(StatusData _statusData)
+        {
+            return m_currentStatusGUIDs.Count != 0 && m_currentStatusGUIDs.Contains(_statusData.statusIdentifierGUID);
+        }
+
+        public bool HasStatusEffects()
+        {
+            return m_currentStatuses.Count > 0;
+        }
+
+        public bool HasStatusEffectOfType(StatusType searchType)
+        {
+            return m_currentStatuses.Count > 0 &&
+                   m_currentStatuses.Any(seb => seb.GetStatusData().statusType == searchType);
+        }
+        
+        public int GetAppliedStatusCount()
+        {
+            return m_currentStatuses.Count;
+        }
+        
         #endregion
 
         bool IReactor.isPerformingReaction

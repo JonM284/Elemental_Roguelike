@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Cysharp.Threading.Tasks;
 using Data.Sides;
 using Project.Scripts.Utils;
 using Runtime.Character.Creations;
@@ -76,7 +77,7 @@ namespace Runtime.GameControllers
         }
         
         
-        public void GetCreationAt(CreationData _creationInfo ,Vector3 startPos, Vector3 startRotation, Transform _user, CharacterSide _side)
+        public async UniTask GetCreationAt(CreationData _creationInfo ,Vector3 startPos, Vector3 startRotation, Transform user, CharacterSide _side)
         {
             if (_creationInfo == null)
             {
@@ -92,33 +93,37 @@ namespace Runtime.GameControllers
             }
 
             //projectile not found in cachedProjectiles
-            if (foundCreation.IsNull())
+            if (!foundCreation.IsNull())
             {
-                Debug.Log($"<color=#00FF00>Creation: {startPos} /// {startRotation} /// {_user} /// {_side}</color>");
-                Debug.DrawLine(_user.transform.position, startPos, Color.green, 10f);
-                //instantiate gameobject
-                var handle = _creationInfo.creationRef.InstantiateAsync(startPos, Quaternion.Euler(startRotation));
-                handle.Completed += operation =>
-                {
-                    if (operation.Status == AsyncOperationStatus.Succeeded)
-                    {
-                        handle.Result.TryGetComponent(out CreationBase _creation);
-                        if (!_creation.IsNull())
-                        {
-                            foundCreation = _creation;
-                            _creation.Initialize(_creationInfo, _user, _side);
-                        }
-                    }
-                };
-                
+                foundCreation.transform.parent = null;
+                foundCreation.transform.position = startPos;
+                foundCreation.transform.forward = startRotation;
+            
+                foundCreation.Initialize(_creationInfo, user, _side);
                 return;
             }
-
-            foundCreation.transform.parent = null;
-            foundCreation.transform.position = startPos;
-            foundCreation.transform.forward = startRotation;
             
-            foundCreation.Initialize(_creationInfo, _user, _side);
+            Debug.Log($"<color=#00FF00>Making New Creation: {startPos} /// {startRotation} /// {user} /// {_side}</color>");
+            Debug.DrawLine(user.transform.position, startPos, Color.green, 10f);
+            
+            //instantiate gameobject
+            var handle = _creationInfo.creationRef.InstantiateAsync(startPos, Quaternion.Euler(startRotation));
+
+            await handle;
+
+            if (handle.Status != AsyncOperationStatus.Succeeded)
+            {
+                return;
+            }
+                
+            handle.Result.TryGetComponent(out CreationBase _creation);
+                
+            if (_creation.IsNull())
+            {
+                return;
+            }
+                
+            _creation.Initialize(_creationInfo, user, _side);
         }
 
         #endregion

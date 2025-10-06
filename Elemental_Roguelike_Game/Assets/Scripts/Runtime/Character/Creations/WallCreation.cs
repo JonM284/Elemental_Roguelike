@@ -21,7 +21,7 @@ namespace Runtime.Character.Creations
 
         private int m_damage;
 
-        private Status.Status m_applicableStatus;
+        private Status.StatusEntityBase _mApplicableStatusEntityBase;
 
         private ElementTyping m_elementTyping;
 
@@ -61,9 +61,10 @@ namespace Runtime.Character.Creations
             other.TryGetComponent(out IDamageable damageable);
             if (!effectable.IsNull())
             {
-                if (!m_applicableStatus.IsNull())
+                if (!_mApplicableStatusEntityBase.IsNull())
                 {
-                    effectable.ApplyEffect(m_applicableStatus);
+                    //ToDo:Status
+                    //effectable.ApplyEffect(_mApplicableStatusBase);
                 }
             }
 
@@ -85,7 +86,7 @@ namespace Runtime.Character.Creations
 
             m_damage = wallCreationData.GetDamage();
 
-            m_applicableStatus = wallCreationData.GetStatus();
+            _mApplicableStatusEntityBase = wallCreationData.GetStatus();
 
             m_elementTyping = wallCreationData.GetElementType();
 

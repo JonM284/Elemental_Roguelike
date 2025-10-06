@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using Data;
+using Data.AbilityDatas;
 using Data.Sides;
 using Project.Scripts.Utils;
 using Runtime.Character;
@@ -44,9 +45,9 @@ namespace Runtime.Weapons
 
         #region Accessors
 
-        public ZoneInfo m_zoneRef { get; private set; }
+        public AoeZoneData MAoeZoneRef { get; private set; }
 
-        private bool hasStatusEffect => !m_zoneRef.IsNull() && !m_zoneRef.statusEffect.IsNull();
+        private bool hasStatusEffect => !MAoeZoneRef.IsNull() && !MAoeZoneRef.statusEntityBaseEffect.IsNull();
 
         #endregion
         
@@ -54,9 +55,9 @@ namespace Runtime.Weapons
 
         private void OnDrawGizmos()
         {
-            if(!m_zoneRef.IsNull()){
+            if(!MAoeZoneRef.IsNull()){
                 Gizmos.color = Color.red;
-                Gizmos.DrawWireSphere(transform.position, m_zoneRef.zoneRadius);
+                Gizmos.DrawWireSphere(transform.position, MAoeZoneRef.zoneRadius);
             }
             else
             {
@@ -94,28 +95,29 @@ namespace Runtime.Weapons
             }
 
             //fixes lingering trigger area
-            if (m_zoneRef.roundStayAmount == 0)
+            if (MAoeZoneRef.roundStayAmount == 0)
             {
                 return;
             }
 
             other.TryGetComponent(out IEffectable effectable);
-            effectable?.ApplyEffect(m_zoneRef.statusEffect);  
+            //ToDo: Status
+            //effectable?.ApplyEffect(m_zoneRef.statusBaseEffect);  
         }
 
         #endregion
 
-        public void Initialize(ZoneInfo _zoneInfo, Transform _user)
+        public void Initialize(AoeZoneData aoeZoneData, Transform _user)
         {
-            if (_zoneInfo.IsNull())
+            if (aoeZoneData.IsNull())
             {
                 Debug.Log("NO ZONE INFO");
                 return;
             }
 
-            m_zoneRef = _zoneInfo;
+            MAoeZoneRef = aoeZoneData;
             
-            m_currentRoundTimer = m_zoneRef.roundStayAmount;
+            m_currentRoundTimer = MAoeZoneRef.roundStayAmount;
 
             if (!_user.IsNull())
             {
@@ -127,7 +129,7 @@ namespace Runtime.Weapons
             onZoneStart?.Invoke();
 
             //This is an impact only zone
-            if(m_zoneRef.roundStayAmount == 0)
+            if(MAoeZoneRef.roundStayAmount == 0)
             {
                 DoEffect();
                 StartCoroutine(C_WaitToDoEffect());
@@ -136,7 +138,7 @@ namespace Runtime.Weapons
 
         private IEnumerator C_WaitToDoEffect()
         {
-            yield return new WaitForSeconds(m_zoneRef.zoneStaySeconds);
+            yield return new WaitForSeconds(1f);
             EndZone();
         }
 
@@ -150,7 +152,7 @@ namespace Runtime.Weapons
         
         private void OnChangeActiveTeam(CharacterSide _side)
         {
-            if (m_zoneRef.roundStayAmount > 0)
+            if (MAoeZoneRef.roundStayAmount > 0)
             {
                 DoEffect();
             }
@@ -170,14 +172,14 @@ namespace Runtime.Weapons
 
         private void DoEffect()
         {
-            Collider[] colliders = Physics.OverlapSphere(transform.position, m_zoneRef.zoneRadius, m_zoneRef.zoneCheckLayer);
+            Collider[] colliders = Physics.OverlapSphere(transform.position, MAoeZoneRef.zoneRadius, MAoeZoneRef.zoneCheckLayer);
             
             if (colliders.Length > 0)
             {
                 foreach (var collider in colliders)
                 {
 
-                    if (m_zoneRef.isIgnoreUser)
+                    if (MAoeZoneRef.isIgnoreUser)
                     {
                         if (IsUser(collider))
                         {
@@ -185,7 +187,7 @@ namespace Runtime.Weapons
                         }
                     }
 
-                    if (m_zoneRef.isStopReaction)
+                    if (MAoeZoneRef.isStopReaction)
                     {
                         collider.TryGetComponent(out CharacterBase _character);
                         if (_character)
@@ -196,17 +198,17 @@ namespace Runtime.Weapons
                     }
 
                     var damageable = collider.GetComponent<IDamageable>();
-                    if (m_zoneRef.zoneDamage > 0)
+                    if (MAoeZoneRef.zoneDamage > 0)
                     {
-                        damageable?.OnDealDamage(m_user, m_zoneRef.zoneDamage, !m_zoneRef.isArmorAffecting,
-                            m_zoneRef.elementType, transform, m_zoneRef.hasKnockback);
+                        damageable?.OnDealDamage(m_user, MAoeZoneRef.zoneDamage, !MAoeZoneRef.isArmorAffecting,
+                            null, transform, MAoeZoneRef.hasKnockback);
                     }
-                    else if(m_zoneRef.zoneDamage < 0)
+                    else if(MAoeZoneRef.zoneDamage < 0)
                     {
-                        damageable?.OnHeal(m_zoneRef.zoneDamage, m_zoneRef.isArmorAffecting);
+                        damageable?.OnHeal(MAoeZoneRef.zoneDamage, MAoeZoneRef.isArmorAffecting);
                     }
                     
-                    if (m_zoneRef.isRandomKnockawayBall)
+                    if (MAoeZoneRef.isRandomKnockawayBall)
                     {
                         collider.TryGetComponent(out IBallInteractable ballInteractable);
                         if (!ballInteractable.IsNull())
@@ -218,7 +220,8 @@ namespace Runtime.Weapons
                     if (hasStatusEffect)
                     {
                         collider.TryGetComponent(out IEffectable effectable);
-                        effectable?.ApplyEffect(m_zoneRef.statusEffect);   
+                        //ToDo: Status
+                        //effectable?.ApplyEffect(m_zoneRef.statusBaseEffect);   
                     }
                     
                 }

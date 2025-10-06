@@ -236,7 +236,8 @@ namespace Runtime.Character.AI
             //--------------
             //If can not go for ball, and Enemy is in range, go for enemy
             Sequence _attackRandomCloseEnemy = new Sequence("RandomAttack", m_randomAttackPriority);
-            _attackRandomCloseEnemy.AddChild(new Leaf("HasEnemyNearby?", new Condition(() => canPerformNextAction && HasUsableDamagingAbility() && !GetBestAbility().IsNull() && IsNearPlayerMember(GetBestAbility().abilityUseRange))));
+            _attackRandomCloseEnemy.AddChild(new Leaf("HasEnemyNearby?", new Condition(() => canPerformNextAction 
+                && HasUsableDamagingAbility() && !GetBestAbility().IsNull() && IsNearPlayerMember(GetBestAbility().currentRange))));
             _attackRandomCloseEnemy.AddChild(new Leaf("AttackRandom", new AwaitingAction(AbilityConsiderationInBetween)));
             
             _availableActions.AddChild(_attackRandomCloseEnemy);
@@ -416,13 +417,13 @@ namespace Runtime.Character.AI
             Debug.Log($"<color=green>Ability Index:{_abilityIndex}</color>");
             
             //Check what type of ability it is, do thing accordingly
-            switch (_ability.ability.abilityType)
+            switch (_ability.abilityData.abilityType)
             {
                 case AbilityType.ProjectileDamage: case AbilityType.ProjectileKnockback : case AbilityType.ProjectileStatus: case AbilityType.ApplyStatusEnemy:
                     //Check to see if enemy is in range, if they are: USE ABILITY
-                    if (IsNearPlayerMember(_ability.ability.range - 0.1f))
+                    if (IsNearPlayerMember(_ability.currentRange - 0.1f))
                     {
-                        var availableTargets = GetAllTargets(true, _ability.ability.range - 0.1f);
+                        var availableTargets = GetAllTargets(true, _ability.currentRange - 0.1f);
                         
                         if(availableTargets.Count == 0){
                             break;    
@@ -435,7 +436,9 @@ namespace Runtime.Character.AI
                             if (TurnController.Instance.ball.controlledCharacterSide.sideGUID != characterBase.side.sideGUID)
                             {
                                 //other team has ball
-                                bestTarget = availableTargets.TrueForAll(cb => cb.characterBallManager.hasBall) ? availableTargets.FirstOrDefault() : availableTargets.FirstOrDefault(cb => cb.characterBallManager.hasBall);
+                                bestTarget = availableTargets.TrueForAll(cb => cb.characterBallManager.hasBall)
+                                    ? availableTargets.FirstOrDefault()
+                                    : availableTargets.FirstOrDefault(cb => cb.characterBallManager.hasBall);
                             }
                             else
                             {
@@ -452,7 +455,7 @@ namespace Runtime.Character.AI
                             break;
                         }
                         
-                        if (_ability.ability.targetType == AbilityTargetType.CHARACTER_TRANSFORM)
+                        if (_ability.abilityData.targetType == AbilityTargetType.CHARACTER_TRANSFORM)
                         {
                             m_isPerformingAbility = true;
                             characterBase.UseCharacterAbility(_abilityIndex);
@@ -472,22 +475,23 @@ namespace Runtime.Character.AI
                 
                 case AbilityType.ZoneHeal: 
                     //Look for allies to help, try to fire as close as possible
-                    if (IsNearTeammates(_ability.ability.range - 0.07f))
+                    if (IsNearTeammates(_ability.currentRange - 0.07f))
                     {
-                        var availableTargets = GetAllTargets(false, _ability.ability.range);
+                        var availableTargets = GetAllTargets(false, _ability.currentRange);
                         
                         if(availableTargets.Count == 0){
                             break;    
                         }
                         
-                        if (!availableTargets.TrueForAll(cb => cb.characterLifeManager.currentHealthPoints == cb.characterLifeManager.maxHealthPoints))
+                        if (!availableTargets.TrueForAll(cb =>
+                                cb.characterLifeManager.currentHealthPoints == cb.characterLifeManager.maxHealthPoints))
                         {
                             m_isPerformingAbility = true;
                             characterBase.UseCharacterAbility(_abilityIndex);
                             
                             var _actualTarget = availableTargets.FirstOrDefault(cb =>
                                 cb.characterLifeManager.currentHealthPoints < cb.characterLifeManager.maxHealthPoints);
-                            if (_ability.ability.targetType == AbilityTargetType.CHARACTER_TRANSFORM)
+                            if (_ability.abilityData.targetType == AbilityTargetType.CHARACTER_TRANSFORM)
                             {
                                 _actualTarget.OnSelect();
                             }
@@ -500,24 +504,24 @@ namespace Runtime.Character.AI
                     
                     break;
                 case AbilityType.ApplyStatusTarget:
-                    if (IsNearTeammates(_ability.ability.range - 0.07f))
+                    if (IsNearTeammates(_ability.currentRange - 0.07f))
                     {
-                        var availableTargets = GetAllTargets(false, _ability.ability.range);
+                        var availableTargets = GetAllTargets(false, _ability.currentRange);
                         
                         if(availableTargets.Count == 0){
                             break;    
                         }
                         
-                        if (!availableTargets.TrueForAll(cb => cb.appliedStatus.IsNull()))
+                        if (!availableTargets.TrueForAll(cb => cb.HasStatusEffects()))
                         {
                             var _actualTarget = availableTargets.FirstOrDefault(cb =>
-                                cb.appliedStatus.status.statusType == StatusType.Negative);
+                                cb.HasStatusEffectOfType(StatusType.Negative));
                             if (!_actualTarget.IsNull())
                             {
                                 m_isPerformingAbility = true;
                                 characterBase.UseCharacterAbility(_abilityIndex);
                                 
-                                if (_ability.ability.targetType == AbilityTargetType.CHARACTER_TRANSFORM)
+                                if (_ability.abilityData.targetType == AbilityTargetType.CHARACTER_TRANSFORM)
                                 {
                                     _actualTarget.OnSelect();
                                 }
@@ -533,7 +537,7 @@ namespace Runtime.Character.AI
                     //Just apply to self?
                     //Maybe depends?
                     Debug.Log($"<color=orange>Applying Status or Upgrade Self</color>");
-                    if (characterBase.appliedStatus.IsNull())
+                    if (!characterBase.HasStatusEffects())
                     {
                         m_isPerformingAbility = true;
                         characterBase.UseCharacterAbility(_abilityIndex);
@@ -541,7 +545,7 @@ namespace Runtime.Character.AI
                     }
                     else
                     {
-                        if (characterBase.appliedStatus.status.statusType == StatusType.Negative)
+                        if (characterBase.HasStatusEffectOfType(StatusType.Negative))
                         {
                             m_isPerformingAbility = true;
                             characterBase.UseCharacterAbility(_abilityIndex);
@@ -580,7 +584,7 @@ namespace Runtime.Character.AI
                                                     transform.position.FlattenVector3Y();
                                     m_isPerformingAbility = true;
                                     characterBase.UseCharacterAbility(_abilityIndex);
-                                    var targetPos = dirToBall.normalized * _ability.ability.range;
+                                    var targetPos = dirToBall.normalized * _ability.currentRange;
                                     characterBase.CheckAllAction(targetPos, false);
                                 }
                                 else
@@ -594,9 +598,9 @@ namespace Runtime.Character.AI
                                         Vector3 targetPos = TurnController.Instance.GetPlayerManager().goalPosition
                                         .position.FlattenVector3Y();
                                         
-                                        if (dirToGoal.magnitude >= _ability.ability.range - 0.1f)
+                                        if (dirToGoal.magnitude >= _ability.currentRange - 0.1f)
                                         {
-                                            targetPos = dirToGoal.normalized * _ability.ability.range;
+                                            targetPos = dirToGoal.normalized * _ability.currentRange;
                                         }
                                             
                                         characterBase.CheckAllAction(targetPos, false);
@@ -610,9 +614,9 @@ namespace Runtime.Character.AI
                     break;
                 case AbilityType.ZoneDamage: case AbilityType.DamageCreation: case AbilityType.TrapCreation: case AbilityType.WallCreation:
                     //Do Damage
-                    if (IsNearPlayerMember(_ability.ability.range - 0.1f))
+                    if (IsNearPlayerMember(_ability.currentRange - 0.1f))
                     {
-                        var availableTargets = GetAllTargets(true, _ability.ability.range);
+                        var availableTargets = GetAllTargets(true, _ability.currentRange);
                         
                         if(availableTargets.Count == 0){
                             break;    
@@ -627,7 +631,7 @@ namespace Runtime.Character.AI
                     }
                     break;
                 case AbilityType.ZoneSelf:
-                    if (IsNearPlayerMember(_ability.ability.range - 0.1f))
+                    if (IsNearPlayerMember(_ability.currentRange - 0.1f))
                     {
                         m_isPerformingAbility = true;
                         characterBase.UseCharacterAbility(_abilityIndex);
@@ -636,7 +640,7 @@ namespace Runtime.Character.AI
                     }
                     break;
                 case AbilityType.Pull:
-                    if (IsBallInRange(_ability.ability.range - 0.1f))
+                    if (IsBallInRange(_ability.currentRange - 0.1f))
                     {
                         m_isPerformingAbility = true;
                         characterBase.UseCharacterAbility(_abilityIndex);
@@ -889,48 +893,48 @@ namespace Runtime.Character.AI
             return enemyMovementThreshold >= distanceToGoal || characterBase.characterBallManager.shotStrength >= distanceToGoal;
         }
         
-        protected CharacterAbilityManager.AssignedAbilities GetBestAbility()
+        protected AbilityEntityBase GetBestAbility()
         {
-            return characterBase.isSilenced ? null : characterBase.characterAbilityManager.GetAssignedAbilities().FirstOrDefault(aa => AbilityIsCurrentlyUsable(aa.ability));
+            return characterBase.isSilenced ? null : characterBase.characterAbilityManager.GetAssignedAbilities().FirstOrDefault(aa => AbilityIsCurrentlyUsable(aa));
         }
 
         protected bool HasUsableHealingAbility()
         {
             return !characterBase.isSilenced && characterBase.characterAbilityManager.GetAssignedAbilities().Any(aa =>
-                aa.ability.abilityType is AbilityType.ZoneHeal or AbilityType.ApplyStatusSelf
+                aa.abilityData.abilityType is AbilityType.ZoneHeal or AbilityType.ApplyStatusSelf
                     or AbilityType.ApplyStatusTarget);
         }
 
         protected bool HasUsableDamagingAbility()
         {
             return !characterBase.isSilenced && characterBase.characterAbilityManager.GetAssignedAbilities().Any(aa =>
-                aa.ability.abilityType is AbilityType.ZoneDamage or AbilityType.DamageCreation
+                aa.abilityData.abilityType is AbilityType.ZoneDamage or AbilityType.DamageCreation
                     or AbilityType.ProjectileDamage or AbilityType.ProjectileKnockback or AbilityType.TrapCreation);
         }
 
-        protected bool AbilityIsCurrentlyUsable(Ability _testAbility)
+        protected bool AbilityIsCurrentlyUsable(AbilityEntityBase _testAbility)
         {
-            switch (_testAbility.abilityType)
+            switch (_testAbility.abilityData.abilityType)
             {
                 //Currently, never really a bad moment to put on a status or upgrade
                 case AbilityType.ApplyStatusSelf or AbilityType.MovementUpgrade or AbilityType.AgilityStatUpgrade
-                    or AbilityType.DamageStatUpgrade or AbilityType.ThrowStatUpgrade when characterBase.appliedStatus.IsNull():
+                    or AbilityType.DamageStatUpgrade or AbilityType.ThrowStatUpgrade when !characterBase.HasStatusEffects():
                 
                     return true;
                 
                 case AbilityType.ApplyStatusSelf or AbilityType.MovementUpgrade or AbilityType.AgilityStatUpgrade
                     or AbilityType.DamageStatUpgrade or AbilityType.ThrowStatUpgrade:
                     
-                    return characterBase.appliedStatus.status.statusType == StatusType.Negative;
+                    return characterBase.HasStatusEffectOfType(StatusType.Negative);
                 
                 case AbilityType.ZoneHeal:
                 {
-                    if (!IsNearTeammates(_testAbility.range - 0.07f))
+                    if (!IsNearTeammates(_testAbility.currentRange - 0.07f))
                     {
                         return false;
                     }
                     
-                    var availableTargets = GetAllTargets(false, _testAbility.range);
+                    var availableTargets = GetAllTargets(false, _testAbility.currentRange);
                         
                     if(availableTargets.Count == 0){
                         return false;    
@@ -943,15 +947,15 @@ namespace Runtime.Character.AI
             //ball is not controlled - relevant abilities: pull, teleport, creations?, 
             if (!TurnController.Instance.ball.isControlled)
             {
-                switch (_testAbility.abilityType)
+                switch (_testAbility.abilityData.abilityType)
                 {
                     case AbilityType.Pull:
 
-                        return IsBallInRange(_testAbility.range - 0.07f);
+                        return IsBallInRange(_testAbility.currentRange - 0.07f);
                     
                     case AbilityType.Teleport: case AbilityType.Dash:
                         
-                        if (!IsBallInRange(_testAbility.range - 0.07f))
+                        if (!IsBallInRange(_testAbility.currentRange - 0.07f))
                         {
                             break;
                         }
@@ -994,17 +998,17 @@ namespace Runtime.Character.AI
             // setting up zones
             if (TurnController.Instance.ball.controlledCharacterSide.sideGUID != characterBase.side.sideGUID)
             {
-                switch (_testAbility.abilityType)
+                switch (_testAbility.abilityData.abilityType)
                 {
                     case AbilityType.ProjectileKnockback: case AbilityType.ApplyStatusEnemy: case AbilityType.ProjectileStatus: case AbilityType.ZoneDamage:
                         case AbilityType.ProjectileDamage: case AbilityType.ZoneSelf:
                             
                         //player with ball is in range
-                        return IsBallInRange(_testAbility.range - 0.07f);
+                        return IsBallInRange(_testAbility.currentRange - 0.07f);
                     
                     case AbilityType.DamageCreation: case AbilityType.TrapCreation: case AbilityType.WallCreation:
                     
-                        return IsNearPlayerMember(_testAbility.range - 0.07f);
+                        return IsNearPlayerMember(_testAbility.currentRange - 0.07f);
                     
                     default:
                         return false;
@@ -1012,7 +1016,7 @@ namespace Runtime.Character.AI
             }
             
             //ball is controlled by AI TEAM - relevant abilities: dealing damage to anyone around, teleport
-            switch (_testAbility.abilityType)
+            switch (_testAbility.abilityData.abilityType)
             {
                 case AbilityType.Teleport: case AbilityType.Dash:
                     if (!characterBase.characterBallManager.hasBall)
@@ -1020,7 +1024,7 @@ namespace Runtime.Character.AI
                         break;
                     }
                     
-                    if(!IsBallInRange(_testAbility.range - 0.07f))
+                    if(!IsBallInRange(_testAbility.currentRange - 0.07f))
                     {
                         break;
                     }
@@ -1049,7 +1053,7 @@ namespace Runtime.Character.AI
                 case AbilityType.ProjectileDamage: case AbilityType.ZoneSelf:
                             
                     //any player nearby
-                    return IsNearPlayerMember(_testAbility.range - 0.07f);
+                    return IsNearPlayerMember(_testAbility.currentRange - 0.07f);
                 
                 default:
                     return false;

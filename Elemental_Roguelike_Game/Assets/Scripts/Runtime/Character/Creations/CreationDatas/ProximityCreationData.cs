@@ -1,5 +1,7 @@
 ﻿using Data;
+using Data.AbilityDatas;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Runtime.Character.Creations.CreationDatas
 {
@@ -9,17 +11,18 @@ namespace Runtime.Character.Creations.CreationDatas
 
         #region Serialized Fields
 
+        [FormerlySerializedAs("zoneInfo")]
         [Header("Zone")]
         [Tooltip("Zone to create on detonation")] 
-        [SerializeField] private ZoneInfo zoneInfo;
+        [SerializeField] private AoeZoneData aoeZoneData;
         
         #endregion
 
         #region Proximity Perameter Getters
 
-        public ZoneInfo GetZoneInfo()
+        public AoeZoneData GetZoneInfo()
         {
-            return zoneInfo;
+            return aoeZoneData;
         }
 
         #endregion

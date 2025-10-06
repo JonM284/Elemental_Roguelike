@@ -4,8 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Cysharp.Threading.Tasks;
 using Data;
-using Data.CharacterData;
-using Data.EnemyData;
 using Data.Sides;
 using Project.Scripts.Utils;
 using Runtime.Character;
@@ -858,7 +856,7 @@ namespace Runtime.GameControllers
             foreach (var _character in playerTeam.teamMembers)
             {
                 _character.characterLifeManager.FullReviveCharacter();
-                _character.RemoveEffect();
+                _character.RemoveAllStatuses();
             }
             
             isInBattle = false;

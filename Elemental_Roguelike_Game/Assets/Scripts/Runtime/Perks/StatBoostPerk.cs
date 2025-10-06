@@ -38,11 +38,8 @@ namespace Runtime.Perks
                     case CharacterStatsEnum.AGILITY:
                         newAmount = (_character.characterClassManager.agilityScore * amountToChangeBy) + _character.characterClassManager.agilityScore;
                         break;
-                    case CharacterStatsEnum.PASSING:
-                        newAmount = (_character.characterClassManager.passingScore * amountToChangeBy) + _character.characterClassManager.passingScore;
-                        break;
-                    case CharacterStatsEnum.SHOOTING:
-                        newAmount = (_character.characterClassManager.shootingScore * amountToChangeBy) + _character.characterClassManager.shootingScore;
+                    case CharacterStatsEnum.THROW:
+                        newAmount = (_character.characterClassManager.throwingScore * amountToChangeBy) + _character.characterClassManager.throwingScore;
                         break;
                     case CharacterStatsEnum.TACKLE:
                         newAmount = (_character.characterClassManager.tacklingScore * amountToChangeBy) + _character.characterClassManager.tacklingScore;
@@ -56,11 +53,8 @@ namespace Runtime.Perks
                     case CharacterStatsEnum.AGILITY:
                         newAmount = _character.characterClassManager.agilityScore + amountToChangeBy;
                         break;
-                    case CharacterStatsEnum.PASSING:
-                        newAmount = _character.characterClassManager.passingScore + amountToChangeBy;
-                        break;
-                    case CharacterStatsEnum.SHOOTING:
-                        newAmount = _character.characterClassManager.shootingScore + amountToChangeBy;
+                    case CharacterStatsEnum.THROW:
+                        newAmount = _character.characterClassManager.throwingScore + amountToChangeBy;
                         break;
                     case CharacterStatsEnum.TACKLE:
                         newAmount = _character.characterClassManager.tacklingScore + amountToChangeBy;

@@ -7,12 +7,7 @@ namespace Runtime.Character.StateMachines
         
         #region StateBase Inherited Methods
 
-        public override void EnterState()
-        {
-            
-        }
-
-        public override void AssignArgument(params object[] _arguments)
+        public override void EnterState(params object[] _arguments)
         {
             
         }

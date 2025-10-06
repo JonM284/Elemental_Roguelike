@@ -436,8 +436,10 @@ namespace Runtime.UI.DataModels
 
             var highlightedAbility = activePlayer.characterAbilityManager.GetAbilityAtIndex(_index);
             tooltipMenu.SetActive(true);
-            tooltipText.text = $"{highlightedAbility.abilityName}: <br> {highlightedAbility.abilityDescription} <br> " +
-                               $"Target Type: {highlightedAbility.targetType} <br> Cooldown: {highlightedAbility.roundCooldownTimer} Turn(s)";
+            tooltipText.text = $"{highlightedAbility.abilityData.abilityName}:" +
+                               $" <br> {highlightedAbility.abilityData} <br> " +
+                               $"Target Type: {highlightedAbility.abilityData.targetType}" +
+                               $" <br> Cooldown: {highlightedAbility.abilityData.abilityTurnCooldownTimer} Turn(s)";
         }
 
         public void SetOverwatch()
@@ -551,13 +553,13 @@ namespace Runtime.UI.DataModels
             for (int i = 0; i < activePlayerAbilities.Count; i++)
             {
                 abilityButtons[i].SetActive(true);
-                m_abilityCooldownImages[i].cooldownImage.SetActive(!activePlayerAbilities[i].canUse);
+                m_abilityCooldownImages[i].cooldownImage.SetActive(!activePlayerAbilities[i].canUseAbility);
 
-                if (!activePlayerAbilities[i].canUse)
+                if (!activePlayerAbilities[i].canUseAbility)
                 {
-                    m_abilityCooldownImages[i].countdownText.text = $"{activePlayerAbilities[i].roundCooldown}";
+                    m_abilityCooldownImages[i].countdownText.text = $"{activePlayerAbilities[i].abilityCooldownCurrent}";
                     m_abilityCooldownImages[i].radialCountdownImage.fillAmount =
-                        activePlayerAbilities[i].roundCooldownPercentage;
+                        (float)activePlayerAbilities[i].abilityCooldownCurrent/activePlayerAbilities[i].abilityCooldownMax;
                 }
             }
 

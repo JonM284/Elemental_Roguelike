@@ -29,14 +29,9 @@ namespace Runtime.Character.StateMachines
             
         }
 
-        public override void EnterState()
+        public override void EnterState(params object[] _arguments)
         {
             characterBallManager.DisplayThrowIndicator(true);
-        }
-
-        public override void AssignArgument(params object[] _arguments)
-        {
-            
         }
 
         public override void UpdateState()

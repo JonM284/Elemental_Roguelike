@@ -27,9 +27,7 @@ MonoBehaviour:
   characterColor: {r: 0.5310609, g: 0.6309135, b: 0.9622642, a: 1}
   characterColorDark: {r: 0.2799039, g: 0.37875336, b: 0.6981132, a: 1}
   typing: {fileID: 11400000, guid: 3007beed4b27d8b458961ac106f278d9, type: 2}
-  abilities:
-  - {fileID: 11400000, guid: 39521109b8e2b8b4da14f143291691c9, type: 2}
-  - {fileID: 11400000, guid: fbfaa199bf5afff40b5dabaa486880c1, type: 2}
+  abilities: []
   classTyping: {fileID: 11400000, guid: ba97e3930af5aa444b3fd0c1f9fd8381, type: 2}
   characterModelAssetRef: {fileID: 1155631098118984018, guid: 3a98f2f9119119b49b55a42f6cfb4749,
     type: 3}

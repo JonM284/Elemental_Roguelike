@@ -1,5 +1,6 @@
 ﻿using Data.Elements;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Runtime.Character.Creations.CreationDatas
 {
@@ -8,8 +9,10 @@ namespace Runtime.Character.Creations.CreationDatas
     {
         #region Serialized Fields
 
+        [FormerlySerializedAs("applicableStatusBase")]
+        [FormerlySerializedAs("applicableStatus")]
         [Header("WALL CREATION DATA")] 
-        [SerializeField] private Status.Status applicableStatus;
+        [SerializeField] private Status.StatusEntityBase applicableStatusEntityBase;
 
         [SerializeField] private int damage;
 
@@ -27,9 +30,9 @@ namespace Runtime.Character.Creations.CreationDatas
 
         #region WallCreation Getters
 
-        public Status.Status GetStatus()
+        public Status.StatusEntityBase GetStatus()
         {
-            return applicableStatus;
+            return applicableStatusEntityBase;
         }
 
         public int GetDamage()

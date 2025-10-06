@@ -20,7 +20,7 @@ namespace Runtime.Character
         
         //local action to use action point when done walking
         private Action OnFinishMovementCallback;
-
+        
         #endregion
 
         #region SerializedFields
@@ -376,12 +376,12 @@ namespace Runtime.Character
             }
         }
 
-        public void SetKnockbackable(float _newModifier)
+        public void SetKnockModifier(float _newModifier)
         {
             m_knockbackMod = _newModifier;
         }
 
-        public void ApplyKnockback(float _knockbackForce, Vector3 _direction, float _duration)
+        public void ApplyKnockback(float _knockbackForce, Vector3 _direction, float _duration, Action callback = null)
         {
             if (isRooted)
             {
@@ -400,6 +400,13 @@ namespace Runtime.Character
                 knockbackParticles.transform.forward = -_direction;
                 knockbackParticles.Play();
             }
+
+            if (callback.IsNull())
+            {
+                return;
+            }
+
+            OnFinishMovementCallback = callback;
         }
 
         private void CheckKnockback()
@@ -427,13 +434,13 @@ namespace Runtime.Character
                     isInReaction = false;
                     OnFinishMovementCallback?.Invoke();
                 }
-                
+                Debug.Log($"Finished Knockback at: {Time.time}");
                 if (!knockbackParticles.IsNull())
                 {
                     knockbackParticles.Stop();
                 }
             }
-            
+            Debug.Log("Moving With Knockback");
             Vector3 knockbackVelocity = m_knockbackDir.normalized * m_knockbackForce;
             characterController.Move(knockbackVelocity * Time.deltaTime);
         }

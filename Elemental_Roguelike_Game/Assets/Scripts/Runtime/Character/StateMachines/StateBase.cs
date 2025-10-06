@@ -31,13 +31,7 @@ namespace Runtime.Character.StateMachines
         /// <summary>
         /// Called when state is changed to this state
         /// </summary>
-        public abstract void EnterState();
-        
-        /// <summary>
-        /// Should be called after EnterState for Specific arguments
-        /// </summary>
-        /// <param name="_arguments">Arguments are passed as objects and casted when reaching the correct function</param>
-        public abstract void AssignArgument(params object[] _arguments);
+        public abstract void EnterState(params object[] _arguments);
         
         /// <summary>
         /// Update this state every frame. NOTE: currently not necessary

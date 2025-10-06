@@ -27,7 +27,7 @@ namespace Data.Elements
         [Header("----- IMMUNITIES -----")]
         public List<ElementTyping> immunities = new List<ElementTyping>();
 
-        public List<Status> statusImmunities = new List<Status>();
+        public List<StatusEntityBase> statusImmunities = new List<StatusEntityBase>();
 
         [Header("----- Meeple -----")]
         public Sprite meepleIcon;

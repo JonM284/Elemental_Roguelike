@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using Cysharp.Threading.Tasks;
 using Data;
+using Data.AbilityDatas;
 using Project.Scripts.Utils;
 using Runtime.Character;
 using Runtime.Weapons;
@@ -111,92 +114,105 @@ namespace Runtime.GameControllers
             zone.transform.ResetTransform(disabledZonePool);
         }
         
-        public void GetProjectileAt(ProjectileInfo projectileInfo, Transform user ,Vector3 startPos, Vector3 startRotation, Vector3 endPos)
+        public async UniTask GetProjectileAt(ProjectileAbilityData projectileAbilityData, Transform user, 
+            Vector3 startPos, Vector3 startRotation, Vector3 endPos, Transform target, CancellationToken cancellationToken)
         {
-            if (projectileInfo == null)
+            if (projectileAbilityData.IsNull())
             {
                 Debug.LogError("Projectile Info Null");
                 return;
             }
             
-            var foundProjectile = m_cachedProjectiles.FirstOrDefault(c => c.m_projectileRef == projectileInfo);
+            var foundProjectile = 
+                m_cachedProjectiles.FirstOrDefault(c
+                    => c.projectileAbilityData.abilityGUID == projectileAbilityData.abilityGUID);
 
             //projectile not found in cachedProjectiles
-            if (foundProjectile == null)
+            if (!foundProjectile.IsNull())
             {
-                //instantiate gameobject
-                var handle = Addressables.LoadAssetAsync<GameObject>(projectileInfo.projectilePrefab);
-                handle.Completed += operation =>
+                if (m_cachedProjectiles.Contains(foundProjectile))
                 {
-                    if (operation.Status == AsyncOperationStatus.Succeeded)
-                    {
-                        var newProjectileObj = Instantiate(handle.Result);
-                        newProjectileObj.transform.parent = null;
-                        newProjectileObj.transform.forward = startRotation;
-                        var newProjectile = newProjectileObj.GetComponent<ProjectileBase>();
-                        if (newProjectile != null)
-                        {
-                            foundProjectile = newProjectile;
-                            newProjectile.Initialize(projectileInfo, user ,startPos , endPos);
-                        }
-                    }
-                };
+                    m_cachedProjectiles.Remove(foundProjectile);
+                }
+
+                foundProjectile.transform.parent = null;
+                foundProjectile.transform.position = startPos;
+                foundProjectile.transform.forward = startRotation;
+            
+                foundProjectile.Initialize(projectileAbilityData, user ,startPos, endPos, target);
                 return;
             }
-
-            if (m_cachedProjectiles.Contains(foundProjectile))
-            {
-                m_cachedProjectiles.Remove(foundProjectile);
-            }
-
-            foundProjectile.transform.parent = null;
-            foundProjectile.transform.position = startPos;
-            foundProjectile.transform.forward = startRotation;
             
-            foundProjectile.Initialize(projectileInfo, user ,startPos, endPos);
+            //instantiate gameobject
+            var handle = Addressables.LoadAssetAsync<GameObject>(projectileAbilityData.projectilePrefab);
+
+            await UniTask.WaitUntil(() => handle.IsDone, cancellationToken: cancellationToken);
+
+            if (handle.Status != AsyncOperationStatus.Succeeded)
+            {
+                return;
+            }
+            
+            var newProjectileObj = Instantiate(handle.Result);
+            
+            newProjectileObj.transform.parent = null;
+            newProjectileObj.transform.forward = startRotation;
+            
+            var newProjectile = newProjectileObj.GetComponent<ProjectileBase>();
+            
+            if (newProjectile.IsNull())
+            {
+                return;
+            }
+            
+            newProjectile.Initialize(projectileAbilityData, user ,startPos , endPos, target);
         }
 
 
-        public void GetZoneAt(ZoneInfo _zoneInfo, Vector3 _spawnPosition, Transform _user)
+        public async UniTask GetZoneAt(AoeZoneData aoeZoneData, Vector3 _spawnPosition, Transform _user, CancellationToken cancellationToken)
         {
-            if (_zoneInfo.IsNull())
+            if (aoeZoneData.IsNull())
             {
                 Debug.LogError("Zone Info Null");
                 return;
             }
 
-            var foundZone = m_cachedZones.FirstOrDefault(zb => zb.m_zoneRef == _zoneInfo);
+            var foundZone = m_cachedZones.FirstOrDefault(zb => zb.MAoeZoneRef == aoeZoneData);
 
-            //projectile not found in cachedProjectiles
-            if (foundZone.IsNull())
+            //projectile found in cachedProjectiles
+            if (!foundZone.IsNull())
             {
-                //instantiate gameobject
-                var handle = Addressables.LoadAssetAsync<GameObject>(_zoneInfo.zonePrefab);
-                handle.Completed += operation =>
+                if (m_cachedZones.Contains(foundZone))
                 {
-                    if (operation.Status == AsyncOperationStatus.Succeeded)
-                    {
-                        var newZoneObj = Instantiate(handle.Result, _spawnPosition, Quaternion.identity);
-                        newZoneObj.TryGetComponent(out ZoneBase zoneBase);
-                        if (!zoneBase.IsNull())
-                        {
-                            foundZone = zoneBase;
-                            zoneBase.Initialize(_zoneInfo, _user);
-                        }
-                    }
-                };
+                    m_cachedZones.Remove(foundZone);
+                }
+
+                foundZone.transform.parent = null;
+                foundZone.transform.position = _spawnPosition;
+
+                foundZone.Initialize(aoeZoneData, _user);
                 return;
             }
+            
+            //instantiate gameobject
+            var handle = Addressables.LoadAssetAsync<GameObject>(aoeZoneData.zonePrefab);
+            
+            await UniTask.WaitUntil(() => handle.IsDone, cancellationToken: cancellationToken);
 
-            if (m_cachedZones.Contains(foundZone))
+            if (handle.Status != AsyncOperationStatus.Succeeded)
             {
-                m_cachedZones.Remove(foundZone);
+                return;
             }
-
-            foundZone.transform.parent = null;
-            foundZone.transform.position = _spawnPosition;
-
-            foundZone.Initialize(_zoneInfo, _user);
+            
+            var newZoneObj = Instantiate(handle.Result, _spawnPosition, Quaternion.identity);
+            newZoneObj.TryGetComponent(out ZoneBase zoneBase);
+            
+            if (zoneBase.IsNull())
+            {
+                return;
+            }
+            
+            zoneBase.Initialize(aoeZoneData, _user);
         }
 
         #endregion

@@ -105,7 +105,7 @@ namespace Runtime.Character.StateMachines
             m_states.Add(_state, _stateBehavior);
         }*/
 
-        public void ChangeState(ECharacterStates _newState)
+        public void ChangeState(ECharacterStates _newState, params object[] arguments)
         {
             m_foundState = m_states.FirstOrDefault(c => c.characterState == _newState);
             
@@ -121,9 +121,18 @@ namespace Runtime.Character.StateMachines
             }
             
             Debug.Log($"Exiting State: {currentState.characterState.ToString()}");
-            currentState.stateBehavior?.ExitState();
+            if (!currentState.stateBehavior.IsNull())
+            {
+                currentState.stateBehavior.ExitState();
+            }
+            
             currentState = m_foundState;
-            currentState.stateBehavior?.EnterState();
+
+            if (!currentState.IsNull() && !currentState.stateBehavior.IsNull())
+            {
+                currentState.stateBehavior.EnterState(arguments);
+            }
+            
             m_foundState = null;
             Debug.Log($"Entered State: {currentState.characterState.ToString()}");
         }

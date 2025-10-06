@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Data;
 using Project.Scripts.Utils;
 using Runtime.GameControllers;
 using Runtime.VFX;
@@ -13,6 +14,18 @@ namespace GameControllers
     public class VFXController: GameControllerBase
     {
 
+        #region Instance
+
+        public static VFXController Instance { get; private set; }
+
+        #endregion
+
+        #region Serialized Fields
+
+        [SerializeField] private CommonVFXData commonVFXData;
+
+        #endregion
+        
         #region Private Fields
 
         private Transform m_vfxPool;
@@ -34,9 +47,20 @@ namespace GameControllers
         });
 
         #endregion
+        
+        #region GameControllerBase Inherited Methods
 
-        #region Controller Inherited Fields
-
+        public override void Initialize()
+        {
+            if (!Instance.IsNull())
+            {
+                return;
+            }
+            
+            Instance = this;
+            base.Initialize();
+        }
+        
         public override void Cleanup()
         {
             m_cached_VFX.ForEach(c => Destroy(c.gameObject));
@@ -82,7 +106,7 @@ namespace GameControllers
         /// <param name="vfxPlayer"></param>
         public void ReturnToPool(VFXPlayer vfxPlayer)
         {
-            if (vfxPlayer == null)
+            if (vfxPlayer.IsNull())
             {
                 return;
             }
@@ -124,6 +148,38 @@ namespace GameControllers
             foundVFX.Play();
             
             m_active_VFX.Add(foundVFX);
+        }
+        
+        public void PreloadCommonVFX(int _amount = 4)
+        {
+
+            for (int i = 0; i < _amount; i++)
+            {
+                m_cached_VFX.Add(Instantiate(commonVFXData.damageVFXPrefab, vfxPool));
+                m_cached_VFX.Add(Instantiate(commonVFXData.buffVFXPrefab, vfxPool));
+                m_cached_VFX.Add(Instantiate(commonVFXData.debuffVFXPrefab, vfxPool));
+            }
+            
+            
+        }
+
+        public void ForceVFXPreload(VFXPlayer _player, int _amount = 1)
+        {
+            for (int i = 0; i < _amount; i++)
+            {
+                m_cached_VFX.Add(Instantiate(_player, vfxPool));
+            }
+        }
+        
+        public void PlayBuffDebuff(bool _isBuff, Vector3 position, Quaternion rotation, Transform activeParent = null)
+        {
+            PlayAt(_isBuff ? commonVFXData.buffVFXPrefab : commonVFXData.debuffVFXPrefab, position, rotation,
+                activeParent);
+        }
+
+        public void PlayDamageVFX(Vector3 position, Quaternion rotation, Transform activeParent = null)
+        {
+            PlayAt(commonVFXData.damageVFXPrefab, position, rotation, activeParent);
         }
 
         #endregion

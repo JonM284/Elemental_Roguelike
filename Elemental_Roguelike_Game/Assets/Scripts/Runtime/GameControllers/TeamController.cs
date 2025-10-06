@@ -178,7 +178,7 @@ namespace Runtime.GameControllers
                 case CharacterStatsEnum.AGILITY:
                     _character.agilityScore += _amount;
                     break;
-                case CharacterStatsEnum.SHOOTING:
+                case CharacterStatsEnum.THROW:
                     _character.shootingScore += _amount;
                     break;
             }

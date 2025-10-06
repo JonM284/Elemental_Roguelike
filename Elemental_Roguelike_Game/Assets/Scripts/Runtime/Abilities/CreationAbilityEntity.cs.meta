@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: ad22221f257d4cf2895c946d27321398
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - abilityAnimationOverride: {instanceID: 0}
+  - abilityIcon: {instanceID: 0}
+  - abilityVFX: {instanceID: 0}
+  - m_creationData: {instanceID: 0}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

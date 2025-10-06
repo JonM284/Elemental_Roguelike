@@ -99,17 +99,13 @@ namespace Runtime.Character
 
         public int agilityScore { get; private set; }
 
-        public int shootingScore { get; private set; }
-
-        public int passingScore { get; private set; }
+        public int throwingScore { get; private set; }
 
         public int tacklingScore { get; private set; }
         
         public int currentMaxAgilityScore { get; private set; }
         
-        public int currentMaxShootingScore { get; private set; }
-        
-        public int currentMaxPassingScore { get; private set; }
+        public int currentMaxThrowingScore { get; private set; }
         
         public int currentMaxTacklingScore { get; private set; }
 
@@ -200,14 +196,12 @@ namespace Runtime.Character
             
             overwatchRadius = assignedClass.overwatchRadius;
             
-            this.agilityScore = agilityScore;
-            this.shootingScore = shootingScore;
-            this.passingScore = passingScore;
-            this.tacklingScore = tacklingScore;
+            this.agilityScore = assignedCharacterStatsRef.agilityScore;
+            this.throwingScore = assignedCharacterStatsRef.throwScore;
+            this.tacklingScore = assignedCharacterStatsRef.tackleScore;
 
             currentMaxAgilityScore = this.agilityScore;
-            currentMaxShootingScore = this.shootingScore;
-            currentMaxPassingScore = this.passingScore;
+            currentMaxThrowingScore = this.throwingScore;
             currentMaxTacklingScore = this.tacklingScore;
             
             ballChangeVelocityAmount = assignedClass.GetBallVelocityChangeAmount();
@@ -1038,14 +1032,14 @@ namespace Runtime.Character
             {
                 if (failedReactionCounter >= 2)
                 {
-                    return currentMaxShootingScore;
+                    return currentMaxThrowingScore;
                 }
 
-                var adjustedBottomRange = Mathf.RoundToInt(currentMaxShootingScore * bottomRangeMod);
-                return Random.Range(adjustedBottomRange, currentMaxShootingScore);
+                var adjustedBottomRange = Mathf.RoundToInt(currentMaxThrowingScore * bottomRangeMod);
+                return Random.Range(adjustedBottomRange, currentMaxThrowingScore);
             }
 
-            return Random.Range(bottomRange, currentMaxShootingScore);
+            return Random.Range(bottomRange, currentMaxThrowingScore);
         }
         
         public int GetRandomDamageStat()
@@ -1080,14 +1074,14 @@ namespace Runtime.Character
             {
                 if (failedReactionCounter >= 2)
                 {
-                    return currentMaxPassingScore;
+                    return currentMaxThrowingScore;
                 }
 
-                var adjustedBottomRange = Mathf.RoundToInt(currentMaxPassingScore * bottomRangeMod);
-                return Random.Range(adjustedBottomRange, currentMaxPassingScore);
+                var adjustedBottomRange = Mathf.RoundToInt(currentMaxThrowingScore * bottomRangeMod);
+                return Random.Range(adjustedBottomRange, currentMaxThrowingScore);
             }
             
-            return Random.Range(bottomRange, currentMaxPassingScore);
+            return Random.Range(bottomRange, currentMaxThrowingScore);
         }
 
         public int GetMaxDamageStat()
@@ -1116,14 +1110,14 @@ namespace Runtime.Character
                 case CharacterStatsEnum.AGILITY:
                     currentMaxAgilityScore = newAmount;
                     break;
-                case CharacterStatsEnum.SHOOTING:
-                    currentMaxShootingScore = newAmount;
+                case CharacterStatsEnum.THROW:
+                    currentMaxThrowingScore = newAmount;
                     break;
                 case CharacterStatsEnum.TACKLE:
                     currentMaxTacklingScore = newAmount;
                     break;
-                case CharacterStatsEnum.PASSING:
-                    currentMaxPassingScore = newAmount;
+                case CharacterStatsEnum.GRAVITY:
+                    //currentMaxPassingScore = newAmount;
                     break;
             }
         }
@@ -1148,9 +1142,8 @@ namespace Runtime.Character
         public void ResetMaxScores()
         {
             currentMaxAgilityScore = agilityScore;
-            currentMaxShootingScore = shootingScore;
+            currentMaxThrowingScore = throwingScore;
             currentMaxTacklingScore = tacklingScore;
-            currentMaxPassingScore = passingScore;
         }
         #endregion
 

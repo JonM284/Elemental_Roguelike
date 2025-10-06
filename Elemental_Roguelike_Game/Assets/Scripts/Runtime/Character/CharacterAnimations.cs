@@ -1,4 +1,8 @@
 ﻿using System.Collections.Generic;
+using Cysharp.Threading.Tasks;
+using Data.AbilityDatas;
+using Data.CharacterData;
+using Data.Elements;
 using Project.Scripts.Utils;
 using Runtime.Abilities;
 using Runtime.GameControllers;
@@ -86,23 +90,8 @@ namespace Runtime.Character
 
         #region Class Implementation
 
-        public void InitializeAnimations(List<string> _abilities, string _classType, string _elementType)
+        public async UniTask InitializeAnimations(List<AbilityEntityBase> abilities)
         {
-            if (_abilities.Count == 0)
-            {
-                return;
-            }
-
-            List<Ability> abilities = new List<Ability>();
-            
-            _abilities.ForEach(a =>
-            {
-                var locatedAbility = AbilityController.Instance.GetAbility(_elementType, _classType, a);
-                
-                abilities.Add(locatedAbility);
-                
-            });
-
             if (abilities.Count == 0 || m_isEnemy)
             {
                 return;
@@ -119,20 +108,20 @@ namespace Runtime.Character
             {
                 if (overrides[i].Key.name == abilityOneClipName)
                 {
-                    if (abilities[0].abilityAnimationOverride.IsNull())
+                    if (abilities[0].abilityData.abilityAnimationOverride.IsNull())
                     {
                         return;
                     }
-                    var newValuePair = new KeyValuePair<AnimationClip, AnimationClip>(overrides[i].Key, abilities[0].abilityAnimationOverride);
+                    var newValuePair = new KeyValuePair<AnimationClip, AnimationClip>(overrides[i].Key, abilities[0].abilityData.abilityAnimationOverride);
                     overrides[i] = newValuePair;
 
                 }else if (overrides[i].Key.name == abilityTwoClipName)
                 {
-                    if (abilities[1].abilityAnimationOverride.IsNull())
+                    if (abilities[1].abilityData.abilityAnimationOverride.IsNull())
                     {
                         return;
                     }
-                    var newValuePair = new KeyValuePair<AnimationClip, AnimationClip>(overrides[i].Key, abilities[1].abilityAnimationOverride);
+                    var newValuePair = new KeyValuePair<AnimationClip, AnimationClip>(overrides[i].Key, abilities[1].abilityData.abilityAnimationOverride);
                     overrides[i] = newValuePair;
                 }
             }
@@ -143,7 +132,6 @@ namespace Runtime.Character
             animator.runtimeAnimatorController = newAnimator;
             
             animator.Play("Idle");
-
         }
 
         /// <summary>

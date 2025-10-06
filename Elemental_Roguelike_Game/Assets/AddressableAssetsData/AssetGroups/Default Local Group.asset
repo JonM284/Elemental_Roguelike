@@ -13,21 +13,26 @@ MonoBehaviour:
   m_Name: Default Local Group
   m_EditorClassIdentifier: 
   m_GroupName: Default Local Group
-  m_Data:
-    m_SerializedData: []
   m_GUID: ff06b6a451a8bdd4ba8b0afb34c62049
   m_SerializeEntries:
+  - m_GUID: 00eac80e5448c2c4fb4b2c6da4ca52ba
+    m_Address: Silence@StatusEntity
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 117d9f0c612dc9949b8b0082137cfd17
     m_Address: MainGameController
     m_ReadOnly: 0
     m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 4e98a61ba661e6d4b815d23faff16b5d
     m_Address: Ball@Prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: c51bc8bdb2bb6e5479c05b7cf9bc0f75, type: 2}
   m_SchemaSet:
     m_Schemas:
-    - {fileID: 11400000, guid: cfe6293fce480394cb87b1a731b9782f, type: 2}
     - {fileID: 11400000, guid: a36264c85f222e645aab8bdce7f9d21c, type: 2}
+    - {fileID: 11400000, guid: cfe6293fce480394cb87b1a731b9782f, type: 2}

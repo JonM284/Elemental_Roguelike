@@ -13,78 +13,98 @@ MonoBehaviour:
   m_Name: Projectiles
   m_EditorClassIdentifier: 
   m_GroupName: Projectiles
-  m_Data:
-    m_SerializedData: []
   m_GUID: 053f1fc220b49414585fe699abe6bb45
   m_SerializeEntries:
-  - m_GUID: 30e2018a2d60d924082e6a3cf540faae
-    m_Address: Fireball@ProjectileAbility
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 14b2aa3087bc9984d8bba580da47882d
-    m_Address: ProjectileVisuals
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 5d2ecc0022857e24bbf63d1ebd6e4853
-    m_Address: TestProjectile
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: dd86dc2ae820a134e92080212a401265
-    m_Address: WaterBall@ProjectileAbility
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 6d62ad2ed5ed3cb43b510e32f527b5c0
-    m_Address: NatureBall@ProjectileZoneAbility
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: e03c721a6c6e93a4a90228986c686d53
-    m_Address: Rock@ProjectileAbility
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 637aef05bef9eaf41920ac4ca194616c
-    m_Address: ShadowBall@ProjecitleAbility
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: bd899187583566d4eaf2d7fe2e6e970c
-    m_Address: Shade@ProjectileZoneAbility
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: aaf5a009c0fcd0e4db366a8bba069a57
-    m_Address: AcidBall@ProjectileZoneAbility
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: d33533fd343de504bbc4521d55c963fb
-    m_Address: AcidBall@ProjectileAbility
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 555f583686659f84fa5621734d15059b
-    m_Address: FireBall@ProjectileZoneAbility
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 45355a8a58d4d4c4291ff2817650b94c
-    m_Address: IceBall@ProjectileZoneAbility
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: af982fbf19189324b864a96a459f820a
-    m_Address: SonicWave@Projectile
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 8fbd04d135221e54fb0b1aa2e8e48f01
-    m_Address: ElectricDash@Projectile
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: a9e6e4260b2b2324393410fafd520179
-    m_Address: Snowball@ProjectileAbility
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: edb17b483463f54429a0656ea956e57e
-    m_Address: Gust@ProjectileAbility
-    m_ReadOnly: 0
-    m_SerializedLabels: []
   - m_GUID: 0055977058acbfc409b40c8670b85518
     m_Address: GhostBall@ProjectileAbility
     m_ReadOnly: 0
     m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 14b2aa3087bc9984d8bba580da47882d
+    m_Address: ProjectileVisuals
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 30e2018a2d60d924082e6a3cf540faae
+    m_Address: Fireball@ProjectilePrefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 45355a8a58d4d4c4291ff2817650b94c
+    m_Address: IceBall@ProjectileZoneAbility
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 555f583686659f84fa5621734d15059b
+    m_Address: FireBall@ProjectileZoneAbility
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5d2ecc0022857e24bbf63d1ebd6e4853
+    m_Address: TestProjectile
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 637aef05bef9eaf41920ac4ca194616c
+    m_Address: ShadowBall@ProjecitleAbility
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6d62ad2ed5ed3cb43b510e32f527b5c0
+    m_Address: NatureBall@ProjectileZoneAbility
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8fbd04d135221e54fb0b1aa2e8e48f01
+    m_Address: ElectricDash@Projectile
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a9e6e4260b2b2324393410fafd520179
+    m_Address: Snowball@ProjectileAbility
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: aaf5a009c0fcd0e4db366a8bba069a57
+    m_Address: AcidBall@ProjectileZoneAbility
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: af982fbf19189324b864a96a459f820a
+    m_Address: SonicWave@Projectile
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: bd899187583566d4eaf2d7fe2e6e970c
+    m_Address: Shade@ProjectileZoneAbility
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d33533fd343de504bbc4521d55c963fb
+    m_Address: AcidBall@ProjectileAbility
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: dd86dc2ae820a134e92080212a401265
+    m_Address: WaterBall@ProjectileAbility
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e03c721a6c6e93a4a90228986c686d53
+    m_Address: Rock@ProjectileAbility
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: edb17b483463f54429a0656ea956e57e
+    m_Address: Gust@ProjectileAbility
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f574fbffe97091e45a913c6c3fbbd088
+    m_Address: ProjectileAbility@EntityPrefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: c51bc8bdb2bb6e5479c05b7cf9bc0f75, type: 2}
   m_SchemaSet:

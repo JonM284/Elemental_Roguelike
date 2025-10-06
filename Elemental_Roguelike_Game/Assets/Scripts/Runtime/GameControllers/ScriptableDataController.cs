@@ -3,6 +3,7 @@ using System.Linq;
 using Data.Sides;
 using Project.Scripts.Utils;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Runtime.GameControllers
 {
@@ -19,9 +20,9 @@ namespace Runtime.GameControllers
 
         [SerializeField] private List<CharacterSide> m_characterSides = new List<CharacterSide>();
 
-        [SerializeField] private List<Status.Status> m_statuses = new List<Status.Status>();
+        [SerializeField] private List<Status.StatusEntityBase> m_statuses = new List<Status.StatusEntityBase>();
 
-        [SerializeField] private Status.Status m_fenceAppliedStatus;
+        [FormerlySerializedAs("mFenceAppliedStatusBase")] [FormerlySerializedAs("m_fenceAppliedStatus")] [SerializeField] private Status.StatusEntityBase mFenceAppliedStatusEntityBase;
 
         [SerializeField] private int m_fenceDamage = 10;
 
@@ -51,9 +52,9 @@ namespace Runtime.GameControllers
             return side;
         }
 
-        public Status.Status GetFenceAppliedStatus()
+        public Status.StatusEntityBase GetFenceAppliedStatus()
         {
-            return m_fenceAppliedStatus;
+            return mFenceAppliedStatusEntityBase;
         }
 
         public int GetFenceDamage()

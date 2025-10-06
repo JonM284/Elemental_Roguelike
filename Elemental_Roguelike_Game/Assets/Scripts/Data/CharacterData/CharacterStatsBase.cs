@@ -1,9 +1,7 @@
 using System.Collections.Generic;
+using Data.AbilityDatas;
 using Data.Elements;
-using Runtime.Abilities;
 using UnityEngine;
-using UnityEngine.AddressableAssets;
-using UnityEngine.UI;
 
 namespace Data.CharacterData
 {
@@ -53,7 +51,7 @@ namespace Data.CharacterData
         [Tooltip("Character Element type")] 
         public ElementTyping typing;
 
-        public List<Ability> abilities;
+        public List<AbilityData> abilities = new List<AbilityData>();
 
         public CharacterClassData classTyping;
         
