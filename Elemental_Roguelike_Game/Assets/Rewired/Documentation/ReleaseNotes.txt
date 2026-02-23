@@ -1,3 +1,216 @@
+1.1.62.5:
+
+    Changes:
+      - Windows Standalone, Raw Input: Added additional checks to prevent crashes due to reading out of bounds memory if Raw Input event contains illegal dwSize value.
+    
+    Bug Fixes:
+      - Windows Standalone, MacOS, Linux, Enhanced Device Support: Prevent possible deadlock when writing output report to devices that use Enhanced Device Support.
+
+1.1.62.4:
+
+    Bug Fixes:
+      - Windows Standalone, Raw Input: Prevent extremely rare IndexOutOfRangeException caused by race condition if a device is connected at the exact instance in between calls to GetRawInputDeviceList when enumerating Raw Input devices.
+
+1.1.62.3:
+
+    Modified Controller Definitions:
+      - Nintendo Switch Pro Controller: Added Android variant with different name and mappings.
+
+1.1.62.2:
+
+    Bug Fixes:
+      - Glyphs Pack: Fixed full binding of Button-type Action bound to button not being displayed (introduced in 1.1.62.0).
+
+1.1.62.1:
+
+    Bug Fixes:
+      - iOS/tvOS: Fixed incorrect Xbox One Controller Right Stick Y mapping broken in version 1.1.60.0.
+
+1.1.62.0:
+
+    Changes:
+      Glyphs pack:
+        - Added ability to display glyph(s) for two Actions simultaneously to allow displaying single glyph for 2D elements such as sticks and D-Pads.
+        - Added ability to display glyphs for the individual poles of a full-axis binding.
+        - Added optional abbreviations of tag attribute values to Unity UI Text Mesh Pro Glyph Helper tags.
+        - Added ability to sort results by controller element type.
+        - Added ability to limit results to only the first controller found with matching bindings.
+        - Added Result Index option to Unity UI Player Controller Element Glyph component.
+      - Added Compound Element Identifier to Mouse for X and Y axes.
+
+    API Changes:
+      Glyphs pack:
+        - Added Rewired.Glyphs.Pair struct.
+        - Added Rewired.Glyphs.ControllerElementGlyphSelectorOptions.useFirstControllerResults property.
+        - Added Rewired.Glyphs.ControllerElementGlyphSelectorOptions.controllerElementTypeOrder property.
+        - Added Rewired.Glyphs.UnityUI.UnityUIPlayerControllerElementGlyphBase.Result2DSelectionHandler delegate.
+        - Added Rewired.Glyphs.UnityUI.UnityUIPlayerControllerElementGlyphBase.actionId2 property.
+        - Added Rewired.Glyphs.UnityUI.UnityUIPlayerControllerElementGlyphBase.ShowAction2DBindings method.
+        - Added Rewired.Glyphs.UnityUI.UnityUIPlayerControllerElementGlyphBase.result2dSelectionHandler property.
+        - Added Rewired.Glyphs.UnityUI.UnityUIPlayerControllerElementGlyphBase.resultIndex property.
+        - Added Rewired.Glyphs.UnityUI.UnityUIPlayerControllerElementGlyphBase.action1FirstPole property.
+        - Added Rewired.Glyphs.UnityUI.UnityUIPlayerControllerElementGlyphBase.action2FirstPole property.
+        - Added Rewired.Glyphs.UnityUI.UnityUIPlayerControllerElementGlyph.actionId2 property.
+        - Added Rewired.Glyphs.UnityUI.UnityUIPlayerControllerElementGlyph.actionName2 property.
+        - Added Rewired.Glyphs.UnityUI.ControllerElementGlyphBase.ShowGlyphsOrText additive overload.
+        - Added Rewired.Glyphs.UnityUI.UnityUITextMeshProGlyphHelper.RewiredElementResult2DSelectionHandler delegate.
+        - Added Rewired.Glyphs.UnityUI.UnityUITextMeshProGlyphHelper.rewiredElementResult2dSelectionHandler property.
+
+    Bug Fixes:
+      - ActionElementMap.TryGetCombinedElementIdentifierName, ActionElementMap.TryGetCombinedElementIdentifierGlyph, and ActionElementMap.TryGetCombinedElementIdentifierFinalGlyphKey now return false if any extraneous ActionElementMaps are included.
+      - Glyphs pack:
+        - Fixed possible duplicate results returned by Rewired.Glyphs.GlyphTools.TryGetActionElementMaps.
+      - Android: Eliminated possible edge case of controller signature mismatch error if multiple Xbox One controllers are used at any time, one with product id of 0x02e0 and others with different product ids. May also occur if Android returns no vendor / product ids when called once, but does the next time.
+
+1.1.61.0:
+
+    Changes:
+      - Added radial clamping of stick axes on most gamepads.
+      - Control Mapper: Added Upper Dead Zone.
+      - Linux Standalone, Native: Changed how Joystick.deviceInstanceGuid is calculated.
+      - Desktop Platforms, Enhanced Device Support: Nintendo Switch Pro Controller now works via USB.
+      - Desktop Platforms, Enhanced Device Support: Moved Nintendo Switch controller initialization to separate thread to prevent stalling of main thread during initialization.
+      - Windows Standalone: Blacklisted Nintendo Switch Pro controller via Bluetooth in Raw Input and Direct Input due to controller no longer working with current firmware. (Enhanced Device Support required for support.)
+      - MacOS Standalone: Blacklisted Nintendo Switch Pro controller via Bluetooth in I/O Kit due to controller no longer working with current firmware. (Enhanced Device Support or Game Controller Framework required for support.)
+      - MacOS Standalone, Native + Use Game Controller Framework: Improved duplicate device filtering when a device is supported by both Game Controller Framework and I/O Kit.
+      - Glyphs pack:
+        - Added Default Controller option to ControllerElementGlyphSelectorOptions to allow displaying glyphs for controllers not currently connected.
+        - Added option to manually select the glyphs to display from a list of all matching results.
+        - Added resultIndex option to Unity UI Text Mesh Pro Glyph Helper rewiredElement tag.
+
+    API Changes:
+      - Added Rewired.Axis2DClampType enum.
+      - Added Rewired.Axis2DCalibration.clampType property.
+      - Added Rewired.Axis2DcalibrationData structure.
+      - Added Rewired.CalibrationMap.Axes2D property.
+      - Added Rewired.CalibrationMap.axis2DCount property.
+      - Added Rewired.CalibrationMap.ctor(InitOptions) constructor.
+      - Deprecated Rewired.CalibrationMap.ctor(AxisCalibration[]) constructor.
+      - Added Rewired.CalibrationMap.GetAxis2D function.
+      - Added Rewired.CalibrationMap.GetCalibratedValue2D function.
+      - Added Rewired.CalibrationMap.SetAxis2DData function.
+      - Added Rewired.CalibrationMap.GetAxis2DData function.
+      - Added Rewired.AxisCalibration.upperDeadZone property.
+      - Added Rewired.AxisCalibrationData.upperDeadZone field.
+      - Added Rewired.Glyphs.ControllerElementGlyphSelectorOptions.useDefaultController property.
+      - Added Rewired.Glyphs.ControllerElementGlyphSelectorOptions.defaultController property.
+      - Added Rewired.Glyphs.ControllerElementGlyphSelectorOptions.ControllerSelector struct.
+      - Added Rewired.Glyphs.ControllerElementGlyphSelectorOptions.ControllerMapSelector struct.
+      - Added Rewired.Glyphs.UnityUIPlayerControllerElementGlyphBase.ResultSelectionHandler delegate.
+      - Added Rewired.Glyphs.UnityUIPlayerControllerElementGlyphBase.resultSelectionHandler property.
+      - Added Rewired.Glyphs.UnityUITextMeshProGlyphHelper.RewiredElementResultSelectionHandler delegate.
+      - Added Rewired.Glyphs.UnityUITextMeshProGlyphHelper.rewiredElementResultSelectionHandler property.
+      - Added Rewired.ReInput.ConfigHelper.disableAxis2dClamping property.
+      
+    Modified Controller definitions:
+      - Nintendo Switch Pro Controller, Joy-Con (L), Joy-Con(R), Standalone platforms Internal Driver: Added upper dead zones to sticks to more accurately mimic stick behavior on the Switch platform.
+
+1.1.60.2:
+
+    Changes:
+      - Windows Standalone, Windows Gaming Input: Excluded Sony Dual Shock 4 and Dual Sense controllers from Windows Gaming Input handling due to numerous new Windows bugs causing various issues with these controllers.
+
+1.1.60.1:
+
+    Bug Fixes:
+      - Fixed auto-generated Controller Element Identifier positive and negative descriptive names being incorrectly cleared resulting in Unknown Controller axis positive and negative descriptive names being blank.
+
+1.1.60.0:
+
+    Changes:
+      - Glyphs pack:
+        - Added detection of Text Mesh Pro version to installer and branched Unity UI Text Mesh Pro Glyph Helper by version to address Text Mesh Pro properties being stripped when the Unity Player Managed Stripping Level is set to Medium or higher due to the use of reflection (Unity 2020-2023).
+        - Added ability to set custom filtering of results for glyph display to glyph components.
+      - iOS/tvOS: Added explicit recognition of supported third party controllers so the correct glyphs will be displayed for these controllers by default instead of the generic gamepad glyphs.
+     
+    API Changes:
+      - Added ReInput.ControllerHelper.SetLastActiveController method.
+      - Added Player.ControllerHelper.SetLastActiveController method.
+      - Added Glyphs.UnityUI.UnityUITextMeshProGlyphHelper.isRewiredElementAllowedHandler property.
+      - Added Glyphs.ControllerElementGlyphSelectorOptions.isActionElementMapAllowedHandler property.
+      
+    Modified Controller Definitions:
+      - Xbox One Controller, DualShock 4, DualSense, Joy-Con (Dual), Switch Pro Controller: Added mappings for iOS/tvOS.
+
+1.1.59.2:
+
+    Changes:
+      - Changed deprecated function call in Control Mapper to eliminate warning (Unity 6000+).
+      - Desktop platforms, Enhanced Device Support: Re-enabled Dual Sense Edge support.
+
+    Modified Controller Definitions:
+      - Windows Standalone, Use Windows Gaming Input: Added mapping for Dual Shock 4 for Windows Gaming Input due to changes in Windows update that cause the controller to now be handled by WGI.
+      - Windows Standalone, Use Windows Gaming Input: Added mapping for Dual Sense for Windows Gaming Input due to changes in Windows update that cause the controller to now be handled by WGI.
+    
+    Bug Fixes:
+      - Windows, Direct Input: Fixed exception thrown when changing joystick refresh rate at runtime with one or more controllers connected and then connecting or disconnecting a controller.
+
+1.1.59.1:
+
+    Changes:
+      - Windows, Linux, OSX + Enhanced Device Support: Improved reliability of Nintendo Switch controller initialization routine.
+      - Windows, Linux, OSX + Enhanced Device Support: Reworked Nintendo Switch controller driver to work around 8Bitdo Ultimate Contoller 2C differences (bugs) in low-level device communication vs official Nintendo Switch controllers.
+      - Added detection of Rewired being reset or destroyed/deinitialized from within an event callback.
+    
+    Bug Fixes:
+      - Windows, Linux, OSX + Enhanced Device Support: Fixed issue of double device initialization if device connected on startup failed to initialize on Awake.
+      - Added custom serialization/deserialization of UnityEngine.AnimationCurve and UnityEngine.Keyframe to XML for Axis Calibration Sensitivity Curve saving/loading.
+      - Fixed bug in keyboard combo key blocking causing order of bindings to affect whether a key binding would be blocked or not when that key is also bound to a key combo.
+
+1.1.59.0:
+
+    Changes:
+      - Added support for Nintendo Switch 2 plugin.
+      - Glyphs pack: UnityUITextMeshProGlyphHelper updates Text Mesh Pro text when UnityUITextMeshProGlyphHelper.text is set changed regardless of whether the new text contains any tags.
+      - Nintendo Switch Controller glyph set: Changed "RS" and "LS" to "R" and "L".
+      - Added VisionOS build support through existing iOS support.
+      - Changed Input Behavior Digital Axis Simulation to disabled by default.
+      - Relative Joystick and Custom Controller axes can now be detected during rebind polling.
+      - Added Controller Element Identifier Roles.
+      - UserDataStore Implementations: Added Action Mapping Save Mode options to save and load mappings by controller (existing and default behavior) or by controller element role.
+      - MacOS, Native + Use Game Controller Framework: Changed method of determining which devices are supported by Game Controller Framework to prevent HID devices that use the Generic profile from being handled by Game Controller Framework instead of IO Kit.
+
+    API Changes:
+      - Added PlayerController.AbsoluteToRelativeScalingMode enum.
+      - Added PlayerController.Axis.absoluteToRelativeScalingMode property.
+      - Added PlayerController.Axis.Definition.absoluteToRelativeScalingMode field.
+      - Added PlayerController.absoluteToRelativeScalingReferenceResolution property.
+      - Added Controller.Element.excludeFromPolling property.
+      - Added Controller.Axis.axisCoordinateMode property.
+      - Added ControllerMap.Create method.
+      - Added ControllerElementIdentifier.role property.
+      - Added Data.UserDataStore_KeyValue.ActionMappingSaveMode enum.
+      - Added Data.UserDataStore_KeyValue.actionMappingSaveMode property.
+      - Added Data.UserDataStore_PlayerPrefs.ActionMappingSaveMode enum.
+      - Added Data.UserDataStore_PlayerPrefs.actionMappingSaveMode property.
+      - Added ControllerMap.modifiedTime property.
+      - Added ControllerMap.isModified property.
+
+    New Controller Definitions:
+      - Xbox Game Core Racing Wheel
+      - Nintendo Switch 2 Console
+      - Nintendo Switch 2 Joy-Con (Dual)
+      - Nintendo Switch 2 Joy-Con (L)
+      - Nintendo Switch 2 Joy-Con (R)
+      - Nintendo Switch 2 Pro Controller
+    
+    Modified Controller Definitions:
+      - Added Role to some element identifiers on many controllers.
+      - Removed TM symbols from all Nintendo Switch controller names.
+      - Added Android mappings to Oculus Touch Left and Oculus Touch Right definitions.
+      - Aerosoft Truck and Bus Wheel: Fixed Stick Y key spelling from "stick/verical" to "stick/vertical".
+
+    Bug Fixes:
+      - Player Mouse: When "Use Hardware Pointer Position" is enabled and the Player Mouse's X/Y axes have also been mapped to the physical mouse axes using a Mouse Map, the hardware pointer position now overrides the mapped mouse delta input instead of the two conflicting mouse inputs being processed
+ additivly which resulted in pointer jitter at lower frame rates.
+      - Player Mouse: Fixed mouse wheel scroll issues when scrolling left or down when "Activate Action Buttons on Negative Value" is enabled.
+      - UserDataStore_File: Fixed attempting to create output directory with no name if save file path has no directory.
+      - Gamepad Template: Changed mapping of Atari Jaguar Controller A button to Action Bottom Row 3.
+      - Gamepad Template: Removed Center 3 mapping from Thrustmaster FireStorm Dual Power.
+      - MacOS, Game Controller Framework: Fixed rare exception when an input event is received with an out of range index when multiple controllers are connected when entering Play mode.
+      - MacOS, Game controller Framework: Fixed exception when GetElementSfSymbolsName or GetElementLocalizedName or unmapped versions of functions when the controller doesn't have an element that corresponds to the element identifier id passed to the function.
+      - MacOS, Game controller Framework: Fixed incorrect value returned from GetElementSfSymbolsName and GetElementLocalizedName or unmapped versions of functions for the whole D-Pad element.
+
 1.1.58.4:
 
     Bug Fixes:

@@ -104,25 +104,23 @@ namespace Runtime.GameControllers
 
         private CharacterBase GetCachedCharacter(CharacterStatsBase _stats)
         {
-            if (_stats == null)
-            {
-                return default;
-            }
+            return _stats.IsNull() ? default 
+                : m_cachedCharacters.FirstOrDefault(cb => cb.characterStatsBase == _stats);
+        }
 
-            return m_cachedCharacters.FirstOrDefault(cb => cb.characterStatsBase == _stats);
+        private bool ExistsCharacter(CharacterStatsBase stats)
+        {
+            return !stats.IsNull() && m_cachedCharacters
+                .Any(cb => cb.characterStatsBase.characterGUID == stats.characterGUID);
         }
 
         private CharacterBase GetLoadedCharacter(CharacterStatsBase _stats)
         {
-            if (_stats == null)
-            {
-                return default;
-            }
-
-            return m_cachedLoadedCharacters.FirstOrDefault(cb => cb.characterStatsBase == _stats);
+            return _stats.IsNull() ? default 
+                : m_cachedLoadedCharacters.FirstOrDefault(cb => cb.characterStatsBase == _stats);
         }
 
-        public async UniTask C_CreateCharacter(CharacterStatsBase _characterStats, Vector3 _spawnPos, 
+        public async UniTask CreateCharacterAsync(CharacterStatsBase _characterStats, Vector3 _spawnPos, 
             Vector3 spawnRotation, bool isPlayable ,Action<CharacterBase> callback = null)
         {
             if (_characterStats.IsNull())
@@ -145,10 +143,7 @@ namespace Runtime.GameControllers
                 await foundCharacter.InitializeCharacter(_characterStats);
                 await UniTask.WaitUntil(() => foundCharacter.isInitialized);
                 
-                if (!callback.IsNull())
-                {
-                    callback?.Invoke(foundCharacter);
-                }
+                callback?.Invoke(foundCharacter);
                 
                 CharacterCreated?.Invoke(foundCharacter);
                 return;
@@ -164,10 +159,7 @@ namespace Runtime.GameControllers
                 await _characterComp.InitializeCharacter(_characterStats);
                 await UniTask.WaitUntil(() => _characterComp.isInitialized);
                 
-                if (!callback.IsNull())
-                {
-                    callback?.Invoke(foundCharacter);
-                }
+                callback?.Invoke(_characterComp);
                 
                 CharacterCreated?.Invoke(_characterComp);
                 
@@ -192,11 +184,8 @@ namespace Runtime.GameControllers
                     await UniTask.WaitUntil(() => _newCharacter.isInitialized);
                 }
                 
-                if (!callback.IsNull())
-                {
-                    callback?.Invoke(foundCharacter);
-                }
-                
+                callback?.Invoke(_newCharacter);
+
                 CharacterCreated?.Invoke(_newCharacter);
             }
             else

@@ -43,9 +43,9 @@ namespace Utils
             projectileController.GetProjectileAt(projectileData, user ,position, rotation, endPos, target, cancellationToken).Forget();
         }
 
-        public static void PlayAt(this AoeZoneData aoeZoneData, Vector3 _position, Transform _user, CancellationToken cancellationToken)
+        public static void PlayAt(this AoeZoneAbilityData aoeZoneData, Vector3 _position, CharacterBase user, CancellationToken cancellationToken)
         {
-            projectileController.GetZoneAt(aoeZoneData, _position, _user, cancellationToken).Forget();
+            projectileController.GetZoneAt(aoeZoneData, _position, user, cancellationToken).Forget();
         }
 
         #endregion

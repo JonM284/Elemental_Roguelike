@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using FishNet.Managing;
-using FishNet.Object;
 using HeathenEngineering.SteamworksIntegration;
 using Project.Scripts.Utils;
 using Runtime.UI.DataModels;
@@ -21,9 +19,9 @@ namespace Runtime.GameControllers
 
         #region Serialized Fields
 
-        [SerializeField] private NetworkManager m_networkManager;
+        /*[SerializeField] private NetworkManager m_networkManager;
 
-        [SerializeField] private FishySteamworks.FishySteamworks m_fishySteamworks;
+        [SerializeField] private FishySteamworks.FishySteamworks m_fishySteamworks;*/
 
         #endregion
 
@@ -112,8 +110,8 @@ namespace Runtime.GameControllers
             SteamMatchmaking.SetLobbyData(new CSteamID(currentLobbyID), "HostAddress", SteamUser.GetSteamID().ToString());
             SteamMatchmaking.SetLobbyData(new CSteamID(currentLobbyID), "name", SteamFriends.GetPersonaName().ToString() + "'s Lobby");
             
-            m_fishySteamworks.SetClientAddress(SteamUser.GetSteamID().ToString());
-            m_fishySteamworks.StartConnection(true);
+            /*m_fishySteamworks.SetClientAddress(SteamUser.GetSteamID().ToString());
+            m_fishySteamworks.StartConnection(true);*/
             
             Debug.Log("<color=cyan> Lobby Created </color>");
         }
@@ -127,13 +125,13 @@ namespace Runtime.GameControllers
         {
             currentLobbyID = _callback.m_ulSteamIDLobby;
 
-            if (!MainMenuDataModel.Instance.IsNull())
+            /*if (!MainMenuDataModel.Instance.IsNull())
             {
                 MainMenuDataModel.Instance.LobbyEntered(SteamMatchmaking.GetLobbyData(new CSteamID(currentLobbyID), "name"), m_networkManager.IsServer);
             }
             
             m_fishySteamworks.SetClientAddress(SteamMatchmaking.GetLobbyData(new CSteamID(currentLobbyID), "HostAddress"));
-            m_fishySteamworks.StartConnection(false);
+            m_fishySteamworks.StartConnection(false);*/
             
             Debug.Log("<color=cyan> Lobby Entered </color>");
         }
@@ -160,12 +158,12 @@ namespace Runtime.GameControllers
             
             currentLobbyID = 0;
 
-            m_fishySteamworks.StopConnection(false);
+            /*m_fishySteamworks.StopConnection(false);
 
             if (m_networkManager.IsServer)
             {
                 m_fishySteamworks.StopConnection(true);
-            }
+            }*/
 
         }
 

@@ -34,7 +34,7 @@ namespace Runtime.Status
                 HealCharacter();
             }        }
 
-        public override void OnTick(CharacterSide obj)
+        public override void OnTick(CharacterSide characterSide)
         {
             if (currentOwner.IsNull() || !affectHealthOverTimeStatusData.isOverTime)
             {

@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Cysharp.Threading.Tasks;
 using Data.CharacterData;
+using NUnit.Framework;
 using Project.Scripts.Utils;
 using Runtime.GameControllers;
 using Runtime.Gameplay;
@@ -38,7 +41,9 @@ namespace Runtime.Character
 
         [SerializeField] protected LineRenderer ballThrowIndicator;
 
-        [SerializeField] private LayerMask goalLayer;
+        [SerializeField] private LayerMask goalLayer, wallLayer, playerCheckLayer;
+
+        [SerializeField] private float throwIndicatorYOffset = -0.49f;
 
         #endregion
 
@@ -52,6 +57,14 @@ namespace Runtime.Character
         private int highestPossibleScore = 100;
         private BallBehavior m_heldBall;
         private bool m_canPickupBall = true;
+        private Vector3 previousMarkPosition = Vector3.zero;
+        private List<CharacterBase> characterRefs = new List<CharacterBase>();
+        private float influenceAdditionalOffset = 1.25f;
+        private int amountOfCalculatedPoints = 40, amountOfShownPoints = 20;
+        
+        private Collider[] foundPlayers = new Collider[15];
+        private int foundPlayersAmount;
+        private float distanceBetweenPoints = 1f;
 
         #endregion
 
@@ -61,12 +74,33 @@ namespace Runtime.Character
 
         public float passStrength => m_shotDistanceBase + (passingScore / 100f) * m_maxShotDistance;
         
-        public CharacterBase characterBase => CommonUtils.GetRequiredComponent(ref m_characterBase, GetComponent<CharacterBase>);
+        public CharacterBase characterBase => CommonUtils.GetRequiredComponent(
+            ref m_characterBase, GetComponent<CharacterBase>);
+
+        public List<CharacterBase> allCharacter
+        {
+            get => characterRefs;
+            set => characterRefs = value;
+        }
 
         public bool hasBall => !m_heldBall.IsNull();
 
         public bool canPickupBall => m_canPickupBall;
         
+        #endregion
+
+        #region Unity Events
+
+        private void OnEnable()
+        {
+            TurnController.OnBattlePreStart += GetAllCharactersRef;
+        }
+
+        private void OnDisable()
+        {
+            TurnController.OnBattlePreStart -= GetAllCharactersRef;
+        }
+
         #endregion
 
         #region IBallInteractalbe Inherited Methods
@@ -115,35 +149,54 @@ namespace Runtime.Character
                 (transform.position + new Vector3(randomPos.x, 0 , randomPos.y) 
                 - transform.position) : attacker.position - transform.position;
             
-            Debug.Log(shotStrength);
+            Debug.Log($"[Ball Throw] Amount: {(shootingScore/100f)}");
             
-            m_heldBall.ThrowBall(direction, shotStrength, false, this.characterBase, 0);
+            m_heldBall.ThrowBall(direction, (shootingScore/100f), false, this.characterBase, 0);
             
             m_heldBall = null;
             
             ballOwnerIndicator.SetActive(false);
         }
 
-        public void ThrowBall(Vector3 _position, bool _isShot)
+        public void ThrowBall(Vector3 _position)
         {
             if (m_heldBall.IsNull())
             {
                 return;
             }
             
-            var _ballThrowSpeed = _isShot ? shotStrength : passStrength;
-            var _attachedStat = _isShot
-                ? GetRandomShootStat()
-                : GetRandomPassStat();
-            
-            m_heldBall.ThrowBall(_position - transform.position, 
-                _ballThrowSpeed,
-                true, this.characterBase,
-                _attachedStat);
+            m_heldBall.ThrowBall(CalculatePoints(m_heldBall.transform.position,
+                (_position - transform.position).normalized, amountOfCalculatedPoints,
+                distanceBetweenPoints, false)
+                , (shootingScore/100f), characterBase);
             
             m_heldBall = null;
             ballOwnerIndicator.SetActive(false);
             
+            if (!ballThrowIndicator.IsNull())
+            {
+                ballThrowIndicator.gameObject.SetActive(false);
+            }
+            
+            BallThrown?.Invoke(characterBase);
+        }
+
+        public void ThrowBall(Vector3[] waypoints)
+        {
+            if (waypoints.IsNull() || waypoints.Length == 0)
+            {
+                return;
+            }
+            
+            if (m_heldBall.IsNull())
+            {
+                return;
+            }
+            
+            m_heldBall.ThrowBall(waypoints, (shootingScore/100f), characterBase);
+            m_heldBall = null;
+            
+            ballOwnerIndicator.SetActive(false);
             if (!ballThrowIndicator.IsNull())
             {
                 ballThrowIndicator.gameObject.SetActive(false);
@@ -175,6 +228,11 @@ namespace Runtime.Character
             
             await UniTask.WaitForEndOfFrame();
         }
+
+        private void GetAllCharactersRef()
+        {
+            characterRefs = TurnController.Instance.GetAllCharacters();
+        }
         
         public void MarkThrowBall(Vector3 _position)
         {
@@ -182,17 +240,98 @@ namespace Runtime.Character
             {
                 return;
             }
-            
-            //ToDo: update points if the player is aiming at a wall
-            var dir = transform.InverseTransformDirection(_position - transform.position);
-            var _decelTime = 1.9f;
-            var _decel = (shotStrength)/_decelTime;
-            var _dist = (0.5f * _decel) * (_decelTime * _decelTime);
-            var furthestPoint = (dir.normalized * _dist);
 
-            ballThrowIndicator.SetPosition(1, new Vector3(furthestPoint.x, furthestPoint.z, 0));
+            if (VectorUtils.IsFastApproximate(_position.FlattenVector3Y(), previousMarkPosition.FlattenVector3Y(), 0.1f))
+            {
+                return;
+            }
+
+            previousMarkPosition = _position;
+            
+            ballThrowIndicator.SetPositions(CalculatePoints(m_heldBall.transform.position,
+                (_position - transform.position).normalized, amountOfShownPoints, distanceBetweenPoints));
         }
 
+        private Vector3[] CalculatePoints(Vector3 startPoint, Vector3 startDir, 
+            int amountOfPoints, float distanceBetweenPoints, bool isStopAtEnemy = true)
+        {
+            var currentPoint = startPoint.FlattenVector3Y(transform.position.y);
+            var currentDirection = startDir;
+
+            List<Vector3> points = new() { currentPoint };
+
+            for (int i = 0; i < amountOfPoints; i++)
+            {
+                var (influenceDir, continueIteration) = GetNextDirection(currentPoint, 
+                    currentDirection);
+                
+                Debug.DrawRay(currentPoint, influenceDir, Color.magenta, 10f );
+                
+                if (!continueIteration && isStopAtEnemy)
+                {
+                    points.Add(currentPoint.FlattenVector3Y(transform.position.y));
+                    continue; //aiming direction has passed through enemy zone
+                }
+                
+                currentDirection = influenceDir.normalized * distanceBetweenPoints;
+
+                var (hasHitWall, raycastHit) = IsWallInThrowDir(currentPoint ,currentDirection, distanceBetweenPoints);
+
+                if (hasHitWall)
+                {
+                    currentPoint = raycastHit.point.FlattenVector3Y(transform.position.y);
+                    points.Add(currentPoint);
+                    currentDirection = Vector3.Reflect(currentDirection, raycastHit.normal);
+                    continue;
+                }
+                
+                currentPoint += currentDirection;
+                currentPoint.FlattenVector3Y(transform.position.y);
+                points.Add(currentPoint);
+            }
+
+            return points.ToArray();
+        }
+
+        private (Vector3, bool) GetNextDirection(Vector3 currentPoint, 
+            Vector3 currentDirection)
+        {
+            if (!HasInfluencesAroundPoint(currentPoint, out var passableCharacters))
+            {
+                return (currentDirection,true);
+            }
+
+            var isContinueIteration = true;
+            
+            List<Vector3> influences = new List<Vector3>();
+            
+            foreach (var character in passableCharacters)
+            {
+                if (character.side.sideGUID != characterBase.side.sideGUID)
+                {
+                    isContinueIteration = false;
+                    break; //stop iterating if the ball will pass through an enemy zone
+                }
+                
+                var dirToCharacter = character.transform.position.FlattenVector3Y(transform.position.y) - currentPoint.FlattenVector3Y(transform.position.y);
+                var influenceVector = 
+                    (dirToCharacter.normalized / Mathf.Clamp(dirToCharacter.sqrMagnitude, 
+                        SettingsController.GravDistClampMin, SettingsController.GravDistClampMax))
+                    * (character.characterClassManager.ballInfluenceIntensity * influenceAdditionalOffset);
+                Debug.DrawRay(currentPoint, influenceVector, Color.red, 10f);
+                influences.Add(influenceVector);
+            }
+            
+            return (new Vector3(currentDirection.x + influences.Sum(v => v.x), 0,
+                currentDirection.z + influences.Sum(v => v.z)), isContinueIteration);
+        }
+
+        private (bool, RaycastHit) IsWallInThrowDir(Vector3 currentPosition, Vector3 dir, float wallRayLegnth)
+        {
+            var hasHit = Physics.Raycast(currentPosition, dir, out RaycastHit hit, wallRayLegnth, wallLayer);
+            return (hasHit, hit);
+        }
+        
         public void TransferBall(CharacterBase _ballHolder, CharacterBase _ballStealer)
         {
             var _ball = TurnController.Instance.ball;
@@ -228,7 +367,49 @@ namespace Runtime.Character
         {
             ballThrowIndicator.gameObject.SetActive(_isOn);
         }
-        
+
+        public bool HasInfluencesAroundPoint(Vector3 point, out List<CharacterBase> influenceCharacters)
+        {
+            influenceCharacters = new List<CharacterBase>();
+            
+            foundPlayersAmount = Physics.OverlapSphereNonAlloc(point, 
+                SettingsController.PassiveDistMax, foundPlayers ,playerCheckLayer);
+
+            if (foundPlayersAmount == 0)
+            {
+                return false;
+            }
+            
+            foreach (var collider in foundPlayers)
+            {
+                if (collider.IsNull())
+                {
+                    continue;
+                }
+                
+                collider.TryGetComponent(out CharacterBase character);
+                    
+                if (character.IsNull())
+                {
+                    continue;
+                }
+
+                if (character == characterBase)
+                {
+                    continue;
+                }
+
+                if ((character.transform.position - point).sqrMagnitude > 
+                    character.characterClassManager.passiveRadiusSqr)
+                {
+                    continue;
+                }
+                
+                influenceCharacters.Add(character);
+            }
+
+            return influenceCharacters.Any();
+        }
         
         private int GetRandomShootStat()
         {

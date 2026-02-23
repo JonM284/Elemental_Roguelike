@@ -1,11 +1,9 @@
-﻿using Runtime.Status;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.AddressableAssets;
-using UnityEngine.Serialization;
 
 namespace Data.AbilityDatas
 {
-    [CreateAssetMenu(menuName = "Maulball/Ability/Creation Ability Data")]
+    [CreateAssetMenu(menuName = "Maulball/Ability/Zone Ability Data")]
     public class AoeZoneAbilityData: AbilityData
     {
         [Header("Zone Specific")] 
@@ -13,7 +11,7 @@ namespace Data.AbilityDatas
         
         public int roundStayAmount = 1;
         
-        public int zoneDamage = 1;
+        public int zoneDamage = 0;
 
         public float zoneRadius = 0.5f;
         
@@ -33,11 +31,13 @@ namespace Data.AbilityDatas
         
         public LayerMask zoneCheckLayer;
         
-        [FormerlySerializedAs("statusBaseEffect")] public StatusEntityBase statusEntityBaseEffect;
+        public GameObject zonePrefab;
 
-        public AssetReference displayedProjectile;
-        public AssetReference zonePrefab;
+        [Header("Traveling Projectile")]
         
-        
+        public GameObject displayedProjectile;
+        public float projectileTravelTime = 1f;
+        public AnimationCurve projectileYCurve;
+
     }
 }

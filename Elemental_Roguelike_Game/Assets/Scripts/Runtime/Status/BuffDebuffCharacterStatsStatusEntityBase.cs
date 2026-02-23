@@ -24,7 +24,7 @@ namespace Runtime.Status
             ChangeStat(affectCharacterStatsData.amountToChangeBy, affectCharacterStatsData.isChangeOverTime);
         }
 
-        public override void OnTick(CharacterSide obj)
+        public override void OnTick(CharacterSide characterSide)
         {
             if (!affectCharacterStatsData.isChangeOverTime)
             {
@@ -42,8 +42,6 @@ namespace Runtime.Status
         }
         
         #endregion
-
-
 
         #region Class Implementation
 

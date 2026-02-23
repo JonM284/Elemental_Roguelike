@@ -12,7 +12,7 @@ namespace Runtime.Weapons
 
         #region Serialized Fields
 
-        [FormerlySerializedAs("zoneInfo")] [SerializeField] private AoeZoneData aoeZoneData;
+        [FormerlySerializedAs("zoneInfo")] [SerializeField] private AoeZoneAbilityData aoeZoneData;
 
         #endregion
 

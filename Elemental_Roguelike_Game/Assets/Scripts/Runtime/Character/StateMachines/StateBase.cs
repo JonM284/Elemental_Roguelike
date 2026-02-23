@@ -7,6 +7,8 @@ namespace Runtime.Character.StateMachines
     [Serializable]
     public abstract class StateBase: MonoBehaviour
     {
+
+        public bool isUpdateState;
         public bool isCompleted { get; protected set; }
         protected float startTime;
         protected float currentTime => Time.time - startTime;

@@ -57,7 +57,7 @@ namespace Runtime.Status
         #endregion
 
         #region Status Inherited Methods
-        public override void OnTick(CharacterSide obj) { }
+        public override void OnTick(CharacterSide characterSide) { }
 
         #endregion
 

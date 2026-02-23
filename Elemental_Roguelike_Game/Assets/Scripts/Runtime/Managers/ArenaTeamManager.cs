@@ -84,7 +84,7 @@ namespace Runtime.Managers
         {
             var isPlayersGoal = characterSide == TurnController.Instance.playersSide;
 
-            var lastContactedPlayer = _ball.lastContactedCharacters.LastOrDefault(cb => cb.side != characterSide);
+            var lastContactedPlayer = _ball.lastContactedCharacters.LastOrDefault();
             lastContactedPlayer.characterClassManager.ChangeToDisplayLayer();
             
             CameraUtils.SetCameraZoom(0.3f);
@@ -117,7 +117,7 @@ namespace Runtime.Managers
         public async UniTask T_SpawnGoalie()
         {
             //Goalie always performs the same actions
-            await CharacterGameController.Instance.C_CreateCharacter(m_goalieRef,
+            await CharacterGameController.Instance.CreateCharacterAsync(m_goalieRef,
                 goalPosition.position, goalPosition.localEulerAngles, false);
         }
 

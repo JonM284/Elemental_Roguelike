@@ -12,6 +12,6 @@ namespace Runtime.Status
             characterBase.RemoveAllStatuses();
         }
 
-        public override void OnTick(CharacterSide obj) { }
+        public override void OnTick(CharacterSide characterSide) { }
     }
 }

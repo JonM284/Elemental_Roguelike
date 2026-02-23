@@ -5,6 +5,7 @@ using Data.Sides;
 using Project.Scripts.Utils;
 using Runtime.GameControllers;
 using Runtime.Gameplay;
+using Runtime.Gameplay.Sensors;
 using Runtime.Managers;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -31,20 +32,19 @@ namespace Runtime.Character
 
         [SerializeField] private LayerMask characterLayers;
 
-        [SerializeField] private float passiveBaseDistance = 1f, maxPassiveBonusDistance = 10f;
-
-        [SerializeField] private float gravityBaseAmount = 1f, maxGravity = 10f;
+        [SerializeField] private PlayerDetectionSensor playerRangeDetector;
+        [SerializeField] private BallDetectionSensor ballRangeDetector;
 
         #endregion
 
         #region Private Fields
 
         private CharacterBase m_characterBase;
-        
+
         private CharacterClassData assignedClassRef;
 
         private CharacterStatsBase assignedCharacterStatsRef;
-        
+
         private BallBehavior m_ballRef;
 
         private bool m_isPerformingReaction;
@@ -72,8 +72,7 @@ namespace Runtime.Character
 
         private bool ballHasExitedRange;
         private int ballChangeVelocityAmount;
-        private float ballInfluenceIntensity;
-        
+
         #endregion
 
         #region Accessors
@@ -102,20 +101,24 @@ namespace Runtime.Character
         public int throwingScore { get; private set; }
 
         public int tacklingScore { get; private set; }
-        
+
         public int currentMaxAgilityScore { get; private set; }
-        
+
         public int currentMaxThrowingScore { get; private set; }
-        
+
         public int currentMaxTacklingScore { get; private set; }
 
         public float passiveRadius { get; private set; }
+
+        public float passiveRadiusSqr { get; private set; }
 
         public float overwatchRadius { get; private set; }
 
         public bool isOverwatch { get; private set; }
 
         public int overwatchCoolDown { get; private set; }
+
+        public float ballInfluenceIntensity { get; private set; }
 
         public float overwatchCooldownPrct => overwatchCoolDown / (float)m_maxOverwatchCooldown;
 
@@ -129,8 +132,14 @@ namespace Runtime.Character
 
         public bool isAbleToReact => m_canPerformReaction && !m_hasPerformedReaction && !m_isPerformingReaction;
 
+        private float gravityBaseAmount => SettingsController.MinGravityPullConstant;
+        private float maxGravity => SettingsController.MaxGravityPullConstant;
+
+        private float passiveBaseDistance => SettingsController.PassiveDistMin;
+        private float maxPassiveBonusDistance => SettingsController.PassiveDistMaxAddition;
+
         private LayerMask displayLayerVal => LayerMask.NameToLayer("DISPLAY");
-        
+
         private LayerMask displayEnemyLayerVal => LayerMask.NameToLayer("DISPLAY_ENEMY");
 
         private LayerMask charLayerVal => LayerMask.NameToLayer("CHARACTER");
@@ -142,60 +151,44 @@ namespace Runtime.Character
         private void OnEnable()
         {
             TurnController.OnChangeActiveTeam += OnSwapSides;
+            playerRangeDetector.OnCharacterEnter += PlayerEnterOverwatchRange;
+            ballRangeDetector.OnBallEnter += BallEnterRange;
+            ballRangeDetector.OnBallExit += BallExitRange;
         }
 
         private void OnDisable()
         {
             TurnController.OnChangeActiveTeam -= OnSwapSides;
-        }
-
-        public void InfluenceUpdate()
-        {
-            if (isOverwatch)
-            {
-                return;
-            }
-
-            CheckInfluence();
-        }
-        
-        public void OverwatchUpdate()
-        {
-            if (!isOverwatch)
-            {
-                return;
-            }
-
-            if (m_isPerformingReaction || m_hasPerformedReaction)
-            {
-                return;
-            }
-            
-            CheckOverwatch();
-            
+            playerRangeDetector.OnCharacterEnter -= PlayerEnterOverwatchRange;
+            ballRangeDetector.OnBallEnter -= BallEnterRange;
+            ballRangeDetector.OnBallExit -= BallExitRange;
         }
 
         #endregion
 
         #region Class Implementation
 
-        public async UniTask InitializedCharacterPassive(CharacterStatsBase characterStatsData, CharacterClassData classData)
+        public async UniTask InitializedCharacterPassive(CharacterStatsBase characterStatsData,
+            CharacterClassData classData)
         {
             if (classData.IsNull() || characterStatsData.IsNull())
             {
-                Debug.LogError($"Character Stats NULL: {characterStatsData.IsNull()} //// Class Data: {classData.IsNull()}");
+                Debug.LogError(
+                    $"Character Stats NULL: {characterStatsData.IsNull()} //// Class Data: {classData.IsNull()}");
                 return;
             }
-            
+
             assignedClassRef = classData;
             assignedCharacterStatsRef = characterStatsData;
 
             //Formula = Base + (Influence Range Score [0-100] / 100)[Percentage] * Max Range for Passive
-            passiveRadius = passiveBaseDistance + 
-                            ((assignedCharacterStats.influenceRange/100f) * maxPassiveBonusDistance);
-            
+            passiveRadius = passiveBaseDistance +
+                            ((assignedCharacterStats.influenceRange / 100f) * maxPassiveBonusDistance);
+
+            passiveRadiusSqr = passiveRadius * passiveRadius;
+
             overwatchRadius = assignedClass.overwatchRadius;
-            
+
             this.agilityScore = assignedCharacterStatsRef.agilityScore;
             this.throwingScore = assignedCharacterStatsRef.throwScore;
             this.tacklingScore = assignedCharacterStatsRef.tackleScore;
@@ -203,11 +196,11 @@ namespace Runtime.Character
             currentMaxAgilityScore = this.agilityScore;
             currentMaxThrowingScore = this.throwingScore;
             currentMaxTacklingScore = this.tacklingScore;
-            
+
             ballChangeVelocityAmount = assignedClass.GetBallVelocityChangeAmount();
-            ballInfluenceIntensity = gravityBaseAmount + 
-                                     ((assignedCharacterStats.gravityScore/100f) * maxGravity);
-            
+            ballInfluenceIntensity = gravityBaseAmount +
+                                     ((assignedCharacterStats.gravityScore / 100f) * maxGravity);
+
             if (m_passiveIndicator.IsNull())
             {
                 return;
@@ -218,29 +211,52 @@ namespace Runtime.Character
             var doubleRadiusSize = passiveRadius * 2;
             Debug.Log($"Passive Size: {passiveRadius} ::: Double:{doubleRadiusSize}", this.gameObject);
             m_passiveIndicator.transform.localScale = Vector3.one * doubleRadiusSize;
-            
+
+            EnableBallSensor(true);
+            ballRangeDetector.SetColliderRadius(passiveRadius);
+
+            playerRangeDetector.SetColliderRadius(passiveRadius);
+            EnablePlayerSensor(false);
+
             //ToDo: make an overwatch range indicator
             var meshRend = m_passiveIndicator.GetComponent<MeshRenderer>();
             var indicatorMat = meshRend.materials[0];
             indicatorMat.SetColor(m_colorVarName, classData.passiveColor);
-            
+
             DisplayIndicator(false);
-            
+
             await UniTask.WaitForEndOfFrame();
-            
+
             Debug.Log("Class Initialized");
+        }
+
+        private void EnableAllSensors(bool isEnable)
+        {
+            EnablePlayerSensor(isEnable);
+            EnableBallSensor(isEnable);
+        }
+
+        private void EnablePlayerSensor(bool isEnable)
+        {
+            playerRangeDetector.gameObject.SetActive(isEnable);
+        }
+
+        private void EnableBallSensor(bool isEnable)
+        {
+            ballRangeDetector.gameObject.SetActive(isEnable);
         }
 
         public void UpdateCharacterPassiveRadius(float newAmount)
         {
             passiveRadius = newAmount;
+            passiveRadiusSqr = passiveRadius * passiveRadius;
             //Radius is 1/2 scale, scale is diameter
             var doubleRadiusSize = passiveRadius * 2;
             m_passiveIndicator.transform.localScale =
                 new Vector3(doubleRadiusSize, doubleRadiusSize, doubleRadiusSize);
         }
-        
-        
+
+
         //Overwatch is only active on other teams turn
         /// <summary>
         /// Automatically deactivate character passives when it gets back to the character's team's turn
@@ -250,10 +266,9 @@ namespace Runtime.Character
         {
             if (!m_canPerformReaction)
             {
-                DisplayIndicator(false);
                 return;
             }
-            
+
             //Enemy turn
             if (characterBase.side.sideGUID != _side.sideGUID)
             {
@@ -265,24 +280,19 @@ namespace Runtime.Character
             m_hasPerformedReaction = false;
             isOverwatch = false;
 
-            if (!m_passiveIndicator.IsNull())
-            {
-                DisplayIndicator(false);
-            }
-
             if (overwatchCoolDown > 0)
             {
                 overwatchCoolDown--;
             }
         }
-        
+
         public void ActivateCharacterOverwatch()
         {
             if (overwatchCoolDown > 0)
             {
                 return;
             }
-            
+
             if (!m_canPerformReaction)
             {
                 DisplayIndicator(false);
@@ -298,55 +308,122 @@ namespace Runtime.Character
                 DisplayIndicator(true);
             }
 
+            if (assignedClass.classType == CharacterClass.TANK || assignedClass.classType == CharacterClass.BRUISER)
+            {
+                EnablePlayerSensor(true);
+            }
+
             overwatchCoolDown = m_maxOverwatchCooldown;
         }
 
-        private void CheckOverwatch()
+        private void BallEnterRange(BallBehavior ball)
         {
-            if (m_isPerformingReaction || m_hasPerformedReaction)
+            if (ball.IsNull())
             {
                 return;
             }
 
-            if (m_isWaitingForReactionQueue)
-            {
-                return;
-            }
-
-            if (characterBase.characterMovement.isKnockedBack)
-            {
-                return;
-            }
-
-            if (!m_canPerformReaction)
+            if (ball.isControlled || !ball.isThrown)
             {
                 return;
             }
             
+            if (isOverwatch)
+            {
+                var canPerformOverwatch = !m_isPerformingReaction && !m_hasPerformedReaction 
+                                                && !m_isWaitingForReactionQueue 
+                                                && !characterBase.characterMovement.isKnockedBack 
+                                                && m_canPerformReaction;
+                if (canPerformOverwatch)
+                {
+                    PerformOverwatch();
+                }
+                return;
+            }
+            
+            ball.AddInfluence(characterBase);
+        }
+
+        private void BallExitRange(BallBehavior ball)
+        {
+            if (ball.IsNull())
+            {
+                return;
+            }
+            
+            if (ball.isControlled || !ball.isThrown)
+            {
+                return;
+            }
+
+            if (isOverwatch)
+            {
+                return;
+            }
+            
+            ball.RemoveInfluence(characterBase);
+        }
+
+        private void PlayerEnterOverwatchRange(CharacterBase enteringCharacter)
+        {
+            if (enteringCharacter.IsNull() || enteringCharacter == characterBase)
+            {
+                return;
+            }
+
+            //Ally Player
+            if (enteringCharacter.side == characterBase.side)
+            {
+                return;
+            }
+            
+            if (!enteringCharacter.characterMovement.isMoving)
+            {
+                return;
+            }
+            
+            //Not Performing Overwatch
+            if (!isOverwatch)
+            {
+                return;
+            }
+            
+            var CanPerformOverwatch = isOverwatch && !m_isPerformingReaction && !m_hasPerformedReaction
+                                      && !m_isWaitingForReactionQueue && !characterBase.characterMovement.isKnockedBack
+                                      && m_canPerformReaction;
+            
+            if (!CanPerformOverwatch)
+            {
+                return;
+            }
+
+            PerformOverwatch();
+            
+        }
+
+        private void PerformOverwatch()
+        {
+            if (assignedClass.classType == CharacterClass.STRIKER)
+            {
+                return;
+            }
+            
+            m_isWaitingForReactionQueue = true;
             switch (assignedClass.classType)
             {
-                case CharacterClass.DEFENDER:
-                    if (IsBallInRange(overwatchRadius))
-                    {
-                        m_isWaitingForReactionQueue = true;
-                        ReactionQueueController.Instance.QueueReaction(this, PerformDefenderAction);
-                    }
+                case CharacterClass.DEFENDER: //Catch Ball
+                    ReactionQueueController.Instance.QueueReaction(this, PerformDefenderAction);
                     break;
-                case CharacterClass.BRUISER:
-                    if (IsEnemyWalkInRange())
-                    {
-                        m_isWaitingForReactionQueue = true;
-                        ReactionQueueController.Instance.QueueReaction(this, PerformBruiserAction);
-                    }
+                case CharacterClass.BRUISER: //Hit Enemy
+                    ReactionQueueController.Instance.QueueReaction(this, PerformBruiserAction);
                     break;
-                case CharacterClass.TANK:
-                    if (IsEnemyWalkInRange())
-                    {
-                        m_isWaitingForReactionQueue = true;
-                        ReactionQueueController.Instance.QueueReaction(this, PerformTankAction);
-                    }
+                case CharacterClass.TANK: //Stun Enemy
+                    ReactionQueueController.Instance.QueueReaction(this, PerformTankAction);
                     break;
-                case CharacterClass.ALL:
+                case CharacterClass.PLAYMAKER: //Redirect Ball to Teammate
+                    ReactionQueueController.Instance.QueueReaction(this, PerformPlaymakerAction);
+                    break;
+                /*case CharacterClass.ALL: Goalie
                     if (IsEnemyWalkInRange())
                     {
                         m_isWaitingForReactionQueue = true;
@@ -360,7 +437,7 @@ namespace Runtime.Character
                         m_isWaitingForReactionQueue = true;
                         ReactionQueueController.Instance.QueueReaction(this, PerformPlaymakerAction);
                     }
-                    break;
+                    break;*/
             }
         }
 
@@ -374,13 +451,7 @@ namespace Runtime.Character
         {
             m_isPerformingReaction = true;
             m_isWaitingForReactionQueue = false;
-
-            if (!IsBallInRangeWithThrowCondition(overwatchRadius, true))
-            {
-                m_isPerformingReaction = false;
-                return;
-            }
-            
+            //ToDo: UNITASK
             StartCoroutine(C_AttemptGrabBall());
         }
         
@@ -388,13 +459,7 @@ namespace Runtime.Character
         {
             m_isPerformingReaction = true;
             m_isWaitingForReactionQueue = false;
-
-            if (!IsBallInRangeWithThrowCondition(overwatchRadius,false))
-            {
-                m_isPerformingReaction = false;
-                return;
-            }
-            
+            //ToDo: UNITASK
             StartCoroutine(C_AttemptGrabBall());
         }
         
@@ -402,13 +467,9 @@ namespace Runtime.Character
         {
             m_isPerformingReaction = true;
             m_isWaitingForReactionQueue = false;
-
-            if (!IsEnemyWalkInRange())
-            {
-                m_isPerformingReaction = false;
-                return;
-            }
             
+            EnablePlayerSensor(false);
+            //ToDo: UNITASK
             StartCoroutine(C_AttemptAttackDamagePlayer());
         }
         
@@ -416,13 +477,8 @@ namespace Runtime.Character
         {
             m_isPerformingReaction = true;
             m_isWaitingForReactionQueue = false;
-
-            if (!IsEnemyWalkInRange())
-            {
-                m_isPerformingReaction = false;
-                return;
-            }
-            
+            //ToDo: UNITASK
+            EnablePlayerSensor(false);
             StartCoroutine(C_AttemptAttackStopPlayer());
         }
 
@@ -764,39 +820,12 @@ namespace Runtime.Character
             DisplayIndicator(true);
         }
 
-        private void CheckInfluence()
+        public Vector3 GetCurrentInfluenceDir(Vector3 ballPosition)
         {
-            if (characterBase.characterMovement.isKnockedBack)
-            {
-                return;
-            }
-
-            if (!IsBallInRange(passiveRadius))
-            {
-                if (!ballHasEnteredPassiveRange || ballHasExitedRange) return;
-                ball.RemoveInfluence(characterBase);
-                ballHasExitedRange = true;
-                ballHasEnteredPassiveRange = false;
-                return;
-            }
-
-            if (!hasAddedToBallThrowVelocity)
-            {
-                ChangeBallVelocity();
-            }
-
-            var directionOffset = ball.lastThrownCharacter.side.sideGUID == characterBase.side.sideGUID ? -1 : 1;
-            var directionToBall = (ball.transform.position - transform.position);
-            var influenceVector = 
-                directionToBall.normalized / directionToBall.sqrMagnitude * (ballInfluenceIntensity * directionOffset); 
-            ball.AddInfluence(characterBase, influenceVector);
-        }
-
-        private void ChangeBallVelocity()
-        {
-            ball.ChangeBallIntensity(characterBase.side, ballChangeVelocityAmount).Forget();
-            hasAddedToBallThrowVelocity = true;
-            ballHasEnteredPassiveRange = true;
+            var directionToSelf = (transform.position - ballPosition);
+            return (directionToSelf.normalized / Mathf.Clamp(directionToSelf.sqrMagnitude,
+                       SettingsController.GravDistClampMin, SettingsController.GravDistClampMax))
+                   * (ballInfluenceIntensity);
         }
 
         private bool IsBallInRange(float checkRange)
@@ -806,7 +835,7 @@ namespace Runtime.Character
                 return false;
             }
             
-            if (!ball.canBeCaught)
+            if (!ball.CanBeCaught())
             {
                 return false;
             }
@@ -829,7 +858,7 @@ namespace Runtime.Character
             var directionToBall = ball.transform.position - transform.position;
             directionToBall.FlattenVector3Y();
 
-            return directionToBall.magnitude <= checkRange;
+            return directionToBall.sqrMagnitude <= checkRange;
         }
         
         private bool IsBallInRangeWithThrowCondition(float checkRange, bool ballThrownCondition)
@@ -853,9 +882,19 @@ namespace Runtime.Character
             
             foreach (var col in charactersInRange)
             {
+                if (col.IsNull())
+                {
+                    continue;
+                }
+                
                 col.TryGetComponent(out CharacterBase character);
                 
                 if (!character)
+                {
+                    continue;
+                }
+                
+                if (character == this.characterBase)
                 {
                     continue;
                 }
@@ -866,11 +905,6 @@ namespace Runtime.Character
                 }
                 
                 if (!character.characterMovement.isMoving)
-                {
-                    continue;
-                }
-
-                if (character == this.characterBase)
                 {
                     continue;
                 }
@@ -988,8 +1022,9 @@ namespace Runtime.Character
             DisplayIndicator(false);
         }
 
-        private void DisplayIndicator(bool _display)
+        public void DisplayIndicator(bool _display)
         {
+            Debug.Log($"[CharacterClassManager][PassiveIndicator] {this.characterBase.name} _ {this.assignedClass.name} _ Display?: {_display}");
             m_passiveIndicator.SetActive(_display);
         }
 

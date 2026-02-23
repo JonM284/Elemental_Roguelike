@@ -31,6 +31,73 @@ Transform:
   m_Children: []
   m_Father: {fileID: 7324821644116867043}
   m_LocalEulerAnglesHint: {x: 23.48, y: 141.2, z: 0}
+--- !u!1 &573973085500692568
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6967843509234196498}
+  - component: {fileID: 4712636399190647653}
+  - component: {fileID: 2535921194495779369}
+  m_Layer: 12
+  m_Name: CatchSensor
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6967843509234196498
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 573973085500692568}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7324821644116867043}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!135 &4712636399190647653
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 573973085500692568}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 256
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Radius: 0.25
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &2535921194495779369
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 573973085500692568}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0770f4ec19174275a5ff4f9d22de9f15, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  collider: {fileID: 4712636399190647653}
 --- !u!1 &1368163201875100920
 GameObject:
   m_ObjectHideFlags: 0
@@ -63,6 +130,73 @@ Transform:
   - {fileID: 8774242186366710370}
   m_Father: {fileID: 7324821644116867043}
   m_LocalEulerAnglesHint: {x: 26.105, y: 0, z: 0}
+--- !u!1 &1690460102862172006
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4453779322588846160}
+  - component: {fileID: 7271152573210426265}
+  - component: {fileID: 8993889117682352274}
+  m_Layer: 12
+  m_Name: InfluenceSensor
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4453779322588846160
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1690460102862172006}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7324821644116867043}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!135 &7271152573210426265
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1690460102862172006}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 256
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Radius: 0.25
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &8993889117682352274
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1690460102862172006}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0770f4ec19174275a5ff4f9d22de9f15, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  collider: {fileID: 7271152573210426265}
 --- !u!1 &2354154895745424480
 GameObject:
   m_ObjectHideFlags: 0
@@ -644,6 +778,8 @@ Transform:
   - {fileID: 7324821644981008697}
   - {fileID: 2108972098}
   - {fileID: 5535735380654798845}
+  - {fileID: 6967843509234196498}
+  - {fileID: 4453779322588846160}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!135 &7324821644116867041
@@ -684,7 +820,42 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 640
   m_fullDecelTime: 1.9
+  speedCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 5
+      outSlope: 5
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.2
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
   playerCheckRadius: 0.25
+  characterCatchSensor: {fileID: 2535921194495779369}
+  characterInfluenceSensor: {fileID: 8993889117682352274}
   playerCheckLayer:
     serializedVersion: 2
     m_Bits: 256
@@ -703,7 +874,7 @@ MonoBehaviour:
   ballThrowIntensityImage: {fileID: 5263809861939788266}
   ballThrowIntensityText: {fileID: 7535046593728035413}
   countFPS: 30
-  textDuration: 0.7
+  textDuration: 0.8
 --- !u!54 &7324821644116867047
 Rigidbody:
   m_ObjectHideFlags: 0

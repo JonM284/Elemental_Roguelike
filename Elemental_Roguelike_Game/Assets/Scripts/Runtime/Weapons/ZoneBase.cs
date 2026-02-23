@@ -1,35 +1,33 @@
-﻿using System;
-using System.Collections;
-using Data;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using Cysharp.Threading.Tasks;
 using Data.AbilityDatas;
 using Data.Sides;
 using Project.Scripts.Utils;
 using Runtime.Character;
-using Runtime.Damage;
 using Runtime.GameControllers;
-using Runtime.Status;
+using Runtime.VFX;
+using TMPro;
 using UnityEngine;
-using UnityEngine.Events;
-using Utils;
-using Random = UnityEngine.Random;
+using UnityEngine.UI;
 
 namespace Runtime.Weapons
 {
 
-    [RequireComponent(typeof(SphereCollider))]
     public class ZoneBase: MonoBehaviour
     {
-        #region Events
-
-        public UnityEvent onZoneStart;
-
-        public UnityEvent onZoneEnd;
-
-        #endregion
-
+        
         #region Serialized Fields
 
         [SerializeField] private float m_debugRadius = 1f;
+
+        [SerializeField] private VFXPlayer attachedVFX;
+        [SerializeField] private AudioSource attachedSFX;
+
+        [SerializeField] private GameObject aoeIndicator;
+        [SerializeField] private TMP_Text countText;
+        [SerializeField] private Image progressImage;
 
         #endregion
 
@@ -37,17 +35,24 @@ namespace Runtime.Weapons
 
         private CharacterSide m_side;
 
-        private int m_currentRoundTimer;
+        private int m_currentTurnTimer;
 
-        private Transform m_user;
+        private bool hasHitTarget = false;
+
+        private CharacterBase currentOwner;
+
+        private int hitsAmount;
+        private Collider[] hits = new Collider[20];
+
+        private CancellationTokenSource cts = new CancellationTokenSource();
 
         #endregion
 
         #region Accessors
 
-        public AoeZoneData MAoeZoneRef { get; private set; }
+        public AoeZoneAbilityData AoeZoneData { get; private set; }
 
-        private bool hasStatusEffect => !MAoeZoneRef.IsNull() && !MAoeZoneRef.statusEntityBaseEffect.IsNull();
+        private bool hasStatusEffect => !AoeZoneData.IsNull() && AoeZoneData.applicableStatusesOnHit.Any();
 
         #endregion
         
@@ -55,9 +60,9 @@ namespace Runtime.Weapons
 
         private void OnDrawGizmos()
         {
-            if(!MAoeZoneRef.IsNull()){
+            if(!AoeZoneData.IsNull()){
                 Gizmos.color = Color.red;
-                Gizmos.DrawWireSphere(transform.position, MAoeZoneRef.zoneRadius);
+                Gizmos.DrawWireSphere(transform.position, AoeZoneData.zoneRadius);
             }
             else
             {
@@ -69,45 +74,23 @@ namespace Runtime.Weapons
         private void OnEnable()
         {
             TurnController.OnChangeActiveTeam += OnChangeActiveTeam;
-            TurnController.OnRunEnded += EndZone;
-            TurnController.OnResetField += EndZone;
-            TurnController.OnBattleEnded += EndZone;
+            TurnController.OnResetField += ReturnObject;
+            TurnController.OnBattleEnded += ReturnObject;
+            TickGameController.Tick += OnTick;
         }
 
         private void OnDisable()
         {
             TurnController.OnChangeActiveTeam -= OnChangeActiveTeam;
-            TurnController.OnRunEnded -= EndZone;
-            TurnController.OnResetField -= EndZone;
-            TurnController.OnBattleEnded -= EndZone;
+            TurnController.OnResetField -= ReturnObject;
+            TurnController.OnBattleEnded -= ReturnObject;
+            TickGameController.Tick -= OnTick;
         }
-
-        private void OnTriggerEnter(Collider other)
-        {
-            if (!hasStatusEffect)
-            {
-                return;
-            }
-            
-            if (IsUser(other))
-            {
-                return;
-            }
-
-            //fixes lingering trigger area
-            if (MAoeZoneRef.roundStayAmount == 0)
-            {
-                return;
-            }
-
-            other.TryGetComponent(out IEffectable effectable);
-            //ToDo: Status
-            //effectable?.ApplyEffect(m_zoneRef.statusBaseEffect);  
-        }
+        
 
         #endregion
 
-        public void Initialize(AoeZoneData aoeZoneData, Transform _user)
+        public void Initialize(AoeZoneAbilityData aoeZoneData, CharacterBase owner)
         {
             if (aoeZoneData.IsNull())
             {
@@ -115,142 +98,205 @@ namespace Runtime.Weapons
                 return;
             }
 
-            MAoeZoneRef = aoeZoneData;
+            AoeZoneData = aoeZoneData;
             
-            m_currentRoundTimer = MAoeZoneRef.roundStayAmount;
+            m_currentTurnTimer = 0;
 
-            if (!_user.IsNull())
-            {
-                m_user = _user;
-            }
+            currentOwner = owner;
+
+            hasHitTarget = false;
             
-            m_side = TurnController.Instance.GetActiveTeamSide();
+            m_side = currentOwner.side;
+            
+            Debug.Log($"[Zone] Name:{aoeZoneData.abilityName} __ Type:{aoeZoneData.aoeType.ToString()} __ " +
+                      $"Has Projectile?: {!aoeZoneData.displayedProjectile.IsNull()}");
 
-            onZoneStart?.Invoke();
+            ShowIndicator(true);
+        }
 
-            //This is an impact only zone
-            if(MAoeZoneRef.roundStayAmount == 0)
+        private CancellationToken GetTokenSource()
+        {
+            if (!cts.IsNull())
             {
-                DoEffect();
-                StartCoroutine(C_WaitToDoEffect());
+                cts.Cancel();
             }
+                
+            cts = new CancellationTokenSource();
+            return cts.Token;
         }
 
-        private IEnumerator C_WaitToDoEffect()
+        private void ShowIndicator(bool isActive)
         {
-            yield return new WaitForSeconds(1f);
-            EndZone();
+            aoeIndicator.SetActive(isActive);
+            if(isActive && !AoeZoneData.IsNull()) aoeIndicator.transform.localScale = Vector3.one * (AoeZoneData.zoneRadius * 2f);
         }
-
-        private void EndZone()
-        {
-            onZoneEnd?.Invoke();
-
-            this.ReturnToPool();
-        }
-
         
-        private void OnChangeActiveTeam(CharacterSide _side)
+        public void OnCreate()
         {
-            if (MAoeZoneRef.roundStayAmount > 0)
+            GetTokenSource();
+            
+            if (AoeZoneData.aoeType != AreaOfEffectType.ON_CREATE)
             {
-                DoEffect();
+                PlayEffectsAsync(cts.Token).Forget();
+                CheckZone();
+                return;
             }
             
-            if (_side != this.m_side)
+            OnCreateAsync(cts.Token).Forget();
+        }
+        
+        
+        private async UniTask OnCreateAsync(CancellationToken token)
+        {
+            token.ThrowIfCancellationRequested();
+            await PlayEffectsAsync(token);
+            CheckZone();
+            ReturnObject();
+        }
+        
+        private void ReturnObject()
+        {
+            ShowIndicator(false);
+            ObjectPoolController.Instance.ReturnToPool(ObjectPoolController.ZonePoolName, 
+                AoeZoneData.abilityGUID, gameObject).Forget();
+        }
+
+        private async UniTask PlayEffectsAsync(CancellationToken token)
+        {
+            token.ThrowIfCancellationRequested();
+
+            PlayVFX(token).Forget();
+            PlaySFX(token).Forget();
+        }
+
+        private async UniTask PlayVFX(CancellationToken token)
+        {
+            token.ThrowIfCancellationRequested();
+            
+            if (attachedVFX.IsNull())
             {
                 return;
             }
+            
+            attachedVFX.Play();
+            await UniTask.WaitUntil(() => !attachedVFX.is_playing, cancellationToken: token);
+        }
 
-            m_currentRoundTimer--;
-
-            if (m_currentRoundTimer == 0)
+        private async UniTask PlaySFX(CancellationToken token)
+        {
+            token.ThrowIfCancellationRequested();
+            
+            if (attachedSFX.IsNull())
             {
-                EndZone();
+                return;
+            }
+            
+            attachedSFX.Play();
+            await UniTask.WaitUntil(() => !attachedSFX.isPlaying, cancellationToken: token);
+        }
+
+        private void OnTick()
+        {
+            if(AoeZoneData.aoeType != AreaOfEffectType.ALWAYS || AoeZoneData.IsNull())
+                return;
+
+            hasHitTarget = false;
+            CheckZone();
+            
+            if (!hasHitTarget) return;
+            PlayEffectsAsync(GetTokenSource()).Forget();
+        }
+
+        /// <summary>
+        /// Every Turn
+        /// </summary>
+        private void OnChangeActiveTeam(CharacterSide side)
+        {
+            switch (AoeZoneData.aoeType)
+            {
+                case AreaOfEffectType.ON_EVERY_TURN:
+                    m_currentTurnTimer++;
+                    break;
+                case AreaOfEffectType.ON_EVERY_ROUND:
+                    if (side.IsNull() || side.sideGUID != this.m_side.sideGUID)
+                        return;
+
+                    m_currentTurnTimer++;
+                    break;
+                case AreaOfEffectType.ON_COUNTDOWN_END:
+                    m_currentTurnTimer++;
+                    if(m_currentTurnTimer < AoeZoneData.roundStayAmount)
+                        return;
+                    PlayEffectsAsync(GetTokenSource()).Forget();
+                    CheckZone();
+                    break;
+                case AreaOfEffectType.ON_CREATE:
+                    return;
+            }
+            
+            
+            if (m_currentTurnTimer < AoeZoneData.roundStayAmount)
+            {
+                PlayEffectsAsync(GetTokenSource()).Forget();
+                CheckZone();
+            } else
+            {
+                ReturnObject();
             }
         }
 
-        private void DoEffect()
+        private void CheckZone()
         {
-            Collider[] colliders = Physics.OverlapSphere(transform.position, MAoeZoneRef.zoneRadius, MAoeZoneRef.zoneCheckLayer);
+            hitsAmount = Physics.OverlapSphereNonAlloc(transform.position, AoeZoneData.zoneRadius, hits,
+                AoeZoneData.zoneCheckLayer);
             
-            if (colliders.Length > 0)
+            if (hitsAmount == 0)
             {
-                foreach (var collider in colliders)
+                return;
+            }
+            
+            for(int i = 0; i < hitsAmount; i++)
+            {
+                hits[i].TryGetComponent(out CharacterBase _character);
+
+                if (_character.IsNull())
                 {
-
-                    if (MAoeZoneRef.isIgnoreUser)
-                    {
-                        if (IsUser(collider))
-                        {
-                            continue;
-                        }
-                    }
-
-                    if (MAoeZoneRef.isStopReaction)
-                    {
-                        collider.TryGetComponent(out CharacterBase _character);
-                        if (_character)
-                        {
-                            _character.SetCharacterUsable(false);
-                            _character.characterClassManager.SetAbleToReact(false);
-                        }
-                    }
-
-                    var damageable = collider.GetComponent<IDamageable>();
-                    if (MAoeZoneRef.zoneDamage > 0)
-                    {
-                        damageable?.OnDealDamage(m_user, MAoeZoneRef.zoneDamage, !MAoeZoneRef.isArmorAffecting,
-                            null, transform, MAoeZoneRef.hasKnockback);
-                    }
-                    else if(MAoeZoneRef.zoneDamage < 0)
-                    {
-                        damageable?.OnHeal(MAoeZoneRef.zoneDamage, MAoeZoneRef.isArmorAffecting);
-                    }
-                    
-                    if (MAoeZoneRef.isRandomKnockawayBall)
-                    {
-                        collider.TryGetComponent(out IBallInteractable ballInteractable);
-                        if (!ballInteractable.IsNull())
-                        {
-                            ballInteractable.KnockBallAway(null);
-                        }
-                    }
-
-                    if (hasStatusEffect)
-                    {
-                        collider.TryGetComponent(out IEffectable effectable);
-                        //ToDo: Status
-                        //effectable?.ApplyEffect(m_zoneRef.statusBaseEffect);   
-                    }
-                    
+                    continue;
                 }
+                
+                if (AoeZoneData.isIgnoreUser && _character == currentOwner)
+                {
+                    continue;
+                }
+
+                if (AoeZoneData.isStopReaction)
+                {
+                    _character.SetCharacterUsable(false);
+                    _character.characterClassManager.SetAbleToReact(false);
+                }
+
+                if (AoeZoneData.zoneDamage > 0)
+                {
+                    _character.OnDealDamage(this.transform, AoeZoneData.zoneDamage, !AoeZoneData.isArmorAffecting,
+                        null, transform, AoeZoneData.hasKnockback);
+                }
+                else if(AoeZoneData.zoneDamage < 0)
+                {
+                    _character.OnHeal(AoeZoneData.zoneDamage, AoeZoneData.isArmorAffecting);
+                }
+                    
+                if (AoeZoneData.isRandomKnockawayBall)
+                {
+                   _character.characterBallManager.KnockBallAway();
+                }
+
+                if (hasStatusEffect)
+                {
+                    AoeZoneData.applicableStatusesOnHit.ForEach(s => _character.ApplyStatus(s).Forget());   
+                }
+
+                hasHitTarget = true;
             }
-            
         }
-
-        private bool IsUser(Collider _collider)
-        {
-            if (_collider.IsNull())
-            {
-                return false;
-            }
-
-            if (m_user.IsNull())
-            {
-                Debug.Log("USER NULL");
-                return false;
-            }
-
-            if (_collider.transform == m_user)
-            {
-                return true;
-            }
-
-
-            return false;
-        }
-
-
     }
 }

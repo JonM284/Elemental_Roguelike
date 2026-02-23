@@ -5,6 +5,7 @@ using System.Linq;
 using Cysharp.Threading.Tasks;
 using Data;
 using Data.Sides;
+using NUnit.Framework;
 using Project.Scripts.Utils;
 using Runtime.Character;
 using Runtime.Gameplay;
@@ -53,6 +54,8 @@ namespace Runtime.GameControllers
 
         public static event Action OnRunEnded;
 
+        public static event Action<bool> OnPauseChangeRequested; 
+
         #endregion
 
         #region Public Fields
@@ -91,6 +94,8 @@ namespace Runtime.GameControllers
 
         private List<CharacterBase> m_cachedHiddenCharacters = new List<CharacterBase>();
 
+        private List<CharacterBase> allCharacters = new List<CharacterBase>();
+
         private bool m_hasScoredPoint;
 
         private bool m_isSettingUpMatch;
@@ -109,7 +114,7 @@ namespace Runtime.GameControllers
 
         public CharacterBase activeCharacter { get; private set; }
 
-        public bool isPlayerTurn => battlersBySides[activeTeamID].teamSide == playerSide;
+        public bool isPlayerTurn => battlersBySides[activeTeamID].teamSide.sideGUID == playerSide.sideGUID;
         
         public Transform knockedOutPlayerPool =>
             CommonUtils.GetRequiredComponent(ref m_knockedPlayerPool, ()=>
@@ -182,6 +187,11 @@ namespace Runtime.GameControllers
         {
             var activeTeam = CommonUtils.ToNewList(GetActiveTeam());
             return activeTeam.FindAll(cb => cb.characterActionPoints != 0 && cb.isAlive);
+        }
+
+        public List<CharacterBase> GetAllCharacters()
+        {
+            return allCharacters;
         }
 
         public void AddGoalieToTeam(CharacterBase _character)
@@ -353,12 +363,18 @@ namespace Runtime.GameControllers
             
             for (int i = 0; i < teamMembers.Count; i++)
             {
-                await CharacterGameController.Instance.C_CreateCharacter(teamMembers[i].m_characterStatsBase,
-                    correctSide.startPositions[i].position, correctSide.startPositions[i].localEulerAngles, true);
+                await CharacterGameController.Instance.CreateCharacterAsync(teamMembers[i].m_characterStatsBase,
+                    correctSide.startPositions[i].position, 
+                    correctSide.startPositions[i].localEulerAngles, true, AddCharacterToList);
             }
 
 
-            await correctSide.T_SpawnGoalie();
+            //await correctSide.T_SpawnGoalie();
+        }
+
+        private void AddCharacterToList(CharacterBase newCharacter)
+        {
+            allCharacters.Add(newCharacter);
         }
         
         private void OnCharacterCreated(CharacterBase _character)
@@ -428,11 +444,12 @@ namespace Runtime.GameControllers
             
             for (int i = 0; i < teamMembers.Count; i++)
             {
-                await CharacterGameController.Instance.C_CreateCharacter(teamMembers[i],
-                    correctSide.startPositions[i].position, correctSide.startPositions[i].localEulerAngles, false);
+                await CharacterGameController.Instance.CreateCharacterAsync(teamMembers[i],
+                    correctSide.startPositions[i].position, 
+                    correctSide.startPositions[i].localEulerAngles, false, AddCharacterToList);
             }
 
-            await correctSide.T_SpawnGoalie();
+            //await correctSide.T_SpawnGoalie();
         }
 
         public void StartBattle()
@@ -833,7 +850,7 @@ namespace Runtime.GameControllers
             {
                 bbs.teamMembers.ForEach(cb =>
                 {
-                    cb.StopAllActions();
+                    cb.StopAllActions(true);
                     cb.SetCharacterUsable(false);
                 });
             });
@@ -846,6 +863,11 @@ namespace Runtime.GameControllers
             RemoveAllCharacters();
             Debug.Log("RUN ENDED PLAYER DIED");
             OnRunEnded?.Invoke();
+        }
+
+        public void RequestPauseChange(bool isPause)
+        {
+            OnPauseChangeRequested?.Invoke(isPause);
         }
 
         private void EndBattle()

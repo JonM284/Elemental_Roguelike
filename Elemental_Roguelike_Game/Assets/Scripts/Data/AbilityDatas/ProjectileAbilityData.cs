@@ -13,10 +13,11 @@ namespace Data.AbilityDatas
 
         [Header("On Projectile End")] 
         public ProjectileEndType projectileEndType;
-        
+
         [Header("Booleans")]
         //ToDo: change this to enum flags
-        public bool isPassThroughObjects, isAffectArmor, isAffectWhileMoving, isStopReaction;
+        public bool isPassThroughObjects;
+        public bool isAffectArmor, isAffectWhileMoving, isStopReaction;
         
         [Header("Multi-shot options")]
         [Tooltip("Amount of projectiles to be fired")]

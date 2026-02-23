@@ -1,7 +1,6 @@
 ﻿using Runtime.Status;
 using Runtime.VFX;
 using UnityEngine;
-using UnityEngine.AddressableAssets;
 
 namespace Data.StatusDatas
 {

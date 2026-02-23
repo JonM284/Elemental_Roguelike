@@ -14,13 +14,13 @@ namespace Runtime.Character.Creations.CreationDatas
         [FormerlySerializedAs("zoneInfo")]
         [Header("Zone")]
         [Tooltip("Zone to create on detonation")] 
-        [SerializeField] private AoeZoneData aoeZoneData;
+        [SerializeField] private AoeZoneAbilityData aoeZoneData;
         
         #endregion
 
         #region Proximity Perameter Getters
 
-        public AoeZoneData GetZoneInfo()
+        public AoeZoneAbilityData GetZoneInfo()
         {
             return aoeZoneData;
         }

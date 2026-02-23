@@ -4676,6 +4676,12 @@
             Event fired when the raw value changes.
             </summary>
         </member>
+        <member name="T:Rewired.Internal.Helpers.ActionElementMapHelper">
+            <exclude></exclude>
+        </member>
+        <member name="M:Rewired.Internal.Helpers.ActionElementMapHelper.TryGetSplitAxisMaps(Rewired.ActionElementMap,Rewired.ActionElementMap@,Rewired.ActionElementMap@)">
+            <exclude></exclude>
+        </member>
         <member name="T:Rewired.ComponentControls.ComponentControl">
             <summary>
             The base class for component controls.
@@ -5999,6 +6005,22 @@
             This is a component wrapper for Player Controller which can be added to a GameObject.
             </summary>
         </member>
+        <member name="P:Rewired.Components.PlayerController.ElementWithSourceInfo.absoluteSourceSensitivity">
+            <summary>
+            The absolute to relative sensitivity multiplier for axes. This is only applied when the axis coordinate mode is set to Relative and the axis receives
+            Absolute coordinate mode input (joystick axes, keyboard keys, etc.).
+            This is equivalent to pixels per second on a 1920x1080 screen.
+            The final result can also be affected by <see cref="P:Rewired.Components.PlayerController.ElementWithSourceInfo.absoluteToRelativeScalingMode"/> and, for a mouse, <see cref="P:Rewired.Components.PlayerMouse.pointerSpeed"/>.
+            </summary>
+        </member>
+        <member name="P:Rewired.Components.PlayerController.ElementWithSourceInfo.absoluteToRelativeScalingMode">
+            <summary>
+            Determines how a relative axis value will be scaled when controlled by an absolute axis (eg: a joystick).
+            This can be used to scale axis value based on screen or viewport resolution.
+            This is used for scaling mouse pointer speed.
+            Set <see cref="P:Rewired.PlayerController.absoluteToRelativeScalingReferenceResolution"/> to use a custom scaling reference resolution.
+            </summary>
+        </member>
         <member name="P:Rewired.Components.PlayerController.playerId">
             <summary>
             The Player id of the Player used for the source of input.
@@ -6919,6 +6941,11 @@
             The controller element identifier.
             </summary>
         </member>
+        <member name="P:Rewired.Controller.Element.excludeFromPolling">
+            <summary>
+            Determines if the element is excluded from rebind polling.
+            </summary>
+        </member>
         <member name="P:Rewired.Controller.Element.isMemberElement">
             <summary>
             Returns True if the element is a member of a compound element such as an Axis2D.
@@ -6999,6 +7026,17 @@
             Do not set this value extremely low or noisy axes will be detected when at rest.
             A value of -1 means the default global polling dead zone will be used instead.
             [Default = -1]
+            </summary>
+        </member>
+        <member name="P:Rewired.Controller.Axis.axisCoordinateMode">
+            <summary>
+            The coordinate mode of the axis.
+            This describes the format of the data returned by the axis.
+            </summary>
+        </member>
+        <member name="P:Rewired.Controller.Axis.excludeFromPolling">
+            <summary>
+            Determines if the element is excluded from rebind polling.
             </summary>
         </member>
         <member name="M:Rewired.Controller.Axis.GetCalibratedValueForPolling(Rewired.UpdateLoopType,Rewired.AxisCalibration)">
@@ -10286,6 +10324,9 @@
         <member name="T:Rewired.Data.Mapping.HardwareJoystickMap.Platform_NintendoSwitch">
             <exclude></exclude>
         </member>
+        <member name="T:Rewired.Data.Mapping.HardwareJoystickMap.Platform_NintendoSwitch2">
+            <exclude></exclude>
+        </member>
         <member name="T:Rewired.Data.Mapping.HardwareJoystickMap.Platform_GameCore_Base">
             <exclude></exclude>
         </member>
@@ -12135,6 +12176,23 @@
             <param name="index">The index of the element.</param>
             <returns>The element at the specified index. Returns null if no element exists at the specified index or it is not the correct type.</returns>
         </member>
+        <member name="P:Rewired.PlayerController.absoluteToRelativeScalingReferenceResolution">
+            <summary>
+            The reference resolution for absolute to relative value scaling.
+            This is used in conjunction with <see cref="P:Rewired.PlayerController.Axis.absoluteToRelativeScalingMode"/> to
+            determine how to scale absolute values to relative values.
+            When <see cref="P:Rewired.PlayerController.Axis.absoluteToRelativeScalingMode"/> is set to any of the screen / viewport
+            scaling modes, if the scaling mode is based on the horizontal dimension of the screen / viewport, the horizontal resolution will
+            be divided by the reference X resolution to determine the final scaling factor. For example, if the horizontal reference resolution
+            is 1920 pixels and the current screen / viewport horizontal resolution is 3840 pixels, the final scaling multiplier will be 2, resulting
+            in a doubling of value to compensate for the increased resolution.
+            If the scaling mode is based on the vertical dimension of the screen / viewport, the vertical resolution will
+            be divided by the reference Y resolution to determine the final scaling factor. For example, if the vertical reference resolution
+            is 1080 pixels and the current screen / viewport horizontal resolution is 720 pixels, the final scaling multiplier will be 0.66667, resulting
+            in a reduction of value to compensate for the decreased resolution.
+            [Default = 1920x1080]
+            </summary>
+        </member>
         <member name="T:Rewired.PlayerController.Factory">
             <summary>
             Class for creating Player Controller instances.
@@ -12147,6 +12205,56 @@
             <param name="definition">Definition use to set initial values in the controller.</param>
             <returns>A new Player Controller.</returns>
         </member>
+        <member name="T:Rewired.PlayerController.AbsoluteToRelativeScalingMode">
+            <summary>
+            Determines how the values will be scaled when controlled by an absolute value (eg: a joystick).
+            </summary>
+        </member>
+        <member name="F:Rewired.PlayerController.AbsoluteToRelativeScalingMode.None">
+            <summary>
+            No scaling.
+            </summary>
+        </member>
+        <member name="F:Rewired.PlayerController.AbsoluteToRelativeScalingMode.ScreenWidth">
+            <summary>
+            Scales based on the screen width.
+            </summary>
+        </member>
+        <member name="F:Rewired.PlayerController.AbsoluteToRelativeScalingMode.ScreenHeight">
+            <summary>
+            Scales based on the screen height.
+            </summary>
+        </member>
+        <member name="F:Rewired.PlayerController.AbsoluteToRelativeScalingMode.MaxScreenDimension">
+            <summary>
+            Scales based on the larger of screen width or height.
+            </summary>
+        </member>
+        <member name="F:Rewired.PlayerController.AbsoluteToRelativeScalingMode.MinScreenDimension">
+            <summary>
+            Scales based on the smaller of screen width or height.
+            </summary>
+        </member>
+        <member name="F:Rewired.PlayerController.AbsoluteToRelativeScalingMode.ViewportWidth">
+            <summary>
+            Scales based on the viewport width.
+            </summary>
+        </member>
+        <member name="F:Rewired.PlayerController.AbsoluteToRelativeScalingMode.ViewportHeight">
+            <summary>
+            Scales based on the viewport height.
+            </summary>
+        </member>
+        <member name="F:Rewired.PlayerController.AbsoluteToRelativeScalingMode.MaxViewportDimension">
+            <summary>
+            Scales based on the larger of viewport width or height.
+            </summary>
+        </member>
+        <member name="F:Rewired.PlayerController.AbsoluteToRelativeScalingMode.MinViewportDimension">
+            <summary>
+            Scales based on the smaller of viewport width or height.
+            </summary>
+        </member>
         <member name="T:Rewired.PlayerController.Axis">
             <summary>
             An Axis that uses Player Actions as the value source.
@@ -12156,6 +12264,15 @@
             <summary>
             The absolute to relative sensitivity multiplier. This is only applied when the axis coordinate mode is set to Relative and the axis receives
             Absolute coordinate mode input (joystick axes, keyboard keys, etc.).
+            This is equivalent to pixels per second on a 1920x1080 screen.
+            The final result can also be affected by <see cref="P:Rewired.PlayerController.Axis.absoluteToRelativeScalingMode"/> and, for a mouse, <see cref="P:Rewired.PlayerMouse.pointerSpeed"/>.
+            </summary>
+        </member>
+        <member name="P:Rewired.PlayerController.Axis.absoluteToRelativeScalingMode">
+            <summary>
+            Determines how a relative axis value will be scaled when controlled by an absolute axis (eg: a joystick).
+            This can be used to scale axis value based on screen or viewport resolution.
+            This is used for scaling mouse pointer speed.
             </summary>
         </member>
         <member name="P:Rewired.PlayerController.Axis.coordinateMode">
@@ -12201,15 +12318,17 @@
             Absolute coordinate mode input (joystick axes, keyboard keys, etc.).
             </summary>
         </member>
+        <member name="F:Rewired.PlayerController.Axis.Definition.absoluteToRelativeScalingMode">
+            <summary>
+            Determines how a relative axis value will be scaled when controlled by an absolute axis (eg: a joystick).
+            This can be used to scale axis value based on screen or viewport resolution.
+            This is used for scaling mouse pointer speed.
+            </summary>
+        </member>
         <member name="T:Rewired.PlayerController.MouseAxis">
             <summary>
             A Mouse Axis that uses Player Actions as the value source.
             Source value is automatically scaled to screen resolution.
-            </summary>
-        </member>
-        <member name="P:Rewired.PlayerController.MouseAxis.value">
-            <summary>
-            The current value.
             </summary>
         </member>
         <member name="T:Rewired.PlayerController.MouseAxis.Definition">
@@ -14001,9 +14120,56 @@
             Calculation type for 2D deadzones.
             </summary>
         </member>
+        <member name="F:Rewired.DeadZone2DType.Radial">
+            <summary>
+            Uses the magnitude of both axes of input to compare against the dead zone.
+            Use this for the smoothest stick input.
+            </summary>
+        </member>
+        <member name="F:Rewired.DeadZone2DType.Axial">
+            <summary>
+            Each axis is compared against the dead zone individually.
+            This will result in input snapping to zero on each axis when
+            entering each respective dead zone.
+            This can be useful for games that primarly use input in the
+            four cardinal directions.
+            </summary>
+        </member>
+        <member name="T:Rewired.Axis2DClampType">
+            <summary>
+            Clamp types for Axis2D.
+            </summary>
+        </member>
+        <member name="F:Rewired.Axis2DClampType.None">
+            <summary>
+            Do not clamp input.
+            If the individual axes are range calibrated,
+            they will still be clamped individually.
+            </summary>
+        </member>
+        <member name="F:Rewired.Axis2DClampType.Radial">
+            <summary>
+            Clamp input to a unit circle.
+            </summary>
+        </member>
+        <member name="F:Rewired.Axis2DClampType.Axial">
+            <summary>
+            Clamp input to -1 to +1 axially.
+            </summary>
+        </member>
         <member name="T:Rewired.AxisSensitivity2DType">
             <summary>
             Calculation type for sensitivity on 2D axes.
+            </summary>
+        </member>
+        <member name="F:Rewired.AxisSensitivity2DType.Radial">
+            <summary>
+            Sensitivity will be calculated using the magnitude of input and applied to the input vector.
+            </summary>
+        </member>
+        <member name="F:Rewired.AxisSensitivity2DType.Axial">
+            <summary>
+            Sensitivity will be calculated using each individual axis of input and applied individually to each.
             </summary>
         </member>
         <member name="T:Rewired.ElementAssignmentType">
@@ -15594,6 +15760,21 @@
             Maps calibration data to a controller's axes.
             </summary>
         </member>
+        <member name="T:Rewired.CalibrationMap.InitOptions">
+            <summary>
+            Initialization options for <see cref="T:Rewired.CalibrationMap"/>.
+            </summary>
+        </member>
+        <member name="P:Rewired.CalibrationMap.InitOptions.axisCalibrations">
+            <summary>
+            List of <see cref="T:Rewired.AxisCalibration"/>.
+            </summary>
+        </member>
+        <member name="P:Rewired.CalibrationMap.InitOptions.axis2DCalibrations">
+            <summary>
+            List of <see cref="T:Rewired.Axis2DCalibration"/>.
+            </summary>
+        </member>
         <member name="P:Rewired.CalibrationMap.Axes">
             <summary>
             Get a list of the AxisCalibration objects.
@@ -15604,11 +15785,28 @@
             The number of axes in the map.
             </summary>
         </member>
+        <member name="P:Rewired.CalibrationMap.Axes2D">
+            <summary>
+            Get a list of the Axis2DCalibration objects.
+            </summary>
+        </member>
+        <member name="P:Rewired.CalibrationMap.axis2DCount">
+            <summary>
+            The number of 2D axes in the map.
+            </summary>
+        </member>
         <member name="M:Rewired.CalibrationMap.#ctor(Rewired.AxisCalibration[])">
             <summary>
             Creates a CalibrationMap from an array of AxisCalibrations.
             </summary>
             <param name="axisCalibrations">Array of AxisCalibrations</param>
+        </member>
+        <member name="M:Rewired.CalibrationMap.#ctor(Rewired.CalibrationMap.InitOptions)">
+            <summary>
+            Creates a CalibrationMap from incoming options.
+            </summary>
+            <exception cref="T:System.ArgumentNullException">A required value in initOptions is null.</exception>
+            <param name="initOptions">The initialization options.</param>
         </member>
         <member name="M:Rewired.CalibrationMap.Reset">
             <summary>
@@ -15622,11 +15820,28 @@
             <param name="index">Index of the Axis</param>
             <returns>AxisCalibration</returns>
         </member>
+        <member name="M:Rewired.CalibrationMap.GetAxis2D(System.Int32)">
+            <summary>
+            Gets an Axis2DCalibration at a particular index.
+            </summary>
+            <param name="index">Index of the Axis2D</param>
+            <returns>Axis2DCalibration</returns>
+        </member>
         <member name="M:Rewired.CalibrationMap.GetCalibratedValue(System.Int32,System.Single)">
             <summary>
             Calibrates the incoming value by the AxisCalibration at a particular index.
             </summary>
             <param name="axisIndex">Index of the Axis</param>
+            <param name="value">Incoming value to calibrate</param>
+            <returns>Calibrated value</returns>
+        </member>
+        <member name="M:Rewired.CalibrationMap.GetCalibratedValue2D(System.Int32,System.Int32,System.Int32,UnityEngine.Vector2)">
+            <summary>
+            Calibrates the incoming value by the Axis2DCalibration at a particular index.
+            </summary>
+            <param name="axis2DIndex">Index of the Axis2D</param>
+            <param name="xAxisIndex">Index of the X Axis</param>
+            <param name="yAxisIndex">Index of the Y Axis</param>
             <param name="value">Incoming value to calibrate</param>
             <returns>Calibrated value</returns>
         </member>
@@ -15638,12 +15853,27 @@
             <param name="data">Calibration data</param>
             <returns>Success / failure</returns>
         </member>
+        <member name="M:Rewired.CalibrationMap.SetAxis2DData(System.Int32,Rewired.Axis2DCalibrationData)">
+            <summary>
+            Sets calibration settings for an Axis2D at a particular index.
+            </summary>
+            <param name="index">Index of the Axis2D</param>
+            <param name="data">Calibration data</param>
+            <returns>Success / failure</returns>
+        </member>
         <member name="M:Rewired.CalibrationMap.GetAxisData(System.Int32)">
             <summary>
             Gets a struct containing the calibration data for an Axis at a particular index.
             </summary>
             <param name="index">Index of the Axis</param>
             <returns>AxisCalibrationData</returns>
+        </member>
+        <member name="M:Rewired.CalibrationMap.GetAxis2DData(System.Int32)">
+            <summary>
+            Gets a struct containing the calibration data for an Axis2D at a particular index.
+            </summary>
+            <param name="index">Index of the Axis2D</param>
+            <returns>Axis2DCalibrationData</returns>
         </member>
         <member name="M:Rewired.CalibrationMap.ToXmlString">
             <summary>
@@ -15684,6 +15914,11 @@
         <member name="P:Rewired.AxisCalibration.deadZone">
             <summary>
             Gets or sets the dead zone. If the Axis's absolute value is less than or equal to the dead zone, it will return 0.
+            </summary>
+        </member>
+        <member name="P:Rewired.AxisCalibration.upperDeadZone">
+            <summary>
+            Gets or sets the upper dead zone. If the Axis's absolute value is greater than or equal to extents minus the upper dead zone, it will return min/max.
             </summary>
         </member>
         <member name="P:Rewired.AxisCalibration.calibratedZero">
@@ -15777,6 +16012,11 @@
             If the Axis's absolute value is less than or equal to the dead zone, it will return 0.
             </summary>
         </member>
+        <member name="F:Rewired.AxisCalibrationData.upperDeadZone">
+            <summary>
+            Gets or sets the upper dead zone. If the Axis's absolute value is greater than or equal to extents minus the upper dead zone, it will return min/max.
+            </summary>
+        </member>
         <member name="F:Rewired.AxisCalibrationData.zero">
             <summary>
             The zero value. This can be used to correct a non-zero resting state.
@@ -15825,6 +16065,11 @@
             Creates a default AxisCalibrationData.
             </summary>
         </member>
+        <member name="T:Rewired.Axis2DCalibration">
+            <summary>
+            Holds calibration information for two controller axes.
+            </summary>
+        </member>
         <member name="P:Rewired.Axis2DCalibration.deadZoneType">
             <summary>
             The calculation type for the dead zone.
@@ -15833,6 +16078,48 @@
         <member name="P:Rewired.Axis2DCalibration.sensitivityType">
             <summary>
             Calculation type for sensitivity on 2D axes.
+            </summary>
+        </member>
+        <member name="P:Rewired.Axis2DCalibration.clampType">
+            <summary>
+            Clamp type.
+            </summary>
+        </member>
+        <member name="M:Rewired.Axis2DCalibration.GetData">
+            <summary>
+            Gets a struct containing the calibration data.
+            </summary>
+            <returns>Axis2DCalibrationData</returns>
+        </member>
+        <member name="M:Rewired.Axis2DCalibration.SetData(Rewired.Axis2DCalibrationData)">
+            <summary>
+            Sets the calibration data.
+            </summary>
+            <param name="data">Calibration data</param>
+        </member>
+        <member name="M:Rewired.Axis2DCalibration.Reset">
+            <summary>
+            Resets all calibration setings to the hardware defaults.
+            </summary>
+        </member>
+        <member name="T:Rewired.Axis2DCalibrationData">
+            <summary>
+            A struct for working with 2d axis calibration data.
+            </summary>
+        </member>
+        <member name="P:Rewired.Axis2DCalibrationData.deadZoneType">
+            <summary>
+            The calculation type for the dead zone.
+            </summary>
+        </member>
+        <member name="P:Rewired.Axis2DCalibrationData.sensitivityType">
+            <summary>
+            Calculation type for sensitivity on 2D axes.
+            </summary>
+        </member>
+        <member name="P:Rewired.Axis2DCalibrationData.clampType">
+            <summary>
+            Clamp type.
             </summary>
         </member>
         <member name="T:Rewired.ControllerElementIdentifier">
@@ -15904,6 +16191,11 @@
             <summary>
             The key of the negative axis of the element identifier, if any.
             This is used for localization and glyph lookup.
+            </summary>
+        </member>
+        <member name="P:Rewired.ControllerElementIdentifier.role">
+            <summary>
+            The role of this element.
             </summary>
         </member>
         <member name="M:Rewired.ControllerElementIdentifier.#ctor">
@@ -16595,6 +16887,18 @@
         <member name="P:Rewired.ControllerMap.ButtonMaps">
             <summary>
             Gets all Button ActionElementMaps in this controller map.
+            </summary>
+        </member>
+        <member name="P:Rewired.ControllerMap.modifiedTime">
+            <summary>
+            The last time the Controller Map was modified since it was created.
+            Returns 0 if the Controller Map was not modified or if <see cref="P:Rewired.ControllerMap.isModified"/> was set to false.
+            </summary>
+        </member>
+        <member name="P:Rewired.ControllerMap.isModified">
+            <summary>
+            Determines if the Controller Map has been modified since it was created.
+            If this is manually set to true, <see cref="P:Rewired.ControllerMap.modifiedTime"/> will also be set to the current time.
             </summary>
         </member>
         <member name="M:Rewired.ControllerMap.ContainsAction(System.String)">
@@ -17785,6 +18089,15 @@
             <param name="skipDisabledMaps">Should disabled ActionElementMaps be skipped?</param>
             <exception cref="T:System.ArgumentNullException">results is null</exception>
         </member>
+        <member name="M:Rewired.ControllerMap.Create(Rewired.Controller,System.Int32,System.Int32)">
+            <summary>
+            Creates a Controller Map for the specified Controller.
+            </summary>
+            <param name="controller">The Controller.</param>
+            <param name="categoryId">The map category id.</param>
+            <param name="layoutId">The layout id.</param>
+            <returns>Controller Map</returns>
+        </member>
         <member name="T:Rewired.ControllerMapWithAxes">
             <summary>
             Maps actions to controller elements for a controller with axes.
@@ -18270,7 +18583,7 @@
             Overload for Custom Controllers.
             </summary>
         </member>
-        <member name="M:Rewired.HardwareControllerMap_Game.#ctor(System.String,Rewired.Internal.Localization.DeviceLocalizationInfo,Rewired.HardwareControllerMapIdentifier,Rewired.JoystickType[],Rewired.ControllerElementIdentifier[],System.Int32[],System.Int32[],Rewired.AxisCalibrationData[],Rewired.AxisRange[],Rewired.Data.Mapping.HardwareAxisInfo[],Rewired.Data.Mapping.HardwareButtonInfo[],Rewired.Data.Mapping.HardwareJoystickMap.CompoundElement[])">
+        <member name="M:Rewired.HardwareControllerMap_Game.#ctor(System.String,Rewired.Internal.Localization.DeviceLocalizationInfo,Rewired.HardwareControllerMapIdentifier,Rewired.JoystickType[],Rewired.ControllerElementIdentifier[],System.Int32[],System.Int32[],Rewired.AxisCalibrationData[],Rewired.Axis2DCalibrationData[],Rewired.AxisRange[],Rewired.Data.Mapping.HardwareAxisInfo[],Rewired.Data.Mapping.HardwareButtonInfo[],Rewired.Data.Mapping.HardwareJoystickMap.CompoundElement[])">
             <summary>
             Overload for Joysticks.
             Also called by Keyboard/Mouse overload.
@@ -20951,6 +21264,17 @@
             </summary>
             <param name="controllerType">The controller type.</param>
             <returns></returns>
+        </member>
+        <member name="M:Rewired.Player.ControllerHelper.SetLastActiveController(Rewired.Controller)">
+            <summary>
+            Sets the last active controller manually.
+            This overrides the last active controller temporarily, using the current time as the last active time for the controller.
+            When another mapped Action bound to a Controller returns input with a later timestamp, it will become the last active controller.
+            Required: The Controller must be connected and assigned to the Player.
+            Note that when setting this value, the last active controller event will not be sent until the next Rewired update.
+            </summary>
+            <param name="controller">The controller.</param>
+            <returns>True on success. False on failure.</returns>
         </member>
         <member name="M:Rewired.Player.ControllerHelper.FindLastActiveControllerOfType(Rewired.ControllerType,Rewired.Controller@,System.Double@)">
             <summary>
@@ -24035,6 +24359,13 @@
             Rewired will be completely reset if this value is set.
             </summary>
         </member>
+        <member name="P:Rewired.ReInput.ConfigHelper.disableAxis2dClamping">
+            <summary>
+            Overrides Axis2D clamping for all Axis2Ds and sets the value to <see cref="F:Rewired.Axis2DClampType.None"/>.
+            This setting only exists to make Axis2D calibration behave as it did
+            before the 1.1.61.0 update which added radial clamping to all gamepad sticks.
+            </summary>
+        </member>
         <member name="T:Rewired.ReInput.ControllerHelper">
             <summary>
             Provides access to all controller-related members.
@@ -24433,6 +24764,17 @@
             If there is no last active controller, ControllerType.Keyboard is returned.
             </summary>
             <returns>Last active Controller</returns>
+        </member>
+        <member name="M:Rewired.ReInput.ControllerHelper.SetLastActiveController(Rewired.Controller)">
+            <summary>
+            Sets the last active controller manually.
+            This overrides the last active controller temporarily, using the current time as the last active time for the controller.
+            When another Controller returns input with a later timestamp, it will become the last active controller.
+            Required: The Controller must be connected.
+            Note that when setting this value, the last active controller event will not be sent until the next Rewired update.
+            </summary>
+            <param name="controller">The controller.</param>
+            <returns>True on success. False on failure.</returns>
         </member>
         <member name="M:Rewired.ReInput.ControllerHelper.AddLastActiveControllerChangedDelegate(Rewired.ActiveControllerChangedDelegate)">
             <summary>

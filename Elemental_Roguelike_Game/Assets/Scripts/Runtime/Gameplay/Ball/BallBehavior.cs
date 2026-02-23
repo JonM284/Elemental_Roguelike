@@ -5,6 +5,8 @@ using Cysharp.Threading.Tasks;
 using Data.Sides;
 using Project.Scripts.Utils;
 using Runtime.Character;
+using Runtime.GameControllers;
+using Runtime.Gameplay.Sensors;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -24,9 +26,11 @@ namespace Runtime.Gameplay
 
         [SerializeField] private float m_fullDecelTime = 1.9f;
 
+        [SerializeField] private AnimationCurve speedCurve;
+
         [Space(15)] 
         [Header("Player Check")] [SerializeField] private float playerCheckRadius;
-
+        [SerializeField] private PlayerDetectionSensor characterCatchSensor;
         [SerializeField] private LayerMask playerCheckLayer, outsideInfluenceLayers;
 
         [Space(15)] [Header("Spring")] [SerializeField]
@@ -55,49 +59,45 @@ namespace Runtime.Gameplay
         #region Private Fields
 
         private List<CharacterBase> m_lastContactedCharacters = new List<CharacterBase>();
-
-        private Collider m_ballCollider;
-
+        
         private Rigidbody m_rb;
 
         private float m_initialY;
 
-        private float m_tempDragSpeed;
+        private readonly float dragModifier = 0.2f;
 
         private float m_afterThrowThreshold = 0.25f;
 
-        private float m_currentThrowTime;
+        private float m_throwStartTime;
 
-        private float currentBallForce;
+        private float currentBallModifier, startingBallThrowModifier, ballInfluenceStrength = 10f;
+        private const float averageBallSpeed = 5f;
 
-        private Vector3 ballThrownDirection, ballOutsideInfluence;
+        private Vector3 ballThrownDirection, ballOutsideInfluence, ballVelocity;
 
         private bool m_isBallPaused;
 
         private Vector3 m_ballStartPosition;
-
-        private float maxIntensity = 30f;
-
+        private List<Vector3> trajectoryWaypoints = new List<Vector3>();
+        private Vector3 currentWaypoint;
+        private int trajectoryIndex;
+        private float distancePreviousFrame;
+        private Vector3 direction, lastDirection;
+        
         private Collider[] foundPlayers = new Collider[15];
         private int foundPlayersAmount;
 
         private Dictionary<CharacterBase, Vector3> currentInfluences = new Dictionary<CharacterBase, Vector3>();
+        private List<CharacterBase> charactersPassedByDuringThrow = new();
+        private CancellationTokenSource ballCts;
+
+        private bool isRequestChargeBall = false;
 
         #endregion
 
         #region Accessors
-
-        private Collider ballCollider => CommonUtils.GetRequiredComponent(ref m_ballCollider, () =>
-        {
-            var c = GetComponent<Collider>();
-            return c;
-        });
-
-        private Rigidbody rb => CommonUtils.GetRequiredComponent(ref m_rb, () =>
-        {
-            var r = GetComponent<Rigidbody>();
-            return r;
-        });
+        
+        private Rigidbody rb => CommonUtils.GetRequiredComponent(ref m_rb, GetComponent<Rigidbody>);
 
         public bool isControlled { get; private set; }
 
@@ -108,10 +108,8 @@ namespace Runtime.Gameplay
         public Transform ballCamPoint => m_ballCamPoint;
 
         public bool isThrown { get; private set; }
-
-        public bool canBeCaught { get; private set; }
-
-        public bool isMoving => currentBallForce > 0;
+        
+        public bool isMoving => currentBallModifier > 0;
         
         public float thrownBallStat { get; private set; }
 
@@ -129,36 +127,50 @@ namespace Runtime.Gameplay
 
         private void Awake()
         {
+            characterCatchSensor.SetColliderRadius(playerCheckRadius);
             m_initialY = transform.position.y;
             m_ballStartPosition = transform.position;
             ballLevelCanvas.worldCamera = CameraUtils.GetMainCamera();
+            ballCts = new CancellationTokenSource();
+            BallIdle(ballCts.Token).Forget();
         }
 
-        private void Update()
+        private void OnEnable()
         {
-            if (m_isBallPaused)
-            {
-                return;
-            }
-            
-            if (isControlled)
-            {
-                FollowTransform();
-            }
-            else
-            {
-                FreeBall();
-            }
+            characterCatchSensor.OnCharacterEnter += OnCharacterCatchBall;
+        }
+
+        private void OnDisable()
+        {
+            characterCatchSensor.OnCharacterEnter -= OnCharacterCatchBall;
         }
 
         #endregion
         
         #region Class Implementation
 
-        public void ThrowBall(Vector3 direction, float throwForce, bool _isThrown, CharacterBase _character, int _thrownBallStat)
+        private void EnableCatchSensor(bool isEnable)
         {
+            characterCatchSensor.gameObject.SetActive(isEnable);
+        }
+        
+        /// <summary>
+        /// UnPlanned throw, influence detection needed
+        /// </summary>
+        /// <param name="direction">Initial Direction</param>
+        /// <param name="throwForce">Initial Force</param>
+        /// <param name="_isThrown">Thrown or KnockedAway</param>
+        /// <param name="_character">Throwing Character</param>
+        /// <param name="_thrownBallStat">Stats</param>
+        public void ThrowBall(Vector3 direction, float throwForce,
+            bool _isThrown, CharacterBase _character, int _thrownBallStat)
+        {
+            ballCts?.Cancel();
+            trajectoryWaypoints.Clear();
+            currentInfluences.Clear();
+            
             thrownBallStat = _thrownBallStat;
-            m_currentThrowTime = 0;
+            m_throwStartTime = Time.time;
             isThrown = _isThrown;
             
             if (isThrown && !_character.IsNull())
@@ -173,81 +185,121 @@ namespace Runtime.Gameplay
 
             currentOwner = null;
             ballThrownDirection = direction;
-            currentBallForce = throwForce;
-            m_tempDragSpeed = (throwForce)/m_fullDecelTime;
+            currentBallModifier = Mathf.Clamp01(throwForce);
+            startingBallThrowModifier = currentBallModifier;
             
             CameraUtils.SetCameraTrackPos(transform, true);
             ballThrowVisuals.SetActive(true);
+            
+            ballCts = new CancellationTokenSource();
+            BallThrown(ballCts.Token).Forget();
         }
 
-        private void FollowTransform()
+        /// <summary>
+        /// Pre-planned throw
+        /// </summary>
+        /// <param name="waypoints"></param>
+        /// <param name="throwForce"></param>
+        /// <param name="_character"></param>
+        public void ThrowBall(Vector3[] waypoints, float throwForce,
+            CharacterBase _character)
         {
-            transform.position = followerTransform.position;
+            ballCts?.Cancel();
+
+            m_throwStartTime = Time.time;
+            isThrown = true;
+            
+            if (isThrown && !_character.IsNull())
+            {
+                lastThrownCharacter = _character;
+            }
+
+            lastHeldCharacter = _character;
+            isControlled = false;
+            controlledCharacterSide = null;
+            followerTransform = null;
+
+            currentOwner = null;
+
+            trajectoryIndex = 0;
+            trajectoryWaypoints.Clear();
+            trajectoryWaypoints = waypoints.ToList();
+            currentWaypoint = trajectoryWaypoints[1];
+            
+            currentBallModifier = Mathf.Clamp01(throwForce);
+            startingBallThrowModifier = currentBallModifier;
+            
+            CameraUtils.SetCameraTrackPos(transform, true);
+            ballThrowVisuals.SetActive(true);
+            
+            ballCts = new CancellationTokenSource();
+            BallThrown(ballCts.Token).Forget();
         }
 
-        private void FreeBall()
-        {
-            if (isControlled)
-            {
-                return;
-            }
-            
-            BouncyFloat();
-            MarkGround();
+        public float GetInfluence() => ballInfluenceStrength;
+        
+        public float GetSpeed() => averageBallSpeed;
 
-            if (currentBallForce > 0)
+        /// <summary>
+        /// Ball is in Idle state, being held
+        /// </summary>
+        /// <param name="token"></param>
+        private async UniTask FollowTransform(CancellationToken token)
+        {
+            token.ThrowIfCancellationRequested();
+
+            while (isControlled)
             {
-                if (Physics.Raycast(transform.position, ballThrownDirection, out RaycastHit hit, m_wallRayLegnth, wallLayers))
-                {
-                    ballThrownDirection = Vector3.Reflect(ballThrownDirection, hit.normal);
-                }
-                
-                currentBallForce -= m_tempDragSpeed * Time.deltaTime;
-                thrownBallStat -= m_tempDragSpeed * Time.deltaTime;
-                var ballVelocity = GetCurrentInfluenceDirection().normalized * (currentBallForce * Time.deltaTime);
-                Debug.DrawRay(transform.position, ballThrownDirection, Color.green, 30f);
-                //Debug.DrawRay(transform.position, ballVelocity, Color.green, 30f);
-                UpdateThrowIntensityVisuals();
-                rb.MovePosition(rb.position + ballVelocity);
-                ballThrownDirection = ballVelocity.normalized * currentBallForce;
-                Debug.DrawRay(transform.position, ballThrownDirection, Color.red, 30f);
-            }else
-            {
-                if (isThrown)
-                {
-                    isThrown = false;
-                    thrownBallStat = 0;
-                    lastThrownCharacter = null;
-                    ballThrowVisuals.SetActive(false);
-                    currentInfluences.Clear();
-                }   
+                transform.position = followerTransform.position;
+                await UniTask.Yield(PlayerLoopTiming.PreLateUpdate, token);
             }
-            
-            if (m_currentThrowTime > m_afterThrowThreshold)
+        }
+
+        /// <summary>
+        /// Ball in Idle State, not being held
+        /// </summary>
+        private async UniTask BallIdle(CancellationToken token)
+        {
+            token.ThrowIfCancellationRequested();
+
+            while (!isControlled)
             {
-                if (!canBeCaught)
-                {
-                    canBeCaught = true;
-                }
-                CheckForPlayer();
+                BouncyFloat();
+                MarkGround();
+                await UniTask.Yield(PlayerLoopTiming.Update, cancellationToken:token);
+            }
+        }
+
+        private async UniTask BallThrown(CancellationToken token)
+        {
+            token.ThrowIfCancellationRequested();
+
+            if (trajectoryWaypoints.Count > 0)
+            {
+                await PlannedTrajectoryMovement(token);
             }
             else
             {
-                if (canBeCaught)
-                {
-                    canBeCaught = false;
-                }
-                m_currentThrowTime += Time.deltaTime;
+                await UnplannedTrajectoryMovement(token);
             }
-
+            
+            isThrown = false;
+            thrownBallStat = 0;
+            lastThrownCharacter = null;
+            ballThrowVisuals.SetActive(false);
+            currentInfluences.Clear();
+            charactersPassedByDuringThrow.Clear();
+            trajectoryWaypoints.Clear();
+            BallIdle(token).Forget();
         }
-
+        
+        
         private void BouncyFloat()
         {
-            float displacement = m_initialY - transform.position.y;
-            float springForce = springConstant * displacement;
-            float dampingForce = -damping * rb.linearVelocity.y;
-            float totalForce = springForce + dampingForce;
+            var displacement = m_initialY - transform.position.y;
+            var springForce = springConstant * displacement;
+            var dampingForce = -damping * rb.linearVelocity.y;
+            var totalForce = springForce + dampingForce;
         
             rb.AddForce(Vector3.up * totalForce, ForceMode.Force);
         }
@@ -265,79 +317,199 @@ namespace Runtime.Gameplay
                 new Vector3(transform.position.x, groundIndOffset, transform.position.z);
         }
 
-        private void CheckForPlayer()
+        private async UniTask UnplannedTrajectoryMovement(CancellationToken token)
         {
-            foundPlayersAmount = Physics.OverlapSphereNonAlloc(transform.position, playerCheckRadius, foundPlayers ,playerCheckLayer);
+            token.ThrowIfCancellationRequested();
+            
+            TurnController.Instance.RequestPauseChange(true);
 
-            if (foundPlayersAmount == 0)
+            while (currentBallModifier > 0 && !isControlled)
             {
-                return;
+                if (Physics.Raycast(transform.position, ballThrownDirection, out RaycastHit hit, m_wallRayLegnth, wallLayers))
+                {
+                    ballThrownDirection = Vector3.Reflect(ballThrownDirection, hit.normal);
+                }
+                
+                BouncyFloat();
+                MarkGround();
+                UpdateThrowIntensityVisuals();
+                
+                if (CanBeCaught() && !characterCatchSensor.isActiveAndEnabled)
+                {
+                    EnableCatchSensor(true);
+                }
+
+                if (isRequestChargeBall)
+                {
+                    await ChangeBallIntensity(token);
+                }
+                
+                if (!m_isBallPaused)
+                {
+                    var ballSpeed = averageBallSpeed * speedCurve.Evaluate(currentBallModifier);
+                    var ballVelocity = GetCurrentInfluenceDirection().normalized * ((ballSpeed) * Time.deltaTime);
+                    rb.MovePosition(rb.position + ballVelocity);
+                    currentBallModifier -= dragModifier * Time.deltaTime;
+                    ballThrownDirection = Vector3.ClampMagnitude(ballVelocity.normalized * ballInfluenceStrength, ballInfluenceStrength);
+                }
+                
+                if (currentBallModifier <= 0.01f)
+                {
+                    Debug.Log("[Ball Behaviour] Current Ball modifier has fallen below 0.1f");
+                    break;
+                }
+                
+                Debug.Log($"[Ball Behaviour] {currentBallModifier}");
+                await UniTask.Yield(PlayerLoopTiming.Update, cancellationToken: token);
             }
             
-            foreach (var collider in foundPlayers)
+            TurnController.Instance.RequestPauseChange(false);
+        }
+        
+        private async UniTask PlannedTrajectoryMovement(CancellationToken token)
+        {
+            token.ThrowIfCancellationRequested();
+            Debug.Log("[BallBehavior][Movement] Start Planned Movement");
+            TurnController.Instance.RequestPauseChange(true);
+
+            while (currentBallModifier > 0 && trajectoryIndex < trajectoryWaypoints.Count -1 && !isControlled)
             {
-                collider.TryGetComponent(out CharacterBase _character);
-                    
-                if (_character.IsNull())
+                if (!m_isBallPaused)
                 {
-                    continue;
+                    var diff = currentWaypoint - transform.position.FlattenVector3Y();
+                    if (diff.magnitude > 0.8f)
+                    {
+                        var ballSpeed = averageBallSpeed * speedCurve.Evaluate(currentBallModifier);
+                        ballVelocity = diff.FlattenVector3Y().normalized * (ballSpeed * Time.deltaTime);
+                        distancePreviousFrame = diff.magnitude;
+                    } else if(diff.magnitude <= 0.8f || (distancePreviousFrame > 0 && diff.magnitude > distancePreviousFrame)) 
+                        //Current Distance is greater than previous frame distance
+                    {
+                        trajectoryIndex++;
+                        Debug.Log("Next Point");
+                        if (trajectoryIndex < trajectoryWaypoints.Count - 1)
+                        {
+                            currentWaypoint = trajectoryWaypoints[trajectoryIndex];
+                            distancePreviousFrame = 0;
+                        }
+                        else
+                        {
+                            //finished planned movement, move onto unplanned movement
+                            ballThrownDirection = diff;
+                            break;
+                        }
+                    }
                 }
-                    
-                if (!_character.characterBallManager.canPickupBall)
+                
+                BouncyFloat();
+                MarkGround();
+                UpdateThrowIntensityVisuals();
+
+                if (CanBeCaught() && !characterCatchSensor.isActiveAndEnabled)
                 {
-                    continue;
+                    EnableCatchSensor(true);
                 }
 
-                if (!lastThrownCharacter.IsNull() && _character == lastThrownCharacter)
+                if (isRequestChargeBall)
                 {
-                    continue;
+                    await ChangeBallIntensity(token);
                 }
-                    
-                isControlled = true;
-                currentBallForce = 0;
-                    
-                if (isThrown)
-                {
-                    isThrown = false;
-                    lastThrownCharacter = null;
-                }
-                    
-                controlledCharacterSide = _character.side;
-                    
-                _character.PickUpBall(this);
-                    
-                groundIndicator.SetActive(!isControlled);
-                break;
+                
+                var dragAmplifier = trajectoryIndex < trajectoryWaypoints.Count - 2 ? 1f : 5f;
+                rb.MovePosition(rb.position + ballVelocity);
+                currentBallModifier -= (dragModifier * dragAmplifier) * Time.deltaTime;
+                await UniTask.Yield(PlayerLoopTiming.Update, cancellationToken: token);
+            }
+
+            if (currentBallModifier > 0 && !ballThrownDirection.IsNan())
+            {
+                await UnplannedTrajectoryMovement(token);
+            }
+            else
+            {
+                TurnController.Instance.RequestPauseChange(false);
             }
         }
-
-        public async UniTask ChangeBallIntensity(CharacterSide side, float amountChange)
+        
+        public bool CanBeCaught()
         {
-            CancellationTokenSource cts = new CancellationTokenSource();
-            cts.Token.ThrowIfCancellationRequested();
+            return Time.time - m_throwStartTime >= m_afterThrowThreshold && !m_isBallPaused;
+        }
 
-            if (side.sideGUID != lastThrownCharacter.side.sideGUID)
+        private void OnCharacterCatchBall(CharacterBase catchingCharacter)
+        {
+            Debug.Log("Catch called");
+            if (isThrown && !CanBeCaught())
             {
+                Debug.Log("return 1");
+                return;
+            }
+
+            if (isControlled)
+            {
+                Debug.Log("return 2");
                 return;
             }
             
-            SetBallPause(true);
-            var ballForce = Mathf.Clamp(currentBallForce + (amountChange), 0, maxIntensity);
-            await CountToNumberAsync(ballForce, cts.Token);
+            if (catchingCharacter.IsNull())
+            {
+                Debug.Log("return 3");
+                return;
+            }
+            
+            if (!catchingCharacter.characterBallManager.canPickupBall)
+            {
+                Debug.Log("return 4");
+                return;
+            }
 
+            if (!lastThrownCharacter.IsNull() && catchingCharacter == lastThrownCharacter)
+            {
+                Debug.Log("return 5");
+                return;
+            }
+                    
+            isControlled = true;
+            currentBallModifier = 0;
+                    
+            if (isThrown)
+            {
+                isThrown = false;
+                lastThrownCharacter = null;
+            }
+                    
+            controlledCharacterSide = catchingCharacter.side;
+                    
+            catchingCharacter.PickUpBall(this);
+                    
+            groundIndicator.SetActive(!isControlled);
+
+            EnableCatchSensor(false);
+        }
+        
+        private async UniTask ChangeBallIntensity(CancellationToken token)
+        {
+            token.ThrowIfCancellationRequested();
+            
+            Debug.Log("<color=cyan>Starting Recharge</color>");
+            
+            SetBallPause(true);
+            await CountToNumberAsync(startingBallThrowModifier, token);
+
+            Debug.Log("<color=cyan>End Recharge</color>");
+            
             SetBallPause(false);
+            isRequestChargeBall = false;
         }
         
         private async UniTask CountToNumberAsync(float _newValue, CancellationToken token)
         {
             token.ThrowIfCancellationRequested();
-            float _previousValue = currentBallForce;
-            int _stepAmount;
+            float _previousValue = currentBallModifier;
+            float _stepAmount;
             float _waitTime = 1 / countFPS;
 
-            _stepAmount = _newValue - _previousValue  < 0 ? 
-                Mathf.FloorToInt((_newValue - _previousValue) / (countFPS * textDuration)) 
-                : Mathf.CeilToInt((_newValue - _previousValue) / (countFPS * textDuration));
+            _stepAmount = (_newValue - _previousValue) / (countFPS * textDuration);
 
             _stepAmount = Mathf.Abs(_stepAmount);
             
@@ -352,8 +524,9 @@ namespace Runtime.Gameplay
                         _previousValue = _newValue;
                     }
                     
-                    ballThrowIntensityText.text = _previousValue.ToString();
-                    ballThrowIntensityImage.fillAmount = _previousValue / maxIntensity;
+                    ballThrowIntensityText.text = $"{_previousValue * 100f:N0}%";;
+                    ballThrowIntensityImage.fillAmount = _previousValue;
+                    Debug.Log($"Wait time: {_waitTime} Step:{_stepAmount} ___ Prev:{_previousValue} ___ New:{_newValue}");
                     await UniTask.WaitForSeconds(_waitTime, cancellationToken:token);
                 }
             }
@@ -367,16 +540,16 @@ namespace Runtime.Gameplay
                         _previousValue = _newValue;
                     }
                     
-                    ballThrowIntensityText.text = _previousValue.ToString();
-                    ballThrowIntensityImage.fillAmount = _previousValue / maxIntensity;
+                    ballThrowIntensityText.text = $"{_previousValue * 100f:N0}%";;
+                    ballThrowIntensityImage.fillAmount = _previousValue;
                     await UniTask.WaitForSeconds(_waitTime, cancellationToken:token);
                 }
             }
 
-            currentBallForce = _newValue;
+            currentBallModifier = _newValue;
         }
         
-        public void AddInfluence(CharacterBase influencingCharacter, Vector3 newInfluenceDirection)
+        public void AddInfluence(CharacterBase influencingCharacter)
         {
             if (!isThrown)
             {
@@ -388,8 +561,19 @@ namespace Runtime.Gameplay
                 return;
             }
 
-            if (currentInfluences.TryAdd(influencingCharacter, newInfluenceDirection)) return;
-            currentInfluences[influencingCharacter] = newInfluenceDirection;
+            var dirToCharacter = influencingCharacter.transform.position - transform.position;
+            
+            var influenceDirection = (dirToCharacter.normalized / Mathf.Clamp(dirToCharacter.sqrMagnitude,
+                                SettingsController.GravDistClampMin, SettingsController.GravDistClampMax))
+                            * (influencingCharacter.characterClassManager.ballInfluenceIntensity);
+
+            if (currentInfluences.TryAdd(influencingCharacter, influenceDirection))
+            {
+                AddPassedCharacter(influencingCharacter);
+                return;
+            }
+            
+            currentInfluences[influencingCharacter] = influenceDirection;
         }
         
         public void RemoveInfluence(CharacterBase removingCharacter)
@@ -398,14 +582,32 @@ namespace Runtime.Gameplay
             {
                 return;
             }
+            
             Debug.Log("<color=orange>Removing Influence</color>");
             currentInfluences.Remove(removingCharacter);
         }
 
+        private void AddPassedCharacter(CharacterBase newCharacter)
+        {
+            if (charactersPassedByDuringThrow.Contains(newCharacter))
+            {
+                return;
+            }
+            
+            charactersPassedByDuringThrow.Add(newCharacter);
+            
+            if (newCharacter.side.sideGUID != lastThrownCharacter.side.sideGUID)
+            {
+                return;
+            }
+            
+            isRequestChargeBall = true;
+        }
+
         private void UpdateThrowIntensityVisuals()
         {
-            ballThrowIntensityImage.fillAmount = currentBallForce / maxIntensity;
-            ballThrowIntensityText.text = Mathf.CeilToInt(currentBallForce).ToString();
+            ballThrowIntensityImage.fillAmount = currentBallModifier;
+            ballThrowIntensityText.text = $"{currentBallModifier * 100f:N0}%";
         }
         
         private Vector3 GetCurrentInfluenceDirection()
@@ -436,6 +638,10 @@ namespace Runtime.Gameplay
                 m_lastContactedCharacters.RemoveAt(0);
             }
             m_lastContactedCharacters.Add(currentOwner);
+
+            ballCts?.Cancel();
+            ballCts = new CancellationTokenSource();
+            FollowTransform(ballCts.Token).Forget();
         }
 
 
@@ -447,13 +653,13 @@ namespace Runtime.Gameplay
 
         public void ForceStopBall()
         {
-            currentBallForce = 0;
+            currentBallModifier = 0;
             rb.linearVelocity = Vector3.zero;
         }
 
         public void ReduceForce(int _reductionAmount)
         {
-            currentBallForce -= _reductionAmount;
+            currentBallModifier -= _reductionAmount;
         }
 
         public void ResetBall()
@@ -478,9 +684,7 @@ namespace Runtime.Gameplay
 
 
         #endregion
-
-
-
-
+        
+        
     }
 }

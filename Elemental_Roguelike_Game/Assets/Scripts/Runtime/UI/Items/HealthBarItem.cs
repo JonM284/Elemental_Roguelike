@@ -29,6 +29,7 @@ namespace Runtime.UI.Items
         
         [SerializeField] private TMP_Text shieldText;
 
+        [SerializeField] private List<GameObject> highStatusIconParents = new List<GameObject>();
         [SerializeField] private List<Image> highStatusIcon = new List<Image>();
 
         [Header("Low Detail Bar")]
@@ -37,6 +38,7 @@ namespace Runtime.UI.Items
 
         [SerializeField] private Slider healthBarLow;
 
+        [SerializeField] private List<GameObject> lowStatusIconParents = new List<GameObject>();
         [SerializeField] private List<Image> lowStatusIcon = new List<Image>();
         
         [SerializeField] private Image healthBarLowImage;
@@ -246,7 +248,7 @@ namespace Runtime.UI.Items
                 return;
             }
 
-            healthText.text = $"{currentHealth}/{maxHealth}";
+            /*healthText.text = $"{currentHealth}/{maxHealth}";
 
             healthBarLow.value = healthPercentage;
             healthBarHigh.value = healthPercentage;
@@ -261,7 +263,7 @@ namespace Runtime.UI.Items
 
             shieldIcons.ForEach(g => g.SetActive(hasShield));
             
-            captainStars.ForEach(g => g.SetActive(_character.characterStatsBase.isCaptain));
+            captainStars.ForEach(g => g.SetActive(_character.characterStatsBase.isCaptain));*/
         }
         
         private void OnCharacterDied(CharacterBase _character)
@@ -343,17 +345,19 @@ namespace Runtime.UI.Items
         private void UpdateStatusList()
         {
             //ToDo: check if necessary. Health bar might be removed
-            /*for (int i = 0; i < m_followStatusIcons.Count; i++)
+            for (int i = 0; i < highStatusIconParents.Count; i++)
             {
-                m_followStatusIcons[i].gameObject.SetActive(i < m_appliedStatuses.Count);
+                highStatusIconParents[i].gameObject.SetActive(i < appliedStatuses.Count);
+                lowStatusIconParents[i].gameObject.SetActive(i < appliedStatuses.Count);
 
-                if (i >= m_appliedStatuses.Count)
+                if (i >= appliedStatuses.Count)
                 {
                     continue;
                 }
 
-                m_followStatusIcons[i].sprite = m_appliedStatuses[i].statusIconRef;
-            }*/
+                highStatusIcon[i].sprite = appliedStatuses[i].statusIcon;
+                lowStatusIcon[i].sprite = appliedStatuses[i].statusIconLow;
+            }
         }
 
         private void ClearAllStatuses()

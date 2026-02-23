@@ -12,6 +12,16 @@ namespace Runtime.GameControllers
 
         public static SettingsController Instance { get; private set; }
 
+        public static readonly float MaxGravityPullConstant = 1.2f;
+        public static readonly float MinGravityPullConstant = 0.4f;
+
+        public static readonly float GravDistClampMin = 7f;
+        public static readonly float GravDistClampMax = 20f;
+
+        public static readonly float PassiveDistMin = 1f;
+        public static readonly float PassiveDistMaxAddition = 5f;
+        public static readonly float PassiveDistMax = 6f;
+
         #endregion
 
         #region Serialized Fields

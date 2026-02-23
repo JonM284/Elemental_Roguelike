@@ -2,6 +2,7 @@
 {
     public enum AreaOfEffectType
     {
+        ALWAYS,
         ON_CREATE,
         ON_COUNTDOWN_END,
         ON_EVERY_TURN,

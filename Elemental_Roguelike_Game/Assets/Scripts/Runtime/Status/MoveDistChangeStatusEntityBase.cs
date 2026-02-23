@@ -24,7 +24,7 @@ namespace Runtime.Status
             characterBase.characterMovement.ChangeMovementRange(amountToChange);
         }
 
-        public override void OnTick(CharacterSide obj) { }
+        public override void OnTick(CharacterSide characterSide) { }
 
         public override void OnEnd()
         {

@@ -21,7 +21,7 @@ namespace Runtime.Status
             characterBase.characterClassManager.SetAbleToReact(false);
         }
 
-        public override void OnTick(CharacterSide obj) { }
+        public override void OnTick(CharacterSide characterSide) { }
 
         public override void OnEnd()
         {

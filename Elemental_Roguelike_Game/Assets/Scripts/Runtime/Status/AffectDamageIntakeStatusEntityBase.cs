@@ -21,7 +21,7 @@ namespace Runtime.Status
             currentOwner.characterLifeManager.SetDamageIntakeModifier(damageIntakeChangeStatusData.damageIntakeModifier);
         }
 
-        public override void OnTick(CharacterSide obj) { }
+        public override void OnTick(CharacterSide characterSide) { }
 
         public override void OnEnd()
         {

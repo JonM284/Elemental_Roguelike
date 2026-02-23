@@ -11,7 +11,7 @@ namespace Runtime.Weapons
         
         #region Serialized Fields
 
-        [FormerlySerializedAs("zoneToCreate")] [SerializeField] private AoeZoneData aoeZoneToCreate;
+        [FormerlySerializedAs("zoneToCreate")] [SerializeField] private AoeZoneAbilityData aoeZoneToCreate;
 
         #endregion
 

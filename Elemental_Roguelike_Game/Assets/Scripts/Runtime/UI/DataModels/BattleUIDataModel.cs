@@ -106,7 +106,7 @@ namespace Runtime.UI.DataModels
 
         private float maxTimer = 60f;
 
-        private bool m_isOutOfTime = false;
+        private bool m_isOutOfTime = false, isPause = false;
 
         #endregion
 
@@ -147,6 +147,11 @@ namespace Runtime.UI.DataModels
                 return;
             }
 
+            if (isPause)
+            {
+                return;
+            }
+
             if (m_isOutOfTime)
             {
                 return;
@@ -175,6 +180,7 @@ namespace Runtime.UI.DataModels
             TurnController.OnBattleEnded += OnBattleEnded;
             TurnController.OnChangeActiveCharacter += OnChangeCharacterTurn;
             TurnController.OnChangeActiveTeam += OnChangeActiveTeam;
+            TurnController.OnPauseChangeRequested += OnPauseChangeRequested;
             CharacterBallManager.BallPickedUp += OnBallPickedUp;
             CharacterAbilityManager.ActionUsed += OnAbilityUsed;
             WinConditionController.PointScored += OnPointScored;
@@ -187,6 +193,7 @@ namespace Runtime.UI.DataModels
             TurnController.OnBattleEnded -= OnBattleEnded;   
             TurnController.OnChangeActiveCharacter -= OnChangeCharacterTurn;
             TurnController.OnChangeActiveTeam -= OnChangeActiveTeam;
+            TurnController.OnPauseChangeRequested -= OnPauseChangeRequested;
             CharacterBallManager.BallPickedUp -= OnBallPickedUp;
             CharacterAbilityManager.ActionUsed -= OnAbilityUsed;
             WinConditionController.PointScored -= OnPointScored;
@@ -574,6 +581,11 @@ namespace Runtime.UI.DataModels
             m_overwatchCooldown.radialCountdownImage.fillAmount =
                 activePlayer.characterClassManager.overwatchCooldownPrct;
 
+        }
+        
+        private void OnPauseChangeRequested(bool _isPause)
+        {
+            isPause = _isPause;
         }
 
         private void ResetTimer()

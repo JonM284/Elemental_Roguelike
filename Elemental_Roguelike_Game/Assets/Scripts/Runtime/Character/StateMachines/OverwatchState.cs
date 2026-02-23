@@ -28,7 +28,6 @@ namespace Runtime.Character.StateMachines
         
         public override void UpdateState()
         {
-            classManager.OverwatchUpdate();
         }
 
         public override void MarkHighlight(Vector3 _position)

@@ -368,15 +368,15 @@ namespace Runtime.Character
                 {
                     return;
                 }
-                aa.abilityCooldownCurrent++;
-                //aa.roundCooldownPercentage = (float)aa.roundCooldown / aa.maxRoundCooldown;
                 
-                if (aa.abilityCooldownCurrent < aa.abilityCooldownMax)
+                aa.UpdateAbilityCooldown();
+                
+                if (aa.abilityCooldownCurrent > 0)
                 {
                     return;
                 }
                 
-                aa.abilityCooldownCurrent = aa.abilityCooldownMax;
+                aa.ResetAbilityForUse();
             });
         }
 

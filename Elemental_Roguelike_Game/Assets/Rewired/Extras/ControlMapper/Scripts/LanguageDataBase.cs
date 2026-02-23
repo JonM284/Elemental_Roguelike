@@ -51,6 +51,7 @@ namespace Rewired.UI.ControlMapper {
         public abstract string mapCategoriesGroupLabel { get; }
         public abstract string restoreDefaultsWindowMessage { get; }
         public abstract string calibrateWindow_deadZoneSliderLabel { get; }
+        public abstract string calibrateWindow_upperDeadZoneSliderLabel { get; }
         public abstract string calibrateWindow_zeroSliderLabel { get; }
         public abstract string calibrateWindow_sensitivitySliderLabel { get; }
         public abstract string calibrateWindow_invertToggleLabel { get; }

@@ -15,7 +15,8 @@ namespace Runtime.Abilities
 
         #region Serialized Fields
 
-        [SerializeField] protected GameObject abilityCastRangeIndicator, abilityPositionIndicator;
+        [SerializeField] protected GameObject abilityCastRangeIndicator, 
+            abilityPositionIndicator;
         [SerializeField] protected LineRenderer abilityDirectionIndicator;
         
         [SerializeField] protected LayerMask wallLayer;
@@ -58,13 +59,14 @@ namespace Runtime.Abilities
         private float rangeModifier = 1f;
         private float knockbackAmountMax;
         private float damageAmountMax;
+        private float markerYOffset = 0.05f;
 
         #endregion
         
         #region IAbility Inherited Methods
 
-        public bool canUseAbility => abilityCooldownCurrent >= abilityCooldownMax;
-        public float abilityCooldownCurrent { get; set; }
+        public bool canUseAbility => abilityCooldownCurrent <= 0;
+        public float abilityCooldownCurrent { get; protected set; }
         public float abilityCooldownMax { get; set; }
 
         public Vector3 aimDirection { get; set; }
@@ -108,14 +110,14 @@ namespace Runtime.Abilities
             #region ------- Changable Ability Stats --------
 
             abilityCooldownMax = abilityData.abilityTurnCooldownTimer;
-            abilityCooldownCurrent = abilityCooldownMax;
+            abilityCooldownCurrent = 0;
             damageAmountMax = abilityData.abilityDamageAmount;
             knockbackAmountMax = abilityData.abilityKnockbackAmount;
             rangeAmountMax = abilityData.abilityRange;
             currentScale = abilityData.abilityScale;
 
             #endregion
-
+            
             if (_canUseOnStart)
             {
                 ResetAbilityForUse();
@@ -127,6 +129,19 @@ namespace Runtime.Abilities
             
             SetCategoryGUIDs();
             await PreLoadNecessaryObjects();
+            
+            Debug.Log($"[Ability][Step] {abilityData.abilityName} was Initialized", gameObject);
+        }
+        
+        protected CancellationToken GetTokenSource()
+        {
+            if (!cts.IsNull())
+            {
+                cts.Cancel();
+            }
+                
+            cts = new CancellationTokenSource();
+            return cts.Token;
         }
 
         /// <summary>
@@ -145,6 +160,7 @@ namespace Runtime.Abilities
             }
         }
 
+        //ToDo: change to override instead of virtual
         /// <summary>
         /// Preload all necessary status effects, projectiles, zones, creations, vfx, etc.
         /// </summary>
@@ -157,13 +173,23 @@ namespace Runtime.Abilities
         public virtual void ShowAttackIndicator(bool _isActive)
         {
             abilityCastRangeIndicator.SetActive(_isActive);
-            if(_isActive) abilityCastRangeIndicator.transform.localScale = Vector3.one * currentRange;
+            if(_isActive) abilityCastRangeIndicator.transform.localScale = Vector3.one * (currentRange * 2f);
             var isPositionHighlight = abilityData.targetType is AbilityTargetType.FREE or AbilityTargetType.LOCATION;
             abilityPositionIndicator.SetActive(_isActive && isPositionHighlight);
             var isDirectionHighlight = abilityData.targetType == AbilityTargetType.DIRECTIONAL;
             abilityDirectionIndicator.gameObject.SetActive(_isActive && isDirectionHighlight);
         }
 
+        /// <summary>
+        /// Is this ability an ability where it creates something that has a range?
+        /// AKA, type creation or aoe
+        /// </summary>
+        /// <returns></returns>
+        protected bool IsEffectAreaAbility()
+        {
+            return abilityData is AoeZoneAbilityData or CreationAbilityData;
+        }
+        
         public void MarkHighlight(Vector3 position)
         {
             switch (abilityData.targetType)
@@ -174,7 +200,7 @@ namespace Runtime.Abilities
                     {
                         return;
                     }
-                    abilityPositionIndicator.transform.position = new Vector3(position.x, 0, position.z);
+                    abilityPositionIndicator.transform.position = new Vector3(position.x, position.y + markerYOffset, position.z);
                     break;
                 case AbilityTargetType.DIRECTIONAL:
                     var localDirection = transform.InverseTransformDirection(position - transform.position);
@@ -196,6 +222,8 @@ namespace Runtime.Abilities
             }
 
             targetPosition = userInputPosition;
+            
+            ShowAttackIndicator(false);
         }
 
 
@@ -211,6 +239,8 @@ namespace Runtime.Abilities
             }
 
             targetTransform = userSelectedTransform;
+            
+            ShowAttackIndicator(false);
         }
 
         /// <summary>
@@ -218,12 +248,12 @@ namespace Runtime.Abilities
         /// </summary>
         public async UniTask UseAbility()
         {
-            var hasAbilityTarget = !targetTransform.IsNull() && !targetPosition.IsNan();
+            var hasAbilityTarget = !targetTransform.IsNull() || !targetPosition.IsNan();
             if (currentOwner.IsNull() || !hasAbilityTarget)
             {
                 return;
             }
-
+            
             await PerformAbilityAction();
 
             OnAbilityUsed();
@@ -237,7 +267,10 @@ namespace Runtime.Abilities
         /// <summary>
         /// Called after ability use
         /// </summary>
-        public abstract void OnAbilityUsed();
+        public virtual void OnAbilityUsed()
+        {
+            SetAbilityUnusable();
+        }
 
         
         /// <summary>
@@ -245,7 +278,7 @@ namespace Runtime.Abilities
         /// </summary>
         protected virtual void SetAbilityUnusable()
         {
-            abilityCooldownCurrent = 0;
+            abilityCooldownCurrent = abilityCooldownMax;
         }
         
         /// <summary>
@@ -254,8 +287,13 @@ namespace Runtime.Abilities
         public virtual void ResetAbilityForUse()
         {
             //Reset Variables
-            abilityCooldownCurrent = abilityCooldownMax;
+            abilityCooldownCurrent = 0;
             m_previouslyHitColliders.Clear();
+        }
+
+        public void UpdateAbilityCooldown()
+        {
+            abilityCooldownCurrent--;
         }
         
 

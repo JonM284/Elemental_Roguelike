@@ -86,6 +86,6 @@ AssetOrigin:
   serializedVersion: 1
   productId: 21676
   packageName: Rewired
-  packageVersion: 1.1.58.4
+  packageVersion: 1.1.62.5
   assetPath: Assets/Rewired/Internal/Libraries/Runtime/Native/MacOSStandalone/Rewired_MacOS.bundle
-  uploadId: 727838
+  uploadId: 864966

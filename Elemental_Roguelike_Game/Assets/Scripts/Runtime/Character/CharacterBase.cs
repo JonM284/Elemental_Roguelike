@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using Cysharp.Threading.Tasks;
 using Data.CharacterData;
 using Data.Elements;
@@ -380,8 +381,13 @@ namespace Runtime.Character
             StartCoroutine(C_DoDeathAction());
         }
 
-        public void StopAllActions()
+        public void StopAllActions(bool isForce = false)
         {
+            if (!isForce && stateManager.currentState.characterState == ECharacterStates.OverWatch)
+            {
+                return;
+            }
+            
             stateManager.ChangeState(ECharacterStates.Idle);
         }
 
@@ -633,6 +639,13 @@ namespace Runtime.Character
             characterActionPoints = maxActionPoints;
             characterAbilityManager.CheckAbilityCooldown();
             CheckStatusCooldown();
+
+            if (stateManager.currentState.characterState == ECharacterStates.Idle)
+            {
+                return;
+            }
+            
+            stateManager.ChangeState(ECharacterStates.Idle);
         }
 
         public void ResetCharacter(Vector3 _position)
@@ -640,7 +653,7 @@ namespace Runtime.Character
             characterLifeManager.FullReviveCharacter();
             RemoveAllStatuses();
             characterMovement.ResetCharacter(_position);
-            StopAllActions();
+            StopAllActions(true);
             CharacterReset?.Invoke(this);
         }
 
@@ -659,7 +672,7 @@ namespace Runtime.Character
                 
                 if (characterBallManager.hasBall)
                 {
-                    characterBallManager.ThrowBall(Vector3.zero, true);
+                    characterBallManager.ThrowBall(Vector3.zero);
                 }
             }
         }
@@ -831,30 +844,34 @@ namespace Runtime.Character
 
         #region Status Related --------------
         
-        public async UniTask ApplyStatus(StatusData _statusData)
+        public async UniTask ApplyStatus(StatusData statusData)
         {
-            if (_statusData.IsNull())
+            if (statusData.IsNull())
             {
                 return;
             }
             
-            var _currentStatusPrefab = await ObjectPoolController.Instance.T_CreateParentedObject(_statusData.name,
-                _statusData.statusGameObject, m_statusHolder);
-
-            VFXController.Instance.PlayBuffDebuff(_statusData.statusType == StatusType.Positive , transform.position, Quaternion.identity);
+            var cts = new CancellationTokenSource();
+            cts.Token.ThrowIfCancellationRequested();
             
-            _currentStatusPrefab.TryGetComponent(out StatusEntityBase _status);
+            var currentStatusPrefab = await ObjectPoolController.Instance.CreateParentedObjectAsync(ObjectPoolController.StatusPoolName,
+                statusData.statusIdentifierGUID, statusData.statusGameObject, m_statusHolder, cts.Token);
+
+            VFXController.Instance.PlayBuffDebuff(statusData.statusType == StatusType.Positive , transform.position, Quaternion.identity);
+            
+            currentStatusPrefab.TryGetComponent(out StatusEntityBase _status);
 
             if (_status.IsNull())
             {
-                ObjectPoolController.Instance.ReturnToPool(_statusData.name, _currentStatusPrefab);
+                ObjectPoolController.Instance.ReturnToPool(ObjectPoolController.StatusPoolName,
+                    statusData.statusIdentifierGUID, currentStatusPrefab, cts.Token).Forget();
                 return;
             }
                 
             m_currentStatuses.Add(_status);
-            m_currentStatusGUIDs.Add(_statusData.statusIdentifierGUID);
+            m_currentStatusGUIDs.Add(statusData.statusIdentifierGUID);
             _status.OnApply(this);
-            StatusAdded?.Invoke(this, _statusData);
+            StatusAdded?.Invoke(this, statusData);
         }
 
         public void RemoveAllStatuses()
@@ -863,13 +880,16 @@ namespace Runtime.Character
             {
                 return;
             }
+
+            var cts = new CancellationTokenSource();
+            cts.Token.ThrowIfCancellationRequested();
             
             m_currentStatuses.ForEach(seb =>
             {
                 seb.OnEnd();
                 StatusRemoved?.Invoke(this, seb.GetStatusData());
-                ObjectPoolController.Instance.ReturnToPool(seb.GetStatusData().name,
-                    seb.gameObject);
+                ObjectPoolController.Instance.ReturnToPool(ObjectPoolController.StatusPoolName,
+                    seb.GetStatusData().statusIdentifierGUID, seb.gameObject, cts.Token).Forget();
             });
             
             m_currentStatusGUIDs.Clear();
@@ -883,6 +903,9 @@ namespace Runtime.Character
                 return;
             }
 
+            var cts = new CancellationTokenSource();
+            cts.Token.ThrowIfCancellationRequested();
+            
             foreach (var _status in m_currentStatuses)
             {
                 if (!_status.isInitialized)
@@ -911,8 +934,8 @@ namespace Runtime.Character
                 m_currentStatusGUIDs.Remove(_removableAbility.GetGUID());
                 m_currentStatuses.Remove(_removableAbility);
                 StatusRemoved?.Invoke(this, _removableAbility.GetStatusData());
-                ObjectPoolController.Instance.ReturnToPool(_removableAbility.GetStatusData().name,
-                    _removableAbility.gameObject);
+                ObjectPoolController.Instance.ReturnToPool(ObjectPoolController.StatusPoolName,
+                    _removableAbility.GetStatusData().statusIdentifierGUID, _removableAbility.gameObject, cts.Token).Forget();
             }
             
             //If all the statuses are able to be removed, might as well clear

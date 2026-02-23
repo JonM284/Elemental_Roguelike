@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using Cysharp.Threading.Tasks;
 using NUnit.Framework;
 using Project.Scripts.Utils;
@@ -21,8 +22,9 @@ namespace Runtime.Character.StateMachines
         #region Protected Fields
 
         protected StateListItem m_foundState;
-        protected bool m_isRunning;
+        protected bool m_isRunning, changingStates;
         protected CharacterAnimations m_characterAnimations;
+        protected CancellationTokenSource cts;
         
         #endregion
 
@@ -34,25 +36,6 @@ namespace Runtime.Character.StateMachines
 
         public CharacterAnimations characterAnimations => CommonUtils.GetRequiredComponent(ref m_characterAnimations,
             GetComponentInChildren<CharacterAnimations>);
-        
-        #endregion
-        
-        #region Unity Events
-
-        void Update()
-        {
-            if (!m_isRunning)
-            {
-                return;
-            }
-            
-            if (currentState.IsNull())
-            {
-                return;
-            }
-            
-            currentState.stateBehavior.UpdateState();
-        }
         
         #endregion
 
@@ -80,6 +63,16 @@ namespace Runtime.Character.StateMachines
 
             m_foundState = null;
             m_isRunning = true;
+
+            if (!currentState.stateBehavior.isUpdateState)
+            {
+                return;
+            }
+            
+            cts?.Cancel();
+
+            cts = new CancellationTokenSource();
+            UpdateState(cts.Token).Forget();
         }
 
         public void UninitStateMachine()
@@ -87,6 +80,31 @@ namespace Runtime.Character.StateMachines
             m_isRunning = false;
             currentState.stateBehavior.ExitState();
             currentState = null;
+        }
+
+        private async UniTask UpdateState(CancellationToken token)
+        {
+            if (!m_isRunning)
+            {
+                await UniTask.WaitUntil(() => m_isRunning, cancellationToken: token);
+            }
+
+            if (currentState.IsNull() || currentState.stateBehavior.IsNull())
+            {
+                return;
+            }
+
+            while (true)
+            {
+                Debug.Log($"updating state: {currentState.characterState.ToString()} FOR: {characterBase.name}", characterBase);
+                currentState.stateBehavior.UpdateState();
+                await UniTask.Yield(PlayerLoopTiming.Update, token);
+                if (!currentState.stateBehavior.isUpdateState)
+                {
+                    Debug.Log("Breaking out of update");
+                    break;
+                }
+            }
         }
         
         /*public void AddState(ECharacterStates _state, StateBase _stateBehavior)
@@ -126,6 +144,8 @@ namespace Runtime.Character.StateMachines
                 currentState.stateBehavior.ExitState();
             }
             
+            cts?.Cancel();
+
             currentState = m_foundState;
 
             if (!currentState.IsNull() && !currentState.stateBehavior.IsNull())
@@ -134,7 +154,15 @@ namespace Runtime.Character.StateMachines
             }
             
             m_foundState = null;
-            Debug.Log($"Entered State: {currentState.characterState.ToString()}");
+            Debug.Log($"<color=orange>Entered State: {currentState.characterState.ToString()}</color>");
+
+            if (!currentState.stateBehavior.isUpdateState)
+            {
+                return;
+            }
+
+            cts = new CancellationTokenSource();
+            UpdateState(cts.Token).Forget();
         }
 
 

@@ -23,7 +23,7 @@ namespace Runtime.Status
             currentOwner.transform.localScale = Vector3.one * affectCharacterSizeStatusBase.m_increasePercentage;
         }
 
-        public override void OnTick(CharacterSide obj) { }
+        public override void OnTick(CharacterSide characterSide) { }
 
         public override void OnEnd()
         {

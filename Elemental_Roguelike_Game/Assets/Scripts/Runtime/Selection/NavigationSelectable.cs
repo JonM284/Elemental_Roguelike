@@ -66,9 +66,15 @@ namespace Runtime.Selection
 
             
             NavMesh.SamplePosition(_pathPosition, out NavMeshHit clickedLocation, 100, NavMesh.AllAreas);
-            
-            SelectPosition?.Invoke(clickedLocation.position, false);
 
+            if (activeCharacter.IsNull())
+            {
+                SelectPosition?.Invoke(clickedLocation.position, false);
+            }
+            else
+            {
+                activeCharacter.CheckAllAction(clickedLocation.position, false);
+            }
         }
 
         #endregion

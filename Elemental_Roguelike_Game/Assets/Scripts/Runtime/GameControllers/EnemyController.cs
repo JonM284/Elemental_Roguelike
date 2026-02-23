@@ -12,6 +12,7 @@ using UnityEngine.ResourceManagement.AsyncOperations;
 
 namespace Runtime.GameControllers
 {
+    [Obsolete]
     public class EnemyController: GameControllerBase
     {
         

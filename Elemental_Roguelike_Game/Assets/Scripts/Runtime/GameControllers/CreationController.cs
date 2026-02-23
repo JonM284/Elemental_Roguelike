@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Cysharp.Threading.Tasks;
 using Data.Sides;
@@ -12,6 +13,7 @@ using UnityEngine.ResourceManagement.AsyncOperations;
 
 namespace Runtime.GameControllers
 {
+    [Obsolete]
     public class CreationController: GameControllerBase
     {
 

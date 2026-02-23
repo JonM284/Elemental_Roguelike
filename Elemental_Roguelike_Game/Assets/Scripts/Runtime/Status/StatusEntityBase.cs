@@ -57,7 +57,7 @@ namespace Runtime.Status
             isInitialized = true;
         }
 
-        public abstract void OnTick(CharacterSide obj);
+        public abstract void OnTick(CharacterSide characterSide);
 
         public virtual void OnEnd()
         {

@@ -46,7 +46,7 @@ namespace Runtime.Character.StateMachines
 
         public override void SelectTarget(Vector3 _position)
         {
-            characterBallManager.ThrowBall(_position, characterBallManager.IsShot(_position));
+            characterBallManager.ThrowBall(_position);
             stateManager.UseActionPoint();
             stateManager.ChangeState(ECharacterStates.Idle);
         }

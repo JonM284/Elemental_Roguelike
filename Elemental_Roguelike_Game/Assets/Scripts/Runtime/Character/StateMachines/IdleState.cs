@@ -27,27 +27,18 @@ namespace Runtime.Character.StateMachines
 
         public override void EnterState(params object[] _arguments)
         {
-            classManager.ResetInfluence();
+            classManager.DisplayIndicator(true);
         }
 
-        public override void UpdateState()
-        {
-            classManager.InfluenceUpdate();
-        }
+        public override void UpdateState() { }
 
-        public override void MarkHighlight(Vector3 _position)
-        {
-            
-        }
+        public override void MarkHighlight(Vector3 _position) { }
 
-        public override void SelectTarget(Vector3 _position)
-        {
-            
-        }
+        public override void SelectTarget(Vector3 _position) { }
 
         public override void ExitState()
         {
-            
+            classManager.DisplayIndicator(false);
         }
     }
 }

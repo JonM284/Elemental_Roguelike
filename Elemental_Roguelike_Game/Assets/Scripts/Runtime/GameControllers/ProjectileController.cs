@@ -14,6 +14,7 @@ using UnityEngine.ResourceManagement.AsyncOperations;
 
 namespace Runtime.GameControllers
 {
+    [Obsolete("Use Object Pool Controller Instead")]
     public class ProjectileController : GameControllerBase
     {
 
@@ -30,6 +31,9 @@ namespace Runtime.GameControllers
         private Transform m_disabledZonePool;
         
         private List<ProjectileBase> m_cachedProjectiles = new List<ProjectileBase>();
+        
+        private Dictionary<string, List<GameObject>> m_cachedGameObjectsPools =
+            new Dictionary<string, List<GameObject>>();
         
         private List<ZoneBase> m_cachedZones = new List<ZoneBase>();
         
@@ -66,7 +70,7 @@ namespace Runtime.GameControllers
             Instance = this;
             base.Initialize();
         }
-
+        
         public override void Cleanup()
         {
             m_cachedProjectiles.ForEach(c => Destroy(c.gameObject));
@@ -169,15 +173,18 @@ namespace Runtime.GameControllers
         }
 
 
-        public async UniTask GetZoneAt(AoeZoneData aoeZoneData, Vector3 _spawnPosition, Transform _user, CancellationToken cancellationToken)
+        public async UniTask GetZoneAt(AoeZoneAbilityData aoeZoneData, Vector3 _spawnPosition, CharacterBase user, CancellationToken cancellationToken)
         {
+            cancellationToken.ThrowIfCancellationRequested();
             if (aoeZoneData.IsNull())
             {
                 Debug.LogError("Zone Info Null");
                 return;
             }
 
-            var foundZone = m_cachedZones.FirstOrDefault(zb => zb.MAoeZoneRef == aoeZoneData);
+            Debug.Log($"[Zone] Creating Zone: {aoeZoneData.abilityName} from {this.name}");
+            
+            var foundZone = m_cachedZones.FirstOrDefault(zb => zb.AoeZoneData == aoeZoneData);
 
             //projectile found in cachedProjectiles
             if (!foundZone.IsNull())
@@ -190,29 +197,68 @@ namespace Runtime.GameControllers
                 foundZone.transform.parent = null;
                 foundZone.transform.position = _spawnPosition;
 
-                foundZone.Initialize(aoeZoneData, _user);
+                foundZone.Initialize(aoeZoneData, user);
+                Debug.Log($"[Zone] cached zone found");
                 return;
             }
             
             //instantiate gameobject
-            var handle = Addressables.LoadAssetAsync<GameObject>(aoeZoneData.zonePrefab);
-            
-            await UniTask.WaitUntil(() => handle.IsDone, cancellationToken: cancellationToken);
-
-            if (handle.Status != AsyncOperationStatus.Succeeded)
-            {
-                return;
-            }
-            
-            var newZoneObj = Instantiate(handle.Result, _spawnPosition, Quaternion.identity);
-            newZoneObj.TryGetComponent(out ZoneBase zoneBase);
+            var zoneObject = await CreateObjectAsync(aoeZoneData.zonePrefab, _spawnPosition, cancellationToken);
+            zoneObject.TryGetComponent(out ZoneBase zoneBase);
             
             if (zoneBase.IsNull())
             {
                 return;
             }
             
-            zoneBase.Initialize(aoeZoneData, _user);
+            zoneBase.Initialize(aoeZoneData, user);
+            Debug.Log($"[Zone] Zone Created");
+        }
+
+        private async UniTask<GameObject> CreateObjectAsync(AssetReference assetRef, Vector3 position, CancellationToken token)
+        {
+            token.ThrowIfCancellationRequested();
+
+            var handle = Addressables.LoadAssetAsync<GameObject>(assetRef);
+            
+            await UniTask.WaitUntil(() => handle.IsDone, cancellationToken: token);
+
+            return Instantiate(handle.Result, position, Quaternion.identity);;
+        }
+
+        private async UniTask<GameObject> CreateObjectAsync(GameObject prefab, Vector3 position, CancellationToken token)
+        {
+            token.ThrowIfCancellationRequested();
+            return Instantiate(prefab, position, Quaternion.identity);
+        }
+        
+        private bool ContainsPool(string key)
+        {
+            return m_cachedGameObjectsPools.ContainsKey(key);
+        }
+
+        private GameObject GetCachedObject(string key)
+        {
+            var foundObj = m_cachedGameObjectsPools[key].FirstOrDefault();
+            m_cachedGameObjectsPools[key].Remove(foundObj);
+            return foundObj;
+        }
+
+        private void CreateNewPool(string key, GameObject value)
+        {
+            m_cachedGameObjectsPools.Add(key, new List<GameObject>());
+            m_cachedGameObjectsPools[key].Add(value);
+        }
+
+        private void ReturnToPool(string key, GameObject value)
+        {
+            if (!ContainsPool(key))
+            {
+                CreateNewPool(key, value);
+                return;
+            }
+            
+            m_cachedGameObjectsPools[key].Add(value);
         }
 
         #endregion
